@@ -1,0 +1,13 @@
+# 文件作用：排除本地配置、依赖、编译产物和运行日志。
+.DS_Store
+.env
+.env.local
+node_modules/
+frontend/dist/
+backend/bin/
+.run/
+*.log
+evidence/*.webm
+
+.playwright-cli/
+frontend/dist-*/

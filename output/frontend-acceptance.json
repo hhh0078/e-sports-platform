@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-18",
+  "client": "uni-app Vue3 / H5 Chromium 390x844 and 320x740",
+  "test_mode": "真实Go/PostgreSQL/Redis API与本地开发账号、模拟支付，无真实扣款",
+  "passed": [
+    "H5与微信小程序构建成功；关闭uniStatistics自动采集",
+    "7款游戏实际点击切换，强调色、背景、图像、分类及服务同步更新",
+    "390与320视口页面scrollWidth等于clientWidth，无横向溢出",
+    "访客服务详情下单触发登录，玩家账号登录后正确回到原服务",
+    "19元服务数量2，后端订单金额38元；提交需求与验收标准成功",
+    "订单本地付款、买家聊天室消息、打手接单/开始/交付、买家验收/5星评价全程UI完成",
+    "服务成交数变为1，评分变为5.0；实际评价在服务详情显示",
+    "俱乐部负责人从团队订单进入该订单，发言显示俱乐部身份；管理员可查看并发言",
+    "非参与者打开同订单显示无权查看，无订单内容泄漏",
+    "管理员游戏配置原值保存并在操作记录看到game.save",
+    "发布6条文字、不同文字与背景色、右侧与左下位置，DOM测量6标签无重叠",
+    "发布审核后，从我的服务再次编辑，六条文字、颜色、背景与位置均正确回填",
+    "管理员搜索UI验收并审核通过，状态由审核中变为已上架",
+    "7项前端单元测试通过：极端标签布局、100种混合排列、边界、默认对比色、金额、日期、上传资源地址",
+    "14张原创封面包装压缩为800x500 JPEG，总569741字节；观察手机截图清晰",
+    "最终稳定服务复验：6条文字再次编辑提交，重入确认5条浅金底标签的深色文字持久化，管理员重新审核通过",
+    "最终稳定服务复验：陌生人订单页初始3个403后观察9秒无新增轮询；订单摘要和消息DOM均0",
+    "公开需求全UI创建/测试支付，北辰点击领取显示独立接单和山海电竞，选山海后已接单，俱乐部负责人可查看订单和聊天室",
+    "订单图片证据正常显示，完整截图包括约定、交付、评价、俱乐部/平台发言和老板图片"
+  ],
+  "test_records": {
+    "order_id": "956e2a8e012cc855316e4ef5b16aba18",
+    "service_id": "8f2027255b77a0097db037e613a7dee1",
+    "public_claim_order_id": "78696d2bbd64c679b71edc232a95a720",
+    "public_claim_order_status": "accepted，挂靠山海电竞，保留供用户测试开始服务"
+  },
+  "found_and_fixed": [
+    "服务详情未返回reviews导致实际评分与评价列表不一致，后端补齐后已浏览器复验",
+    "text内嵌Icon产生跨端warning，相关组件改view",
+    "小程序原生胶囊覆盖头像，MP header按胶囊边界留空间并隐藏重复头像",
+    "封面路径/api/media补后端origin以支持管理员上传",
+    "金色浅底默认白字对比不足，新建标签根据背景亮度选择深色文字",
+    "发布和公开接单俱乐部选项同时校验有效挂靠与支持游戏，切游戏清理不匹配挂靠",
+    "公开接单动作菜单每页最多6项，兼容微信上限并支持任意数量俱乐部",
+    "登录页无有效next时明确恢复我的页默认值，防止残留旧目标"
+  ],
+  "pending_recheck": [],
+  "screenshots": [
+    "output/playwright/frontend-home-390.png",
+    "output/playwright/frontend-compressed-390.png",
+    "output/playwright/frontend-home-320.png",
+    "output/playwright/frontend-order-four-roles.png",
+    "output/playwright/frontend-order-denied.png",
+    "output/playwright/frontend-six-label-cover.png",
+    "output/playwright/frontend-admin-review.png",
+    "output/playwright/frontend-admin-approved.png",
+    "output/playwright/frontend-order-evidence.png",
+    "output/playwright/frontend-claim-club.png"
+  ],
+  "external_limits": [
+    "未提供正式微信AppID/商户号，真实登录与真实扣款未验收；微信开发工具由主agent进行验收"
+  ]
+}

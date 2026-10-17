@@ -1,0 +1,17 @@
+{
+  "pages": [
+    { "path": "pages/index/index", "style": { "navigationBarTitleText": "集结 · 玩家" } },
+    { "path": "pages/worker/index", "style": { "navigationBarTitleText": "打手工作台" } },
+    { "path": "pages/orders/index", "style": { "navigationBarTitleText": "我的订单" } },
+    { "path": "pages/me/index", "style": { "navigationBarTitleText": "我的集结" } },
+    { "path": "pages/service/index", "style": { "navigationBarTitleText": "服务详情" } },
+    { "path": "pages/login/index", "style": { "navigationBarTitleText": "登录集结" } },
+    { "path": "pages/order/index", "style": { "navigationBarTitleText": "订单详情" } },
+    { "path": "pages/publish/index", "style": { "navigationBarTitleText": "发布服务" } },
+    { "path": "pages/request/index", "style": { "navigationBarTitleText": "发布需求" } },
+    { "path": "pages/clubs/index", "style": { "navigationBarTitleText": "俱乐部" } },
+    { "path": "pages/club/index", "style": { "navigationBarTitleText": "俱乐部详情" } },
+    { "path": "pages/admin/index", "style": { "navigationBarTitleText": "管理中心" } }
+  ],
+  "globalStyle": { "navigationStyle": "custom", "backgroundColor": "#0a1110", "backgroundTextStyle": "light", "navigationBarTextStyle": "white" }
+}

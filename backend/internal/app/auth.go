@@ -1,0 +1,260 @@
+// Package app 负责开发身份、微信身份兑换以及每次请求的冻结校验。
+package app
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"github.com/redis/go-redis/v9"
+	"net"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+)
+
+// actor 从 Redis 会话取用户，并实时校验账号状态。
+func (a *App) actor(r *http.Request) (User, error) {
+	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if token == "" || token == r.Header.Get("Authorization") {
+		return User{}, fail(401, "请先登录")
+	}
+	id, err := a.Redis.Get(r.Context(), a.redisKey("session:"+token)).Result()
+	if err == redis.Nil {
+		return User{}, fail(401, "登录已过期，请重新登录")
+	}
+	if err != nil {
+		return User{}, fail(503, "登录服务暂时不可用")
+	}
+	u, err := get[User](r.Context(), a.DB, "users", id, false)
+	if err != nil {
+		return User{}, fail(401, "账号不存在")
+	}
+	if u.Status != "active" {
+		return User{}, fail(403, "账号已被停用")
+	}
+	return u, nil
+}
+
+// admin 强制校验平台管理员身份。
+func (a *App) admin(r *http.Request) (User, error) {
+	u, err := a.actor(r)
+	if err != nil {
+		return u, err
+	}
+	if u.Role != "admin" {
+		return u, fail(403, "仅管理员可操作")
+	}
+	return u, nil
+}
+
+// session 创建三十天有效的随机会话，不接受客户端角色。
+func (a *App) session(ctx context.Context, u User) (any, error) {
+	if u.Status != "active" {
+		return nil, fail(403, "账号已被停用")
+	}
+	token := newID() + newID()
+	if err := a.Redis.Set(ctx, a.redisKey("session:"+token), u.ID, 30*24*time.Hour).Err(); err != nil {
+		return nil, fail(503, "登录服务暂时不可用")
+	}
+	return map[string]any{"token": token, "user": u}, nil
+}
+
+// loginRate 通过 Redis 固定窗口限制身份入口滥用。
+func (a *App) loginRate(r *http.Request) error {
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	key := a.redisKey("login:" + ip + ":" + time.Now().UTC().Format("200601021504"))
+	n, err := a.Redis.Incr(r.Context(), key).Result()
+	if err != nil {
+		return fail(503, "登录服务暂时不可用")
+	}
+	if n == 1 {
+		a.Redis.Expire(r.Context(), key, 2*time.Minute)
+	}
+	if n > 120 {
+		return fail(429, "登录请求过于频繁，请稍后再试")
+	}
+	return nil
+}
+
+// accounts 仅向开发环境暴露固定验收账号。
+func (a *App) accounts(w http.ResponseWriter, r *http.Request) (any, error) {
+	if !a.Config.DevMode {
+		return nil, fail(404, "接口不存在")
+	}
+	return list[User](r.Context(), a.DB, "users", "WHERE id IN ('player','worker','clubowner','admin','outsider') ORDER BY id")
+}
+
+// devLogin 在显式开发模式下选用种子账号。
+func (a *App) devLogin(w http.ResponseWriter, r *http.Request) (any, error) {
+	if !a.Config.DevMode {
+		return nil, fail(404, "接口不存在")
+	}
+	if err := a.loginRate(r); err != nil {
+		return nil, err
+	}
+	var in struct {
+		UserID string `json:"user_id"`
+	}
+	if err := decode(r, &in); err != nil {
+		return nil, err
+	}
+	if !contains([]string{"player", "worker", "clubowner", "admin", "outsider"}, in.UserID) {
+		return nil, fail(400, "请选择测试账号")
+	}
+	u, err := get[User](r.Context(), a.DB, "users", in.UserID, false)
+	if err != nil {
+		return nil, err
+	}
+	return a.session(r.Context(), u)
+}
+
+// wechatLogin 使用官方 code2session 交换身份，不回传 session_key。
+func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
+	if a.Config.WechatAppID == "" || a.Config.WechatSecret == "" {
+		return nil, fail(503, "微信登录尚未配置，请联系管理员")
+	}
+	if err := a.loginRate(r); err != nil {
+		return nil, err
+	}
+	var in struct {
+		Code string `json:"code"`
+	}
+	if err := decode(r, &in); err != nil {
+		return nil, err
+	}
+	if !length(in.Code, 1, 256) {
+		return nil, fail(400, "微信登录凭证无效")
+	}
+	query := url.Values{"appid": {a.Config.WechatAppID}, "secret": {a.Config.WechatSecret}, "js_code": {in.Code}, "grant_type": {"authorization_code"}}
+	req, _ := http.NewRequestWithContext(r.Context(), "GET", "https://api.weixin.qq.com/sns/jscode2session?"+query.Encode(), nil)
+	res, err := a.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fail(502, "微信登录服务暂时不可用")
+	}
+	defer res.Body.Close()
+	var wx struct {
+		OpenID  string `json:"openid"`
+		ErrCode int    `json:"errcode"`
+	}
+	if json.NewDecoder(res.Body).Decode(&wx) != nil || res.StatusCode != 200 || wx.ErrCode != 0 || wx.OpenID == "" {
+		return nil, fail(401, "微信登录凭证已失效，请重新登录")
+	}
+	hash := sha256.Sum256([]byte(a.Config.WechatAppID + ":" + wx.OpenID))
+	id := "wx_" + hex.EncodeToString(hash[:16])
+	u, err := get[User](r.Context(), a.DB, "users", id, false)
+	if missing(err) {
+		u = User{ID: id, Nickname: "新队友", Bio: "", Role: "user", Status: "active", CreatedAt: now()}
+		raw, _ := json.Marshal(u)
+		_, err = a.DB.Exec(r.Context(), "INSERT INTO users(id,data) VALUES($1,$2) ON CONFLICT(id) DO NOTHING", id, raw)
+		if err == nil {
+			u, err = get[User](r.Context(), a.DB, "users", id, false)
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	if err = put(r.Context(), a.DB, "identities", u.ID, map[string]string{"openid": wx.OpenID}); err != nil {
+		return nil, err
+	}
+	return a.session(r.Context(), u)
+}
+
+// logout 主动使当前会话失效。
+func (a *App) logout(w http.ResponseWriter, r *http.Request) (any, error) {
+	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if token != "" {
+		if err := a.Redis.Del(r.Context(), a.redisKey("session:"+token)).Err(); err != nil {
+			return nil, fail(503, "退出失败，请稍后重试")
+		}
+	}
+	return map[string]bool{"ok": true}, nil
+}
+
+// me 返回当前用户安全资料。
+func (a *App) me(w http.ResponseWriter, r *http.Request) (any, error) { return a.actor(r) }
+
+// updateMe 仅允许个人修改展示资料，绝不信任客户端角色。
+func (a *App) updateMe(w http.ResponseWriter, r *http.Request) (any, error) {
+	u, err := a.actor(r)
+	if err != nil {
+		return nil, err
+	}
+	var in struct {
+		Nickname *string `json:"nickname"`
+		Bio      *string `json:"bio"`
+		Provider *bool   `json:"provider_enabled"`
+	}
+	if err = decode(r, &in); err != nil {
+		return nil, err
+	}
+	tx, err := a.DB.Begin(r.Context())
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(r.Context())
+	u, err = get[User](r.Context(), tx, "users", u.ID, true)
+	if err != nil {
+		return nil, err
+	}
+	if in.Nickname != nil {
+		if !length(*in.Nickname, 2, 24) {
+			return nil, fail(400, "昵称需为 2 至 24 个字")
+		}
+		u.Nickname = strings.TrimSpace(*in.Nickname)
+	}
+	if in.Bio != nil {
+		if !length(*in.Bio, 0, 300) {
+			return nil, fail(400, "简介最多 300 字")
+		}
+		u.Bio = strings.TrimSpace(*in.Bio)
+	}
+	if in.Provider != nil {
+		u.ProviderEnabled = *in.Provider
+	}
+	if err = put(r.Context(), tx, "users", u.ID, u); err != nil {
+		return nil, err
+	}
+	return u, tx.Commit(r.Context())
+}
+
+// stats 从最终订单状态实时聚合，退款自然扣除收入。
+func (a *App) stats(w http.ResponseWriter, r *http.Request) (any, error) {
+	u, err := a.actor(r)
+	if err != nil {
+		return nil, err
+	}
+	orders, err := list[Order](r.Context(), a.DB, "orders", "WHERE data->>'buyer_id'=$1 OR data->>'provider_id'=$1", u.ID)
+	if err != nil {
+		return nil, err
+	}
+	out := map[string]int64{"buying_count": 0, "working_count": 0, "completed_count": 0, "earnings_cents": 0}
+	for _, o := range orders {
+		if o.BuyerID == u.ID && !contains([]string{"completed", "cancelled", "refunded"}, o.Status) {
+			out["buying_count"]++
+		}
+		if o.ProviderID == u.ID && !contains([]string{"completed", "cancelled", "refunded"}, o.Status) {
+			out["working_count"]++
+		}
+		if o.Status == "completed" && !contains([]string{"requested", "escalated", "processing"}, o.RefundStatus) {
+			out["completed_count"]++
+			if o.ProviderID == u.ID {
+				out["earnings_cents"] += o.AmountCents
+			}
+		}
+	}
+	return out, nil
+}
+
+// getWechatOpenID 从私密身份表读取微信标识，不向用户资料接口暴露。
+func (a *App) getWechatOpenID(ctx context.Context, userID string) (string, error) {
+	v, err := get[map[string]string](ctx, a.DB, "identities", userID, false)
+	if err != nil || v["openid"] == "" {
+		return "", fail(503, "请先通过微信登录后使用微信支付")
+	}
+	return v["openid"], nil
+}
+
+// redisKey 隔离部署环境及测试命名空间，避免共享 Redis 的会话和限流串扰。
+func (a *App) redisKey(key string) string { return a.Config.RedisPrefix + key }

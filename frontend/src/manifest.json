@@ -1,0 +1,27 @@
+{
+  "name": "集结",
+  "appid": "__UNI__JIJIE_LOCAL",
+  "description": "多游戏陪练、任务协作与俱乐部服务平台",
+  "versionName": "1.0.0",
+  "versionCode": 100,
+  "transformPx": false,
+  "vueVersion": "3",
+  "h5": {
+    "title": "集结 · 找队友，也成为队友",
+    "router": {
+      "mode": "hash"
+    }
+  },
+  "mp-weixin": {
+    "appid": "touristappid",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true
+    },
+    "usingComponents": true
+  },
+  "uniStatistics": {
+    "enable": false
+  }
+}
