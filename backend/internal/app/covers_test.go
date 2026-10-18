@@ -47,6 +47,7 @@ func TestIntegrationCustomCovers(t *testing.T) {
 	g := games[0]
 	g.Covers = append(g.Covers, response.Data.URL)
 	g.CoverURL = response.Data.URL
+	g.IconURL = response.Data.URL
 	api.call("admin", "PATCH", "/admin/games/"+g.ID, g, 200, nil)
 	res, err = http.Get(api.Server.URL + response.Data.URL)
 	if err != nil {
@@ -58,9 +59,12 @@ func TestIntegrationCustomCovers(t *testing.T) {
 	}
 	g.Covers = append(g.Covers, "/api/media/00000000000000000000000000000000")
 	api.call("admin", "PATCH", "/admin/games/"+g.ID, g, 400, nil)
+	g.Covers = g.Covers[:len(g.Covers)-1]
 	o := api.newOrder()
 	private := api.uploadTestImage("player", o.ID)
 	private = strings.Split(private, "?")[0]
+	g.IconURL = strings.Replace(private, "/evidence/", "/media/", 1)
+	api.call("admin", "PATCH", "/admin/games/"+g.ID, g, 400, nil)
 	res, err = http.Get(api.Server.URL + strings.Replace(private, "/evidence/", "/media/", 1))
 	if err != nil {
 		t.Fatal(err)

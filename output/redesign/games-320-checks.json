@@ -1,0 +1,483 @@
+[
+  {
+    "game": "honor",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 王者荣耀"
+  },
+  {
+    "game": "peace",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 和平精英"
+  },
+  {
+    "game": "delta",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 三角洲行动"
+  },
+  {
+    "game": "tft",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 金铲铲之战"
+  },
+  {
+    "game": "valorant",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 无畏契约"
+  },
+  {
+    "game": "lol",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 英雄联盟"
+  },
+  {
+    "game": "valorantm",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 无畏契约：源能行动"
+  },
+  {
+    "game": "cfm",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 穿越火线手游"
+  },
+  {
+    "game": "arena",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 暗区突围"
+  },
+  {
+    "game": "codm",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 使命召唤手游"
+  },
+  {
+    "game": "identityv",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 第五人格"
+  },
+  {
+    "game": "narakam",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 永劫无间手游"
+  },
+  {
+    "game": "eggy",
+    "cards": [
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 10,
+        "right": 155.5,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 10,
+        "y": 424.5
+      },
+      {
+        "bottom": 591.1875,
+        "height": 166.6875,
+        "left": 164.5,
+        "right": 310,
+        "top": 424.5,
+        "width": 145.5,
+        "x": 164.5,
+        "y": 424.5
+      }
+    ],
+    "nav": {
+      "bottom": 720,
+      "height": 61,
+      "left": 0,
+      "right": 320,
+      "top": 659,
+      "width": 320,
+      "x": 0,
+      "y": 659
+    },
+    "overflow": false,
+    "title": "集结 · 蛋仔派对"
+  }
+]

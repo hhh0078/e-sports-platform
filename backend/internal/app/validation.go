@@ -11,7 +11,7 @@ import (
 )
 
 var hexColor = regexp.MustCompile(`^#[0-9A-Fa-f]{6}$`)
-var localCover = regexp.MustCompile(`^/static/covers/[a-z0-9_-]+\.(jpg|jpeg|png|webp)$`)
+var localCover = regexp.MustCompile(`^/static/covers/(official/)?[a-z0-9_-]+\.(jpg|jpeg|png|webp)$`)
 var gameIDPattern = regexp.MustCompile(`^[a-z][a-z0-9_-]{1,30}$`)
 
 // length 判断去除首尾空白后的 Unicode 字符长度。
@@ -56,6 +56,9 @@ func validateGame(g *Game) error {
 		if !validCover(c) {
 			return fail(400, "封面地址不合法")
 		}
+	}
+	if g.IconURL != "" && !validCover(g.IconURL) {
+		return fail(400, "游戏图标地址不合法")
 	}
 	if len(g.Categories) < 1 || len(g.Categories) > 12 {
 		return fail(400, "请配置 1 至 12 个服务分类")

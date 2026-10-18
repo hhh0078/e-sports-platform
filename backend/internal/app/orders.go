@@ -78,7 +78,7 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 	if s.ClubID != "" {
 		c, ce := get[Club](r.Context(), tx, "clubs", s.ClubID, false)
 		m, me := get[ClubMember](r.Context(), tx, "members", s.ClubID+":"+s.ProviderID, false)
-		if ce == nil && c.Status == "active" && (c.OwnerID == s.ProviderID || (me == nil && m.Status == "active")) {
+		if ce == nil && c.Status == "active" && contains(c.GameIDs, s.GameID) && (c.OwnerID == s.ProviderID || (me == nil && m.Status == "active")) {
 			o.ClubID = s.ClubID
 		}
 	}

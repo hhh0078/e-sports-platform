@@ -20,6 +20,7 @@ type Game struct {
 	BgColor      string   `json:"bg_color"`
 	SurfaceColor string   `json:"surface_color"`
 	TextColor    string   `json:"text_color"`
+	IconURL      string   `json:"icon_url"`
 	CoverURL     string   `json:"cover_url"`
 	Covers       []string `json:"covers"`
 	Categories   []string `json:"categories"`

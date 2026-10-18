@@ -1,0 +1,235 @@
+{"Time":"2026-10-18T08:23:42.378184+08:00","Action":"start","Package":"jijie/cmd/server"}
+{"Time":"2026-10-18T08:23:42.378282+08:00","Action":"output","Package":"jijie/cmd/server","Output":"?   \tjijie/cmd/server\t[no test files]\n"}
+{"Time":"2026-10-18T08:23:42.378296+08:00","Action":"skip","Package":"jijie/cmd/server","Elapsed":0}
+{"Time":"2026-10-18T08:23:43.450473+08:00","Action":"start","Package":"jijie/internal/app"}
+{"Time":"2026-10-18T08:23:44.024336+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationCustomCovers"}
+{"Time":"2026-10-18T08:23:44.024405+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationCustomCovers","Output":"=== RUN   TestIntegrationCustomCovers\n"}
+{"Time":"2026-10-18T08:23:44.204502+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationCustomCovers","Output":"--- PASS: TestIntegrationCustomCovers (0.18s)\n"}
+{"Time":"2026-10-18T08:23:44.204553+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationCustomCovers","Elapsed":0.18}
+{"Time":"2026-10-18T08:23:44.204567+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationPaymentConfigDoesNotLockCancellation"}
+{"Time":"2026-10-18T08:23:44.204581+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPaymentConfigDoesNotLockCancellation","Output":"=== RUN   TestIntegrationPaymentConfigDoesNotLockCancellation\n"}
+{"Time":"2026-10-18T08:23:44.326667+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPaymentConfigDoesNotLockCancellation","Output":"--- PASS: TestIntegrationPaymentConfigDoesNotLockCancellation (0.12s)\n"}
+{"Time":"2026-10-18T08:23:44.326703+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationPaymentConfigDoesNotLockCancellation","Elapsed":0.12}
+{"Time":"2026-10-18T08:23:44.326717+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationClubClaimAndPublicPrivacy"}
+{"Time":"2026-10-18T08:23:44.326723+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationClubClaimAndPublicPrivacy","Output":"=== RUN   TestIntegrationClubClaimAndPublicPrivacy\n"}
+{"Time":"2026-10-18T08:23:44.477495+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationClubClaimAndPublicPrivacy","Output":"--- PASS: TestIntegrationClubClaimAndPublicPrivacy (0.15s)\n"}
+{"Time":"2026-10-18T08:23:44.477554+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationClubClaimAndPublicPrivacy","Elapsed":0.15}
+{"Time":"2026-10-18T08:23:44.47768+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationMessageCursors"}
+{"Time":"2026-10-18T08:23:44.47771+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationMessageCursors","Output":"=== RUN   TestIntegrationMessageCursors\n"}
+{"Time":"2026-10-18T08:23:44.711685+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationMessageCursors","Output":"--- PASS: TestIntegrationMessageCursors (0.23s)\n"}
+{"Time":"2026-10-18T08:23:44.711742+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationMessageCursors","Elapsed":0.23}
+{"Time":"2026-10-18T08:23:44.711757+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationAdminSearchBeforePagination"}
+{"Time":"2026-10-18T08:23:44.711763+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationAdminSearchBeforePagination","Output":"=== RUN   TestIntegrationAdminSearchBeforePagination\n"}
+{"Time":"2026-10-18T08:23:44.970466+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationAdminSearchBeforePagination","Output":"--- PASS: TestIntegrationAdminSearchBeforePagination (0.26s)\n"}
+{"Time":"2026-10-18T08:23:44.970512+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationAdminSearchBeforePagination","Elapsed":0.26}
+{"Time":"2026-10-18T08:23:44.970523+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog"}
+{"Time":"2026-10-18T08:23:44.970528+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog","Output":"=== RUN   TestIntegrationExpandedGameCatalog\n"}
+{"Time":"2026-10-18T08:23:45.061152+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/honor"}
+{"Time":"2026-10-18T08:23:45.061198+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/honor","Output":"=== RUN   TestIntegrationExpandedGameCatalog/honor\n"}
+{"Time":"2026-10-18T08:23:45.091681+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/honor","Output":"--- PASS: TestIntegrationExpandedGameCatalog/honor (0.03s)\n"}
+{"Time":"2026-10-18T08:23:45.091709+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/honor","Elapsed":0.03}
+{"Time":"2026-10-18T08:23:45.091717+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/peace"}
+{"Time":"2026-10-18T08:23:45.091721+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/peace","Output":"=== RUN   TestIntegrationExpandedGameCatalog/peace\n"}
+{"Time":"2026-10-18T08:23:45.111711+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/peace","Output":"--- PASS: TestIntegrationExpandedGameCatalog/peace (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.111737+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/peace","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.111747+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/delta"}
+{"Time":"2026-10-18T08:23:45.111751+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/delta","Output":"=== RUN   TestIntegrationExpandedGameCatalog/delta\n"}
+{"Time":"2026-10-18T08:23:45.146659+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/delta","Output":"--- PASS: TestIntegrationExpandedGameCatalog/delta (0.03s)\n"}
+{"Time":"2026-10-18T08:23:45.146684+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/delta","Elapsed":0.03}
+{"Time":"2026-10-18T08:23:45.146701+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/tft"}
+{"Time":"2026-10-18T08:23:45.146706+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/tft","Output":"=== RUN   TestIntegrationExpandedGameCatalog/tft\n"}
+{"Time":"2026-10-18T08:23:45.168111+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/tft","Output":"--- PASS: TestIntegrationExpandedGameCatalog/tft (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.168141+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/tft","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.168148+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/valorant"}
+{"Time":"2026-10-18T08:23:45.168153+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/valorant","Output":"=== RUN   TestIntegrationExpandedGameCatalog/valorant\n"}
+{"Time":"2026-10-18T08:23:45.189044+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/valorant","Output":"--- PASS: TestIntegrationExpandedGameCatalog/valorant (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.189071+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/valorant","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.18908+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/lol"}
+{"Time":"2026-10-18T08:23:45.189084+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/lol","Output":"=== RUN   TestIntegrationExpandedGameCatalog/lol\n"}
+{"Time":"2026-10-18T08:23:45.20843+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/lol","Output":"--- PASS: TestIntegrationExpandedGameCatalog/lol (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.208458+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/lol","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.208467+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/valorantm"}
+{"Time":"2026-10-18T08:23:45.208471+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/valorantm","Output":"=== RUN   TestIntegrationExpandedGameCatalog/valorantm\n"}
+{"Time":"2026-10-18T08:23:45.228258+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/valorantm","Output":"--- PASS: TestIntegrationExpandedGameCatalog/valorantm (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.228283+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/valorantm","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.228291+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/cfm"}
+{"Time":"2026-10-18T08:23:45.228295+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/cfm","Output":"=== RUN   TestIntegrationExpandedGameCatalog/cfm\n"}
+{"Time":"2026-10-18T08:23:45.246417+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/cfm","Output":"--- PASS: TestIntegrationExpandedGameCatalog/cfm (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.246455+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/cfm","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.246463+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/arena"}
+{"Time":"2026-10-18T08:23:45.246468+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/arena","Output":"=== RUN   TestIntegrationExpandedGameCatalog/arena\n"}
+{"Time":"2026-10-18T08:23:45.267753+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/arena","Output":"--- PASS: TestIntegrationExpandedGameCatalog/arena (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.267779+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/arena","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.26779+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/codm"}
+{"Time":"2026-10-18T08:23:45.267794+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/codm","Output":"=== RUN   TestIntegrationExpandedGameCatalog/codm\n"}
+{"Time":"2026-10-18T08:23:45.290132+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/codm","Output":"--- PASS: TestIntegrationExpandedGameCatalog/codm (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.290157+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/codm","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.290166+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/identityv"}
+{"Time":"2026-10-18T08:23:45.29017+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/identityv","Output":"=== RUN   TestIntegrationExpandedGameCatalog/identityv\n"}
+{"Time":"2026-10-18T08:23:45.309201+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/identityv","Output":"--- PASS: TestIntegrationExpandedGameCatalog/identityv (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.309227+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/identityv","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.309236+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/narakam"}
+{"Time":"2026-10-18T08:23:45.309259+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/narakam","Output":"=== RUN   TestIntegrationExpandedGameCatalog/narakam\n"}
+{"Time":"2026-10-18T08:23:45.329206+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/narakam","Output":"--- PASS: TestIntegrationExpandedGameCatalog/narakam (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.329231+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/narakam","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.329239+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/eggy"}
+{"Time":"2026-10-18T08:23:45.329243+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/eggy","Output":"=== RUN   TestIntegrationExpandedGameCatalog/eggy\n"}
+{"Time":"2026-10-18T08:23:45.347924+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/eggy","Output":"--- PASS: TestIntegrationExpandedGameCatalog/eggy (0.02s)\n"}
+{"Time":"2026-10-18T08:23:45.347943+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog/eggy","Elapsed":0.02}
+{"Time":"2026-10-18T08:23:45.356112+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog","Output":"--- PASS: TestIntegrationExpandedGameCatalog (0.39s)\n"}
+{"Time":"2026-10-18T08:23:45.356157+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationExpandedGameCatalog","Elapsed":0.39}
+{"Time":"2026-10-18T08:23:45.356168+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationOfficialCoverMigration"}
+{"Time":"2026-10-18T08:23:45.356173+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationOfficialCoverMigration","Output":"=== RUN   TestIntegrationOfficialCoverMigration\n"}
+{"Time":"2026-10-18T08:23:45.512177+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationOfficialCoverMigration","Output":"--- PASS: TestIntegrationOfficialCoverMigration (0.16s)\n"}
+{"Time":"2026-10-18T08:23:45.51223+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationOfficialCoverMigration","Elapsed":0.16}
+{"Time":"2026-10-18T08:23:45.512241+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationDemoSeedPreservesClubScope"}
+{"Time":"2026-10-18T08:23:45.512246+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationDemoSeedPreservesClubScope","Output":"=== RUN   TestIntegrationDemoSeedPreservesClubScope\n"}
+{"Time":"2026-10-18T08:23:45.649685+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationDemoSeedPreservesClubScope","Output":"--- PASS: TestIntegrationDemoSeedPreservesClubScope (0.14s)\n"}
+{"Time":"2026-10-18T08:23:45.649727+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationDemoSeedPreservesClubScope","Elapsed":0.14}
+{"Time":"2026-10-18T08:23:45.649818+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationClubScopeAndSingleConnection"}
+{"Time":"2026-10-18T08:23:45.649854+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationClubScopeAndSingleConnection","Output":"=== RUN   TestIntegrationClubScopeAndSingleConnection\n"}
+{"Time":"2026-10-18T08:23:45.772142+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationClubScopeAndSingleConnection","Output":"--- PASS: TestIntegrationClubScopeAndSingleConnection (0.12s)\n"}
+{"Time":"2026-10-18T08:23:45.772184+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationClubScopeAndSingleConnection","Elapsed":0.12}
+{"Time":"2026-10-18T08:23:45.7722+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestGameIconValidation"}
+{"Time":"2026-10-18T08:23:45.772205+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestGameIconValidation","Output":"=== RUN   TestGameIconValidation\n"}
+{"Time":"2026-10-18T08:23:45.772668+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestGameIconValidation","Output":"--- PASS: TestGameIconValidation (0.00s)\n"}
+{"Time":"2026-10-18T08:23:45.772701+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestGameIconValidation","Elapsed":0}
+{"Time":"2026-10-18T08:23:45.772709+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationProductionCatalogHasNoDemo"}
+{"Time":"2026-10-18T08:23:45.772715+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationProductionCatalogHasNoDemo","Output":"=== RUN   TestIntegrationProductionCatalogHasNoDemo\n"}
+{"Time":"2026-10-18T08:23:45.898484+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationProductionCatalogHasNoDemo","Output":"--- PASS: TestIntegrationProductionCatalogHasNoDemo (0.13s)\n"}
+{"Time":"2026-10-18T08:23:45.898515+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationProductionCatalogHasNoDemo","Elapsed":0.13}
+{"Time":"2026-10-18T08:23:45.898525+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration"}
+{"Time":"2026-10-18T08:23:45.898529+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration","Output":"=== RUN   TestIntegrationDefaultPresentationMigration\n"}
+{"Time":"2026-10-18T08:23:46.022302+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration/不同旧色不可猜测"}
+{"Time":"2026-10-18T08:23:46.022334+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration/不同旧色不可猜测","Output":"=== RUN   TestIntegrationDefaultPresentationMigration/不同旧色不可猜测\n"}
+{"Time":"2026-10-18T08:23:46.064243+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration/不同旧色不可猜测","Output":"--- PASS: TestIntegrationDefaultPresentationMigration/不同旧色不可猜测 (0.04s)\n"}
+{"Time":"2026-10-18T08:23:46.064289+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration/不同旧色不可猜测","Elapsed":0.04}
+{"Time":"2026-10-18T08:23:46.064297+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration/存在管理员审计即保留"}
+{"Time":"2026-10-18T08:23:46.064302+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration/存在管理员审计即保留","Output":"=== RUN   TestIntegrationDefaultPresentationMigration/存在管理员审计即保留\n"}
+{"Time":"2026-10-18T08:23:46.106488+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration/存在管理员审计即保留","Output":"--- PASS: TestIntegrationDefaultPresentationMigration/存在管理员审计即保留 (0.04s)\n"}
+{"Time":"2026-10-18T08:23:46.106537+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration/存在管理员审计即保留","Elapsed":0.04}
+{"Time":"2026-10-18T08:23:46.113678+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration","Output":"--- PASS: TestIntegrationDefaultPresentationMigration (0.22s)\n"}
+{"Time":"2026-10-18T08:23:46.113745+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationDefaultPresentationMigration","Elapsed":0.22}
+{"Time":"2026-10-18T08:23:46.113772+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationOrderRoles"}
+{"Time":"2026-10-18T08:23:46.113777+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationOrderRoles","Output":"=== RUN   TestIntegrationOrderRoles\n"}
+{"Time":"2026-10-18T08:23:46.272927+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationOrderRoles","Output":"--- PASS: TestIntegrationOrderRoles (0.16s)\n"}
+{"Time":"2026-10-18T08:23:46.272968+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationOrderRoles","Elapsed":0.16}
+{"Time":"2026-10-18T08:23:46.272977+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationConcurrentClaims"}
+{"Time":"2026-10-18T08:23:46.272981+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationConcurrentClaims","Output":"=== RUN   TestIntegrationConcurrentClaims\n"}
+{"Time":"2026-10-18T08:23:46.436575+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationConcurrentClaims","Output":"--- PASS: TestIntegrationConcurrentClaims (0.16s)\n"}
+{"Time":"2026-10-18T08:23:46.436636+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationConcurrentClaims","Elapsed":0.16}
+{"Time":"2026-10-18T08:23:46.436645+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationRefundAndIsolation"}
+{"Time":"2026-10-18T08:23:46.436649+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundAndIsolation","Output":"=== RUN   TestIntegrationRefundAndIsolation\n"}
+{"Time":"2026-10-18T08:23:46.611943+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundAndIsolation","Output":"--- PASS: TestIntegrationRefundAndIsolation (0.18s)\n"}
+{"Time":"2026-10-18T08:23:46.611977+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationRefundAndIsolation","Elapsed":0.18}
+{"Time":"2026-10-18T08:23:46.611985+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationEvidenceAndFreeze"}
+{"Time":"2026-10-18T08:23:46.611989+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationEvidenceAndFreeze","Output":"=== RUN   TestIntegrationEvidenceAndFreeze\n"}
+{"Time":"2026-10-18T08:23:46.758886+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationEvidenceAndFreeze","Output":"--- PASS: TestIntegrationEvidenceAndFreeze (0.15s)\n"}
+{"Time":"2026-10-18T08:23:46.758931+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationEvidenceAndFreeze","Elapsed":0.15}
+{"Time":"2026-10-18T08:23:46.758941+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationPublicationAndProduction"}
+{"Time":"2026-10-18T08:23:46.758946+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPublicationAndProduction","Output":"=== RUN   TestIntegrationPublicationAndProduction\n"}
+{"Time":"2026-10-18T08:23:46.913823+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPublicationAndProduction","Output":"完整本地角色、交易、退款、权限、证据与生产隔离验收通过\n"}
+{"Time":"2026-10-18T08:23:46.919944+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPublicationAndProduction","Output":"--- PASS: TestIntegrationPublicationAndProduction (0.16s)\n"}
+{"Time":"2026-10-18T08:23:46.919976+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationPublicationAndProduction","Elapsed":0.16}
+{"Time":"2026-10-18T08:23:46.919985+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationRestartPreservesData"}
+{"Time":"2026-10-18T08:23:46.919989+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRestartPreservesData","Output":"=== RUN   TestIntegrationRestartPreservesData\n"}
+{"Time":"2026-10-18T08:23:47.085988+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRestartPreservesData","Output":"--- PASS: TestIntegrationRestartPreservesData (0.17s)\n"}
+{"Time":"2026-10-18T08:23:47.086034+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationRestartPreservesData","Elapsed":0.17}
+{"Time":"2026-10-18T08:23:47.086047+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationServiceReauditAndSensitiveFields"}
+{"Time":"2026-10-18T08:23:47.086052+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceReauditAndSensitiveFields","Output":"=== RUN   TestIntegrationServiceReauditAndSensitiveFields\n"}
+{"Time":"2026-10-18T08:23:47.208552+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceReauditAndSensitiveFields","Output":"--- PASS: TestIntegrationServiceReauditAndSensitiveFields (0.12s)\n"}
+{"Time":"2026-10-18T08:23:47.208591+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationServiceReauditAndSensitiveFields","Elapsed":0.12}
+{"Time":"2026-10-18T08:23:47.2086+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationPrepayCancelSerialization"}
+{"Time":"2026-10-18T08:23:47.208605+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPrepayCancelSerialization","Output":"=== RUN   TestIntegrationPrepayCancelSerialization\n"}
+{"Time":"2026-10-18T08:23:47.679645+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPrepayCancelSerialization","Output":"--- PASS: TestIntegrationPrepayCancelSerialization (0.47s)\n"}
+{"Time":"2026-10-18T08:23:47.679689+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationPrepayCancelSerialization","Elapsed":0.47}
+{"Time":"2026-10-18T08:23:47.679701+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationPrepayTimeoutKeepsIntent"}
+{"Time":"2026-10-18T08:23:47.679707+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPrepayTimeoutKeepsIntent","Output":"=== RUN   TestIntegrationPrepayTimeoutKeepsIntent\n"}
+{"Time":"2026-10-18T08:23:48.119078+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPrepayTimeoutKeepsIntent","Output":"--- PASS: TestIntegrationPrepayTimeoutKeepsIntent (0.44s)\n"}
+{"Time":"2026-10-18T08:23:48.119121+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationPrepayTimeoutKeepsIntent","Elapsed":0.44}
+{"Time":"2026-10-18T08:23:48.119129+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationEvidenceLinkRenewal"}
+{"Time":"2026-10-18T08:23:48.119135+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationEvidenceLinkRenewal","Output":"=== RUN   TestIntegrationEvidenceLinkRenewal\n"}
+{"Time":"2026-10-18T08:23:48.258937+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationEvidenceLinkRenewal","Output":"--- PASS: TestIntegrationEvidenceLinkRenewal (0.14s)\n"}
+{"Time":"2026-10-18T08:23:48.258983+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationEvidenceLinkRenewal","Elapsed":0.14}
+{"Time":"2026-10-18T08:23:48.258993+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationPrepayWithSingleDBConnection"}
+{"Time":"2026-10-18T08:23:48.258998+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPrepayWithSingleDBConnection","Output":"=== RUN   TestIntegrationPrepayWithSingleDBConnection\n"}
+{"Time":"2026-10-18T08:23:48.545917+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationPrepayWithSingleDBConnection","Output":"--- PASS: TestIntegrationPrepayWithSingleDBConnection (0.29s)\n"}
+{"Time":"2026-10-18T08:23:48.545954+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationPrepayWithSingleDBConnection","Elapsed":0.29}
+{"Time":"2026-10-18T08:23:48.545962+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery"}
+{"Time":"2026-10-18T08:23:48.545966+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery","Output":"=== RUN   TestIntegrationRefundTimeoutRecovery\n"}
+{"Time":"2026-10-18T08:23:48.545971+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/cancel"}
+{"Time":"2026-10-18T08:23:48.545974+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/cancel","Output":"=== RUN   TestIntegrationRefundTimeoutRecovery/cancel\n"}
+{"Time":"2026-10-18T08:23:48.855046+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/cancel","Output":"2026/10/18 08:23:48 退款资金状态待同步 order=30a35a2ade29286133178ac033b8e589: 微信支付暂未响应，请稍后同步订单状态，勿重复付款\n"}
+{"Time":"2026-10-18T08:23:48.877171+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/cancel","Output":"--- PASS: TestIntegrationRefundTimeoutRecovery/cancel (0.33s)\n"}
+{"Time":"2026-10-18T08:23:48.877202+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/cancel","Elapsed":0.33}
+{"Time":"2026-10-18T08:23:48.877212+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/approve"}
+{"Time":"2026-10-18T08:23:48.877216+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/approve","Output":"=== RUN   TestIntegrationRefundTimeoutRecovery/approve\n"}
+{"Time":"2026-10-18T08:23:49.522109+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/approve","Output":"2026/10/18 08:23:49 退款资金状态待同步 order=99d0844372970b9df81a84db9c9755c0: 微信支付暂未响应，请稍后同步订单状态，勿重复付款\n"}
+{"Time":"2026-10-18T08:23:49.542484+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/approve","Output":"--- PASS: TestIntegrationRefundTimeoutRecovery/approve (0.67s)\n"}
+{"Time":"2026-10-18T08:23:49.542528+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/approve","Elapsed":0.67}
+{"Time":"2026-10-18T08:23:49.542536+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/resolve"}
+{"Time":"2026-10-18T08:23:49.54254+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/resolve","Output":"=== RUN   TestIntegrationRefundTimeoutRecovery/resolve\n"}
+{"Time":"2026-10-18T08:23:50.042307+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/resolve","Output":"2026/10/18 08:23:50 退款资金状态待同步 order=71cb08bd09c791676eb8811d30b2cd5c: 微信支付暂未响应，请稍后同步订单状态，勿重复付款\n"}
+{"Time":"2026-10-18T08:23:50.06418+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/resolve","Output":"--- PASS: TestIntegrationRefundTimeoutRecovery/resolve (0.52s)\n"}
+{"Time":"2026-10-18T08:23:50.064208+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery/resolve","Elapsed":0.52}
+{"Time":"2026-10-18T08:23:50.064218+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery","Output":"--- PASS: TestIntegrationRefundTimeoutRecovery (1.52s)\n"}
+{"Time":"2026-10-18T08:23:50.064223+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationRefundTimeoutRecovery","Elapsed":1.52}
+{"Time":"2026-10-18T08:23:50.064236+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination"}
+{"Time":"2026-10-18T08:23:50.064241+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination","Output":"=== RUN   TestIntegrationServiceSortBeforePagination\n"}
+{"Time":"2026-10-18T08:23:50.256991+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/recommended"}
+{"Time":"2026-10-18T08:23:50.257021+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/recommended","Output":"=== RUN   TestIntegrationServiceSortBeforePagination/recommended\n"}
+{"Time":"2026-10-18T08:23:50.348715+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/recommended","Output":"--- PASS: TestIntegrationServiceSortBeforePagination/recommended (0.09s)\n"}
+{"Time":"2026-10-18T08:23:50.34876+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/recommended","Elapsed":0.09}
+{"Time":"2026-10-18T08:23:50.348784+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/price"}
+{"Time":"2026-10-18T08:23:50.348789+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/price","Output":"=== RUN   TestIntegrationServiceSortBeforePagination/price\n"}
+{"Time":"2026-10-18T08:23:50.440083+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/price","Output":"--- PASS: TestIntegrationServiceSortBeforePagination/price (0.09s)\n"}
+{"Time":"2026-10-18T08:23:50.440134+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/price","Elapsed":0.09}
+{"Time":"2026-10-18T08:23:50.440142+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/completed"}
+{"Time":"2026-10-18T08:23:50.440147+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/completed","Output":"=== RUN   TestIntegrationServiceSortBeforePagination/completed\n"}
+{"Time":"2026-10-18T08:23:50.531955+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/completed","Output":"--- PASS: TestIntegrationServiceSortBeforePagination/completed (0.09s)\n"}
+{"Time":"2026-10-18T08:23:50.532002+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination/completed","Elapsed":0.09}
+{"Time":"2026-10-18T08:23:50.608341+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination","Output":"--- PASS: TestIntegrationServiceSortBeforePagination (0.54s)\n"}
+{"Time":"2026-10-18T08:23:50.608384+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestIntegrationServiceSortBeforePagination","Elapsed":0.54}
+{"Time":"2026-10-18T08:23:50.608392+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestOrderTransitions"}
+{"Time":"2026-10-18T08:23:50.608396+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestOrderTransitions","Output":"=== RUN   TestOrderTransitions\n"}
+{"Time":"2026-10-18T08:23:50.608436+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestOrderTransitions","Output":"--- PASS: TestOrderTransitions (0.00s)\n"}
+{"Time":"2026-10-18T08:23:50.608461+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestOrderTransitions","Elapsed":0}
+{"Time":"2026-10-18T08:23:50.608468+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestAfterSaleWindow"}
+{"Time":"2026-10-18T08:23:50.608472+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestAfterSaleWindow","Output":"=== RUN   TestAfterSaleWindow\n"}
+{"Time":"2026-10-18T08:23:50.608514+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestAfterSaleWindow","Output":"--- PASS: TestAfterSaleWindow (0.00s)\n"}
+{"Time":"2026-10-18T08:23:50.608524+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestAfterSaleWindow","Elapsed":0}
+{"Time":"2026-10-18T08:23:50.608529+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestServiceValidation"}
+{"Time":"2026-10-18T08:23:50.608533+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestServiceValidation","Output":"=== RUN   TestServiceValidation\n"}
+{"Time":"2026-10-18T08:23:50.608588+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestServiceValidation","Output":"--- PASS: TestServiceValidation (0.00s)\n"}
+{"Time":"2026-10-18T08:23:50.608596+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestServiceValidation","Elapsed":0}
+{"Time":"2026-10-18T08:23:50.608599+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestProductionGuard"}
+{"Time":"2026-10-18T08:23:50.608603+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestProductionGuard","Output":"=== RUN   TestProductionGuard\n"}
+{"Time":"2026-10-18T08:23:50.60863+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestProductionGuard","Output":"--- PASS: TestProductionGuard (0.00s)\n"}
+{"Time":"2026-10-18T08:23:50.608636+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestProductionGuard","Elapsed":0}
+{"Time":"2026-10-18T08:23:50.60864+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestWXVerifyRejectsTampering"}
+{"Time":"2026-10-18T08:23:50.608644+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXVerifyRejectsTampering","Output":"=== RUN   TestWXVerifyRejectsTampering\n"}
+{"Time":"2026-10-18T08:23:50.94708+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXVerifyRejectsTampering","Output":"--- PASS: TestWXVerifyRejectsTampering (0.34s)\n"}
+{"Time":"2026-10-18T08:23:50.947139+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestWXVerifyRejectsTampering","Elapsed":0.34}
+{"Time":"2026-10-18T08:23:50.947147+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestWXDecryptRejectsWrongKeyAndEvent"}
+{"Time":"2026-10-18T08:23:50.947152+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXDecryptRejectsWrongKeyAndEvent","Output":"=== RUN   TestWXDecryptRejectsWrongKeyAndEvent\n"}
+{"Time":"2026-10-18T08:23:51.19267+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXDecryptRejectsWrongKeyAndEvent","Output":"--- PASS: TestWXDecryptRejectsWrongKeyAndEvent (0.25s)\n"}
+{"Time":"2026-10-18T08:23:51.192718+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestWXDecryptRejectsWrongKeyAndEvent","Elapsed":0.25}
+{"Time":"2026-10-18T08:23:51.192725+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestWXRequestSignsAndVerifies"}
+{"Time":"2026-10-18T08:23:51.19273+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXRequestSignsAndVerifies","Output":"=== RUN   TestWXRequestSignsAndVerifies\n"}
+{"Time":"2026-10-18T08:23:51.351711+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXRequestSignsAndVerifies","Output":"--- PASS: TestWXRequestSignsAndVerifies (0.16s)\n"}
+{"Time":"2026-10-18T08:23:51.351758+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestWXRequestSignsAndVerifies","Elapsed":0.16}
+{"Time":"2026-10-18T08:23:51.351767+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestWXPaymentAndRefundCallbacks"}
+{"Time":"2026-10-18T08:23:51.351771+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXPaymentAndRefundCallbacks","Output":"=== RUN   TestWXPaymentAndRefundCallbacks\n"}
+{"Time":"2026-10-18T08:23:51.695122+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXPaymentAndRefundCallbacks","Output":"--- PASS: TestWXPaymentAndRefundCallbacks (0.34s)\n"}
+{"Time":"2026-10-18T08:23:51.695156+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestWXPaymentAndRefundCallbacks","Elapsed":0.34}
+{"Time":"2026-10-18T08:23:51.695166+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestWXConfigFailsClosed"}
+{"Time":"2026-10-18T08:23:51.69517+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXConfigFailsClosed","Output":"=== RUN   TestWXConfigFailsClosed\n"}
+{"Time":"2026-10-18T08:23:51.695202+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXConfigFailsClosed","Output":"--- PASS: TestWXConfigFailsClosed (0.00s)\n"}
+{"Time":"2026-10-18T08:23:51.695209+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestWXConfigFailsClosed","Elapsed":0}
+{"Time":"2026-10-18T08:23:51.695214+08:00","Action":"run","Package":"jijie/internal/app","Test":"TestWXCloseAbsentOrderRequiresSignature"}
+{"Time":"2026-10-18T08:23:51.69523+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXCloseAbsentOrderRequiresSignature","Output":"=== RUN   TestWXCloseAbsentOrderRequiresSignature\n"}
+{"Time":"2026-10-18T08:23:51.818856+08:00","Action":"output","Package":"jijie/internal/app","Test":"TestWXCloseAbsentOrderRequiresSignature","Output":"--- PASS: TestWXCloseAbsentOrderRequiresSignature (0.12s)\n"}
+{"Time":"2026-10-18T08:23:51.818908+08:00","Action":"pass","Package":"jijie/internal/app","Test":"TestWXCloseAbsentOrderRequiresSignature","Elapsed":0.12}
+{"Time":"2026-10-18T08:23:51.818917+08:00","Action":"output","Package":"jijie/internal/app","Output":"PASS\n"}
+{"Time":"2026-10-18T08:23:52.836268+08:00","Action":"output","Package":"jijie/internal/app","Output":"ok  \tjijie/internal/app\t9.386s\n"}
+{"Time":"2026-10-18T08:23:52.836315+08:00","Action":"pass","Package":"jijie/internal/app","Elapsed":9.386}

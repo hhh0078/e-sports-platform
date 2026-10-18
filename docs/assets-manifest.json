@@ -1,0 +1,669 @@
+{
+  "_description": "文件作用：记录官方游戏分类图标与封面来源、尺寸、校验值及视觉验收。素材版权归原权利人，公开访问不代表商业授权。",
+  "verified_at": "2026-10-18",
+  "games": {
+    "delta": {
+      "name": "三角洲行动",
+      "official_page": "https://df.qq.com/cp/community1031/wallpaper.html",
+      "covers": [
+        "/static/covers/official/delta-1.jpg",
+        "/static/covers/official/delta-2.jpg",
+        "/static/covers/official/delta-3.jpg",
+        "/static/covers/official/delta-4.jpg"
+      ],
+      "icon": "/static/covers/official/delta-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/delta-1.jpg",
+          "title": "起源 KV",
+          "source_url": "https://playerhub.df.qq.com/playerhub/c29d97b6-13a8-4c0f-9dd6-b9e611d5249c.png",
+          "source_page": "https://df.qq.com/cp/community1031/wallpaper.html",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 42047,
+          "sha256": "aa5e81f0c1f944608d28e924084bba29699902dceb67428d1207ec295e068e48",
+          "width": 800,
+          "height": 444
+        },
+        {
+          "path": "/static/covers/official/delta-2.jpg",
+          "title": "起源赛季 KV",
+          "source_url": "https://playerhub.df.qq.com/playerhub/022011ab-23b5-4e26-94cc-7425fef84a21.png",
+          "source_page": "https://df.qq.com/cp/community1031/wallpaper.html",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 46852,
+          "sha256": "f4571ffe6904f49fd5d985bfffbd4f40fbb8b47f9fd5f259b53dae07c454c5df",
+          "width": 800,
+          "height": 444
+        },
+        {
+          "path": "/static/covers/official/delta-icon.jpg",
+          "title": "三角洲行动官方图标",
+          "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/10/34/0e/10340e62-72a3-4a99-0b4a-3199680f248c/AppIcon-1x_U007emarketing-0-8-0-85-220-0.png/512x512bb.jpg",
+          "source_page": "https://apps.apple.com/cn/app/id1642894547",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩",
+          "bytes": 8582,
+          "sha256": "c29ea18727a62296a608328dd2dca7263412eb6deb2de618c1aee6363cc69b68",
+          "width": 160,
+          "height": 160
+        },
+        {
+          "path": "/static/covers/official/delta-3.jpg",
+          "title": "乌姆斯运河地图",
+          "source_url": "https://playerhub.df.qq.com/playerhub/d383fec2-68aa-4a75-8dd0-1625a7aade38.jpg",
+          "source_page": "https://df.qq.com/cp/community1031/wallpaper.html",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "width": 760,
+          "height": 427,
+          "bytes": 41915,
+          "sha256": "6ff7f14c2da28fce70ec7c7a691606decac528191a977a6a203c1287ab731810"
+        },
+        {
+          "path": "/static/covers/official/delta-4.jpg",
+          "title": "烈火冲天赛季双人协作",
+          "source_url": "https://playerhub.df.qq.com/playerhub/7fc04bc0-0be3-4f98-96f5-573f36a1eefb.png",
+          "source_page": "https://df.qq.com/cp/community1031/wallpaper.html",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "width": 760,
+          "height": 427,
+          "bytes": 40115,
+          "sha256": "9c0cfd73ac4e7324a0d32bb1dc6bdae013237c991fe26b16b29adcfcb6ce5e11"
+        }
+      ]
+    },
+    "honor": {
+      "name": "王者荣耀",
+      "official_page": "https://pvp.qq.com/web201605/herolist.shtml",
+      "covers": [
+        "/static/covers/official/honor-1.jpg",
+        "/static/covers/official/honor-2.jpg",
+        "/static/covers/official/honor-3.jpg",
+        "/static/covers/official/honor-4.jpg"
+      ],
+      "icon": "/static/covers/official/honor-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/honor-1.jpg",
+          "title": "李白原画",
+          "source_url": "https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/131/131-bigskin-1.jpg",
+          "source_page": "https://pvp.qq.com/web201605/herolist.shtml",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 46123,
+          "sha256": "d6620c76ccd75311062dc299224d7c7f9fc7d1ce4d3ec658b9318d3f2d6b1ae2",
+          "width": 800,
+          "height": 367
+        },
+        {
+          "path": "/static/covers/official/honor-2.jpg",
+          "title": "亚瑟原画",
+          "source_url": "https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/166/166-bigskin-1.jpg",
+          "source_page": "https://pvp.qq.com/web201605/herolist.shtml",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 55507,
+          "sha256": "96a4e9983f8b05248ab8b31d6170408cd1787d0c84d2a89e3cac6dd7b9299254",
+          "width": 800,
+          "height": 367
+        },
+        {
+          "path": "/static/covers/official/honor-icon.jpg",
+          "title": "王者荣耀官方图标",
+          "source_url": "https://game.gtimg.cn/images/yxzj/img201606/heroimg/166/166.jpg",
+          "source_page": "https://pvp.qq.com/web201605/herodetail/166.shtml",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩",
+          "bytes": 5605,
+          "sha256": "1537a1e0a49d24f0ce09a8d03acc4ca005d1a428121e66c1ddbe75802e8d4b6e",
+          "width": 90,
+          "height": 90
+        },
+        {
+          "path": "/static/covers/official/honor-3.jpg",
+          "title": "妲己原画",
+          "source_url": "https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/109/109-bigskin-1.jpg",
+          "source_page": "https://pvp.qq.com/web201605/herodetail/109.shtml",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "width": 760,
+          "height": 349,
+          "bytes": 35316,
+          "sha256": "a70c388d4faf09d8bdac5002226c353821f53875fba8d6e98a072e906a802882"
+        },
+        {
+          "path": "/static/covers/official/honor-4.jpg",
+          "title": "孙悟空原画",
+          "source_url": "https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/167/167-bigskin-1.jpg",
+          "source_page": "https://pvp.qq.com/web201605/herodetail/167.shtml",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "width": 760,
+          "height": 349,
+          "bytes": 46776,
+          "sha256": "435f539d29c4ce79510062c8df64d021bf9e30ed42695e9f9116f3525381e233"
+        }
+      ]
+    },
+    "peace": {
+      "name": "和平精英",
+      "official_page": "https://gp.qq.com/main.shtml",
+      "covers": [
+        "/static/covers/official/peace-1.jpg",
+        "/static/covers/official/peace-2.jpg"
+      ],
+      "icon": "/static/covers/official/peace-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/peace-1.jpg",
+          "title": "经典头盔特种兵与战术机械",
+          "source_url": "https://game.gtimg.cn/images/gp/web202411/sec3-features-img1.png",
+          "source_page": "https://gp.qq.com/main.shtml",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 50718,
+          "sha256": "f9a05a4a399fac1f9bf8e14f98eaae709ed86f53e162af687bc3a7f84cc41a65",
+          "width": 760,
+          "height": 353
+        },
+        {
+          "path": "/static/covers/official/peace-2.jpg",
+          "title": "特种兵战术协作",
+          "source_url": "https://game.gtimg.cn/images/gp/cp/a202600825jqjz/m/p3-img1.jpg",
+          "source_page": "https://gp.qq.com/main.shtml",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 54088,
+          "sha256": "5d40a956098bad40aa3a4cc05d1962dda67fac6c5dcdfc4bf180ec65e1a366fa",
+          "width": 518,
+          "height": 760
+        },
+        {
+          "path": "/static/covers/official/peace-icon.jpg",
+          "title": "和平精英官方图标",
+          "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/89/36/e2/8936e24b-f6d7-990a-efd4-078a14a6fe8e/AppIcon-1x_U007emarketing-0-10-0-85-220-0.png/512x512bb.jpg",
+          "source_page": "https://apps.apple.com/cn/app/id1321803705",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩",
+          "bytes": 9025,
+          "sha256": "d2952a160e64b2ac5c594b22016242ac3243f9e8b5c7256b2c7854818ffb3140",
+          "width": 160,
+          "height": 160
+        }
+      ]
+    },
+    "arena": {
+      "name": "暗区突围",
+      "official_page": "https://aqtw.qq.com/",
+      "covers": [
+        "/static/covers/official/arena-1.jpg",
+        "/static/covers/official/arena-2.jpg"
+      ],
+      "icon": "/static/covers/official/arena-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/arena-1.jpg",
+          "title": "战术撤离场景",
+          "source_url": "https://game.gtimg.cn/images/aqtw/act/a20250603version/features/pic_1.jpg",
+          "source_page": "https://aqtw.qq.com/",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 57785,
+          "sha256": "9cee1c4a6bc9685fb7be6a6ef1ec568b8767fe23e3905358664e64ec5859e11e",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/arena-2.jpg",
+          "title": "战前整备",
+          "source_url": "https://game.gtimg.cn/images/aqtw/act/a20250603version/features/pic_2.jpg",
+          "source_page": "https://aqtw.qq.com/",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 38441,
+          "sha256": "1ccb1bf44edb930f44c6b92a4fb79d34e83ec6d4dec7d9cfdbf926bab4c091c8",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/arena-icon.jpg",
+          "title": "暗区突围官方图标",
+          "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/70/b1/b7/70b1b729-8b2d-0280-915e-d7b2a4fd8b04/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg",
+          "source_page": "https://apps.apple.com/cn/app/id1505445106",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩",
+          "bytes": 6134,
+          "sha256": "2f1cff48ea9f1bebe4217a486ab06aa9e3e1fcbd66747ff5d57b5e65a26716e0",
+          "width": 160,
+          "height": 160
+        }
+      ]
+    },
+    "valorant": {
+      "name": "无畏契约",
+      "official_page": "https://playvalorant.com/en-us/media/",
+      "covers": [
+        "/static/covers/official/valorant-1.jpg",
+        "/static/covers/official/valorant-2.jpg"
+      ],
+      "icon": "/static/covers/official/valorant-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/valorant-1.jpg",
+          "title": "Jett 官方壁纸",
+          "source_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/b952882ceff3dfcd9fb4841513fdbe3dd82bf4a0-854x484.png?accountingTag=VAL",
+          "source_page": "https://playvalorant.com/en-us/media/",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 49084,
+          "sha256": "51a9049248a4a7036f4fcd8699c5fe3f739c429d58c250bbbff0671f990ccee5",
+          "width": 800,
+          "height": 453
+        },
+        {
+          "path": "/static/covers/official/valorant-2.jpg",
+          "title": "Sage 官方壁纸",
+          "source_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/0b8610b6e13a77412c7049d14ca64e69e246ea4f-854x484.png?accountingTag=VAL",
+          "source_page": "https://playvalorant.com/en-us/media/",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 38853,
+          "sha256": "5d231cc40bdf33c27c51385293dc4d85a70e017fbf5d64a52f7435ef8f281991",
+          "width": 800,
+          "height": 453
+        },
+        {
+          "path": "/static/covers/official/valorant-icon.jpg",
+          "title": "Jett 官方壁纸人物方形裁切",
+          "source_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/b952882ceff3dfcd9fb4841513fdbe3dd82bf4a0-854x484.png?accountingTag=VAL",
+          "source_page": "https://playvalorant.com/en-us/media/",
+          "visual_checked": true,
+          "processing": "官方Jett壁纸中心正方形裁切及JPEG压缩",
+          "bytes": 10430,
+          "sha256": "7a42b116f806d13dc5fbfc67e30db49f9092e38ec83120c33a41ecdbad7a364a",
+          "width": 160,
+          "height": 160
+        }
+      ]
+    },
+    "cfm": {
+      "name": "穿越火线手游",
+      "official_page": "https://cfm.qq.com/",
+      "covers": [
+        "/static/covers/official/cfm-1.jpg",
+        "/static/covers/official/cfm-2.jpg"
+      ],
+      "icon": "/static/covers/official/cfm-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/cfm-1.jpg",
+          "title": "官网人物群像",
+          "source_url": "https://game.gtimg.cn/images/cfm/cp/a20260908index/pc/bg1.jpg",
+          "source_page": "https://cfm.qq.com/",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 62748,
+          "sha256": "22a8dc8bcf39acc7a96087e167d75a2eaec5561d49b1ec7a3a105631147d47cd",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/cfm-2.jpg",
+          "title": "官网角色主视觉",
+          "source_url": "https://game.gtimg.cn/images/cfm/cp/a20260908index/pc/bg2.jpg",
+          "source_page": "https://cfm.qq.com/",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 57700,
+          "sha256": "8fcd39f6495ae285f1bfad27548eef9510b4f056d43b859a77ade55f0e036a03",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/cfm-icon.jpg",
+          "title": "穿越火线手游官方图标",
+          "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/64/8a/42/648a42c3-284e-98c3-25d1-11b8c55bd0ab/AppIcon-1x_U007emarketing-0-10-0-85-220-0.png/512x512bb.jpg",
+          "source_page": "https://apps.apple.com/cn/app/id1042545880",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩",
+          "bytes": 7739,
+          "sha256": "b72584a120e555de880c2969b5ba33103b4d9e75705c94811cf4878f38291be3",
+          "width": 160,
+          "height": 160
+        }
+      ]
+    },
+    "tft": {
+      "name": "金铲铲之战",
+      "official_page": "https://jcc.qq.com/",
+      "covers": [
+        "/static/covers/official/tft-1.jpg",
+        "/static/covers/official/tft-2.jpg"
+      ],
+      "icon": "/static/covers/official/tft-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/tft-1.jpg",
+          "title": "自然之力赛季主视觉",
+          "source_url": "https://game.gtimg.cn/images/jk/kv/M18S19/kv.jpg",
+          "source_page": "https://jcc.qq.com/",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 61261,
+          "sha256": "c24c1b1f46198bddb28572cdfbbb8a8cfd60d14f7b6ebccc60a4bf9a51002390",
+          "width": 720,
+          "height": 405
+        },
+        {
+          "path": "/static/covers/official/tft-2.jpg",
+          "title": "星神赛季主视觉",
+          "source_url": "https://game.gtimg.cn/images/jk/kv/M17S18/kv.jpg",
+          "source_page": "https://jcc.qq.com/",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩；未重绘内容",
+          "bytes": 48339,
+          "sha256": "3ac1865eb39f85eb143037b1b6163a2945564c1b1e349fadb97cf47e0924ecb8",
+          "width": 760,
+          "height": 427
+        },
+        {
+          "path": "/static/covers/official/tft-icon.jpg",
+          "title": "金铲铲之战官方图标",
+          "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/9e/99/44/9e994473-3fc3-264b-6585-f262e8c183fb/AppIcon-1x_U007emarketing-0-8-0-85-220-0.png/512x512bb.jpg",
+          "source_page": "https://apps.apple.com/cn/app/id1478101301",
+          "visual_checked": true,
+          "processing": "等比缩放及JPEG压缩",
+          "bytes": 9455,
+          "sha256": "5523f968943d2adbd30772322e295e43fc9c8efe4bffd304c3fdc74f86968db4",
+          "width": 160,
+          "height": 160
+        }
+      ]
+    },
+    "lol": {
+      "name": "英雄联盟",
+      "official_page": "https://www.leagueoflegends.com/en-us/",
+      "covers": [
+        "/static/covers/official/lol-1.jpg",
+        "/static/covers/official/lol-2.jpg"
+      ],
+      "icon": "/static/covers/official/lol-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/lol-1.jpg",
+          "title": "Riot Data Dragon 阿狸原画",
+          "source_url": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+          "source_page": "https://www.leagueoflegends.com/en-us/",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 32302,
+          "sha256": "90727cf82435e3585716e47e66bc13887484dd6a25b2c2a4aec6d90f311fb841",
+          "width": 800,
+          "height": 472
+        },
+        {
+          "path": "/static/covers/official/lol-2.jpg",
+          "title": "Riot Data Dragon 亚索原画",
+          "source_url": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
+          "source_page": "https://www.leagueoflegends.com/en-us/",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 41400,
+          "sha256": "b30c13387726b45806213c509701d175ba4edd71f35222b0cfca07dc2720e158",
+          "width": 800,
+          "height": 472
+        },
+        {
+          "path": "/static/covers/official/lol-icon.jpg",
+          "title": "英雄联盟官网金色L图标",
+          "source_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/d3b7bd9decb1e1672dcb80be4f8bc1aa05490dc1-110x70.svg?accountingTag=LoL",
+          "source_page": "https://www.leagueoflegends.com/en-us/",
+          "visual_checked": true,
+          "processing": "保持图形比例缩放，110px方形留边，JPEG；L图标仅去除原SVG透明留白",
+          "bytes": 1860,
+          "sha256": "fc96de3e3dade40510856a2de5e34c5c3398169d879b2bf08aacc935a39566bb",
+          "width": 110,
+          "height": 110
+        }
+      ]
+    },
+    "valorantm": {
+      "name": "无畏契约：源能行动",
+      "official_page": "https://valm.qq.com/act/a20250805launch/",
+      "covers": [
+        "/static/covers/official/valorantm-1.jpg",
+        "/static/covers/official/valorantm-2.jpg"
+      ],
+      "icon": "/static/covers/official/valorantm-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/valorantm-1.jpg",
+          "title": "源能行动官方角色展示底图",
+          "source_url": "https://game.gtimg.cn/images/codev/act/a20250805launch/v260914/bg3.jpg",
+          "source_page": "https://valm.qq.com/act/a20250805launch/",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 25529,
+          "sha256": "32be679bedd5941a27cbd23685b0930c27a86746001443393ce516185d19e088",
+          "width": 800,
+          "height": 567
+        },
+        {
+          "path": "/static/covers/official/valorantm-2.jpg",
+          "title": "源能行动官方地图展示图",
+          "source_url": "https://game.gtimg.cn/images/codev/act/a20250805launch/v260914/hero_vid.png?v=hmon4po2",
+          "source_page": "https://valm.qq.com/act/a20250805launch/",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 34725,
+          "sha256": "2d4b7a2dc34594f20739bd805fb34e10b9ddf5488f455f2f71f689dd2ae6ee1f",
+          "width": 800,
+          "height": 461
+        },
+        {
+          "path": "/static/covers/official/valorantm-icon.jpg",
+          "title": "腾讯官方App Store应用图标",
+          "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/4d/d0/ea/4dd0eaf7-4498-51a2-43ea-821cd4223d76/AppIcon-1x_U007emarketing-0-8-0-85-220-0.png/512x512bb.jpg",
+          "source_page": "https://apps.apple.com/cn/app/id6535673811",
+          "visual_checked": true,
+          "processing": "保持图形比例缩放，110px方形留边，JPEG",
+          "bytes": 2793,
+          "sha256": "b1f22164e83535ed2ff21028c525160ab966bc40fb0880a75492b3bd5f2a093f",
+          "width": 110,
+          "height": 110
+        }
+      ]
+    },
+    "codm": {
+      "name": "使命召唤手游",
+      "official_page": "https://codm.qq.com/main.shtml",
+      "covers": [
+        "/static/covers/official/codm-1.jpg",
+        "/static/covers/official/codm-2.jpg"
+      ],
+      "icon": "/static/covers/official/codm-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/codm-1.jpg",
+          "title": "使命召唤手游官方网站角色KV",
+          "source_url": "https://game.gtimg.cn/images/codm/cp/a20200923shequ/indeximg/kv2.jpg",
+          "source_page": "https://codm.qq.com/main.shtml",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 36712,
+          "sha256": "b14fb623b0bdba6a531d22cccd4341a0c6d4036a024283d6cbde08d867b4b9c7",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/codm-2.jpg",
+          "title": "使命召唤手游官方雪地地图图",
+          "source_url": "https://game.gtimg.cn/images/codm/cp/a20200923shequ/indeximg/banner.jpg",
+          "source_page": "https://codm.qq.com/main.shtml",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 31084,
+          "sha256": "d875bfb0351b3c99f4bf35e55c84f2d30c4e04bc4cfe675751c8768e4dce8072",
+          "width": 800,
+          "height": 440
+        },
+        {
+          "path": "/static/covers/official/codm-icon.jpg",
+          "title": "腾讯官方App Store应用图标",
+          "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/ba/ea/8a/baea8af7-14d2-ff84-fa6e-bbdfaf026c6e/AppIcon-0-0-1x_U007emarketing-0-10-0-85-220.png/512x512bb.jpg",
+          "source_page": "https://apps.apple.com/cn/app/id1488410151",
+          "visual_checked": true,
+          "processing": "保持图形比例缩放，110px方形留边，JPEG",
+          "bytes": 3492,
+          "sha256": "4d131157da334a74f1b853750254aad4f51d2beaa86f0daea5de27742afa0b2f",
+          "width": 110,
+          "height": 110
+        }
+      ]
+    },
+    "narakam": {
+      "name": "永劫无间手游",
+      "official_page": "https://m.yjwujian.cn/",
+      "covers": [
+        "/static/covers/official/narakam-1.jpg",
+        "/static/covers/official/narakam-2.jpg"
+      ],
+      "icon": "/static/covers/official/narakam-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/narakam-1.jpg",
+          "title": "永劫无间手游官方网站角色KV",
+          "source_url": "https://myjwujian.res.netease.com/pc/zt/20240708162653/keep_origin/assets/kv-bg3_cd6aa03e.jpg",
+          "source_page": "https://m.yjwujian.cn/",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 32017,
+          "sha256": "af73aec596d9de4e01b558792f32ad5da645718c0004f6db8ef6a22b53acad32",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/narakam-2.jpg",
+          "title": "永劫无间手游官方网站另一组角色KV",
+          "source_url": "https://myjwujian.res.netease.com/pc/zt/20240708162653/keep_origin/assets/kv-bg2_5c5579c4.png",
+          "source_page": "https://m.yjwujian.cn/",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 25397,
+          "sha256": "fecd99aa5d0d852f1d1bc509f4fc12cf03e047647febc65b10ae38bac9c894da",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/narakam-icon.jpg",
+          "title": "网易官方App Store应用图标",
+          "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/d8/d2/1c/d8d21c44-5b0c-79c8-ad8e-08b6f4e1b748/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg",
+          "source_page": "https://apps.apple.com/cn/app/id1580500427",
+          "visual_checked": true,
+          "processing": "保持图形比例缩放，110px方形留边，JPEG",
+          "bytes": 2700,
+          "sha256": "f1105dabc33321a451381c59ee8817190011043b4f347b9488f29e8bdcfc68f9",
+          "width": 110,
+          "height": 110
+        }
+      ]
+    },
+    "identityv": {
+      "name": "第五人格",
+      "official_page": "https://id5.163.com/",
+      "covers": [
+        "/static/covers/official/identityv-1.jpg",
+        "/static/covers/official/identityv-2.jpg"
+      ],
+      "icon": "/static/covers/official/identityv-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/identityv-1.jpg",
+          "title": "第五人格官方网站角色KV",
+          "source_url": "https://id5.res.netease.com/pc/fab/20260318144430/img/kv_59852b71.jpg",
+          "source_page": "https://id5.163.com/",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 38118,
+          "sha256": "43d0d0328e6afee2426a71f3a43782d01727f0fa2386b5c94af1f83abe57e2a0",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/identityv-2.jpg",
+          "title": "第五人格官方角色展示场景，保留原图少量说明文字",
+          "source_url": "https://id5.res.netease.com/pc/fab/20260318144430/img/bg_da7de480.jpg",
+          "source_page": "https://id5.163.com/",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 37869,
+          "sha256": "6faf408d182b1dae7aa034628eb61213b0f33435a8bf4dd8889f3ab61033deb1",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/identityv-icon.jpg",
+          "title": "第五人格官方网站应用图标",
+          "source_url": "https://webinput.nie.netease.com/img/id5/icon.png",
+          "source_page": "https://id5.163.com/",
+          "visual_checked": true,
+          "processing": "保持图形比例缩放，110px方形留边，JPEG",
+          "bytes": 3087,
+          "sha256": "c65eadc6cf291911023b12c4647e4dfd829c2fc2d5ec43bc0740ec16136ce30e",
+          "width": 110,
+          "height": 110
+        }
+      ]
+    },
+    "eggy": {
+      "name": "蛋仔派对",
+      "official_page": "https://party.163.com/media/index.html?tab=0",
+      "covers": [
+        "/static/covers/official/eggy-1.jpg",
+        "/static/covers/official/eggy-2.jpg"
+      ],
+      "icon": "/static/covers/official/eggy-icon.jpg",
+      "sources": [
+        {
+          "path": "/static/covers/official/eggy-1.jpg",
+          "title": "蛋仔派对官方登山KV",
+          "source_url": "https://nie.res.netease.com/r/pic/20241014/adbc0f31-49a0-4fe2-8487-434899920634.jpg",
+          "source_page": "https://party.163.com/media/index.html?tab=0",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 35331,
+          "sha256": "72c5b90178381743542671bc61183bbb79279ce89ca77471639e427832b5a891",
+          "width": 800,
+          "height": 448
+        },
+        {
+          "path": "/static/covers/official/eggy-2.jpg",
+          "title": "蛋仔派对官方二次元角色展示图",
+          "source_url": "https://nie.res.netease.com/r/pic/20241125/33578183-55ac-4a1c-9607-575b2ebb502d.jpg",
+          "source_page": "https://party.163.com/media/index.html?tab=0",
+          "visual_checked": true,
+          "processing": "保持原始长宽比缩至800px宽，JPEG压缩；无生成、无重绘、无裁切",
+          "bytes": 58695,
+          "sha256": "a6ba0e4a834ae2f1b7e91d24f49a11a30a560d8a5dd6058e29bc6f3571582fa7",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "path": "/static/covers/official/eggy-icon.jpg",
+          "title": "蛋仔派对官方网站应用图标",
+          "source_url": "https://webinput.nie.netease.com/img/party/icon.png/128",
+          "source_page": "https://party.163.com/media/index.html?tab=0",
+          "visual_checked": true,
+          "processing": "保持图形比例缩放，110px方形留边，JPEG",
+          "bytes": 3688,
+          "sha256": "dc016b5eb7bc879bf92eda219be9b165dc1d1fb9c7ab673b418d085369f1a826",
+          "width": 110,
+          "height": 110
+        }
+      ]
+    }
+  }
+}

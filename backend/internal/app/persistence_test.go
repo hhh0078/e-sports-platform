@@ -59,7 +59,7 @@ func TestIntegrationRestartPreservesData(t *testing.T) {
 // TestIntegrationServiceReauditAndSensitiveFields 验证服务修改重新审核，支付字段不能通过接口外泄。
 func TestIntegrationServiceReauditAndSensitiveFields(t *testing.T) {
 	api := newTestAPI(t)
-	payload := map[string]any{"game_id": "delta", "title": "调整后的服务方案", "description": "修改价格后必须重新审核才允许继续向买家展示。", "category": "任务协作", "price_cents": 2300, "unit": "局", "cover_url": "/static/covers/delta-2.jpg", "labels": []CoverLabel{}, "tags": []string{}, "club_id": "shanhai"}
+	payload := map[string]any{"game_id": "delta", "title": "调整后的服务方案", "description": "修改价格后必须重新审核才允许继续向买家展示。", "category": "任务协作", "price_cents": 2300, "unit": "局", "cover_url": "/static/covers/official/delta-2.jpg", "labels": []CoverLabel{}, "tags": []string{}, "club_id": "shanhai"}
 	var edited Service
 	api.call("worker", "PATCH", "/services/delta-service-1", payload, 200, &edited)
 	if edited.Status != "pending" {

@@ -206,7 +206,7 @@ func (a *App) saveGame(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err = validateGame(&g); err != nil {
 		return nil, err
 	}
-	for _, cover := range append(append([]string{}, g.Covers...), g.CoverURL) {
+	for _, cover := range append(append([]string{}, g.Covers...), g.CoverURL, g.IconURL) {
 		if strings.HasPrefix(cover, "/api/media/") {
 			v, e := get[Evidence](r.Context(), a.DB, "evidence", strings.TrimPrefix(cover, "/api/media/"), false)
 			if e != nil || !v.Public {

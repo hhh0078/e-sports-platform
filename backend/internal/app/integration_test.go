@@ -367,7 +367,7 @@ func TestIntegrationEvidenceAndFreeze(t *testing.T) {
 func TestIntegrationPublicationAndProduction(t *testing.T) {
 	api := newTestAPI(t)
 	var s Service
-	api.call("worker", "POST", "/services", map[string]any{"game_id": "delta", "title": "测试自定义服务", "description": "明确提供陪练和任务协作服务，不索取游戏密码。", "category": "任务协作", "price_cents": 1900, "unit": "小时", "cover_url": "/static/covers/delta-1.jpg", "labels": []CoverLabel{{Text: "认真陪练", Color: "#FFFFFF", Background: "transparent", FontSize: 16}}, "tags": []string{"耐心"}, "club_id": "shanhai"}, 200, &s)
+	api.call("worker", "POST", "/services", map[string]any{"game_id": "delta", "title": "测试自定义服务", "description": "明确提供陪练和任务协作服务，不索取游戏密码。", "category": "任务协作", "price_cents": 1900, "unit": "小时", "cover_url": "/static/covers/official/delta-1.jpg", "labels": []CoverLabel{{Text: "认真陪练", Color: "#FFFFFF", Background: "transparent", FontSize: 16}}, "tags": []string{"耐心"}, "club_id": "shanhai"}, 200, &s)
 	if s.Status != "pending" {
 		t.Fatal("发布必须待审核")
 	}

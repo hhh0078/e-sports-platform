@@ -1,0 +1,425 @@
+{
+  "passed": true,
+  "time": "2026-10-18T00:52:34.789Z",
+  "steps": [
+    "默认三角洲下，王者、和平、三角洲、金铲铲、无畏五个入口完整显示",
+    "游戏切换与独立封面：王者荣耀",
+    "游戏切换与独立封面：和平精英",
+    "游戏切换与独立封面：三角洲行动",
+    "游戏切换与独立封面：金铲铲之战",
+    "游戏切换与独立封面：无畏契约",
+    "游戏切换与独立封面：英雄联盟",
+    "游戏切换与独立封面：无畏契约：源能行动",
+    "游戏切换与独立封面：穿越火线手游",
+    "游戏切换与独立封面：暗区突围",
+    "游戏切换与独立封面：使命召唤手游",
+    "游戏切换与独立封面：第五人格",
+    "游戏切换与独立封面：永劫无间手游",
+    "游戏切换与独立封面：蛋仔派对",
+    "排序界面与服务端顺序一致：价格从低到高",
+    "排序界面与服务端顺序一致：成交优先",
+    "排序界面与服务端顺序一致：综合排序",
+    "完整十三游戏目录与蛋仔搜索选择",
+    "六个独立文字图层、换底图保留完整配置、无 Canvas、文字均不重叠且在封面内",
+    "九宫格全部九种位置可选，六条文字在每种位置均无重叠且不越界"
+  ],
+  "games": [
+    {
+      "id": "honor",
+      "cards": 4
+    },
+    {
+      "id": "peace",
+      "cards": 2
+    },
+    {
+      "id": "delta",
+      "cards": 8
+    },
+    {
+      "id": "tft",
+      "cards": 3
+    },
+    {
+      "id": "valorant",
+      "cards": 2
+    },
+    {
+      "id": "lol",
+      "cards": 2
+    },
+    {
+      "id": "valorantm",
+      "cards": 2
+    },
+    {
+      "id": "cfm",
+      "cards": 2
+    },
+    {
+      "id": "arena",
+      "cards": 2
+    },
+    {
+      "id": "codm",
+      "cards": 2
+    },
+    {
+      "id": "identityv",
+      "cards": 2
+    },
+    {
+      "id": "narakam",
+      "cards": 2
+    },
+    {
+      "id": "eggy",
+      "cards": 2
+    }
+  ],
+  "sorts": [
+    {
+      "sort": "price",
+      "label": "价格从低到高",
+      "cards": [
+        {
+          "title": "快乐开黑 · 轻松组队",
+          "price": 1500,
+          "count": 0
+        },
+        {
+          "title": "新手起步 · 基础陪练",
+          "price": 1600,
+          "count": 0
+        },
+        {
+          "title": "地图探索 · 任务搭子",
+          "price": 1800,
+          "count": 0
+        },
+        {
+          "title": "安全撤离 · 全程护航",
+          "price": 1900,
+          "count": 0
+        },
+        {
+          "title": "周末开黑 · 默契队友",
+          "price": 2000,
+          "count": 0
+        },
+        {
+          "title": "干员配合 · 战术训练",
+          "price": 2200,
+          "count": 0
+        },
+        {
+          "title": "路线复盘 · 撤离规划",
+          "price": 2500,
+          "count": 0
+        },
+        {
+          "title": "任务协作 · 轻松探索",
+          "price": 2900,
+          "count": 0
+        }
+      ]
+    },
+    {
+      "sort": "completed",
+      "label": "成交优先",
+      "cards": [
+        {
+          "title": "安全撤离 · 全程护航",
+          "price": 1900,
+          "count": 0
+        },
+        {
+          "title": "任务协作 · 轻松探索",
+          "price": 2900,
+          "count": 0
+        },
+        {
+          "title": "新手起步 · 基础陪练",
+          "price": 1600,
+          "count": 0
+        },
+        {
+          "title": "快乐开黑 · 轻松组队",
+          "price": 1500,
+          "count": 0
+        },
+        {
+          "title": "路线复盘 · 撤离规划",
+          "price": 2500,
+          "count": 0
+        },
+        {
+          "title": "干员配合 · 战术训练",
+          "price": 2200,
+          "count": 0
+        },
+        {
+          "title": "地图探索 · 任务搭子",
+          "price": 1800,
+          "count": 0
+        },
+        {
+          "title": "周末开黑 · 默契队友",
+          "price": 2000,
+          "count": 0
+        }
+      ]
+    },
+    {
+      "sort": "recommended",
+      "label": "综合排序",
+      "cards": [
+        {
+          "title": "周末开黑 · 默契队友",
+          "price": 2000,
+          "count": 0
+        },
+        {
+          "title": "地图探索 · 任务搭子",
+          "price": 1800,
+          "count": 0
+        },
+        {
+          "title": "干员配合 · 战术训练",
+          "price": 2200,
+          "count": 0
+        },
+        {
+          "title": "路线复盘 · 撤离规划",
+          "price": 2500,
+          "count": 0
+        },
+        {
+          "title": "快乐开黑 · 轻松组队",
+          "price": 1500,
+          "count": 0
+        },
+        {
+          "title": "新手起步 · 基础陪练",
+          "price": 1600,
+          "count": 0
+        },
+        {
+          "title": "任务协作 · 轻松探索",
+          "price": 2900,
+          "count": 0
+        },
+        {
+          "title": "安全撤离 · 全程护航",
+          "price": 1900,
+          "count": 0
+        }
+      ]
+    }
+  ],
+  "positions": [
+    "左上",
+    "上方",
+    "右上",
+    "左侧",
+    "居中",
+    "右侧",
+    "左下",
+    "下方",
+    "右下"
+  ],
+  "exceptions": [],
+  "first_row": [
+    {
+      "id": "honor",
+      "rect": {
+        "left": 12,
+        "top": 316.5,
+        "width": 60,
+        "height": 77
+      }
+    },
+    {
+      "id": "peace",
+      "rect": {
+        "left": 85,
+        "top": 316.5,
+        "width": 60,
+        "height": 77
+      }
+    },
+    {
+      "id": "delta",
+      "rect": {
+        "left": 158,
+        "top": 316.5,
+        "width": 60,
+        "height": 77
+      }
+    },
+    {
+      "id": "tft",
+      "rect": {
+        "left": 231,
+        "top": 316.5,
+        "width": 60,
+        "height": 77
+      }
+    },
+    {
+      "id": "valorant",
+      "rect": {
+        "left": 304,
+        "top": 316.5,
+        "width": 60,
+        "height": 77
+      }
+    }
+  ],
+  "independent_layers": 6,
+  "no_canvas": true,
+  "random_preserved_labels": true,
+  "cover_before": {
+    "image": "/static/covers/official/delta-2.jpg",
+    "bounds": {
+      "left": 21,
+      "top": 356.59375,
+      "width": 348,
+      "height": 217.5
+    },
+    "labels": [
+      {
+        "text": "稳定护航",
+        "style": "left:2.2222222222222223%;top:3.5555555555555554%;width:24.355555555555558%;height:10.222222222222223%;color:#ffffff;background:#b98132;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 28.7265625,
+          "top": 364.3203125,
+          "width": 84.75,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "语音沟通",
+        "style": "left:2.2222222222222223%;top:86.22222222222223%;width:24.355555555555558%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 28.7265625,
+          "top": 544.125,
+          "width": 84.75,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "新手友好",
+        "style": "left:27.77777777777778%;top:86.22222222222223%;width:24.355555555555558%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 117.6640625,
+          "top": 544.125,
+          "width": 84.75,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "晚间在线",
+        "style": "left:53.333333333333336%;top:86.22222222222223%;width:24.355555555555558%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 206.59375,
+          "top": 544.125,
+          "width": 84.75,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "目标先确认",
+        "style": "left:2.2222222222222223%;top:72.88888888888889%;width:29.333333333333332%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 28.7265625,
+          "top": 515.125,
+          "width": 102.078125,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "按约定交付",
+        "style": "left:33.33333333333333%;top:72.88888888888889%;width:29.333333333333332%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 137,
+          "top": 515.125,
+          "width": 102.078125,
+          "height": 22.2265625
+        }
+      }
+    ]
+  },
+  "cover_after": {
+    "image": "/static/covers/official/delta-3.jpg",
+    "bounds": {
+      "left": 21,
+      "top": 356.59375,
+      "width": 348,
+      "height": 217.5
+    },
+    "labels": [
+      {
+        "text": "稳定护航",
+        "style": "left:2.2222222222222223%;top:3.5555555555555554%;width:24.355555555555558%;height:10.222222222222223%;color:#ffffff;background:#b98132;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 28.7265625,
+          "top": 364.3203125,
+          "width": 84.75,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "语音沟通",
+        "style": "left:2.2222222222222223%;top:86.22222222222223%;width:24.355555555555558%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 28.7265625,
+          "top": 544.125,
+          "width": 84.75,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "新手友好",
+        "style": "left:27.77777777777778%;top:86.22222222222223%;width:24.355555555555558%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 117.6640625,
+          "top": 544.125,
+          "width": 84.75,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "晚间在线",
+        "style": "left:53.333333333333336%;top:86.22222222222223%;width:24.355555555555558%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 206.59375,
+          "top": 544.125,
+          "width": 84.75,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "目标先确认",
+        "style": "left:2.2222222222222223%;top:72.88888888888889%;width:29.333333333333332%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 28.7265625,
+          "top": 515.125,
+          "width": 102.078125,
+          "height": 22.2265625
+        }
+      },
+      {
+        "text": "按约定交付",
+        "style": "left:33.33333333333333%;top:72.88888888888889%;width:29.333333333333332%;height:10.222222222222223%;color:#101714;background:#00E59B;font-size:15.466666666666667px;visibility:visible;",
+        "rect": {
+          "left": 137,
+          "top": 515.125,
+          "width": 102.078125,
+          "height": 22.2265625
+        }
+      }
+    ]
+  },
+  "position_picker_passed": true
+}

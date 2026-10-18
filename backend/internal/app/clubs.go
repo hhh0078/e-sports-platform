@@ -87,13 +87,13 @@ func (a *App) club(w http.ResponseWriter, r *http.Request) (any, error) {
 }
 
 // validateClub 校验组织基本资料与游戏范围。
-func (a *App) validateClub(ctx context.Context, c Club) error {
-	if !length(c.Name, 2, 30) || !length(c.Description, 10, 1000) || len(c.GameIDs) < 1 || len(c.GameIDs) > 12 {
-		return fail(400, "俱乐部名称 2 至 30 字、介绍 10 至 1000 字，至少选择一个游戏")
+func validateClub(ctx context.Context, q querier, c Club) error {
+	if !length(c.Name, 2, 30) || !length(c.Description, 10, 1000) || len(c.GameIDs) < 1 || len(c.GameIDs) > 32 {
+		return fail(400, "俱乐部名称 2 至 30 字、介绍 10 至 1000 字，选择 1 至 32 个游戏")
 	}
 	seen := map[string]bool{}
 	for _, id := range c.GameIDs {
-		g, err := get[Game](ctx, a.DB, "games", id, false)
+		g, err := get[Game](ctx, q, "games", id, false)
 		if err != nil || !g.Enabled || seen[id] {
 			return fail(400, "游戏不存在、未启用或重复")
 		}
@@ -136,7 +136,7 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	c.GameIDs = in.GameIDs
 	c.Status = "pending"
 	c.Verified = false
-	if err = a.validateClub(r.Context(), c); err != nil {
+	if err = validateClub(r.Context(), tx, c); err != nil {
 		return nil, err
 	}
 	if err = put(r.Context(), tx, "clubs", c.ID, c); err != nil {

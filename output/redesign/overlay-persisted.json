@@ -1,0 +1,74 @@
+{
+  "id": "9d6fbce4bae12a9e94a3e3d1e1e9aa57",
+  "game_id": "delta",
+  "provider_id": "worker",
+  "provider_name": "北辰",
+  "provider_avatar": "",
+  "club_id": "",
+  "club_name": "",
+  "club_verified": false,
+  "title": "分层验收 · 六文案护航",
+  "description": "本地验收服务：预约一局护航，先确认区服和撤离目标，完成后按聊天约定验收。",
+  "category": "护航撤离",
+  "price_cents": 2100,
+  "unit": "局",
+  "cover_url": "/static/covers/official/delta-2.jpg",
+  "labels": [
+    {
+      "id": "label-1792283490685-fltaa",
+      "text": "稳定护航",
+      "color": "#ffffff",
+      "background": "#b98132",
+      "position": "top-left",
+      "font_size": 16
+    },
+    {
+      "id": "label-1792283490950-wfr8c",
+      "text": "语音沟通",
+      "color": "#101714",
+      "background": "#00E59B",
+      "position": "bottom-left",
+      "font_size": 16
+    },
+    {
+      "id": "label-1792283491234-sxj9p",
+      "text": "新手友好",
+      "color": "#101714",
+      "background": "#00E59B",
+      "position": "bottom-left",
+      "font_size": 16
+    },
+    {
+      "id": "label-1792283491486-yiadm",
+      "text": "晚间在线",
+      "color": "#101714",
+      "background": "#00E59B",
+      "position": "bottom-left",
+      "font_size": 16
+    },
+    {
+      "id": "label-1792283491740-03ktu",
+      "text": "目标先确认",
+      "color": "#101714",
+      "background": "#00E59B",
+      "position": "bottom-left",
+      "font_size": 16
+    },
+    {
+      "id": "label-1792283492007-aui9d",
+      "text": "按约定交付",
+      "color": "#101714",
+      "background": "#00E59B",
+      "position": "bottom-left",
+      "font_size": 16
+    }
+  ],
+  "tags": [
+    "新手友好",
+    "语音沟通"
+  ],
+  "status": "active",
+  "rating": 0,
+  "completed_count": 0,
+  "created_at": "2026-10-18T00:32:10.851137Z"
+}

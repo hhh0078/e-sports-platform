@@ -1,0 +1,250 @@
+[
+  {
+    "game": "honor",
+    "accent": "#E9BC71",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/honor-4.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/honor-3.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/honor-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/honor-1.jpg"
+      }
+    ],
+    "heading": "集结 · 王者荣耀",
+    "overflow": false
+  },
+  {
+    "game": "peace",
+    "accent": "#66CBE1",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/peace-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/peace-1.jpg"
+      }
+    ],
+    "heading": "集结 · 和平精英",
+    "overflow": false
+  },
+  {
+    "game": "delta",
+    "accent": "#00E59B",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-4.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-3.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-1.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-4.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-3.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/delta-1.jpg"
+      }
+    ],
+    "heading": "集结 · 三角洲行动",
+    "overflow": false
+  },
+  {
+    "game": "tft",
+    "accent": "#E6C76D",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/tft-1.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/tft-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/tft-1.jpg"
+      }
+    ],
+    "heading": "集结 · 金铲铲之战",
+    "overflow": false
+  },
+  {
+    "game": "valorant",
+    "accent": "#FF6672",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/valorant-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/valorant-1.jpg"
+      }
+    ],
+    "heading": "集结 · 无畏契约",
+    "overflow": false
+  },
+  {
+    "game": "lol",
+    "accent": "#C9AA71",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/lol-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/lol-1.jpg"
+      }
+    ],
+    "heading": "集结 · 英雄联盟",
+    "overflow": false
+  },
+  {
+    "game": "valorantm",
+    "accent": "#FF7880",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/valorantm-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/valorantm-1.jpg"
+      }
+    ],
+    "heading": "集结 · 无畏契约：源能行动",
+    "overflow": false
+  },
+  {
+    "game": "cfm",
+    "accent": "#F28C51",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/cfm-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/cfm-1.jpg"
+      }
+    ],
+    "heading": "集结 · 穿越火线手游",
+    "overflow": false
+  },
+  {
+    "game": "arena",
+    "accent": "#E0AA62",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/arena-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/arena-1.jpg"
+      }
+    ],
+    "heading": "集结 · 暗区突围",
+    "overflow": false
+  },
+  {
+    "game": "codm",
+    "accent": "#D5D96A",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/codm-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/codm-1.jpg"
+      }
+    ],
+    "heading": "集结 · 使命召唤手游",
+    "overflow": false
+  },
+  {
+    "game": "identityv",
+    "accent": "#C4B598",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/identityv-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/identityv-1.jpg"
+      }
+    ],
+    "heading": "集结 · 第五人格",
+    "overflow": false
+  },
+  {
+    "game": "narakam",
+    "accent": "#D68D72",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/narakam-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/narakam-1.jpg"
+      }
+    ],
+    "heading": "集结 · 永劫无间手游",
+    "overflow": false
+  },
+  {
+    "game": "eggy",
+    "accent": "#E5AB65",
+    "covers": [
+      {
+        "loaded": true,
+        "src": "/static/covers/official/eggy-2.jpg"
+      },
+      {
+        "loaded": true,
+        "src": "/static/covers/official/eggy-1.jpg"
+      }
+    ],
+    "heading": "集结 · 蛋仔派对",
+    "overflow": false
+  }
+]

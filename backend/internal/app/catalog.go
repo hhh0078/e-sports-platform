@@ -24,7 +24,12 @@ func (a *App) bootstrap(w http.ResponseWriter, r *http.Request) (any, error) {
 // games 返回已启用的游戏主题。
 func (a *App) games(w http.ResponseWriter, r *http.Request) (any, error) {
 	items, err := list[Game](r.Context(), a.DB, "games", "WHERE data->>'enabled'='true'")
-	sort.Slice(items, func(i, j int) bool { return items[i].SortOrder < items[j].SortOrder })
+	sort.Slice(items, func(i, j int) bool {
+		if items[i].SortOrder == items[j].SortOrder {
+			return items[i].ID < items[j].ID
+		}
+		return items[i].SortOrder < items[j].SortOrder
+	})
 	return items, err
 }
 
@@ -38,7 +43,7 @@ func (a *App) decorateService(ctx context.Context, s Service) Service {
 	s.ClubName = ""
 	if s.ClubID != "" {
 		c, err := get[Club](ctx, a.DB, "clubs", s.ClubID, false)
-		if err == nil && c.Status == "active" {
+		if err == nil && c.Status == "active" && contains(c.GameIDs, s.GameID) {
 			s.ClubName = c.Name
 			m, e := get[ClubMember](ctx, a.DB, "members", s.ClubID+":"+s.ProviderID, false)
 			s.ClubVerified = c.Verified && (c.OwnerID == s.ProviderID || (e == nil && m.Status == "active"))
@@ -49,42 +54,26 @@ func (a *App) decorateService(ctx context.Context, s Service) Service {
 
 // services 过滤公开服务或当前用户自己的发布记录。
 func (a *App) services(w http.ResponseWriter, r *http.Request) (any, error) {
-	where := "WHERE data->>'status'='active'"
-	args := []any{}
-	mine := r.URL.Query().Get("mine") == "1"
-	if mine {
+	ownerID := ""
+	if r.URL.Query().Get("mine") == "1" {
 		u, err := a.actor(r)
 		if err != nil {
 			return nil, err
 		}
-		where = "WHERE data->>'provider_id'=$1"
-		args = append(args, u.ID)
+		ownerID = u.ID
 	}
-	items, err := list[Service](r.Context(), a.DB, "services", where+" ORDER BY data->>'created_at' DESC", args...)
+	where, args, err := serviceQuery(r, ownerID)
 	if err != nil {
 		return nil, err
 	}
-	out := []Service{}
-	for _, s := range items {
-		if game := r.URL.Query().Get("game_id"); game != "" && s.GameID != game {
-			continue
-		}
-		if c := r.URL.Query().Get("category"); c != "" && s.Category != c {
-			continue
-		}
-		if q := strings.TrimSpace(r.URL.Query().Get("q")); q != "" && !strings.Contains(strings.ToLower(s.Title+" "+s.Description), strings.ToLower(q)) {
-			continue
-		}
-		if !mine {
-			g, e := get[Game](r.Context(), a.DB, "games", s.GameID, false)
-			u, ue := get[User](r.Context(), a.DB, "users", s.ProviderID, false)
-			if e != nil || !g.Enabled || ue != nil || u.Status != "active" || !u.ProviderEnabled {
-				continue
-			}
-		}
-		out = append(out, a.decorateService(r.Context(), s))
+	items, err := list[Service](r.Context(), a.DB, "services", where, args...)
+	if err != nil {
+		return nil, err
 	}
-	return paginate(r, out), nil
+	for i := range items {
+		items[i] = a.decorateService(r.Context(), items[i])
+	}
+	return items, nil
 }
 
 // service 仅向发布者或管理员显示尚未上架的服务。

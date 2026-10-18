@@ -1,0 +1,16 @@
+{
+  "colors": [
+    "#00E59B",
+    "#0B0F0E",
+    "#101614",
+    "#F3F5F3"
+  ],
+  "covers": [
+    "/static/covers/official/delta-1.jpg",
+    "/static/covers/official/delta-2.jpg",
+    "/static/covers/official/delta-3.jpg",
+    "/static/covers/official/delta-4.jpg"
+  ],
+  "icon": "http://127.0.0.1:8090/api/media/35c83af8ae6e80aed8a127936a5d0386",
+  "loaded": true
+}
