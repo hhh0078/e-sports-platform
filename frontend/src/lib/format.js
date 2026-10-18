@@ -7,8 +7,13 @@ export function money(cents) { return (Number(cents || 0) / 100).toFixed(2).repl
 export function time(value) { if (!value) return ''; const date = new Date(value); if (Number.isNaN(date.getTime())) return ''; return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}` }
 /** 取得订单或审核状态的中文含义。 */
 export function statusLabel(status) { return statusNames[status] || status || '未知状态' }
-/** 切换主导航时重置页面栈，其余页面保留返回路径。 */
-export function go(url) { const primary = ['/pages/index/index', '/pages/worker/index', '/pages/orders/index', '/pages/me/index']; if (primary.includes(url)) uni.reLaunch({ url }); else uni.navigateTo({ url }) }
+/** 切换主导航含筛选参数时也重置页面栈，其余页面保留返回路径。 */
+export function go(url) {
+  const primary = ['/pages/index/index', '/pages/worker/index', '/pages/orders/index', '/pages/me/index']
+  const options = { url, fail: () => notify('页面打开失败，请重试') }
+  if (primary.includes(url.split('?')[0])) uni.reLaunch(options)
+  else uni.navigateTo(options)
+}
 /** 以统一短提示显示操作反馈。 */
 export function notify(error) { uni.showToast({ title: typeof error === 'string' ? error : error?.message || '操作失败，请重试', icon: 'none', duration: 2500 }) }
 

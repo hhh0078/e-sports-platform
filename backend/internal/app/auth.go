@@ -229,13 +229,30 @@ func (a *App) stats(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := map[string]int64{"buying_count": 0, "working_count": 0, "completed_count": 0, "earnings_cents": 0}
+	var servicesCount int64
+	if err = a.DB.QueryRow(r.Context(), "SELECT count(*) FROM services WHERE data->>'provider_id'=$1", u.ID).Scan(&servicesCount); err != nil {
+		return nil, err
+	}
+	out := map[string]int64{"buying_count": 0, "working_count": 0, "completed_count": 0, "earnings_cents": 0, "provider_working_count": 0, "provider_completed_count": 0, "services_count": servicesCount, "buyer_order_count": 0, "completed_order_count": 0}
 	for _, o := range orders {
+		if o.BuyerID == u.ID {
+			out["buyer_order_count"]++
+		}
 		if o.BuyerID == u.ID && !contains([]string{"completed", "cancelled", "refunded"}, o.Status) {
 			out["buying_count"]++
 		}
 		if o.ProviderID == u.ID && !contains([]string{"completed", "cancelled", "refunded"}, o.Status) {
 			out["working_count"]++
+		}
+		// 新计数严格对应接单视角筛选，保留旧跨身份计数供现有页面兼容。
+		if o.ProviderID == u.ID && contains(workingOrderStatuses, o.Status) {
+			out["provider_working_count"]++
+		}
+		if o.Status == "completed" {
+			out["completed_order_count"]++
+			if o.ProviderID == u.ID {
+				out["provider_completed_count"]++
+			}
 		}
 		if o.Status == "completed" && !contains([]string{"requested", "escalated", "processing"}, o.RefundStatus) {
 			out["completed_count"]++

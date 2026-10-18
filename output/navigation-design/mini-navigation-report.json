@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "time": "2026-10-18T03:41:17.175Z",
+  "command": "node scripts/mini-navigation-smoke.cjs",
+  "steps": [
+    "实际登录：北辰",
+    "打手默认服务、真实统计、全部状态、独立文案、20条分页直到按钮消失",
+    "进行中深链与服务端过滤一致；打手待支付不出现继续支付；切买方不残留打手订单",
+    "我的完成订单进入全部身份已完成；我的俱乐部携带 mine=1 并匹配本人列表",
+    "空昵称与一字昵称均未保存，取消并重开恢复原资料；原生错误提示已截图",
+    "接单身份关闭后仍可查看进行中订单及聊天室，原开关已恢复",
+    "实际登录：集结管理员",
+    "实际登录：云间旅人",
+    "实际登录：山海主理人",
+    "平台管理员具有管理入口；玩家和俱乐部管理员无平台管理入口",
+    "实际登录：北辰"
+  ],
+  "coverage": {
+    "services": {
+      "total": 38,
+      "first_page": 20,
+      "load_more_clicks": 1,
+      "independent_labels": 25
+    },
+    "provider_working": 1,
+    "provider_pending_payment": 1,
+    "buyer_pending_payment": 0,
+    "all_completed": 1
+  },
+  "exceptions": [],
+  "console_errors": [],
+  "restored_original_profile": true
+}

@@ -1,5 +1,20 @@
 # 集结 · 本地版本验收结果
 
+## 2026-10-18：其余三个导航按图改版
+
+先生成并保存 [打手](design/navigation-worker.png)、[订单](design/navigation-orders.png)、[我的](design/navigation-me.png) 三张图，再据图实现。源图/实屏的逐轮对照及修复见 [design-qa.md](../design-qa.md)，三页总览见 [实际页面](../output/navigation-design/navigation-actual.jpg)。
+
+- 打手页改为游戏主题工作台、真实统计、服务分组；保留暂停/待审和独立封面文字，20条分页至38项全部显示。
+- 订单页读取角色/阶段深链，SQL先筛选后分页，卖方待支付不出现付款动作；停用游戏使用订单游戏名快照。
+- 我的页按图重排，资料限制和后端一致；计数与路由一致，俱乐部入口正确mine=1，管理员权限保留。
+- 修复跨会话迟到资料/401覆盖、旧读取覆盖接单开关、WXSS不兼容选择器和320px溢出。含query的主导航也重置页面栈。
+
+本轮实测：Go真实PG/Redis集成与race（38项顶层+21子场景）、vet、前端33项测试、H5/微信构建全部通过。微信导航报告 [mini-navigation-report.json](../output/navigation-design/mini-navigation-report.json) passed=true；profile原始字段及开关恢复；运行异常与console_errors为空。H5记录 [h5-checks.json](../output/navigation-design/h5-checks.json)。
+
+微信新订单 `103e0d5caebc5ab88ea9d5505cd3c16f` 完整走通支付→接单→开始→交付→四方聊天→退款申请→打手拒绝→平台介入→全额退款，陌生账号无权访问。详见 [交易报告](../output/playwright/mini-e2e.json)。这里的支付退款均为本地测试，不扣真实款。
+
+本轮以前的验收与历史业务边界保留如下。
+
 文件作用：区分当前代码测试、真实界面验收、历史证据与外部渠道待验收项。更新日期：2026-10-18。
 
 ## 本轮结论

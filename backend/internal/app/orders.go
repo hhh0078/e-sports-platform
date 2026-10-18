@@ -9,6 +9,9 @@ import (
 	"time"
 )
 
+// workingOrderStatuses 统一进行中筛选与打手工作台计数，待付款和待验收分别展示。
+var workingOrderStatuses = []string{"open", "accepted", "in_progress"}
+
 // baseOrder 创建未付款订单及唯一流水号。
 func baseOrder(u User) Order {
 	id := newID()
@@ -155,18 +158,27 @@ func (a *App) orders(w http.ResponseWriter, r *http.Request) (any, error) {
 	default:
 		return nil, fail(400, "订单视角无效")
 	}
-	args := []any{u.ID}
-	if status := r.URL.Query().Get("status"); status != "" {
-		where += " AND data->>'status'=$2"
+	limit, offset := pageLimit(r)
+	args := []any{u.ID, limit, offset}
+	switch status := r.URL.Query().Get("status"); status {
+	case "", "all":
+	case "working":
+		where += " AND data->>'status'=ANY($4::text[])"
+		args = append(args, workingOrderStatuses)
+	case "refund":
+		where += " AND (data->>'status'='refunded' OR COALESCE(data->>'refund_status','') NOT IN ('','none'))"
+	case "pending_payment", "open", "accepted", "in_progress", "delivered", "completed", "cancelled", "refunded":
+		where += " AND data->>'status'=$4"
 		args = append(args, status)
+	default:
+		return nil, fail(400, "订单状态筛选无效")
 	}
-	items, err := list[Order](r.Context(), a.DB, "orders", where+" ORDER BY data->>'created_at' DESC", args...)
-	return paginate(r, items), err
+	return list[Order](r.Context(), a.DB, "orders", where+" ORDER BY (data->>'created_at')::timestamptz DESC, id DESC LIMIT $2 OFFSET $3", args...)
 }
 
 // jobs 公开大厅隐藏具体需求说明、买家标识和聊天证据。
 func (a *App) jobs(w http.ResponseWriter, r *http.Request) (any, error) {
-	items, err := list[Order](r.Context(), a.DB, "orders", "WHERE data->>'status'='open' AND data->>'provider_id'='' AND data->>'refund_status' NOT IN ('requested','escalated','processing') ORDER BY data->>'created_at' DESC")
+	items, err := list[Order](r.Context(), a.DB, "orders", "WHERE data->>'status'='open' AND data->>'provider_id'='' AND data->>'refund_status' NOT IN ('requested','escalated','processing') ORDER BY (data->>'created_at')::timestamptz DESC, id DESC")
 	if err != nil {
 		return nil, err
 	}

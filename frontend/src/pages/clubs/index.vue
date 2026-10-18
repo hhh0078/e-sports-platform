@@ -4,7 +4,7 @@
 <script setup>
 /** 文件作用：加载公开与个人俱乐部，验证创建资料后提交审批。 */
 import { ref,reactive } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { onLoad,onShow } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import Icon from '../../components/Icon.vue'
@@ -12,6 +12,8 @@ import { state,init } from '../../lib/store'
 import { api } from '../../lib/api'
 import { go,notify,statusLabel } from '../../lib/format'
 const clubs=ref([]),mine=ref(false),loading=ref(false),error=ref(''),creating=ref(false),busy=ref(false),form=reactive({name:'',description:'',game_ids:[]})
+/** 根据入口参数选择个人俱乐部列表，首次加载即可读取本人挂靠。 */
+function applyRoute(options){mine.value=options?.mine==='1'}
 /** 刷新俱乐部列表，仅登录后才能读取个人挂靠。 */
 async function load(){loading.value=true;error.value='';try{await init();if(mine.value&&!state.user){clubs.value=[];return}clubs.value=await api('/clubs'+(mine.value?'?mine=1':''))}catch(e){error.value=e.message}finally{loading.value=false}}
 /** 显示游戏短名称。 */
@@ -22,6 +24,7 @@ function openCreate(){if(!state.user)return go('/pages/login/index');form.game_i
 function toggleGame(id){const index=form.game_ids.indexOf(id);if(index>=0)form.game_ids.splice(index,1);else form.game_ids.push(id)}
 /** 验证资料并创建待审核俱乐部。 */
 async function create(){if(busy.value)return;if(!form.name.trim()||!form.description.trim()||!form.game_ids.length)return notify('请填写名称、介绍并选择游戏');busy.value=true;try{const club=await api('/clubs','POST',{name:form.name.trim(),description:form.description.trim(),game_ids:form.game_ids});creating.value=false;notify('俱乐部申请已提交');go('/pages/club/index?id='+club.id)}catch(e){notify(e)}finally{busy.value=false}}
+onLoad(applyRoute)
 onShow(load)
 </script>
 <style scoped>.club-hero{padding:12px 0 28px}.hero-line{display:block;font-size:28px;line-height:1.5;font-weight:800;letter-spacing:-1px;margin:12px 0}.hero-line>text{display:block}.club-card{margin-bottom:14px}.club-monogram{width:45px;height:45px;flex-shrink:0;border-radius:12px;background:#ffffff08;color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:750}.club-heading{flex:1;min-width:0}.club-name{font-size:16px;font-weight:700}.club-description{font-size:12px;line-height:1.8;display:block;color:#a0b1a6;margin:16px 0}.game-tags{display:flex;flex-wrap:wrap;gap:5px}.modal-mask{position:fixed;inset:0;background:#000b;z-index:110;display:flex;align-items:center;padding:22px;justify-content:center}.modal{width:100%;max-width:440px;display:flex;flex-direction:column;gap:15px;max-height:85vh;overflow:auto}.modal>.row>button{flex:1}.game-choices{display:flex;flex-wrap:wrap;gap:7px}</style>
