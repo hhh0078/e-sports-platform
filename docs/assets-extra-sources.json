@@ -4,7 +4,7 @@
   "assets": [
     {
       "game_id": "lol",
-      "path": "frontend/src/static/covers/official/lol-1.jpg",
+      "path": "backend/internal/assets/covers/official/lol-1.jpg",
       "role": "cover",
       "source_url": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
       "source_page": "https://www.leagueoflegends.com/en-us/",
@@ -17,7 +17,7 @@
     },
     {
       "game_id": "lol",
-      "path": "frontend/src/static/covers/official/lol-2.jpg",
+      "path": "backend/internal/assets/covers/official/lol-2.jpg",
       "role": "cover",
       "source_url": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
       "source_page": "https://www.leagueoflegends.com/en-us/",
@@ -30,7 +30,7 @@
     },
     {
       "game_id": "lol",
-      "path": "frontend/src/static/covers/official/lol-icon.jpg",
+      "path": "backend/internal/assets/covers/official/lol-icon.jpg",
       "role": "icon",
       "source_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/d3b7bd9decb1e1672dcb80be4f8bc1aa05490dc1-110x70.svg?accountingTag=LoL",
       "source_page": "https://www.leagueoflegends.com/en-us/",
@@ -43,7 +43,7 @@
     },
     {
       "game_id": "valorantm",
-      "path": "frontend/src/static/covers/official/valorantm-1.jpg",
+      "path": "backend/internal/assets/covers/official/valorantm-1.jpg",
       "role": "cover",
       "source_url": "https://game.gtimg.cn/images/codev/act/a20250805launch/v260914/bg3.jpg",
       "source_page": "https://valm.qq.com/act/a20250805launch/",
@@ -56,7 +56,7 @@
     },
     {
       "game_id": "valorantm",
-      "path": "frontend/src/static/covers/official/valorantm-2.jpg",
+      "path": "backend/internal/assets/covers/official/valorantm-2.jpg",
       "role": "cover",
       "source_url": "https://game.gtimg.cn/images/codev/act/a20250805launch/v260914/hero_vid.png?v=hmon4po2",
       "source_page": "https://valm.qq.com/act/a20250805launch/",
@@ -69,7 +69,7 @@
     },
     {
       "game_id": "valorantm",
-      "path": "frontend/src/static/covers/official/valorantm-icon.jpg",
+      "path": "backend/internal/assets/covers/official/valorantm-icon.jpg",
       "role": "icon",
       "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/4d/d0/ea/4dd0eaf7-4498-51a2-43ea-821cd4223d76/AppIcon-1x_U007emarketing-0-8-0-85-220-0.png/512x512bb.jpg",
       "source_page": "https://valm.qq.com/act/a20250805launch/",
@@ -82,7 +82,7 @@
     },
     {
       "game_id": "codm",
-      "path": "frontend/src/static/covers/official/codm-1.jpg",
+      "path": "backend/internal/assets/covers/official/codm-1.jpg",
       "role": "cover",
       "source_url": "https://game.gtimg.cn/images/codm/cp/a20200923shequ/indeximg/kv2.jpg",
       "source_page": "https://codm.qq.com/main.shtml",
@@ -95,7 +95,7 @@
     },
     {
       "game_id": "codm",
-      "path": "frontend/src/static/covers/official/codm-2.jpg",
+      "path": "backend/internal/assets/covers/official/codm-2.jpg",
       "role": "cover",
       "source_url": "https://game.gtimg.cn/images/codm/cp/a20200923shequ/indeximg/banner.jpg",
       "source_page": "https://codm.qq.com/main.shtml",
@@ -108,7 +108,7 @@
     },
     {
       "game_id": "codm",
-      "path": "frontend/src/static/covers/official/codm-icon.jpg",
+      "path": "backend/internal/assets/covers/official/codm-icon.jpg",
       "role": "icon",
       "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/ba/ea/8a/baea8af7-14d2-ff84-fa6e-bbdfaf026c6e/AppIcon-0-0-1x_U007emarketing-0-10-0-85-220.png/512x512bb.jpg",
       "source_page": "https://codm.qq.com/main.shtml",
@@ -121,7 +121,7 @@
     },
     {
       "game_id": "narakam",
-      "path": "frontend/src/static/covers/official/narakam-1.jpg",
+      "path": "backend/internal/assets/covers/official/narakam-1.jpg",
       "role": "cover",
       "source_url": "https://myjwujian.res.netease.com/pc/zt/20240708162653/keep_origin/assets/kv-bg3_cd6aa03e.jpg",
       "source_page": "https://m.yjwujian.cn/",
@@ -134,7 +134,7 @@
     },
     {
       "game_id": "narakam",
-      "path": "frontend/src/static/covers/official/narakam-2.jpg",
+      "path": "backend/internal/assets/covers/official/narakam-2.jpg",
       "role": "cover",
       "source_url": "https://myjwujian.res.netease.com/pc/zt/20240708162653/keep_origin/assets/kv-bg2_5c5579c4.png",
       "source_page": "https://m.yjwujian.cn/",
@@ -147,7 +147,7 @@
     },
     {
       "game_id": "narakam",
-      "path": "frontend/src/static/covers/official/narakam-icon.jpg",
+      "path": "backend/internal/assets/covers/official/narakam-icon.jpg",
       "role": "icon",
       "source_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/d8/d2/1c/d8d21c44-5b0c-79c8-ad8e-08b6f4e1b748/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg",
       "source_page": "https://m.yjwujian.cn/",
@@ -160,7 +160,7 @@
     },
     {
       "game_id": "identityv",
-      "path": "frontend/src/static/covers/official/identityv-1.jpg",
+      "path": "backend/internal/assets/covers/official/identityv-1.jpg",
       "role": "cover",
       "source_url": "https://id5.res.netease.com/pc/fab/20260318144430/img/kv_59852b71.jpg",
       "source_page": "https://id5.163.com/",
@@ -173,7 +173,7 @@
     },
     {
       "game_id": "identityv",
-      "path": "frontend/src/static/covers/official/identityv-2.jpg",
+      "path": "backend/internal/assets/covers/official/identityv-2.jpg",
       "role": "cover",
       "source_url": "https://id5.res.netease.com/pc/fab/20260318144430/img/bg_da7de480.jpg",
       "source_page": "https://id5.163.com/",
@@ -186,7 +186,7 @@
     },
     {
       "game_id": "identityv",
-      "path": "frontend/src/static/covers/official/identityv-icon.jpg",
+      "path": "backend/internal/assets/covers/official/identityv-icon.jpg",
       "role": "icon",
       "source_url": "https://webinput.nie.netease.com/img/id5/icon.png",
       "source_page": "https://id5.163.com/",
@@ -199,7 +199,7 @@
     },
     {
       "game_id": "eggy",
-      "path": "frontend/src/static/covers/official/eggy-1.jpg",
+      "path": "backend/internal/assets/covers/official/eggy-1.jpg",
       "role": "cover",
       "source_url": "https://nie.res.netease.com/r/pic/20241014/adbc0f31-49a0-4fe2-8487-434899920634.jpg",
       "source_page": "https://party.163.com/media/index.html?tab=0",
@@ -212,7 +212,7 @@
     },
     {
       "game_id": "eggy",
-      "path": "frontend/src/static/covers/official/eggy-2.jpg",
+      "path": "backend/internal/assets/covers/official/eggy-2.jpg",
       "role": "cover",
       "source_url": "https://nie.res.netease.com/r/pic/20241125/33578183-55ac-4a1c-9607-575b2ebb502d.jpg",
       "source_page": "https://party.163.com/media/index.html?tab=0",
@@ -225,7 +225,7 @@
     },
     {
       "game_id": "eggy",
-      "path": "frontend/src/static/covers/official/eggy-icon.jpg",
+      "path": "backend/internal/assets/covers/official/eggy-icon.jpg",
       "role": "icon",
       "source_url": "https://webinput.nie.netease.com/img/party/icon.png/128",
       "source_page": "https://party.163.com/media/index.html?tab=0",

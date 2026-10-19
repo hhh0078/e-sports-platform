@@ -12,7 +12,7 @@
 
 ## 素材与数据
 
-真实封面/图标按游戏单独归档到`frontend/src/static/covers/official/`，来源见`ASSETS.md`。原始官方图保留人物识别，不使用AI仿造角色。游戏增补依据与数据口径见`GAME_POPULARITY.md`。
+真实封面/图标按游戏单独归档到`backend/internal/assets/covers/official/`，来源见`ASSETS.md`。原始官方图保留人物识别，不使用AI仿造角色。游戏增补依据与数据口径见`GAME_POPULARITY.md`。
 
 底图存`cover_url`，文案存`labels`数组（文字、前景、背景、位置、字号），前端使用`image`和独立`view`渲染。不会调用canvas导出合成封面。新建和换游戏随机底图，编辑保持已有底图，换底图保留文字。不同尺寸共用同一360×225坐标布局，自动避让。
 

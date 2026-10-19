@@ -10,6 +10,9 @@ import (
 
 // applyAction 对交易状态机执行纯内存校验与修改，调用方负责持锁提交。
 func applyAction(o *Order, u User, action, note string) error {
+	if err := requireLiveOrder(*o); err != nil {
+		return err
+	}
 	buyer := o.BuyerID == u.ID
 	provider := o.ProviderID == u.ID
 	note = strings.TrimSpace(note)
@@ -184,6 +187,9 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 	defer tx.Rollback(r.Context())
 	o, err := get[Order](r.Context(), tx, "orders", r.PathValue("id"), true)
 	if err != nil {
+		return nil, err
+	}
+	if err = requireLiveOrder(o); err != nil {
 		return nil, err
 	}
 	before := o

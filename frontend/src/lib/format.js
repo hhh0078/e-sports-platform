@@ -17,5 +17,5 @@ export function go(url) {
 /** 以统一短提示显示操作反馈。 */
 export function notify(error) { uni.showToast({ title: typeof error === 'string' ? error : error?.message || '操作失败，请重试', icon: 'none', duration: 2500 }) }
 
-/** 将后台上传资源的相对地址转成当前服务端地址，内置静态封面保留本地路径。 */
-export function assetUrl(url) { const value = String(url || ''); return value.startsWith('/api/') ? API_BASE.replace(/\/api\/?$/, '') + value : value }
+/** 将后台上传资源的相对地址转成当前服务端地址，游戏封面也由后端托管以控制小程序包体积。 */
+export function assetUrl(url) { const value = String(url || ''); return (value.startsWith('/api/') || value.startsWith('/static/covers/')) ? API_BASE.replace(/\/api\/?$/, '') + value : value }

@@ -2,8 +2,7 @@
 <template>
   <AppShell :title="serviceId ? '编辑服务' : '发布你的拿手好戏'" subtitle="让真正合拍的老板找到你" back>
     <view v-if="error" class="error-box mb">{{ error }}</view>
-    <view v-if="!state.user" class="panel stack"><text>登录后即可自由发布服务</text><button class="btn" @click="go('/pages/login/index')">去登录</button></view>
-    <template v-else>
+    <template>
       <view class="editor-intro"><text class="eyebrow">CREATE YOUR CARD</text><text class="muted">选张喜欢的底图，写上你的拿手好戏。</text></view>
       <view class="preview"><view class="preview-toolbar"><text>封面预览</text><button v-if="covers.length>1" class="text-btn" @click="changeCover">换一张底图</button></view><CoverArt :src="form.cover_url" :labels="form.labels"/><view class="preview-caption"><text>{{ form.title || '你的服务标题' }}</text><text class="accent">¥{{ form.price || '0' }} / {{ form.unit }}</text></view></view>
       <view class="panel form-panel"><text class="section-title">封面工作台</text><text class="hint block">换底图，文字还在。文字默认从左下依次排列，也可以自由调色、选位置，自动错开不重叠。</text>
@@ -20,6 +19,7 @@
   </AppShell>
 </template>
 <script setup>
+import { requirePhone } from '../../lib/phone'
 /** 文件作用：维护可保存的封面配置，检查金额与服务内容并提交后台审核。 */
 import { ref, reactive, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
@@ -56,6 +56,7 @@ function positionIndex(value) { return Math.max(0,POSITIONS.findIndex(item=>item
 function positionName(value) { return POSITIONS[positionIndex(value)][1] }
 /** 验证标题、金额和颜色后提交；发布需要用户明确启用打手身份。 */
 async function save() {
+  if (!(await requirePhone())) return
   if(busy.value)return
   error.value=''
   form.labels.forEach(label=>{label.text=normalizeLabelText(label.text)})

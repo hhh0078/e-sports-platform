@@ -3,13 +3,9 @@ package app
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
 	"github.com/redis/go-redis/v9"
 	"net"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 )
@@ -96,6 +92,7 @@ func (a *App) devLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	var in struct {
 		UserID string `json:"user_id"`
+		consentInput
 	}
 	if err := decode(r, &in); err != nil {
 		return nil, err
@@ -103,59 +100,27 @@ func (a *App) devLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 	if !contains([]string{"player", "worker", "clubowner", "admin", "outsider"}, in.UserID) {
 		return nil, fail(400, "请选择测试账号")
 	}
-	u, err := get[User](r.Context(), a.DB, "users", in.UserID, false)
+	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
 	}
-	return a.session(r.Context(), u)
-}
-
-// wechatLogin 使用官方 code2session 交换身份，不回传 session_key。
-func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
-	if a.Config.WechatAppID == "" || a.Config.WechatSecret == "" {
-		return nil, fail(503, "微信登录尚未配置，请联系管理员")
-	}
-	if err := a.loginRate(r); err != nil {
-		return nil, err
-	}
-	var in struct {
-		Code string `json:"code"`
-	}
-	if err := decode(r, &in); err != nil {
-		return nil, err
-	}
-	if !length(in.Code, 1, 256) {
-		return nil, fail(400, "微信登录凭证无效")
-	}
-	query := url.Values{"appid": {a.Config.WechatAppID}, "secret": {a.Config.WechatSecret}, "js_code": {in.Code}, "grant_type": {"authorization_code"}}
-	req, _ := http.NewRequestWithContext(r.Context(), "GET", "https://api.weixin.qq.com/sns/jscode2session?"+query.Encode(), nil)
-	res, err := a.HTTPClient.Do(req)
-	if err != nil {
-		return nil, fail(502, "微信登录服务暂时不可用")
-	}
-	defer res.Body.Close()
-	var wx struct {
-		OpenID  string `json:"openid"`
-		ErrCode int    `json:"errcode"`
-	}
-	if json.NewDecoder(res.Body).Decode(&wx) != nil || res.StatusCode != 200 || wx.ErrCode != 0 || wx.OpenID == "" {
-		return nil, fail(401, "微信登录凭证已失效，请重新登录")
-	}
-	hash := sha256.Sum256([]byte(a.Config.WechatAppID + ":" + wx.OpenID))
-	id := "wx_" + hex.EncodeToString(hash[:16])
-	u, err := get[User](r.Context(), a.DB, "users", id, false)
-	if missing(err) {
-		u = User{ID: id, Nickname: "新队友", Bio: "", Role: "user", Status: "active", CreatedAt: now()}
-		raw, _ := json.Marshal(u)
-		_, err = a.DB.Exec(r.Context(), "INSERT INTO users(id,data) VALUES($1,$2) ON CONFLICT(id) DO NOTHING", id, raw)
-		if err == nil {
-			u, err = get[User](r.Context(), a.DB, "users", id, false)
+	defer tx.Rollback(r.Context())
+	explicit := in.Agreed || in.UserAgreementVersion != "" || in.PrivacyPolicyVersion != ""
+	if explicit {
+		if err = validateConsent(r.Context(), tx, in.consentInput); err != nil {
+			return nil, err
 		}
 	}
+	u, err := get[User](r.Context(), tx, "users", in.UserID, true)
 	if err != nil {
 		return nil, err
 	}
-	if err = put(r.Context(), a.DB, "identities", u.ID, map[string]string{"openid": wx.OpenID}); err != nil {
+	if explicit {
+		if err = mergeIdentity(r.Context(), tx, u.ID, consentFields(in.consentInput)); err != nil {
+			return nil, err
+		}
+	}
+	if err = tx.Commit(r.Context()); err != nil {
 		return nil, err
 	}
 	return a.session(r.Context(), u)

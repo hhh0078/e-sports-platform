@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-20",
+  "success": true,
+  "stage": "wx.login + production.prepare",
+  "status": 200,
+  "agreements_received": true,
+  "account_created": false,
+  "diagnostic_correction": "此前evaluate上下文的appid missing不代表原生wx.login结果"
+}

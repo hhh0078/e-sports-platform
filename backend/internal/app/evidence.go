@@ -40,6 +40,9 @@ func (a *App) uploadEvidence(w http.ResponseWriter, r *http.Request) (any, error
 	if err != nil {
 		return nil, err
 	}
+	if err = requireLiveOrder(o); err != nil {
+		return nil, err
+	}
 	if err = a.throttle(r.Context(), "evidence", u.ID, 20); err != nil {
 		return nil, err
 	}

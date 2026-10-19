@@ -1,6 +1,39 @@
-# 集结 · 本地版本验收结果
+# 集结 · 验收结果与待验收项
 
-## 2026-10-18：其余三个导航按图改版
+文件作用：记录有原始证据支持的验收结果，并区分本地模拟、服务器部署与微信正式渠道。2026-10-20 重新运行自动验证、源码 Docker 构建、服务器更新与外网检查；小程序社区、导航与四方交易沿用 2026-10-18 的界面实测记录，分别标明日期。
+
+## 当前交付证据（2026-10-20）
+
+| 范围 | 结果 | 原始证据 |
+| --- | --- | --- |
+| 后端测试（10 月 20 日） | `./scripts/verify.sh` 全过；63 项顶层测试、27 个子场景通过，0 失败；无 DATA RACE；真实本地 PG/Redis 集成与 `go vet` 通过 | [verification-20261020.txt](../output/community/verification-20261020.txt)；前次结构化记录 [backend-final-tests.jsonl](../output/community/backend-final-tests.jsonl) |
+| 前端与双端构建（10 月 20 日） | 前端 52/52 通过，0 失败、0 跳过；H5、微信小程序 production 构建均成功；覆盖协议登录、会话/配置竞态、原生选图草稿保留与封面避让 | [verification-20261020.txt](../output/community/verification-20261020.txt) |
+| 源码 Docker 构建（10 月 20 日） | 本机直接使用 `backend/Dockerfile` 构建成功；镜像内 API、演示工具与 CA 存在，非 root 用户 UID 100 检查通过。服务器使用 Linux amd64 发布镜像，下面单独验收 | `.run/docker-source-build-20261020.log` |
+| 小程序访客与社区（10 月 18 日） | 15 个步骤通过，异常列表为空；访客三个工作区、协议阻拦、可跳过资料弹层、独立资料页、公开玩家/俱乐部主页、五个本地体验身份及配置权限均有实际点击 | [mini-community-report.json](../output/community/mini-community-report.json) |
+| 小程序四方交易（10 月 18 日） | 本地订单 `14d58ecf813c2bf8e06cdf70a61391be` 完成测试付款、接单、开始、交付、四方聊天、退款申请/拒绝/介入/裁决退款；无关账号被拒绝，运行异常为空 | [mini-e2e.json](../output/playwright/mini-e2e.json) |
+| 小程序导航回归（10 月 18 日） | 打手服务分页、身份/状态深链、资料校验、接单开关恢复与管理入口权限通过；异常与 console_errors 均为空 | [mini-navigation-report.json](../output/navigation-design/mini-navigation-report.json) |
+| 服务器更新（10 月 20 日） | 项目镜像更新为 `jijie-api:20261020`，容器内二进制 SHA256 与本地发布文件相同；API、PG、Redis 均 healthy；`nginx -t` 与更新前备份完整性检查通过 | [server-final-20261020.png](../output/community/server-final-20261020.png) |
+| 正式域名外网检查（10 月 20 日） | 54 个请求通过，其中 43 个为游戏封面/图标；包含 13 款游戏配置、服务、俱乐部、玩家主页、协议；开发账号接口与 `.env` 为 404，未登录管理接口为 401 | [production-http-check-20261020.json](../output/community/production-http-check-20261020.json) |
+| 微信后端凭据（10 月 20 日） | 使用私密部署配置调用微信官方 `stable_token` 返回 HTTP 200、`errcode=0`、有效期 7200 秒，证明 AppID/AppSecret 配对有效；未把 access_token 写入验收记录。此项不代表客户端登录、手机号或支付通过 | [wechat-config-check-20261020.json](../output/community/wechat-config-check-20261020.json) |
+| 正式小程序产物（10 月 20 日） | `frontend/dist/build/mp-weixin` 已生成；AppID 正确、API 为正式 HTTPS 域名、`url_check=true`。最终文件数与体积以产物报告为准 | [release-mini-20261020.json](../output/community/release-mini-20261020.json) |
+| 微信身份准备（10 月 20 日） | 改用官方 SDK `mini.callWxMethod` 后，应用原生 `getAccountInfoSync` 返回正确 AppID，`wx.login` 成功取得 code；正式后端 `/api/auth/wechat/prepare` 返回 HTTP 200 及协议资料。未代替用户同意协议，未创建账号或最终登录会话 | [official-login-20261020.json](../output/community/official-login-20261020.json) |
+| 正式小程序页面联网（10 月 20 日） | 6 步实际复核通过，运行异常为空：原生请求正式 HTTPS 目录、玩家页服务器演示服务与 HTTPS 图片、个人中心访客布局、订单登录提示、公开演示俱乐部、正式登录页无开发入口且协议默认未勾选；响应 `dev_mode=false`、13 款游戏 | [mini-production-20261020.json](../output/community/mini-production-20261020.json) |
+
+本地体验包独立保存在 `frontend/dist/local/mp-weixin`，继续连接本地测试环境；正式产物仍在 `frontend/dist/build/mp-weixin`，没有被本地包覆盖。分别导入对应目录，避免把本地模拟流程当成正式小程序验收。
+
+**诊断纠正：** 早先通过 `mini.evaluate` 发起微信 API 调用，执行上下文不属于实际小程序，产生的 `appid missing` 与 `url not in domain list` 不能作为应用配置失败证据。改用 `mini.callWxMethod` 后，原生网络请求返回 200、官方登录 code 与正式服务端身份准备均已成功。旧的失败判断作废；社区报告里的 10 月 18 日登录态过期结果仅为当时历史记录。
+
+**真实最终登录仍待用户完成。** 已验证官方 `wx.login` 与正式后端 `code2session`/身份票据准备；尚未实测真人主动同意两协议后建立账号和最终会话，不能称完整登录链路通过。正式页面联网复核结果以 [mini-production-20261020.json](../output/community/mini-production-20261020.json) 为准。
+
+**真实手机号、商户扣款退款、真机网络与微信提审仍待验收。** 本地身份、模拟号码与测试付款可验证产品流程，但未证明运营账号权限或真实到账。首次正式管理员绑定也需可信运维渠道配置，生产不存在默认体验管理员。具体步骤见 [发布指南](DEPLOYMENT.md) 与 [微信配置清单](WECHAT_BACKEND_SETUP.md)。
+
+本轮新增的登录、个人中心与俱乐部设计图分别为 [login-v2.png](design/login-v2.png)、[me-v2.png](design/me-v2.png)、[club-v2.png](design/club-v2.png)。设计与实屏的最终比较以 [design-qa.md](../design-qa.md) 中明确标记的对应轮次为准。
+
+演示数据为虚构展示内容：60 用户、6 俱乐部、42 条成员关系、130 服务、52 订单、260 消息、8 评价及 60 头像；命令和只读交易保护见 [DEMO_DATA.md](DEMO_DATA.md)。发布包与源码包必须分开：本地 `.deploy/jijie-release-20261018.tar.gz` 包含私密 `.env`，仅用于部署，不可交给源码买家；源码仅包含 `.env.example`。
+
+以下为前几轮的范围说明和历史记录。其测试数量、构建体积与订单编号仅对应当时版本；同名报告会由复测脚本更新，当前结果以本节链接的记录为准。
+
+## 历史：2026-10-18 其余三个导航按图改版
 
 先生成并保存 [打手](design/navigation-worker.png)、[订单](design/navigation-orders.png)、[我的](design/navigation-me.png) 三张图，再据图实现。源图/实屏的逐轮对照及修复见 [design-qa.md](../design-qa.md)，三页总览见 [实际页面](../output/navigation-design/navigation-actual.jpg)。
 
@@ -9,9 +42,9 @@
 - 我的页按图重排，资料限制和后端一致；计数与路由一致，俱乐部入口正确mine=1，管理员权限保留。
 - 修复跨会话迟到资料/401覆盖、旧读取覆盖接单开关、WXSS不兼容选择器和320px溢出。含query的主导航也重置页面栈。
 
-本轮实测：Go真实PG/Redis集成与race（38项顶层+21子场景）、vet、前端33项测试、H5/微信构建全部通过。微信导航报告 [mini-navigation-report.json](../output/navigation-design/mini-navigation-report.json) passed=true；profile原始字段及开关恢复；运行异常与console_errors为空。H5记录 [h5-checks.json](../output/navigation-design/h5-checks.json)。
+该轮实测记录：Go真实PG/Redis集成与race（38项顶层+21子场景）、vet、前端33项测试、H5/微信构建通过。导航报告已被后续复测更新，当前统计见本文首节。该轮 H5 记录 [h5-checks.json](../output/navigation-design/h5-checks.json)。
 
-微信新订单 `103e0d5caebc5ab88ea9d5505cd3c16f` 完整走通支付→接单→开始→交付→四方聊天→退款申请→打手拒绝→平台介入→全额退款，陌生账号无权访问。详见 [交易报告](../output/playwright/mini-e2e.json)。这里的支付退款均为本地测试，不扣真实款。
+该轮微信订单 `103e0d5caebc5ab88ea9d5505cd3c16f` 完整走通支付→接单→开始→交付→四方聊天→退款申请→打手拒绝→平台介入→全额退款，陌生账号无权访问。交易报告已被后续复测更新，最新样本见本文首节。这里的支付退款均为本地测试，不扣真实款。
 
 本轮以前的验收与历史业务边界保留如下。
 
@@ -23,7 +56,7 @@
 
 当前 API、H5、PostgreSQL 和 Redis 已运行。入口：[集结本地体验](http://127.0.0.1:5173/)。这是本地可用版本，真实微信身份、商户扣款/退款、分账提现、微信提审与真机网络未完成正式渠道验收。生产模式缺少配置会明确失败，不会退回测试付款成功。
 
-## 当前版本验证结果
+## 历史：首页改版验证结果
 
 | 项目 | 实际结果 | 证据 |
 | --- | --- | --- |
@@ -54,11 +87,11 @@
 
 管理员配置和历史数据保护已有测试：只迁移明确的旧默认图，不覆盖自定义主题、封面、服务内容/金额/标签或历史订单快照；有管理员保存记录的游戏主题不自动覆盖。本机本轮改色和新增封面通过管理员接口显式保存。
 
-## 微信最终实测
+## 历史：首页改版微信实测
 
 环境：微信开发者工具Stable 2.02.2608040、基础库3.17.4、游客模式、本地API。导入目录 `frontend/dist/build/mp-weixin`；HBuilderX已导入 `frontend`。
 
-最新四方退款订单：`b21ee0a617daedcd3bc68664c4696f98`，2026-10-18 08:37（北京时间）完成。
+该轮四方退款订单：`b21ee0a617daedcd3bc68664c4696f98`，2026-10-18 08:37（北京时间）完成。
 
 1. 云间旅人填写约定、下单、测试付款，发送老板消息。
 2. 北辰接单、开始、发送打手消息、提交交付。

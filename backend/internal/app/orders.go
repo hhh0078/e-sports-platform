@@ -31,6 +31,9 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err = a.requireVerifiedPhone(r, u); err != nil {
+		return nil, err
+	}
 	var in struct {
 		ServiceID    string `json:"service_id"`
 		Quantity     int    `json:"quantity"`
@@ -50,6 +53,9 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 	s, err := get[Service](r.Context(), tx, "services", in.ServiceID, true)
 	if err != nil {
 		return nil, err
+	}
+	if strings.HasPrefix(s.ID, "demo_") {
+		return nil, fail(400, "此为演示服务，请选择可交易服务")
 	}
 	if s.Status != "active" {
 		return nil, fail(409, "服务当前不可下单")
@@ -101,6 +107,9 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 func (a *App) createRequest(w http.ResponseWriter, r *http.Request) (any, error) {
 	u, err := a.actor(r)
 	if err != nil {
+		return nil, err
+	}
+	if err = a.requireVerifiedPhone(r, u); err != nil {
 		return nil, err
 	}
 	var in struct {
@@ -232,6 +241,9 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 	defer tx.Rollback(r.Context())
 	o, err := get[Order](r.Context(), tx, "orders", r.PathValue("id"), true)
 	if err != nil {
+		return nil, err
+	}
+	if err = requireLiveOrder(o); err != nil {
 		return nil, err
 	}
 	if o.BuyerID != u.ID {

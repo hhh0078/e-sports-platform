@@ -42,10 +42,13 @@ export async function refreshMe() {
 }
 
 /** 切换本地测试身份，真实生产环境由服务端禁用此接口。 */
-export async function login(userID) { const version = ++sessionVersion; const data = await api('/auth/dev', 'POST', { user_id: userID }); if (version !== sessionVersion) return state.user; uni.setStorageSync('jijie_token', data.token); state.user = data.user; return data.user }
+export async function login(userID, consent = {}) { const version = ++sessionVersion; const data = await api('/auth/dev', 'POST', { user_id: userID, ...consent }); if (version !== sessionVersion) return state.user; uni.setStorageSync('jijie_token', data.token); state.user = data.user; return data.user }
 
-/** 用微信登录凭证建立真实会话。 */
-export async function wechatLogin(code) { const version = ++sessionVersion; const data = await api('/auth/wechat', 'POST', { code }); if (version !== sessionVersion) return state.user; uni.setStorageSync('jijie_token', data.token); state.user = data.user; return data.user }
+/** 仅交换微信临时登录票据，不创建账号或提前写入会话。 */
+export async function prepareWechatLogin(code) { return api('/auth/wechat/prepare', 'POST', { code }) }
+
+/** 用户主动同意当前协议后，用一次性票据建立真实会话。 */
+export async function wechatLogin(ticket, consent) { const version = ++sessionVersion; const data = await api('/auth/wechat', 'POST', { ticket, ...consent }); if (version !== sessionVersion) return state.user; uni.setStorageSync('jijie_token', data.token); state.user = data.user; return data.user }
 
 /** 退出当前账号，并撤销服务端会话。 */
 export async function logout() {

@@ -8,10 +8,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 	"io"
+	"jijie/internal/assets"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -20,11 +22,13 @@ type Config struct {
 	DevMode                                                                                  bool
 }
 type App struct {
-	DB          *pgxpool.Pool
-	Redis       *redis.Client
-	Config      Config
-	HTTPClient  *http.Client
-	EvidenceKey []byte
+	paymentConfigMu sync.RWMutex
+	paymentConfig   *paymentConfigState
+	DB              *pgxpool.Pool
+	Redis           *redis.Client
+	Config          Config
+	HTTPClient      *http.Client
+	EvidenceKey     []byte
 }
 type apiError struct {
 	Status  int
@@ -60,13 +64,13 @@ func New(ctx context.Context, cfg Config) (*App, error) {
 	}
 	db, err := pgxpool.New(ctx, cfg.DatabaseURL)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("数据库连接配置无效，请检查 DATABASE_URL 的格式与连接选项")
 	}
 	r := redis.NewClient(&redis.Options{Addr: cfg.RedisAddr, Password: cfg.RedisPassword, DialTimeout: 2 * time.Second, ReadTimeout: 2 * time.Second, WriteTimeout: 2 * time.Second})
 	a := &App{DB: db, Redis: r, Config: cfg, HTTPClient: &http.Client{Timeout: 10 * time.Second}, EvidenceKey: []byte(newID() + newID())}
 	if err = db.Ping(ctx); err != nil {
 		a.Close()
-		return nil, err
+		return nil, errors.New("数据库连接失败，请检查地址、认证与数据库状态")
 	}
 	if err = r.Ping(ctx).Err(); err != nil {
 		a.Close()
@@ -77,6 +81,10 @@ func New(ctx context.Context, cfg Config) (*App, error) {
 		return nil, err
 	}
 	if err = a.seed(ctx); err != nil {
+		a.Close()
+		return nil, err
+	}
+	if err = a.loadPaymentSettings(ctx); err != nil {
 		a.Close()
 		return nil, err
 	}
@@ -126,8 +134,16 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 			w.WriteHeader(204)
 			return
 		}
-		if !strings.HasSuffix(r.URL.Path, "/evidence") && r.URL.Path != "/api/admin/covers" {
+		if !strings.HasSuffix(r.URL.Path, "/evidence") && r.URL.Path != "/api/admin/covers" && r.URL.Path != "/api/media/images" {
 			r.Body = http.MaxBytesReader(w, r.Body, 65536)
+		}
+		if r.Method != http.MethodGet && r.Method != http.MethodHead && r.Method != http.MethodOptions {
+			for _, id := range []string{r.PathValue("id"), r.PathValue("user_id"), r.URL.Query().Get("club_id")} {
+				if strings.HasPrefix(id, "demo_") {
+					respond(w, 400, map[string]any{"error": "演示数据仅用于展示，不可修改或交易"})
+					return
+				}
+			}
 		}
 		out, err := fn(w, r)
 		if err != nil {
@@ -150,7 +166,11 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 // Handler 注册平台全部 API，并只允许明确列出的接口。
 func (a *App) Handler() http.Handler {
 	mux := http.NewServeMux()
+	mux.Handle("GET /static/covers/", assets.Handler())
+	a.registerIdentityRoutes(mux)
+	a.registerPaymentSettingsRoutes(mux)
 	routes := map[string]func(http.ResponseWriter, *http.Request) (any, error){
+		"GET /api/players/{id}": a.playerProfile, "PATCH /api/me/profile": a.saveProfile, "POST /api/media/images": a.uploadImage,
 		"GET /health": a.health, "GET /api/health": a.health, "GET /api/bootstrap": a.bootstrap, "GET /api/dev/accounts": a.accounts, "POST /api/auth/dev": a.devLogin, "POST /api/auth/wechat": a.wechatLogin, "POST /api/auth/logout": a.logout, "GET /api/me": a.me, "PATCH /api/me": a.updateMe, "GET /api/me/stats": a.stats,
 		"GET /api/games": a.games, "GET /api/services": a.services, "GET /api/services/{id}": a.service, "POST /api/services": a.saveService, "PATCH /api/services/{id}": a.saveService, "POST /api/services/{id}/pause": a.pauseService,
 		"POST /api/orders": a.createOrder, "POST /api/requests": a.createRequest, "GET /api/orders": a.orders, "GET /api/jobs": a.jobs, "GET /api/orders/{id}": a.order, "POST /api/orders/{id}/pay": a.pay, "POST /api/orders/{id}/sync-payment": a.syncPayment, "POST /api/orders/{id}/actions": a.action, "POST /api/orders/{id}/evidence": a.uploadEvidence, "GET /api/orders/{id}/evidence-link": a.evidenceLink, "GET /api/orders/{id}/messages": a.messages, "POST /api/orders/{id}/messages": a.message, "POST /api/orders/{id}/review": a.review, "GET /api/orders/{id}/reviews": a.reviews,

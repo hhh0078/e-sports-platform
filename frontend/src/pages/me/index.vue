@@ -1,164 +1,71 @@
-<!-- 文件作用：以游戏主题展示个人资料、真实交易统计、接单身份及权限内的管理入口。 -->
+<!-- 文件作用：保持访客和已登录用户一致的个人中心结构，提供订单、个人主页、资料与验证入口。 -->
 <template>
   <AppShell immersive active="me">
-    <SectionHero eyebrow="我的" art="profile" :title="state.user ? '' : '我的集结'" :subtitle="state.user ? '' : '你热爱的，都值得认真对待。'">
-      <template v-if="state.user">
-        <view class="profile-top">
-          <view class="profile-avatar">{{ avatarLetter }}</view>
-          <view class="profile-name"><view>{{ state.user.nickname }}</view><text>{{ state.user.role === 'admin' ? '平台管理员' : state.user.provider_enabled ? '玩家 · 打手' : '玩家' }}</text></view>
-          <button class="profile-edit" :disabled="saving" @click="toggleEditor"><Icon name="edit" :size="18" /><text>{{ editing ? '收起编辑' : '编辑资料' }}</text></button>
-        </view>
-        <view class="profile-bio">{{ state.user.bio || '写下你的游戏经历，让队友更了解你。' }}</view>
-      </template>
-    </SectionHero>
+    <view class="me-hero"><image class="me-background" :src="assetUrl(game.cover_url)" mode="aspectFill"/><view class="me-shade"/><view class="me-titlebar" :style="nativeHeader"><text>我的集结</text><button :style="{right:nativeHeader.paddingRight||'19px'}" @click="protectedGo('/pages/profile/index')"><Icon name="settings" :size="22"/></button></view><view class="profile-top" @click="openIdentity"><view class="profile-avatar"><image v-if="state.user?.avatar" :src="assetUrl(state.user.avatar)" mode="aspectFill"/><Icon v-else name="user" :size="35"/></view><view class="profile-name"><view>{{ state.user?.nickname || '登录后查看' }}<Icon name="arrow" :size="19"/></view><text>{{ state.user?.bio || '找到队友，也成为队友' }}</text></view></view><view class="stats-row"><view @click="protectedGo('/pages/orders/index?role=buyer')"><text>{{ stat('buyer_order_count') }}</text><view>下单记录</view></view><view @click="protectedGo('/pages/orders/index?role=provider&status=working')"><text>{{ stat('provider_working_count') }}</text><view>进行中接单</view></view><view @click="protectedGo('/pages/orders/index?role=all&status=completed')"><text>{{ stat('completed_order_count') }}</text><view>完成订单</view></view></view></view>
     <view class="profile-content">
-      <EmptyState v-if="!state.user" title="让每一次相遇，都有名字" detail="登录后查看订单、发布服务，建立你的玩家名片。" icon="user"><button class="btn" @click="go('/pages/login/index')">登录 / 开始体验</button></EmptyState>
-      <template v-else>
-        <view v-if="editing" class="panel edit-panel">
-          <view class="field"><text class="field-label">昵称 · 2—24 个字</text><input v-model="form.nickname" class="input" maxlength="24" placeholder="你的玩家昵称" /></view>
-          <view class="field"><text class="field-label">个人介绍 · 最多 300 个字</text><textarea v-model="form.bio" class="input" maxlength="300" placeholder="擅长什么游戏？哪些时段在线？你的服务风格是…" /></view>
-          <view class="edit-actions"><button class="btn-secondary" :disabled="saving" @click="toggleEditor">取消</button><button class="btn" :disabled="saving" @click="saveProfile">{{ saving ? '保存中…' : '保存资料' }}</button></view>
-        </view>
-        <view class="stats-row">
-          <view @click="go('/pages/orders/index?role=buyer')"><text>{{ stats.buyer_order_count ?? '—' }}</text><view>下单记录</view></view>
-          <view @click="go('/pages/orders/index?role=provider&status=working')"><text>{{ stats.provider_working_count ?? '—' }}</text><view>进行中接单</view></view>
-          <view @click="go('/pages/orders/index?role=all&status=completed')"><text>{{ stats.completed_order_count ?? '—' }}</text><view>完成订单</view></view>
-        </view>
-        <view class="provider-switch profile-panel">
-          <view class="switch-copy"><view class="switch-label">接单身份</view><text class="hint">{{ state.user.provider_enabled ? '已开启，可以发布服务和领取需求。' : '无需俱乐部，开启后自由接单。' }}</text></view>
-          <switch :key="switchVersion" :checked="state.user.provider_enabled" :color="game.primary_color" :disabled="saving" @change="toggleProvider" />
-        </view>
-        <view v-if="state.user.provider_enabled" class="earnings-panel profile-panel" @click="go('/pages/orders/index?role=provider&status=completed')">
-          <view class="earnings-copy"><text class="earnings-label">已完成订单收入</text><view class="balance"><text class="currency">¥</text>{{ stats.earnings_cents === undefined ? '—' : money(stats.earnings_cents) }}</view><text class="hint">{{ state.devMode ? '测试环境统计，不是真实可提现余额。' : '按已完成订单统计，不是可提现余额。' }}</text></view><Icon name="wallet" :size="31" />
-        </view>
-        <view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn" @click="load">重新加载</button></view>
-        <view class="menu-list profile-panel">
-          <view class="menu-item" @click="go('/pages/orders/index')"><Icon name="orders" :size="25" /><view class="menu-copy"><text>我的订单</text><view>交易进度、沟通与售后</view></view><Icon name="arrow" :size="16" /></view>
-          <view class="menu-item" @click="go('/pages/clubs/index?mine=1')"><Icon name="club" :size="26" /><view class="menu-copy"><text>我的俱乐部</text><view>查看我的俱乐部与挂靠</view></view><Icon name="arrow" :size="16" /></view>
-          <view class="menu-item" @click="go('/pages/worker/index')"><Icon name="work" :size="26" /><view class="menu-copy"><text>打手工作台</text><view>管理服务，发现新需求</view></view><Icon name="arrow" :size="16" /></view>
-          <view v-if="state.user.role === 'admin'" class="menu-item admin-entry" @click="go('/pages/admin/index')"><Icon name="settings" :size="25" /><view class="menu-copy"><text>平台管理中心</text><view>数据、审核、游戏主题与订单纠纷</view></view><Icon name="arrow" :size="16" /></view>
-          <view v-if="state.devMode" class="menu-item" @click="go('/pages/login/index')"><Icon name="refresh" :size="26" /><view class="menu-copy"><text>切换体验身份</text><view>体验玩家、打手与管理角色</view></view><Icon name="arrow" :size="16" /></view>
-        </view>
-        <button class="logout-button profile-panel" :disabled="saving" @click="signOut"><Icon name="logout" :size="25" /><text>退出登录</text><Icon name="arrow" :size="16" /></button>
-      </template>
+      <view class="profile-panel orders-panel"><view class="panel-heading"><text>我的订单</text><button @click="protectedGo('/pages/orders/index?role=buyer')">全部 <Icon name="arrow" :size="15"/></button></view><view class="order-shortcuts"><view v-for="item in orderLinks" :key="item.status" @click="protectedGo('/pages/orders/index?role=buyer&status='+item.status)"><Icon :name="item.icon" :size="26"/><text>{{ item.label }}</text></view></view></view>
+      <view class="profile-panel space-panel"><text class="panel-title">我的空间</text><view class="space-grid"><button @click="openIdentity"><Icon name="user" :size="30"/><view><text>个人主页</text><view>查看服务与名片</view></view></button><button @click="protectedGo('/pages/clubs/index?mine=1')"><Icon name="club" :size="30"/><view><text>我的俱乐部</text><view>找到你的集结地</view></view></button></view></view>
+      <view class="provider-switch profile-panel"><Icon name="send" :size="29"/><view class="switch-copy"><text>接单身份</text><view>{{ !state.user ? '登录后开启服务发布' : state.user.provider_enabled ? '已开启，自由接单与发布服务' : '无需挂靠，开启后自由接单' }}</view></view><switch :key="switchVersion" :checked="!!state.user?.provider_enabled" :color="game.primary_color" :disabled="saving" @change="toggleProvider"/></view>
+      <view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn" @click="load">重新加载</button></view>
+      <view class="menu-list profile-panel"><view class="menu-item" @click="protectedGo('/pages/profile/index')"><Icon name="user" :size="23"/><text class="menu-label">个人资料</text><Icon name="arrow" :size="16"/></view><view class="menu-item" @click="verifyPhone"><Icon name="phone" :size="23"/><text class="menu-label">手机号验证</text><text v-if="state.user?.phone_verified" class="verified-phone">{{ state.user.phone_masked || '已验证' }}</text><Icon name="arrow" :size="16"/></view><view class="menu-item" @click="go('/pages/agreements/index?type=user_agreement')"><Icon name="orders" :size="23"/><text class="menu-label">用户协议</text><Icon name="arrow" :size="16"/></view><view class="menu-item" @click="go('/pages/agreements/index?type=privacy_policy')"><Icon name="shield" :size="23"/><text class="menu-label">隐私政策</text><Icon name="arrow" :size="16"/></view></view>
+      <view v-if="state.user?.role==='admin'" class="menu-list profile-panel"><view class="menu-item admin-entry" @click="go('/pages/admin/index')"><Icon name="settings" :size="23"/><text class="menu-label">平台管理中心</text><Icon name="arrow" :size="16"/></view></view>
+      <view class="profile-motto">热爱不设门槛，实力值得被看见</view>
     </view>
   </AppShell>
 </template>
 <script setup>
-import { computed, ref, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
-import SectionHero from '../../components/SectionHero.vue'
-import EmptyState from '../../components/EmptyState.vue'
 import Icon from '../../components/Icon.vue'
-import { state, game, init, logout, clearSession, sessionRevision } from '../../lib/store'
+import { state, game, init, clearSession, sessionRevision } from '../../lib/store'
 import { api, token } from '../../lib/api'
-import { money, go, notify } from '../../lib/format'
-const switchVersion = ref(0)
-const stats = ref({}), editing = ref(false), saving = ref(false), error = ref(''), form = reactive({ nickname: '', bio: '' })
-let loadVersion = 0, visible = true
-/** 记录发起操作时的会话、账号及版本，避免旧响应进入新身份页面。 */
-function currentSession() { return { token: token(), userId: state.user?.id, revision: sessionRevision() } }
-/** 确认当前账号仍是操作发起时的会话。 */
-function sameSession(session) { return session.token === token() && session.userId === state.user?.id && session.revision === sessionRevision() }
-/** 让早先读取失效，并清除不再保证属于当前界面的统计。 */
-function invalidateLoad() { stats.value = {}; return ++loadVersion }
-/** 只有当前页面版本与会话都未变化，才允许提交异步返回值。 */
-function currentRequest(version, session) { return visible && version === loadVersion && sameSession(session) }
-/** 按完整 Unicode 字符生成头像，避免表情昵称被截断。 */
-const avatarLetter = computed(() => Array.from(state.user?.nickname || '集')[0])
-/** 将服务端资料复制到编辑表单，避免取消后留下未保存内容。 */
-function resetForm() {
-  form.nickname = state.user?.nickname || ''
-  form.bio = state.user?.bio || ''
+import { requirePhone } from '../../lib/phone'
+import { go, notify, assetUrl } from '../../lib/format'
+const stats=ref({}),saving=ref(false),error=ref(''),switchVersion=ref(0),nativeHeader=ref({})
+const orderLinks=[{status:'pending_payment',label:'待付款',icon:'wallet'},{status:'working',label:'进行中',icon:'clock'},{status:'delivered',label:'待验收',icon:'checkbox'},{status:'refund',label:'售后',icon:'headphones'}]
+let loadVersion=0,visible=true
+/** 记录请求发起时的账号与会话。 */
+function currentSession(){return{token:token(),userId:state.user?.id,revision:sessionRevision()}}
+/** 检查账号切换和令牌变化，禁止提交旧账号响应。 */
+function sameSession(session){return session.token===token()&&session.userId===state.user?.id&&session.revision===sessionRevision()}
+/** 清空不再属于当前版本的统计。 */
+function invalidateLoad(){stats.value={};return ++loadVersion}
+/** 仅允许当前可见页面及原会话更新数据。 */
+function currentRequest(version,session){return visible&&version===loadVersion&&sameSession(session)}
+/** 访客显示空数据，登录后的未完成请求使用等待占位符。 */
+function stat(key){return state.user?(stats.value[key]??'—'):0}
+/** 需要身份的入口保留原目标，访客可以继续查看整个个人中心。 */
+function protectedGo(target){if(!state.user){go('/pages/login/index?next='+encodeURIComponent(target));return false}go(target);return true}
+/** 已登录用户打开公开名片，访客从头像和昵称区域进入登录。 */
+function openIdentity(){protectedGo(state.user?'/pages/player/index?id='+encodeURIComponent(state.user.id):'/pages/me/index')}
+/** 显式打开手机号验证，已有验证也展示当前安全状态。 */
+async function verifyPhone(){if(!state.user)return protectedGo('/pages/me/index');if(state.user.phone_verified)return notify('已验证 '+(state.user.phone_masked||'手机号'));await requirePhone()}
+/** 刷新真实资料与统计，旧会话和隐藏页面的响应全部丢弃。 */
+async function load(){const version=invalidateLoad();let session;error.value='';try{await init();if(!visible||version!==loadVersion||!state.user)return;session=currentSession();const user=await api('/me');if(!currentRequest(version,session))return;state.user=user;const summary=await api('/me/stats');if(currentRequest(version,session))stats.value=summary||{}}catch(err){if(!visible||version!==loadVersion||(session&&!sameSession(session)))return;if(err.status===401){clearSession();return}error.value=err.message}}
+/** 访客先登录；已登录用户切换接单身份，失败时重建原开关。 */
+async function toggleProvider(event){
+  if(saving.value||!state.user){switchVersion.value++;if(!state.user)protectedGo('/pages/me/index');return}
+  const enabled=event.detail.value
+  if(enabled&&!state.user.bio?.trim()){switchVersion.value++;notify('请先完善个人介绍');go('/pages/profile/index');return}
+  const version=invalidateLoad(),session=currentSession();saving.value=true
+  try{const user=await api('/me','PATCH',{provider_enabled:enabled});if(!currentRequest(version,session))return;state.user=user;notify(enabled?'接单身份已开启':'接单身份已关闭')}
+  catch(err){if(currentRequest(version,session))notify(err)}finally{saving.value=false;switchVersion.value++;if(visible&&sameSession(session))load()}
 }
-/** 切换资料编辑状态，每次打开都使用当前已保存资料。 */
-function toggleEditor() {
-  if (saving.value) return
-  resetForm()
-  editing.value = !editing.value
+/** 根据微信原生胶囊保留顶部标题与设置按钮空间。 */
+function fitHeader(){
+  // #ifdef MP-WEIXIN
+  const capsule=uni.getMenuButtonBoundingClientRect(),info=uni.getWindowInfo();if(capsule?.width)nativeHeader.value={paddingTop:capsule.top+'px',paddingRight:info.windowWidth-capsule.left+12+'px'}
+  // #endif
 }
-/** 读取最新个人资料与订单汇总，页面返回时同步变化。 */
-async function load() {
-  const version = invalidateLoad()
-  let session
-  error.value = ''
-  try {
-    await init()
-    if (!visible || version !== loadVersion) return
-    if (!state.user) { editing.value = false; return }
-    session = currentSession()
-    const user = await api('/me')
-    if (!currentRequest(version, session)) return
-    state.user = user
-    if (!editing.value) resetForm()
-    const summary = await api('/me/stats')
-    if (currentRequest(version, session)) stats.value = summary || {}
-  } catch (err) {
-    if (!visible || version !== loadVersion || (session && !sameSession(session))) return
-    if (err.status === 401) { clearSession(); editing.value = false }
-    error.value = err.message
-  }
-}
-/** 按后端字数限制保存个人资料，仅提交昵称与介绍。 */
-async function saveProfile() {
-  if (saving.value || !state.user) return
-  const nickname = form.nickname.trim(), bio = form.bio.trim(), nicknameLength = Array.from(nickname).length
-  if (nicknameLength < 2 || nicknameLength > 24) return notify('昵称需要 2—24 个字')
-  if (Array.from(bio).length > 300) return notify('个人介绍不能超过 300 个字')
-  const version = invalidateLoad(), session = currentSession()
-  saving.value = true
-  try {
-    const user = await api('/me', 'PATCH', { nickname, bio })
-    if (!currentRequest(version, session)) return
-    state.user = user
-    editing.value = false
-    resetForm()
-    notify('资料已保存')
-  } catch (err) { if (currentRequest(version, session)) notify(err) }
-  finally { saving.value = false; if (visible && sameSession(session)) load() }
-}
-/** 开关接单身份；请求失败时按服务端原值重新渲染开关。 */
-async function toggleProvider(event) {
-  if (saving.value || !state.user) { switchVersion.value++; return }
-  const enabled = event.detail.value
-  if (enabled && !state.user.bio?.trim()) {
-    resetForm()
-    editing.value = true
-    notify('请先填写个人介绍并保存')
-    switchVersion.value++
-    return
-  }
-  const version = invalidateLoad(), session = currentSession()
-  saving.value = true
-  try {
-    const user = await api('/me', 'PATCH', { provider_enabled: enabled })
-    if (!currentRequest(version, session)) return
-    state.user = user
-    notify(enabled ? '接单身份已开启' : '接单身份已关闭')
-  } catch (err) { if (currentRequest(version, session)) notify(err) }
-  finally { saving.value = false; switchVersion.value++; if (visible && sameSession(session)) load() }
-}
-/** 撤销登录会话并恢复访客界面。 */
-async function signOut() {
-  if (saving.value) return
-  const version = invalidateLoad()
-  saving.value = true
-  const task = logout(), session = currentSession()
-  try {
-    await task
-    if (!visible || version !== loadVersion || token() || state.user) return
-    editing.value = false
-    notify('已退出登录')
-  } catch (err) { if (currentRequest(version, session)) notify(err) } finally { saving.value = false }
-}
-/** 页面重新可见后刷新资料；隐藏时禁止在途请求恢复旧界面。 */
-function showPage() { visible = true; load() }
-/** 离开页面时清空统计并使旧读取和操作回调失效。 */
-function hidePage() { visible = false; invalidateLoad() }
+/** 页面可见时重新查询。 */
+function showPage(){visible=true;load()}
+/** 页面离开后不允许迟到响应恢复身份或统计。 */
+function hidePage(){visible=false;invalidateLoad()}
+onMounted(fitHeader)
 onShow(showPage)
 onHide(hidePage)
 </script>
 <style scoped>
-.profile-top{display:flex;align-items:center;gap:14px}.profile-avatar{width:58px;height:58px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:15px;background:var(--accent);color:#032118;font-size:29px;font-weight:800}.profile-name{flex:1;min-width:0}.profile-name>view{font-size:25px;line-height:1.25;font-weight:800;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.profile-name>text{display:block;margin-top:5px;font-size:12px;font-weight:600;color:var(--accent)}.profile-edit{display:flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0;border:1px solid #ffffff12;border-radius:18px;padding:6px 8px;line-height:20px;font-size:12px;color:#e0e6e5;background:#07120f55}.profile-edit[disabled]{opacity:.5}.profile-bio{margin-top:10px;font-size:13px;line-height:20px;color:#b4bfc0;white-space:pre-wrap;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:40px}.profile-content{display:flex;flex-direction:column;gap:11px;padding:0 14px}.profile-panel,.stats-row{border:1px solid #ffffff16;border-radius:11px;background:#ffffff01}.stats-row{display:flex;align-items:center;min-height:74px;padding:11px 0}.stats-row>view{flex:1;min-width:0;text-align:center;border-right:1px solid #ffffff14;cursor:pointer}.stats-row>view:last-child{border:0}.stats-row>view>text{font-size:27px;line-height:28px;font-weight:800;color:var(--text)}.stats-row>view>view{margin-top:3px;font-size:12px;line-height:18px;color:#aab8b9}.provider-switch{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:67px;padding:12px 14px}.switch-copy{flex:1;min-width:0}.switch-label{font-size:15px;line-height:22px;font-weight:750;margin-bottom:2px}.provider-switch .hint{display:block;font-size:12px;line-height:18px;color:#aab8b9}.provider-switch switch{width:49px;flex-shrink:0;transform:scale(.76);transform-origin:right center}.earnings-panel{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:104px;padding:12px 14px;color:var(--accent);cursor:pointer}.earnings-copy{flex:1;min-width:0}.earnings-label{display:block;font-size:13px;line-height:18px;color:#aab8b9}.balance{margin:3px 0 5px;font-size:31px;line-height:34px;font-weight:800;letter-spacing:-.7px}.currency{font-size:24px;margin-right:1px}.earnings-panel .hint{display:block;font-size:12px;line-height:18px;color:#aab8b9}.menu-list{padding:0;overflow:hidden}.menu-item{display:flex;align-items:center;gap:19px;min-height:61px;padding:10px 17px;border-bottom:1px solid #ffffff12;color:#aab8b9;cursor:pointer}.menu-item:last-child{border:0}.menu-copy{flex:1;min-width:0}.menu-copy>text{font-size:15px;line-height:21px;font-weight:750;color:var(--text)}.menu-copy>view{font-size:12px;line-height:18px;color:#aab8b9;margin-top:1px}.admin-entry{color:var(--accent)}.logout-button{display:flex;align-items:center;gap:19px;width:100%;min-height:44px;padding:9px 17px;line-height:24px;font-size:14px;color:#aab8b9;text-align:left}.logout-button>text{flex:1}.logout-button[disabled]{opacity:.5}.edit-panel{margin-bottom:1px;padding:16px}.edit-actions{display:flex;gap:9px}.edit-actions>button{flex:1}.error-box{font-size:12px;padding:12px}.error-box .text-btn{margin-top:5px}@media(max-width:350px){.profile-top{gap:9px}.profile-avatar{width:50px;height:50px;font-size:26px}.profile-name>view{font-size:22px}.profile-edit{font-size:10px;gap:3px;padding:5px}.profile-content{padding:0 12px}.provider-switch{padding:11px}.provider-switch .hint{font-size:11px}.menu-item{gap:14px;padding-left:14px;padding-right:14px}.earnings-panel .hint{font-size:11px}}
+.me-hero{position:relative;overflow:hidden;padding-bottom:12px}.me-background{position:absolute;inset:0;width:100%;height:100%;opacity:.33}.me-shade{position:absolute;inset:0;background:linear-gradient(0deg,var(--bg),#07100d33 85%)}.me-titlebar{position:relative;display:flex;align-items:center;justify-content:center;min-height:45px;padding:18px 20px 0;box-sizing:content-box;font-size:21px;font-weight:750}.me-titlebar>button{position:absolute;right:19px;bottom:6px;margin:0;padding:0;line-height:29px;background:none;color:#dce5df}.profile-top{position:relative;display:flex;align-items:center;gap:15px;padding:22px 20px 18px}.profile-avatar{width:58px;height:58px;flex-shrink:0;border:1px solid #c4cfca77;background:#d2dbd733;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#c8d1cc}.profile-avatar image{width:100%;height:100%}.profile-name{flex:1;min-width:0}.profile-name>view{display:flex;align-items:center;gap:5px;font-size:22px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.profile-name>text{display:block;font-size:12px;line-height:19px;color:#aab8b0;margin-top:4px;max-height:38px;overflow:hidden}.stats-row{position:relative;display:flex;margin:9px 0 0;padding:2px 0 4px}.stats-row>view{flex:1;text-align:center;border-right:1px solid #ffffff30}.stats-row>view:last-child{border:0}.stats-row>view>text{font-size:24px;line-height:27px;font-weight:750}.stats-row>view>view{margin-top:4px;color:#aebcb3;font-size:12px}.profile-content{display:flex;flex-direction:column;gap:11px;padding:0 14px}.profile-panel{border:1px solid #ffffff16;border-radius:11px;background:#ffffff02}.panel-heading{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #ffffff12}.panel-heading>text,.panel-title{font-size:16px;font-weight:750}.panel-heading>button{display:flex;align-items:center;gap:3px;padding:0;margin:0;background:none;font-size:12px;color:#a3b0a7;line-height:23px}.order-shortcuts{display:flex;justify-content:space-around;padding:12px 0}.order-shortcuts>view{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;color:#c6d5cd}.order-shortcuts text{font-size:12px;color:#e1e9e4}.space-panel{padding:12px 10px 10px}.panel-title{display:block;margin:0 2px 10px}.space-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.space-grid>button{display:flex;align-items:center;gap:9px;margin:0;padding:10px 10px;border:1px solid #ffffff20;border-radius:8px;background:#ffffff03;color:#d0ded5;text-align:left;line-height:20px}.space-grid>button>view{min-width:0}.space-grid>button text{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:#e9eee9;white-space:nowrap}.space-grid>button>view>view{font-size:10px;color:#9eafa3;white-space:nowrap}.provider-switch{display:flex;align-items:center;gap:13px;min-height:61px;padding:11px 14px;color:#7fc9a8}.switch-copy{flex:1;min-width:0}.switch-copy>text{font-size:15px;font-weight:700;color:#e4ebe5}.switch-copy>view{font-size:11px;line-height:18px;margin-top:3px;color:#a3b3a8}.provider-switch switch{width:45px;height:32px;flex-shrink:0;transform:scale(.76);transform-origin:right center}.menu-list{overflow:hidden}.menu-item{display:flex;align-items:center;gap:16px;height:44px;padding:0 15px;border-bottom:1px solid #ffffff12;color:#cbd9d0}.menu-item:last-child{border-bottom:0}.menu-item .menu-label{flex:1;font-size:14px;font-weight:600;color:#dce6de}.menu-item .verified-phone{flex:0;font-size:10px;font-weight:400;white-space:nowrap;color:#90b6a0}.admin-entry{color:var(--accent)}.profile-motto{font-size:11px;color:#8da093;text-align:center;padding:12px 0 18px}.error-box{font-size:12px;padding:12px}.error-box .text-btn{margin-top:5px}@media(max-width:350px){.profile-content{padding:0 12px}.profile-top{padding-left:16px;padding-right:16px;gap:12px}.profile-name>view{font-size:20px}.space-grid>button{padding:11px 7px;gap:6px}.space-grid>button text{font-size:11px}.space-grid>button>view>view{font-size:9px}.menu-item{gap:12px}}
 </style>

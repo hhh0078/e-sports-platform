@@ -1,0 +1,223 @@
+{
+  "date": "2026-10-20",
+  "checks": [
+    {
+      "path": "/health",
+      "status": 200
+    },
+    {
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/honor-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/honor-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/honor-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/honor-3.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/honor-4.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/peace-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/peace-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/peace-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/delta-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/delta-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/delta-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/delta-3.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/delta-4.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/tft-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/tft-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/tft-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/valorant-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/valorant-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/valorant-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/lol-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/lol-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/lol-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/valorantm-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/valorantm-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/valorantm-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/cfm-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/cfm-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/cfm-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/arena-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/arena-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/arena-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/codm-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/codm-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/codm-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/identityv-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/identityv-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/identityv-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/narakam-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/narakam-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/narakam-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/eggy-icon.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/eggy-1.jpg",
+      "status": 200
+    },
+    {
+      "path": "/static/covers/official/eggy-2.jpg",
+      "status": 200
+    },
+    {
+      "path": "/api/services",
+      "status": 200
+    },
+    {
+      "path": "/api/clubs",
+      "status": 200
+    },
+    {
+      "path": "/api/players/demo_user_007",
+      "status": 200
+    },
+    {
+      "path": "/api/clubs/demo_club_001",
+      "status": 200
+    },
+    {
+      "path": "/api/agreements",
+      "status": 200
+    },
+    {
+      "path": "/api/dev/accounts",
+      "status": 404
+    },
+    {
+      "path": "/api/auth/dev",
+      "status": 404
+    },
+    {
+      "path": "/api/admin/users",
+      "status": 401
+    },
+    {
+      "path": "/.env",
+      "status": 404
+    }
+  ],
+  "assets": 43,
+  "passed": true
+}

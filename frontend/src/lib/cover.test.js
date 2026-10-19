@@ -94,3 +94,17 @@ test('空配置、无效位置与字号不会导致无效坐标或渲染异常',
   assert.equal(result[0].font_size,16)
   assert.equal(result[1].font_size,12)
 })
+
+/** 卡片底部留出信息叠层时，六条最长标签依然必须保持在可见区域内。 */
+test('卡片信息叠层预留区域内六段文案无碰撞', () => {
+  const labels = Array.from({ length: 6 }, (_, i) => ({ id: String(i), text: '最长文案十二字一起开心玩', font_size: 24, position: 'bottom-left' }))
+  const placed = layoutLabels(labels, 50)
+  for (const label of placed) {
+    assert.ok(label.top >= 0)
+    assert.ok(label.top + label.height <= (225 - 50) / 225 * 100 + .001)
+  }
+  for (let a = 0; a < placed.length; a++) for (let b = a + 1; b < placed.length; b++) {
+    const x = placed[a], y = placed[b]
+    assert.ok(x.left + x.width <= y.left || y.left + y.width <= x.left || x.top + x.height <= y.top || y.top + y.height <= x.top)
+  }
+})

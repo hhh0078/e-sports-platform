@@ -1,0 +1,7 @@
+# 文件作用：防止私密配置、测试输出及本机构建产物进入 Docker 构建上下文。
+.env
+.env.*
+!.env.example
+bin
+*.log
+Dockerfile.runtime

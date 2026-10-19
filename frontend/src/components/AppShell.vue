@@ -7,7 +7,7 @@
       <PageHeader v-if="title" :title="title" :subtitle="subtitle" :back="back" />
       <slot />
     </view>
-    <view class="bottom-nav"><view class="nav-inner"><view v-for="item in items" :key="item.key" class="nav-item" :class="{selected: active === item.key}" @click="go(item.url)"><view class="nav-icon"><Icon :name="item.icon" :size="23" /></view><text>{{ item.label }}</text><view v-if="active === item.key" class="nav-dot" /></view></view></view>
+    <PhoneVerification/><view v-if="!hideNav" class="bottom-nav"><view class="nav-inner"><view v-for="item in items" :key="item.key" class="nav-item" :class="{selected: active === item.key}" @click="go(item.url)"><view class="nav-icon"><Icon :name="item.icon" :size="23" /></view><text>{{ item.label }}</text><view v-if="active === item.key" class="nav-dot" /></view></view></view>
   </view>
 </template>
 <script setup>
@@ -16,7 +16,8 @@ import { state, themeStyle } from '../lib/store'
 import { go } from '../lib/format'
 import Icon from './Icon.vue'
 import PageHeader from './PageHeader.vue'
-defineProps({ title: String, subtitle: String, active: String, back: Boolean, immersive: Boolean })
+import PhoneVerification from './PhoneVerification.vue'
+defineProps({ title: String, subtitle: String, active: String, back: Boolean, immersive: Boolean, hideNav: Boolean })
 const items = [{ key: 'index', label: '玩家', icon: 'home', url: '/pages/index/index' }, { key: 'worker', label: '打手', icon: 'work', url: '/pages/worker/index' }, { key: 'orders', label: '订单', icon: 'orders', url: '/pages/orders/index' }, { key: 'me', label: '我的', icon: 'user', url: '/pages/me/index' }]
 const headerStyle = ref({})
 /** 根据微信原生胶囊边界保留安全空间，避免头像与系统按钮重叠。 */

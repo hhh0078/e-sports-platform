@@ -1,0 +1,50 @@
+{
+  "/health": {
+    "status": 200,
+    "bytes": 71,
+    "type": "application/json; charset=utf-8",
+    "body": {
+      "data": {
+        "database": "ok",
+        "dev_mode": false,
+        "redis": "ok",
+        "status": "ok"
+      }
+    }
+  },
+  "/api/bootstrap": {
+    "status": 200,
+    "bytes": 6850,
+    "type": "application/json; charset=utf-8",
+    "game_count": 13
+  },
+  "/api/services": {
+    "status": 200,
+    "bytes": 104107,
+    "type": "application/json; charset=utf-8"
+  },
+  "/api/clubs": {
+    "status": 200,
+    "bytes": 6602,
+    "type": "application/json; charset=utf-8"
+  },
+  "/api/agreements": {
+    "status": 200,
+    "bytes": 4161,
+    "type": "application/json; charset=utf-8"
+  },
+  "/api/dev/accounts": {
+    "status": 404
+  },
+  "/api/admin/users": {
+    "status": 401
+  },
+  "/static/covers/official/delta-icon.jpg": {
+    "status": 200,
+    "bytes": 8582,
+    "type": "image/jpeg"
+  },
+  "/.env": {
+    "status": 404
+  }
+}

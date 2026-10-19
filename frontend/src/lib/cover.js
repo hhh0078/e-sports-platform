@@ -84,30 +84,34 @@ function overlaps(a, b) {
 }
 
 /** 根据九宫格位置计算期望左上坐标，返回设计坐标。 */
-function desiredPosition(position, width, height) {
+function desiredPosition(position, width, height, canvasHeight = COVER_HEIGHT) {
   const [vertical, horizontal] = String(position || 'bottom-left').split('-')
   return {
     x: horizontal === 'right' ? 352 - width : horizontal === 'center' ? (360 - width) / 2 : 8,
-    y: vertical === 'top' ? 8 : vertical === 'middle' ? (225 - height) / 2 : 217 - height
+    y: vertical === 'top' ? 8 : vertical === 'middle' ? (canvasHeight - height) / 2 : canvasHeight - 8 - height
   }
 }
 
 /** 为最多六个标签生成百分比坐标；发生冲突时就近排列，极端拥挤时退回分行布局。 */
-export function layoutLabels(labels = []) {
+export function layoutLabels(labels = [], reserveBottom = 0) {
+  const canvasHeight = COVER_HEIGHT - Math.max(0, Math.min(55, Number(reserveBottom) || 0))
   const entries = (Array.isArray(labels) ? labels : []).filter(label => label && typeof label === 'object').slice(0, 6).map((label, index) => {
     const text = normalizeLabelText(label.text)
     const requestedSize = Number(label.font_size)
-    const size = Number.isFinite(requestedSize) ? Math.min(24, Math.max(12, Math.round(requestedSize) || 16)) : 16
+    const requestedFont = Number.isFinite(requestedSize) ? Math.min(24, Math.max(12, Math.round(requestedSize) || 16)) : 16
+    const count = Math.max(1, Math.min(6, (Array.isArray(labels) ? labels : []).filter(label => label?.text).length))
+    const maxStackedSize = (canvasHeight - 16 - (count - 1) * 4) / count - 7
+    const size = reserveBottom ? Math.min(requestedFont * canvasHeight / COVER_HEIGHT, maxStackedSize) : requestedFont
     const position = POSITIONS.some(item => item[0] === label.position) ? label.position : 'bottom-left'
     return { ...label, id: label.id || `label-${index}`, text, position, font_size: size, w: textWidth(text, size), h: size + 7 }
   }).filter(label => label.text)
   const placed = []
   let crowded = false
   for (const entry of entries) {
-    const desired = desiredPosition(entry.position, entry.w, entry.h)
+    const desired = desiredPosition(entry.position, entry.w, entry.h, canvasHeight)
     const candidates = [{ ...desired, w: entry.w, h: entry.h }]
     for (let x = 8; x <= 352 - entry.w; x += 4) candidates.push({ x, y: desired.y, w: entry.w, h: entry.h })
-    for (let y = 8; y <= 217 - entry.h; y += 4) {
+    for (let y = 8; y <= canvasHeight - 8 - entry.h; y += 4) {
       for (let x = 8; x <= 352 - entry.w; x += 4) candidates.push({ x, y, w: entry.w, h: entry.h })
     }
     candidates.sort((a, b) => entry.position === 'bottom-left' ? b.y - a.y || a.x - b.x : Math.abs(a.x - desired.x) + Math.abs(a.y - desired.y) * 2 - Math.abs(b.x - desired.x) - Math.abs(b.y - desired.y) * 2)
@@ -117,8 +121,8 @@ export function layoutLabels(labels = []) {
   }
   const result = crowded ? entries.map((entry, index) => ({
     ...entry,
-    x: desiredPosition(entry.position, entry.w, entry.h).x,
-    y: 217 - entries.slice(index).reduce((sum, item) => sum + item.h, 0) - (entries.length - index - 1) * 4
+    x: desiredPosition(entry.position, entry.w, entry.h, canvasHeight).x,
+    y: canvasHeight - 8 - entries.slice(index).reduce((sum, item) => sum + item.h, 0) - (entries.length - index - 1) * 4
   })) : placed
   return result.map(entry => ({
     ...entry,

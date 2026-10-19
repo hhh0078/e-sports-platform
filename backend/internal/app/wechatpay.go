@@ -8,16 +8,13 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -40,45 +37,18 @@ func (e *wxAPIError) Error() string {
 // Unwrap 将外部渠道错误映射为网关错误，保留统一接口错误格式。
 func (e *wxAPIError) Unwrap() error { return fail(502, e.Error()) }
 
-// loadWXPay 从服务器环境读取支付配置，任何缺失均关闭真实支付，密钥不会返回客户端。
+// loadWXPay 读取已加密落库的只读快照，未使用管理配置时兼容环境变量部署。
 func (a *App) loadWXPay() (wxPayConfig, error) {
-	c := wxPayConfig{AppID: a.Config.WechatAppID, MerchantID: os.Getenv("WECHAT_PAY_MCH_ID"), Serial: os.Getenv("WECHAT_PAY_SERIAL"), PublicKeyID: os.Getenv("WECHAT_PAY_PUBLIC_KEY_ID"), APIKey: os.Getenv("WECHAT_PAY_API_V3_KEY"), NotifyURL: os.Getenv("WECHAT_PAY_NOTIFY_URL"), RefundNotifyURL: os.Getenv("WECHAT_PAY_REFUND_NOTIFY_URL")}
-	if c.AppID == "" || c.MerchantID == "" || c.Serial == "" || c.PublicKeyID == "" || len(c.APIKey) != 32 || !validNotifyURL(c.NotifyURL) || !validNotifyURL(c.RefundNotifyURL) {
-		return c, fail(503, "微信支付配置不完整，未产生扣款")
+	a.paymentConfigMu.RLock()
+	snapshot := a.paymentConfig
+	a.paymentConfigMu.RUnlock()
+	if snapshot != nil {
+		if !snapshot.Ready {
+			return wxPayConfig{}, fail(503, "微信支付配置不完整，未产生扣款")
+		}
+		return snapshot.Runtime, nil
 	}
-	privateBytes, err := os.ReadFile(os.Getenv("WECHAT_PAY_PRIVATE_KEY_PATH"))
-	if err != nil {
-		return c, fail(503, "支付商户私钥未配置")
-	}
-	block, _ := pem.Decode(privateBytes)
-	if block == nil {
-		return c, fail(503, "支付商户私钥格式无效")
-	}
-	if value, e := x509.ParsePKCS8PrivateKey(block.Bytes); e == nil {
-		c.PrivateKey, _ = value.(*rsa.PrivateKey)
-	} else {
-		c.PrivateKey, _ = x509.ParsePKCS1PrivateKey(block.Bytes)
-	}
-	if c.PrivateKey == nil || c.PrivateKey.N.BitLen() < 2048 {
-		return c, fail(503, "支付商户 RSA 私钥无效")
-	}
-	publicBytes, err := os.ReadFile(os.Getenv("WECHAT_PAY_PUBLIC_KEY_PATH"))
-	if err != nil {
-		return c, fail(503, "微信支付验签公钥未配置")
-	}
-	block, _ = pem.Decode(publicBytes)
-	if block == nil {
-		return c, fail(503, "微信支付公钥格式无效")
-	}
-	if value, e := x509.ParsePKIXPublicKey(block.Bytes); e == nil {
-		c.PublicKey, _ = value.(*rsa.PublicKey)
-	} else if cert, e := x509.ParseCertificate(block.Bytes); e == nil {
-		c.PublicKey, _ = cert.PublicKey.(*rsa.PublicKey)
-	}
-	if c.PublicKey == nil || c.PublicKey.N.BitLen() < 2048 {
-		return c, fail(503, "微信支付 RSA 公钥无效")
-	}
-	return c, nil
+	return a.runtimePaymentConfig(paymentSettingsFromEnvironment())
 }
 
 // validNotifyURL 要求生产回调使用 HTTPS 地址且不携带账号密码或片段。
@@ -174,6 +144,9 @@ func (a *App) wxRequest(ctx context.Context, c wxPayConfig, method, path string,
 
 // prepay 创建微信小程序预支付会话，仅返回拉起支付参数，不把客户端操作视为付款成功。
 func (a *App) prepay(r *http.Request, u User, o Order) (any, error) {
+	if err := requireLiveOrder(o); err != nil {
+		return nil, err
+	}
 	c, err := a.loadWXPay()
 	if err != nil {
 		return nil, err
@@ -203,6 +176,9 @@ func (a *App) prepay(r *http.Request, u User, o Order) (any, error) {
 
 // refund 用稳定退款单号申请全额退款，处理中返回 false，只有微信确认成功才返回 true。
 func (a *App) refund(ctx context.Context, o Order, reason string) (bool, error) {
+	if err := requireLiveOrder(o); err != nil {
+		return false, err
+	}
 	c, err := a.loadWXPay()
 	if err != nil {
 		return false, err
@@ -236,6 +212,9 @@ func (a *App) refund(ctx context.Context, o Order, reason string) (bool, error) 
 
 // closePayment 先关闭微信预支付单再允许本地取消，避免取消后仍发生实际扣款。
 func (a *App) closePayment(ctx context.Context, o Order) error {
+	if err := requireLiveOrder(o); err != nil {
+		return err
+	}
 	c, err := a.loadWXPay()
 	if err != nil {
 		return err

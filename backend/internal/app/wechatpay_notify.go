@@ -173,6 +173,9 @@ func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction
 	if err != nil {
 		return err
 	}
+	if err = requireLiveOrder(o); err != nil {
+		return err
+	}
 	if o.AmountCents != v.Amount.Total || o.PayOpenID == "" || o.PayOpenID != v.Payer.OpenID {
 		return fail(400, "支付金额或付款人不匹配")
 	}
@@ -223,6 +226,9 @@ func (a *App) applyWXRefund(ctx context.Context, c wxPayConfig, v wxRefund) erro
 	if err != nil {
 		return err
 	}
+	if err = requireLiveOrder(o); err != nil {
+		return err
+	}
 	if o.OrderNo != v.OrderNo || o.RefundID != v.OutRefundNo || o.PaymentTransactionID == "" || o.PaymentTransactionID != v.TransactionID || v.Amount.Total != o.AmountCents || v.Amount.Refund != o.AmountCents || (v.Amount.Currency != "" && v.Amount.Currency != "CNY") {
 		return fail(400, "退款金额或流水不匹配")
 	}
@@ -269,6 +275,9 @@ func (a *App) syncPayment(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err = requireLiveOrder(o); err != nil {
+		return nil, err
+	}
 	if u.ID != o.BuyerID && u.Role != "admin" {
 		return nil, fail(403, "仅买家或平台可同步资金状态")
 	}
@@ -310,6 +319,9 @@ func (a *App) retryRefund(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	o, err := get[Order](r.Context(), a.DB, "orders", r.PathValue("id"), false)
 	if err != nil {
+		return nil, err
+	}
+	if err = requireLiveOrder(o); err != nil {
 		return nil, err
 	}
 	if a.Config.DevMode || o.RefundStatus != "processing" || o.RefundID == "" || o.PaymentStatus != "paid" {

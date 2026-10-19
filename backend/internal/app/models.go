@@ -2,6 +2,9 @@
 package app
 
 type User struct {
+	ProfileCover    string `json:"profile_cover"`
+	PhoneVerified   bool   `json:"phone_verified"`
+	PhoneMasked     string `json:"phone_masked"`
 	ID              string `json:"id"`
 	Nickname        string `json:"nickname"`
 	Avatar          string `json:"avatar"`
@@ -59,24 +62,34 @@ type Service struct {
 	Reviews        []Review     `json:"reviews,omitempty"`
 }
 type Club struct {
-	ID               string   `json:"id"`
-	Name             string   `json:"name"`
-	Description      string   `json:"description"`
-	OwnerID          string   `json:"owner_id"`
-	OwnerName        string   `json:"owner_name"`
-	GameIDs          []string `json:"game_ids"`
-	Status           string   `json:"status"`
-	Verified         bool     `json:"verified"`
-	MemberCount      int      `json:"member_count"`
-	CreatedAt        string   `json:"created_at"`
-	MembershipStatus string   `json:"membership_status,omitempty"`
+	CoverURL         string           `json:"cover_url"`
+	DetailBlocks     []CommunityBlock `json:"detail_blocks"`
+	DepositCents     int64            `json:"deposit_cents"`
+	Assessment       string           `json:"assessment"`
+	ID               string           `json:"id"`
+	Name             string           `json:"name"`
+	Description      string           `json:"description"`
+	OwnerID          string           `json:"owner_id"`
+	OwnerName        string           `json:"owner_name"`
+	GameIDs          []string         `json:"game_ids"`
+	Status           string           `json:"status"`
+	Verified         bool             `json:"verified"`
+	MemberCount      int              `json:"member_count"`
+	CreatedAt        string           `json:"created_at"`
+	MembershipStatus string           `json:"membership_status,omitempty"`
 }
 type ClubMember struct {
-	UserID    string `json:"user_id"`
-	Nickname  string `json:"nickname"`
-	ClubID    string `json:"club_id"`
-	Status    string `json:"status"`
-	CreatedAt string `json:"created_at"`
+	ApplicationNote      string `json:"application_note,omitempty"`
+	RequirementsAccepted bool   `json:"requirements_accepted,omitempty"`
+	AppliedDepositCents  int64  `json:"applied_deposit_cents,omitempty"`
+	AppliedAssessment    string `json:"applied_assessment,omitempty"`
+	AssessmentPassed     bool   `json:"assessment_passed,omitempty"`
+	ReviewNote           string `json:"review_note,omitempty"`
+	UserID               string `json:"user_id"`
+	Nickname             string `json:"nickname"`
+	ClubID               string `json:"club_id"`
+	Status               string `json:"status"`
+	CreatedAt            string `json:"created_at"`
 }
 type Order struct {
 	ID                   string `json:"id"`

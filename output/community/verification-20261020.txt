@@ -1,0 +1,567 @@
+=== RUN   TestDemoConfigErrorHidesCredentials
+--- PASS: TestDemoConfigErrorHidesCredentials (0.00s)
+PASS
+ok  	jijie/cmd/demo	1.989s
+?   	jijie/cmd/server	[no test files]
+=== RUN   TestIntegrationBootstrapWechatAdmin
+--- PASS: TestIntegrationBootstrapWechatAdmin (0.37s)
+=== RUN   TestIntegrationCommunityClubLifecycle
+--- PASS: TestIntegrationCommunityClubLifecycle (2.11s)
+=== RUN   TestIntegrationCommunityPublicProfile
+--- PASS: TestIntegrationCommunityPublicProfile (0.71s)
+=== RUN   TestCommunityMemberProjection
+--- PASS: TestCommunityMemberProjection (0.00s)
+=== RUN   TestIntegrationCustomCovers
+--- PASS: TestIntegrationCustomCovers (0.22s)
+=== RUN   TestIntegrationPaymentConfigDoesNotLockCancellation
+--- PASS: TestIntegrationPaymentConfigDoesNotLockCancellation (0.17s)
+=== RUN   TestIntegrationClubClaimAndPublicPrivacy
+--- PASS: TestIntegrationClubClaimAndPublicPrivacy (0.19s)
+=== RUN   TestIntegrationMessageCursors
+--- PASS: TestIntegrationMessageCursors (0.29s)
+=== RUN   TestIntegrationAdminSearchBeforePagination
+--- PASS: TestIntegrationAdminSearchBeforePagination (0.30s)
+=== RUN   TestIntegrationExpandedGameCatalog
+=== RUN   TestIntegrationExpandedGameCatalog/honor
+=== RUN   TestIntegrationExpandedGameCatalog/peace
+=== RUN   TestIntegrationExpandedGameCatalog/delta
+=== RUN   TestIntegrationExpandedGameCatalog/tft
+=== RUN   TestIntegrationExpandedGameCatalog/valorant
+=== RUN   TestIntegrationExpandedGameCatalog/lol
+=== RUN   TestIntegrationExpandedGameCatalog/valorantm
+=== RUN   TestIntegrationExpandedGameCatalog/cfm
+=== RUN   TestIntegrationExpandedGameCatalog/arena
+=== RUN   TestIntegrationExpandedGameCatalog/codm
+=== RUN   TestIntegrationExpandedGameCatalog/identityv
+=== RUN   TestIntegrationExpandedGameCatalog/narakam
+=== RUN   TestIntegrationExpandedGameCatalog/eggy
+--- PASS: TestIntegrationExpandedGameCatalog (0.47s)
+    --- PASS: TestIntegrationExpandedGameCatalog/honor (0.03s)
+    --- PASS: TestIntegrationExpandedGameCatalog/peace (0.03s)
+    --- PASS: TestIntegrationExpandedGameCatalog/delta (0.04s)
+    --- PASS: TestIntegrationExpandedGameCatalog/tft (0.02s)
+    --- PASS: TestIntegrationExpandedGameCatalog/valorant (0.03s)
+    --- PASS: TestIntegrationExpandedGameCatalog/lol (0.03s)
+    --- PASS: TestIntegrationExpandedGameCatalog/valorantm (0.03s)
+    --- PASS: TestIntegrationExpandedGameCatalog/cfm (0.02s)
+    --- PASS: TestIntegrationExpandedGameCatalog/arena (0.02s)
+    --- PASS: TestIntegrationExpandedGameCatalog/codm (0.02s)
+    --- PASS: TestIntegrationExpandedGameCatalog/identityv (0.02s)
+    --- PASS: TestIntegrationExpandedGameCatalog/narakam (0.02s)
+    --- PASS: TestIntegrationExpandedGameCatalog/eggy (0.02s)
+=== RUN   TestIntegrationOfficialCoverMigration
+--- PASS: TestIntegrationOfficialCoverMigration (0.19s)
+=== RUN   TestIntegrationDemoSeedPreservesClubScope
+--- PASS: TestIntegrationDemoSeedPreservesClubScope (0.17s)
+=== RUN   TestIntegrationClubScopeAndSingleConnection
+--- PASS: TestIntegrationClubScopeAndSingleConnection (0.15s)
+=== RUN   TestGameIconValidation
+--- PASS: TestGameIconValidation (0.00s)
+=== RUN   TestIntegrationProductionCatalogHasNoDemo
+--- PASS: TestIntegrationProductionCatalogHasNoDemo (0.15s)
+=== RUN   TestIntegrationDefaultPresentationMigration
+=== RUN   TestIntegrationDefaultPresentationMigration/不同旧色不可猜测
+=== RUN   TestIntegrationDefaultPresentationMigration/存在管理员审计即保留
+--- PASS: TestIntegrationDefaultPresentationMigration (0.28s)
+    --- PASS: TestIntegrationDefaultPresentationMigration/不同旧色不可猜测 (0.06s)
+    --- PASS: TestIntegrationDefaultPresentationMigration/存在管理员审计即保留 (0.05s)
+=== RUN   TestIntegrationOrderRoles
+--- PASS: TestIntegrationOrderRoles (0.30s)
+=== RUN   TestIntegrationConcurrentClaims
+--- PASS: TestIntegrationConcurrentClaims (0.19s)
+=== RUN   TestIntegrationRefundAndIsolation
+--- PASS: TestIntegrationRefundAndIsolation (0.23s)
+=== RUN   TestIntegrationEvidenceAndFreeze
+--- PASS: TestIntegrationEvidenceAndFreeze (0.23s)
+=== RUN   TestIntegrationPublicationAndProduction
+完整本地角色、交易、退款、权限、证据与生产隔离验收通过
+--- PASS: TestIntegrationPublicationAndProduction (0.20s)
+=== RUN   TestPublicImageDimensions
+--- PASS: TestPublicImageDimensions (0.00s)
+=== RUN   TestPublicImageNormalization
+--- PASS: TestPublicImageNormalization (0.07s)
+=== RUN   TestIntegrationCommunityImageSecurity
+--- PASS: TestIntegrationCommunityImageSecurity (0.87s)
+=== RUN   TestIntegrationOrderFiltersBeforePagination
+--- PASS: TestIntegrationOrderFiltersBeforePagination (0.38s)
+=== RUN   TestIntegrationOrderFiltersValidateAndKeepScope
+--- PASS: TestIntegrationOrderFiltersValidateAndKeepScope (0.18s)
+=== RUN   TestIntegrationOrderStatsSeparateRoles
+--- PASS: TestIntegrationOrderStatsSeparateRoles (0.34s)
+=== RUN   TestPaymentEncryptionIntegrity
+--- PASS: TestPaymentEncryptionIntegrity (0.00s)
+=== RUN   TestIntegrationPaymentSettingsSecretsAndReload
+--- PASS: TestIntegrationPaymentSettingsSecretsAndReload (0.33s)
+=== RUN   TestIntegrationPaymentConfigSnapshotConcurrent
+--- PASS: TestIntegrationPaymentConfigSnapshotConcurrent (0.32s)
+=== RUN   TestIntegrationRestartPreservesData
+--- PASS: TestIntegrationRestartPreservesData (0.20s)
+=== RUN   TestIntegrationServiceReauditAndSensitiveFields
+--- PASS: TestIntegrationServiceReauditAndSensitiveFields (0.15s)
+=== RUN   TestIntegrationPhoneGateAndPrivateIdentity
+--- PASS: TestIntegrationPhoneGateAndPrivateIdentity (0.21s)
+=== RUN   TestIntegrationPhoneRefreshAndPrivacyBoundary
+--- PASS: TestIntegrationPhoneRefreshAndPrivacyBoundary (0.11s)
+=== RUN   TestIntegrationPrepayCancelSerialization
+--- PASS: TestIntegrationPrepayCancelSerialization (0.40s)
+=== RUN   TestIntegrationPrepayTimeoutKeepsIntent
+--- PASS: TestIntegrationPrepayTimeoutKeepsIntent (0.36s)
+=== RUN   TestIntegrationEvidenceLinkRenewal
+--- PASS: TestIntegrationEvidenceLinkRenewal (0.16s)
+=== RUN   TestIntegrationPrepayWithSingleDBConnection
+--- PASS: TestIntegrationPrepayWithSingleDBConnection (0.41s)
+=== RUN   TestIntegrationRefundTimeoutRecovery
+=== RUN   TestIntegrationRefundTimeoutRecovery/cancel
+2026/10/20 01:06:56 退款资金状态待同步 order=3128ca4453120dc8de0277e3b4ee939e: 微信支付暂未响应，请稍后同步订单状态，勿重复付款
+=== RUN   TestIntegrationRefundTimeoutRecovery/approve
+2026/10/20 01:06:57 退款资金状态待同步 order=a2400cb6e055649ee041873b12f3e457: 微信支付暂未响应，请稍后同步订单状态，勿重复付款
+=== RUN   TestIntegrationRefundTimeoutRecovery/resolve
+2026/10/20 01:06:57 退款资金状态待同步 order=9e027becd28576f25797d9180dd95956: 微信支付暂未响应，请稍后同步订单状态，勿重复付款
+--- PASS: TestIntegrationRefundTimeoutRecovery (1.15s)
+    --- PASS: TestIntegrationRefundTimeoutRecovery/cancel (0.37s)
+    --- PASS: TestIntegrationRefundTimeoutRecovery/approve (0.47s)
+    --- PASS: TestIntegrationRefundTimeoutRecovery/resolve (0.31s)
+=== RUN   TestIntegrationServiceSortBeforePagination
+=== RUN   TestIntegrationServiceSortBeforePagination/recommended
+=== RUN   TestIntegrationServiceSortBeforePagination/price
+=== RUN   TestIntegrationServiceSortBeforePagination/completed
+--- PASS: TestIntegrationServiceSortBeforePagination (0.56s)
+    --- PASS: TestIntegrationServiceSortBeforePagination/recommended (0.11s)
+    --- PASS: TestIntegrationServiceSortBeforePagination/price (0.09s)
+    --- PASS: TestIntegrationServiceSortBeforePagination/completed (0.09s)
+=== RUN   TestIntegrationShowcaseSeedAndClear
+--- PASS: TestIntegrationShowcaseSeedAndClear (4.39s)
+=== RUN   TestIntegrationShowcaseProtectsRealReferences
+--- PASS: TestIntegrationShowcaseProtectsRealReferences (2.31s)
+=== RUN   TestIntegrationShowcaseNamespaceCollision
+--- PASS: TestIntegrationShowcaseNamespaceCollision (2.00s)
+=== RUN   TestIntegrationShowcaseProtectsEvidenceAssociations
+=== RUN   TestIntegrationShowcaseProtectsEvidenceAssociations/messages_order_id
+=== RUN   TestIntegrationShowcaseProtectsEvidenceAssociations/messages_sender_id
+=== RUN   TestIntegrationShowcaseProtectsEvidenceAssociations/reviews_order_id
+=== RUN   TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_order_id
+=== RUN   TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_owner_id
+=== RUN   TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_club_id
+--- PASS: TestIntegrationShowcaseProtectsEvidenceAssociations (2.36s)
+    --- PASS: TestIntegrationShowcaseProtectsEvidenceAssociations/messages_order_id (0.03s)
+    --- PASS: TestIntegrationShowcaseProtectsEvidenceAssociations/messages_sender_id (0.02s)
+    --- PASS: TestIntegrationShowcaseProtectsEvidenceAssociations/reviews_order_id (0.02s)
+    --- PASS: TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_order_id (0.02s)
+    --- PASS: TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_owner_id (0.02s)
+    --- PASS: TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_club_id (0.02s)
+=== RUN   TestIntegrationOverviewExcludesShowcase
+--- PASS: TestIntegrationOverviewExcludesShowcase (2.31s)
+=== RUN   TestDatabaseConfigErrorHidesCredentials
+--- PASS: TestDatabaseConfigErrorHidesCredentials (0.00s)
+=== RUN   TestRequireLiveOrderRejectsEveryDemoReference
+--- PASS: TestRequireLiveOrderRejectsEveryDemoReference (0.00s)
+=== RUN   TestIntegrationDemoTradeBlocked
+--- PASS: TestIntegrationDemoTradeBlocked (0.29s)
+=== RUN   TestIntegrationDemoResourceReferenceBlocked
+--- PASS: TestIntegrationDemoResourceReferenceBlocked (2.33s)
+=== RUN   TestOrderTransitions
+--- PASS: TestOrderTransitions (0.00s)
+=== RUN   TestAfterSaleWindow
+--- PASS: TestAfterSaleWindow (0.00s)
+=== RUN   TestServiceValidation
+--- PASS: TestServiceValidation (0.00s)
+=== RUN   TestProductionGuard
+--- PASS: TestProductionGuard (0.00s)
+=== RUN   TestIntegrationWechatTicketAndAgreementVersions
+--- PASS: TestIntegrationWechatTicketAndAgreementVersions (0.16s)
+=== RUN   TestIntegrationWechatTicketAtomicConsumption
+--- PASS: TestIntegrationWechatTicketAtomicConsumption (0.14s)
+=== RUN   TestWXVerifyRejectsTampering
+--- PASS: TestWXVerifyRejectsTampering (0.11s)
+=== RUN   TestWXDecryptRejectsWrongKeyAndEvent
+--- PASS: TestWXDecryptRejectsWrongKeyAndEvent (0.29s)
+=== RUN   TestWXRequestSignsAndVerifies
+--- PASS: TestWXRequestSignsAndVerifies (0.08s)
+=== RUN   TestWXPaymentAndRefundCallbacks
+--- PASS: TestWXPaymentAndRefundCallbacks (0.36s)
+=== RUN   TestWXConfigFailsClosed
+--- PASS: TestWXConfigFailsClosed (0.00s)
+=== RUN   TestWXCloseAbsentOrderRequiresSignature
+--- PASS: TestWXCloseAbsentOrderRequiresSignature (0.23s)
+PASS
+ok  	jijie/internal/app	33.120s
+=== RUN   TestEmbeddedCover
+--- PASS: TestEmbeddedCover (0.01s)
+PASS
+ok  	jijie/internal/assets	3.161s
+
+> jijie-marketplace@1.0.0 test
+> node --test src/lib/*.test.js
+
+TAP version 13
+# (node:71848) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/Zhuanz/Desktop/%E4%B8%89%E8%A7%92%E6%B4%B2/frontend/src/lib/cover.test.js is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/Zhuanz/Desktop/三角洲/frontend/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 六条最长最大字号文案在全部九宫格锚点不越界不重叠
+ok 1 - 六条最长最大字号文案在全部九宫格锚点不越界不重叠
+  ---
+  duration_ms: 8.704917
+  type: 'test'
+  ...
+# Subtest: 混合位置、字号与英文文本仍能安全布局
+ok 2 - 混合位置、字号与英文文本仍能安全布局
+  ---
+  duration_ms: 202.342709
+  type: 'test'
+  ...
+# Subtest: 默认左下、无数据和超量标签处理
+ok 3 - 默认左下、无数据和超量标签处理
+  ---
+  duration_ms: 4.248292
+  type: 'test'
+  ...
+# Subtest: 浅色封面标签采用深色字，深色标签采用白字
+ok 4 - 浅色封面标签采用深色字，深色标签采用白字
+  ---
+  duration_ms: 0.111875
+  type: 'test'
+  ...
+# Subtest: 新建随机选底图，主动换图避开当前，单图空图库和无效随机数安全处理
+ok 5 - 新建随机选底图，主动换图避开当前，单图空图库和无效随机数安全处理
+  ---
+  duration_ms: 0.294334
+  type: 'test'
+  ...
+# Subtest: 截字保持旗帜、肤色、连接符表情与组合音标完整，并遵守后端十二码点上限
+ok 6 - 截字保持旗帜、肤色、连接符表情与组合音标完整，并遵守后端十二码点上限
+  ---
+  duration_ms: 0.194208
+  type: 'test'
+  ...
+# Subtest: 默认左下按加入顺序向右排，颜色透明层保留且不修改原始配置
+ok 7 - 默认左下按加入顺序向右排，颜色透明层保留且不修改原始配置
+  ---
+  duration_ms: 1.670209
+  type: 'test'
+  ...
+# Subtest: emoji、极宽英文、中文在不同字号九宫格组合下都有安全间距
+ok 8 - emoji、极宽英文、中文在不同字号九宫格组合下都有安全间距
+  ---
+  duration_ms: 183.060375
+  type: 'test'
+  ...
+# Subtest: 空配置、无效位置与字号不会导致无效坐标或渲染异常
+ok 9 - 空配置、无效位置与字号不会导致无效坐标或渲染异常
+  ---
+  duration_ms: 1.576958
+  type: 'test'
+  ...
+# Subtest: 卡片信息叠层预留区域内六段文案无碰撞
+ok 10 - 卡片信息叠层预留区域内六段文案无碰撞
+  ---
+  duration_ms: 2.968666
+  type: 'test'
+  ...
+# (node:71849) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/Zhuanz/Desktop/%E4%B8%89%E8%A7%92%E6%B4%B2/frontend/src/lib/format.test.js is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/Zhuanz/Desktop/三角洲/frontend/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 金额按分准确展示，保留有效小数
+ok 11 - 金额按分准确展示，保留有效小数
+  ---
+  duration_ms: 1.630959
+  type: 'test'
+  ...
+# Subtest: 空值和无效时间安全显示，未知状态保留原值
+ok 12 - 空值和无效时间安全显示，未知状态保留原值
+  ---
+  duration_ms: 0.336958
+  type: 'test'
+  ...
+# Subtest: 上传封面采用后端地址，内置图片保持小程序相对路径
+ok 13 - 上传封面采用后端地址，内置图片保持小程序相对路径
+  ---
+  duration_ms: 0.2605
+  type: 'test'
+  ...
+# Subtest: 主导航筛选保留参数并重置页面栈，详情保留返回且失败给出提示
+ok 14 - 主导航筛选保留参数并重置页面栈，详情保留返回且失败给出提示
+  ---
+  duration_ms: 0.149333
+  type: 'test'
+  ...
+# (node:71850) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/Zhuanz/Desktop/%E4%B8%89%E8%A7%92%E6%B4%B2/frontend/src/lib/login-flow.test.js is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/Zhuanz/Desktop/三角洲/frontend/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 未勾选协议时不调用微信也不建立会话
+ok 15 - 未勾选协议时不调用微信也不建立会话
+  ---
+  duration_ms: 2.309917
+  type: 'test'
+  ...
+# Subtest: 真实微信登录失败显示开发者工具登录态过期，并恢复按钮
+ok 16 - 真实微信登录失败显示开发者工具登录态过期，并恢复按钮
+  ---
+  duration_ms: 0.716375
+  type: 'test'
+  ...
+# Subtest: 登录期间离开页面后迟到的票据不会建立会话或弹出资料层
+ok 17 - 登录期间离开页面后迟到的票据不会建立会话或弹出资料层
+  ---
+  duration_ms: 0.402125
+  type: 'test'
+  ...
+# Subtest: 当前登录按微信票据后再建立会话的顺序显示可选资料层
+ok 18 - 当前登录按微信票据后再建立会话的顺序显示可选资料层
+  ---
+  duration_ms: 0.544958
+  type: 'test'
+  ...
+# (node:71851) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/Zhuanz/Desktop/%E4%B8%89%E8%A7%92%E6%B4%B2/frontend/src/lib/order-list.test.js is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/Zhuanz/Desktop/三角洲/frontend/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 保留有效订单深链，拒绝未知身份与筛选
+ok 19 - 保留有效订单深链，拒绝未知身份与筛选
+  ---
+  duration_ms: 1.264709
+  type: 'test'
+  ...
+# Subtest: 付款入口只向本人买方显示，售后与履约优先级明确
+ok 20 - 付款入口只向本人买方显示，售后与履约优先级明确
+  ---
+  duration_ms: 0.117959
+  type: 'test'
+  ...
+# (node:71852) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/Zhuanz/Desktop/%E4%B8%89%E8%A7%92%E6%B4%B2/frontend/src/lib/session-race.test.js is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/Zhuanz/Desktop/三角洲/frontend/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 旧账号资料成功或401都不能覆盖后来登录的账号
+    # Subtest: success
+    ok 1 - success
+      ---
+      duration_ms: 1.655583
+      type: 'test'
+      ...
+    # Subtest: 401
+    ok 2 - 401
+      ---
+      duration_ms: 0.52675
+      type: 'test'
+      ...
+    1..2
+ok 21 - 旧账号资料成功或401都不能覆盖后来登录的账号
+  ---
+  duration_ms: 2.779666
+  type: 'test'
+  ...
+# Subtest: 当前401仍清理身份，旧退出请求不能退出新账号
+    # Subtest: current401
+    ok 1 - current401
+      ---
+      duration_ms: 0.683625
+      type: 'test'
+      ...
+    # Subtest: oldLogout
+    ok 2 - oldLogout
+      ---
+      duration_ms: 0.437709
+      type: 'test'
+      ...
+    1..2
+ok 22 - 当前401仍清理身份，旧退出请求不能退出新账号
+  ---
+  duration_ms: 1.274042
+  type: 'test'
+  ...
+# Subtest: 资料页和个人中心的旧读取不能覆盖刚保存的资料或接单开关
+    # Subtest: profile
+    ok 1 - profile
+      ---
+      duration_ms: 5.893083
+      type: 'test'
+      ...
+    # Subtest: provider
+    ok 2 - provider
+      ---
+      duration_ms: 1.154625
+      type: 'test'
+      ...
+    1..2
+ok 23 - 资料页和个人中心的旧读取不能覆盖刚保存的资料或接单开关
+  ---
+  duration_ms: 7.445
+  type: 'test'
+  ...
+# Subtest: 个人中心和资料页的跨会话回调及隐藏后的统计不再提交
+    # Subtest: me-old401
+    ok 1 - me-old401
+      ---
+      duration_ms: 0.947833
+      type: 'test'
+      ...
+    # Subtest: profile-old401
+    ok 2 - profile-old401
+      ---
+      duration_ms: 0.61625
+      type: 'test'
+      ...
+    # Subtest: oldPatch
+    ok 3 - oldPatch
+      ---
+      duration_ms: 0.539625
+      type: 'test'
+      ...
+    # Subtest: hiddenStats
+    ok 4 - hiddenStats
+      ---
+      duration_ms: 0.84575
+      type: 'test'
+      ...
+    # Subtest: logoutBeforeOldRead
+    ok 5 - logoutBeforeOldRead
+      ---
+      duration_ms: 0.855541
+      type: 'test'
+      ...
+    1..5
+ok 24 - 个人中心和资料页的跨会话回调及隐藏后的统计不再提交
+  ---
+  duration_ms: 4.181625
+  type: 'test'
+  ...
+# Subtest: 微信预登录票据不修改身份，只有同意协议后的登录建立会话
+ok 25 - 微信预登录票据不修改身份，只有同意协议后的登录建立会话
+  ---
+  duration_ms: 0.511541
+  type: 'test'
+  ...
+# Subtest: 迟到的微信登录响应不能覆盖后来完成的身份切换
+ok 26 - 迟到的微信登录响应不能覆盖后来完成的身份切换
+  ---
+  duration_ms: 0.395916
+  type: 'test'
+  ...
+# Subtest: 订单当前401切回可登录空态，旧账号响应不影响新账号
+    # Subtest: expiredSession
+    ok 1 - expiredSession
+      ---
+      duration_ms: 1.173625
+      type: 'test'
+      ...
+    # Subtest: old401
+    ok 2 - old401
+      ---
+      duration_ms: 0.720667
+      type: 'test'
+      ...
+    # Subtest: oldOrders
+    ok 3 - oldOrders
+      ---
+      duration_ms: 0.656209
+      type: 'test'
+      ...
+    1..3
+ok 27 - 订单当前401切回可登录空态，旧账号响应不影响新账号
+  ---
+  duration_ms: 2.779625
+  type: 'test'
+  ...
+# (node:71853) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/Zhuanz/Desktop/%E4%B8%89%E8%A7%92%E6%B4%B2/frontend/src/lib/settings-race.test.js is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/Zhuanz/Desktop/三角洲/frontend/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 俱乐部押金按十进制分计算，并拒绝超额及非法小数
+ok 28 - 俱乐部押金按十进制分计算，并拒绝超额及非法小数
+  ---
+  duration_ms: 2.116666
+  type: 'test'
+  ...
+# Subtest: 俱乐部空图文段落阻止保存，合法图文去除本地编号并保存准确金额
+ok 29 - 俱乐部空图文段落阻止保存，合法图文去除本地编号并保存准确金额
+  ---
+  duration_ms: 3.444584
+  type: 'test'
+  ...
+# Subtest: 管理员只接收支付公开字段，隐藏页面立即清除秘密且不持久缓存
+ok 30 - 管理员只接收支付公开字段，隐藏页面立即清除秘密且不持久缓存
+  ---
+  duration_ms: 2.829542
+  type: 'test'
+  ...
+# Subtest: 管理员跨身份迟到的配置读取不能写入新身份页面
+ok 31 - 管理员跨身份迟到的配置读取不能写入新身份页面
+  ---
+  duration_ms: 0.944
+  type: 'test'
+  ...
+# Subtest: 管理员跨身份迟到的支付或协议保存不能覆盖新配置
+    # Subtest: payment
+    ok 1 - payment
+      ---
+      duration_ms: 1.35025
+      type: 'test'
+      ...
+    # Subtest: agreements
+    ok 2 - agreements
+      ---
+      duration_ms: 1.166
+      type: 'test'
+      ...
+    1..2
+ok 32 - 管理员跨身份迟到的支付或协议保存不能覆盖新配置
+  ---
+  duration_ms: 3.101625
+  type: 'test'
+  ...
+# Subtest: 原生选图隐藏再显示时保留未保存的昵称和简介
+    # Subtest: showBeforeUpload
+    ok 1 - showBeforeUpload
+      ---
+      duration_ms: 1.103084
+      type: 'test'
+      ...
+    # Subtest: showAfterUpload
+    ok 2 - showAfterUpload
+      ---
+      duration_ms: 0.819333
+      type: 'test'
+      ...
+    1..2
+ok 33 - 原生选图隐藏再显示时保留未保存的昵称和简介
+  ---
+  duration_ms: 2.495875
+  type: 'test'
+  ...
+# Subtest: 原生选图迟到响应不能回填另一身份的资料草稿
+ok 34 - 原生选图迟到响应不能回填另一身份的资料草稿
+  ---
+  duration_ms: 1.067
+  type: 'test'
+  ...
+1..34
+# tests 52
+# suites 0
+# pass 52
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 471.852583
+
+> jijie-marketplace@1.0.0 build:h5
+> uni build
+
+Compiler version: 5.26（vue3）
+Compiling...
+
+欢迎将web站点部署到uniCloud前端网页托管平台，高速、免费、安全、省心，详见：https://uniapp.dcloud.io/uniCloud/hosting
+DONE  Build complete.
+
+> jijie-marketplace@1.0.0 build:mp-weixin
+> uni build -p mp-weixin
+
+Compiler version: 5.26（vue3）
+Compiling...
+DONE  Build complete.
+Run method: open Weixin Mini Program Devtools, import dist/build/mp-weixin run.
+自动验收完成：后端集成测试、竞态检查、静态检查、前端测试与 H5/微信构建均通过。
+真实微信登录/支付及真机验收需要实际 AppID、商户和 HTTPS 域名，见 docs/WECHAT_SETUP.md。

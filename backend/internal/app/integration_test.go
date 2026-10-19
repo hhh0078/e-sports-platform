@@ -61,8 +61,10 @@ func newTestAPI(t *testing.T) *testAPI {
 	api := &testAPI{t: t, Server: s, App: a, Tokens: map[string]string{}}
 	t.Cleanup(func() {
 		s.Close()
-		for _, token := range api.Tokens {
-			a.Redis.Del(context.Background(), a.redisKey("session:"+token))
+		// 清理该测试唯一前缀下的会话、短票据与限流缓存，不触及演示或其他测试数据。
+		iter := a.Redis.Scan(context.Background(), 0, a.redisKey("*"), 100).Iterator()
+		for iter.Next(context.Background()) {
+			a.Redis.Del(context.Background(), iter.Val())
 		}
 		a.Close()
 		base.Exec(context.Background(), "DROP SCHEMA "+schema+" CASCADE")
@@ -74,6 +76,7 @@ func newTestAPI(t *testing.T) *testAPI {
 		}
 		api.call("", "POST", "/auth/dev", map[string]any{"user_id": id}, 200, &result)
 		api.Tokens[id] = result.Token
+		api.call(id, "POST", "/me/phone/dev", map[string]string{"phone_number": "13800138000"}, 200, nil)
 	}
 	return api
 }
@@ -389,7 +392,11 @@ func TestIntegrationPublicationAndProduction(t *testing.T) {
 	api.App.Config.DevMode = false
 	api.call("", "POST", "/auth/dev", map[string]string{"user_id": "admin"}, 404, nil)
 	api.call("", "GET", "/dev/accounts", nil, 404, nil)
-	api.call("", "POST", "/auth/wechat", map[string]string{"code": "fake"}, 503, nil)
+	api.App.Config.WechatSecret = ""
+	api.call("", "POST", "/auth/wechat/prepare", map[string]string{"code": "fake"}, 503, nil)
+	if err := put(t.Context(), api.App.DB, "identities", "player", testVerifiedWechatIdentity("test-only-player")); err != nil {
+		t.Fatal(err)
+	}
 	var o Order
 	api.call("player", "POST", "/orders", map[string]any{"service_id": "delta-service-1", "quantity": 1}, 200, &o)
 	api.call("player", "POST", "/orders/"+o.ID+"/pay", map[string]any{}, 503, nil)

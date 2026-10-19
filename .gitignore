@@ -11,3 +11,6 @@ evidence/*.webm
 
 .playwright-cli/
 frontend/dist-*/
+
+.deploy/
+deploy/.env

@@ -6,20 +6,26 @@ import (
 	"strings"
 )
 
-// overview 汇总平台经营与待办数量，金额只计最终完成订单。
+// overview 汇总真实业务经营与待办数量，排除演示记录，金额只计最终完成订单。
 func (a *App) overview(w http.ResponseWriter, r *http.Request) (any, error) {
 	if _, err := a.admin(r); err != nil {
 		return nil, err
 	}
 	out := map[string]int64{}
+	const liveData = "left(id,5)<>'demo_' AND COALESCE(data->>'is_demo','false')<>'true'"
 	for _, table := range []string{"users", "services", "orders", "clubs"} {
 		var n int64
-		if err := a.DB.QueryRow(r.Context(), "SELECT count(*) FROM "+table).Scan(&n); err != nil {
+		if err := a.DB.QueryRow(r.Context(), "SELECT count(*) FROM "+table+" WHERE "+liveData).Scan(&n); err != nil {
 			return nil, err
 		}
 		out[table] = n
 	}
-	queries := map[string]string{"revenue_cents": "SELECT COALESCE(sum((data->>'amount_cents')::bigint),0) FROM orders WHERE data->>'status'='completed' AND data->>'refund_status' NOT IN ('requested','escalated','processing')", "pending_services": "SELECT count(*) FROM services WHERE data->>'status'='pending'", "pending_clubs": "SELECT count(*) FROM clubs WHERE data->>'status'='pending'", "disputed_orders": "SELECT count(*) FROM orders WHERE data->>'refund_status'='escalated' OR data->>'status'='disputed'"}
+	queries := map[string]string{
+		"revenue_cents":    "SELECT COALESCE(sum((data->>'amount_cents')::bigint),0) FROM orders WHERE " + liveData + " AND data->>'status'='completed' AND data->>'refund_status' NOT IN ('requested','escalated','processing')",
+		"pending_services": "SELECT count(*) FROM services WHERE " + liveData + " AND data->>'status'='pending'",
+		"pending_clubs":    "SELECT count(*) FROM clubs WHERE " + liveData + " AND data->>'status'='pending'",
+		"disputed_orders":  "SELECT count(*) FROM orders WHERE " + liveData + " AND (data->>'refund_status'='escalated' OR data->>'status'='disputed')",
+	}
 	for k, q := range queries {
 		var n int64
 		if err := a.DB.QueryRow(r.Context(), q).Scan(&n); err != nil {
@@ -290,6 +296,9 @@ func (a *App) resolve(w http.ResponseWriter, r *http.Request) (any, error) {
 	defer tx.Rollback(r.Context())
 	o, err := get[Order](r.Context(), tx, "orders", r.PathValue("id"), true)
 	if err != nil {
+		return nil, err
+	}
+	if err = requireLiveOrder(o); err != nil {
 		return nil, err
 	}
 	if in.Resolution == "refund" && o.Status == "refunded" && o.RefundStatus == "approved" {

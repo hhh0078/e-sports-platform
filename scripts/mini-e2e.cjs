@@ -30,9 +30,26 @@ async function action(text, note = '') {
 async function login(name) {
   await mini.reLaunch('/pages/login/index')
   const page = await pageAt('pages/login/index')
+  await page.waitFor(450)
+  await (await until(() => page.$('.consent-line label'), '协议勾选标签')).tap()
+  await until(async () => String(await (await page.$('checkbox')).property('checked')) === 'true', '明确同意协议')
+  await (await button('开发体验')).tap()
   const account = await until(async () => { for (const element of await page.$$('button')) if ((await element.text()).includes(name)) return element; return null }, '账号 ' + name)
-  await account.tap(); await pageAt('pages/me/index')
+  await account.tap()
+  await (await button('先这样，稍后完善')).tap()
+  await pageAt('pages/me/index')
   events.push('登录：' + name); console.log('PASS 登录 ' + name)
+}
+/** 只通过明确标识的本地测试手机号按钮验证，不模拟真实微信授权结果。 */
+async function bindPhoneOrWaitForOrder(page) {
+  await until(async () => {
+    if ((await mini.currentPage())?.path === 'pages/order/index') return true
+    const shell = await page.$('components\\/AppShell'), phone = shell && await shell.$('components\\/PhoneVerification')
+    const control = phone && await phone.$('.phone-dev')
+    if (!control) return false
+    await control.tap(); events.push('手机号：通过本地模拟号码验证，未调用真实运营商认证'); console.log('PASS 本地手机号验证')
+    return true
+  }, '订单跳转或手机号验证')
 }
 /** 打开订单并等待服务端状态渲染。 */
 async function order(id, expected) {
@@ -73,6 +90,7 @@ async function run() {
   let page = await pageAt('pages/service/index')
   await (await until(() => page.$('textarea'), '需求输入')).input('微信模拟器验收：双排教学一小时，需讲解撤离路线，交付后共同核对。')
   await (await button('确认下单')).tap()
+  await bindPhoneOrWaitForOrder(page)
   page = await pageAt('pages/order/index')
   const id = page.query.id
   assert.ok(id)

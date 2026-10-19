@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-20",
+  "passed": true,
+  "steps": [
+    "原生请求正式HTTPS目录成功",
+    "玩家页真实载入服务器演示服务与HTTPS图片",
+    "个人中心访客布局",
+    "订单访客提示",
+    "服务器演示俱乐部公开主页",
+    "正式登录无开发入口且协议未默认勾选"
+  ],
+  "exceptions": [],
+  "network": {
+    "status": 200,
+    "dev_mode": false,
+    "games": 13
+  },
+  "hero_url": "https://game.ai.58it.cn/static/covers/official/delta-1.jpg",
+  "diagnostic_correction": "原生SDK和真实页面复核成功，早先evaluate上下文的url not in domain list为无效诊断"
+}

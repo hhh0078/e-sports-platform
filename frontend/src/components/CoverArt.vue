@@ -5,10 +5,10 @@ import { computed, getCurrentInstance, nextTick, onMounted, onBeforeUnmount, ref
 import { onShow } from '@dcloudio/uni-app'
 import { assetUrl } from '../lib/format'
 import { layoutLabels } from '../lib/cover'
-const props = defineProps({ src: String, labels: { type: Array, default: () => [] }, shade: { type: Boolean, default: true } })
+const props = defineProps({ src: String, labels: { type: Array, default: () => [] }, shade: { type: Boolean, default: true }, reserveBottom: { type: Number, default: 0 } })
 const width = ref(0)
 const instance = getCurrentInstance()
-const arranged = computed(() => layoutLabels(props.labels || []))
+const arranged = computed(() => layoutLabels(props.labels || [], props.reserveBottom))
 let active = false, resizeObserver
 /** 将画布坐标转换为当前卡片的相对位置与字号。 */
 function labelStyle(label) { return { left: label.left + '%', top: label.top + '%', width: label.width + '%', height: label.height + '%', color: label.color || '#ffffff', background: label.background || 'transparent', fontSize: (label.font_size * width.value / 360) + 'px', visibility: width.value ? 'visible' : 'hidden' } }

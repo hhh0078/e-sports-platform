@@ -14,6 +14,7 @@
   </template>
 </AppShell></template>
 <script setup>
+import { requirePhone } from '../../lib/phone'
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
@@ -30,7 +31,7 @@ async function load() { loading.value = true; error.value = ''; try { await init
 /** 保持购买数量在服务端允许的范围内。 */
 function changeQuantity(amount) { quantity.value = Math.max(1, Math.min(99, quantity.value + amount)) }
 /** 从服务端创建真实订单，金额以服务端计算结果为准。 */
-async function createOrder() { if (!state.user) return go('/pages/login/index?next=' + encodeURIComponent('/pages/service/index?id=' + id)); if (!requirements.value.trim()) return notify('请填写需求与验收标准'); if (submitting.value) return; submitting.value = true; try { const order = await api('/orders', 'POST', { service_id: id, quantity: quantity.value, requirements: requirements.value.trim() }); go('/pages/order/index?id=' + order.id) } catch (err) { notify(err) } finally { submitting.value = false } }
+async function createOrder() { if (!state.user) return go('/pages/login/index?next=' + encodeURIComponent('/pages/service/index?id=' + id)); if (!(await requirePhone())) return; if (!requirements.value.trim()) return notify('请填写需求与验收标准'); if (submitting.value) return; submitting.value = true; try { const order = await api('/orders', 'POST', { service_id: id, quantity: quantity.value, requirements: requirements.value.trim() }); go('/pages/order/index?id=' + order.id) } catch (err) { notify(err) } finally { submitting.value = false } }
 onLoad(options => { id = options.id || ''; load() })
 </script>
 <style scoped>.detail-cover{overflow:hidden;border-radius:16px;border:1px solid rgba(255,255,255,.1)}.detail-main{padding:22px 0}.detail-title{font-size:25px;line-height:1.4;font-weight:750;margin-top:14px}.price-row{display:flex;align-items:baseline;gap:8px;margin-top:15px}.detail-price{font-size:34px;font-weight:800;color:var(--accent);letter-spacing:-1px}.rating{margin-left:auto;color:#d5ba7e;font-size:12px}.provider-panel{display:flex;gap:12px;align-items:center}.provider-info{flex:1}.provider-info view{font-weight:650;font-size:14px}.provider-info text{color:#94a599;font-size:11px}.description{white-space:pre-wrap;line-height:1.9;font-size:13px;color:#b6c6bb}.tags{margin-top:12px;flex-wrap:wrap}.order-form{margin-top:17px}.quantity{display:flex;align-items:center;gap:22px}.quantity button{width:34px;height:34px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:transparent;color:var(--text);line-height:30px;padding:0}.quantity button[disabled]{opacity:.3}.quantity>text:not(.muted){font-weight:700}.checkout{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;gap:15px}.checkout>.btn{font-size:12px;padding:12px 16px}.total{font-size:25px;color:var(--accent);font-weight:750;margin-left:6px}.review-content{margin:12px 0;line-height:1.8;color:#b8c5bd;font-size:13px}</style>

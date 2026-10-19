@@ -8,6 +8,9 @@ import (
 
 // prepareRemoteRefund 在订单事务内冻结履约并持久化稳定退款号，尚不调用外部接口。
 func (a *App) prepareRemoteRefund(o *Order, before Order) error {
+	if err := requireLiveOrder(*o); err != nil {
+		return err
+	}
 	if _, err := a.loadWXPay(); err != nil {
 		return err
 	}
@@ -25,6 +28,9 @@ func (a *App) prepareRemoteRefund(o *Order, before Order) error {
 
 // submitRemoteRefund 必须在退款意图事务提交后调用，未知结果保留冻结并由查询补偿。
 func (a *App) submitRemoteRefund(ctx context.Context, o Order, reason string) (Order, error) {
+	if err := requireLiveOrder(o); err != nil {
+		return o, err
+	}
 	done, err := a.refund(ctx, o, reason)
 	if err != nil {
 		log.Printf("退款资金状态待同步 order=%s: %v", o.ID, err)

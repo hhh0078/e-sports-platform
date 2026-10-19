@@ -1,6 +1,6 @@
 # 微信登录与支付接入指南
 
-文件作用：记录真实微信所需配置、上线前联调步骤和本地测试的边界，不包含任何真实密钥。2026-10-18。
+文件作用：保留早期本地版微信接入说明。2026-10-20 的实际部署、配置与验收请以 [DEPLOYMENT.md](DEPLOYMENT.md)、[WECHAT_BACKEND_SETUP.md](WECHAT_BACKEND_SETUP.md) 和 [ACCEPTANCE.md](ACCEPTANCE.md) 为准；下文的游客 AppID 与尚无域名描述属于历史状态，不代表当前版本。本文不包含真实密钥。
 
 ## 当前可用方式
 

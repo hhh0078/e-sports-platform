@@ -81,6 +81,9 @@ func (a *App) message(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err = requireLiveOrder(o); err != nil {
+		return nil, err
+	}
 	if err = a.throttle(r.Context(), "message", u.ID, 60); err != nil {
 		return nil, err
 	}
@@ -136,6 +139,9 @@ func (a *App) review(w http.ResponseWriter, r *http.Request) (any, error) {
 	defer tx.Rollback(r.Context())
 	o, err := get[Order](r.Context(), tx, "orders", r.PathValue("id"), true)
 	if err != nil {
+		return nil, err
+	}
+	if err = requireLiveOrder(o); err != nil {
 		return nil, err
 	}
 	if o.BuyerID != u.ID {

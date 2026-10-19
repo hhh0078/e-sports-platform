@@ -106,6 +106,9 @@ func (a *App) saveService(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err = a.requireVerifiedPhone(r, u); err != nil {
+		return nil, err
+	}
 	var in struct {
 		GameID      string       `json:"game_id"`
 		Title       string       `json:"title"`

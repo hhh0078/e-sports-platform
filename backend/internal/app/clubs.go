@@ -13,7 +13,7 @@ func (a *App) decorateClub(ctx context.Context, c Club) Club {
 		c.OwnerName = u.Nickname
 	}
 	var n int
-	if a.DB.QueryRow(ctx, "SELECT count(*) FROM members WHERE data->>'club_id'=$1 AND data->>'status'='active'", c.ID).Scan(&n) == nil {
+	if a.DB.QueryRow(ctx, "SELECT count(*) FROM members WHERE data->>'club_id'=$1 AND data->>'status'='active' AND EXISTS(SELECT 1 FROM users u WHERE u.id=members.data->>'user_id' AND u.data->>'status'='active' AND u.data->>'provider_enabled'='true')", c.ID).Scan(&n) == nil {
 		c.MemberCount = n
 	}
 	return c
@@ -69,21 +69,26 @@ func (a *App) club(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := []ClubMember{}
-	var my *ClubMember
+	out := []map[string]any{}
+	var my map[string]any
 	for _, m := range members {
-		if member, e := get[User](r.Context(), a.DB, "users", m.UserID, false); e == nil {
-			m.Nickname = member.Nickname
+		member, e := get[User](r.Context(), a.DB, "users", m.UserID, false)
+		if e != nil {
+			continue
 		}
+		m.Nickname = member.Nickname
 		if m.UserID == u.ID {
-			copy := m
-			my = &copy
+			my = communityMemberView(m, member, true)
 		}
-		if manager || m.Status == "active" || m.UserID == u.ID {
-			out = append(out, m)
+		if manager || m.Status == "active" && member.Status == "active" && member.ProviderEnabled {
+			out = append(out, communityMemberView(m, member, manager))
 		}
 	}
-	return map[string]any{"club": a.decorateClub(r.Context(), c), "members": out, "my_membership": my}, nil
+	services, err := a.publicCommunityServices(r, "club", c.ID)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{"club": a.decorateClub(r.Context(), c), "members": out, "my_membership": my, "services": services, "can_manage": manager}, nil
 }
 
 // validateClub 校验组织基本资料与游戏范围。
@@ -109,9 +114,13 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	var in struct {
-		Name        string   `json:"name"`
-		Description string   `json:"description"`
-		GameIDs     []string `json:"game_ids"`
+		Name         *string           `json:"name"`
+		Description  *string           `json:"description"`
+		GameIDs      *[]string         `json:"game_ids"`
+		CoverURL     *string           `json:"cover_url"`
+		DetailBlocks *[]CommunityBlock `json:"detail_blocks"`
+		DepositCents *int64            `json:"deposit_cents"`
+		Assessment   *string           `json:"assessment"`
 	}
 	if err = decode(r, &in); err != nil {
 		return nil, err
@@ -131,12 +140,33 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 			return nil, fail(403, "只能管理自己的俱乐部")
 		}
 	}
-	c.Name = strings.TrimSpace(in.Name)
-	c.Description = strings.TrimSpace(in.Description)
-	c.GameIDs = in.GameIDs
+	if in.Name != nil {
+		c.Name = strings.TrimSpace(*in.Name)
+	}
+	if in.Description != nil {
+		c.Description = strings.TrimSpace(*in.Description)
+	}
+	if in.GameIDs != nil {
+		c.GameIDs = *in.GameIDs
+	}
+	if in.CoverURL != nil {
+		c.CoverURL = *in.CoverURL
+	}
+	if in.DetailBlocks != nil {
+		c.DetailBlocks = *in.DetailBlocks
+	}
+	if in.DepositCents != nil {
+		c.DepositCents = *in.DepositCents
+	}
+	if in.Assessment != nil {
+		c.Assessment = *in.Assessment
+	}
 	c.Status = "pending"
 	c.Verified = false
 	if err = validateClub(r.Context(), tx, c); err != nil {
+		return nil, err
+	}
+	if err = validateClubDecoration(r.Context(), tx, &c, u); err != nil {
 		return nil, err
 	}
 	if err = put(r.Context(), tx, "clubs", c.ID, c); err != nil {
@@ -169,6 +199,18 @@ func (a *App) joinClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	if !u.ProviderEnabled {
 		return nil, fail(400, "请先开启打手身份")
 	}
+	var in struct {
+		ApplicationNote      string `json:"application_note"`
+		RequirementsAccepted bool   `json:"requirements_accepted"`
+	}
+	if r.ContentLength != 0 {
+		if err = decode(r, &in); err != nil {
+			return nil, err
+		}
+	}
+	if !length(in.ApplicationNote, 0, 500) {
+		return nil, fail(400, "申请说明最多 500 字")
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
@@ -184,16 +226,22 @@ func (a *App) joinClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	if c.OwnerID == u.ID {
 		return map[string]bool{"ok": true}, nil
 	}
+	if (c.DepositCents > 0 || c.Assessment != "") && !in.RequirementsAccepted {
+		return nil, fail(400, "请先阅读并确认入会规则；确认规则不表示押金已支付")
+	}
 	id := c.ID + ":" + u.ID
 	m, e := get[ClubMember](r.Context(), tx, "members", id, true)
 	if e != nil && !missing(e) {
 		return nil, e
 	}
-	if e == nil && contains([]string{"pending", "active"}, m.Status) {
+	if e == nil && (m.Status == "active" || m.Status == "pending" && m.AppliedDepositCents == c.DepositCents && m.AppliedAssessment == c.Assessment) {
 		return map[string]bool{"ok": true}, nil
 	}
-	m = ClubMember{UserID: u.ID, Nickname: u.Nickname, ClubID: c.ID, Status: "pending", CreatedAt: now()}
+	m = ClubMember{UserID: u.ID, Nickname: u.Nickname, ClubID: c.ID, Status: "pending", CreatedAt: now(), ApplicationNote: strings.TrimSpace(in.ApplicationNote), RequirementsAccepted: in.RequirementsAccepted, AppliedDepositCents: c.DepositCents, AppliedAssessment: c.Assessment}
 	if err = put(r.Context(), tx, "members", id, m); err != nil {
+		return nil, err
+	}
+	if err = audit(r.Context(), tx, u.ID, "club.apply", id, "申请不代表认证或押金支付"); err != nil {
 		return nil, err
 	}
 	return map[string]bool{"ok": true}, tx.Commit(r.Context())
@@ -246,12 +294,14 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 		return nil, err
 	}
 	var in struct {
-		Status string `json:"status"`
+		Status           string `json:"status"`
+		AssessmentPassed bool   `json:"assessment_passed"`
+		ReviewNote       string `json:"review_note"`
 	}
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
-	if !contains([]string{"active", "rejected"}, in.Status) {
+	if !contains([]string{"active", "rejected"}, in.Status) || !length(in.ReviewNote, 0, 500) {
 		return nil, fail(400, "成员状态无效")
 	}
 	tx, err := a.DB.Begin(r.Context())
@@ -260,15 +310,39 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 	}
 	defer tx.Rollback(r.Context())
 	id := c.ID + ":" + r.PathValue("user_id")
+	c, err = get[Club](r.Context(), tx, "clubs", c.ID, true)
+	if err != nil {
+		return nil, err
+	}
+	if c.OwnerID != u.ID && u.Role != "admin" {
+		return nil, fail(403, "无权管理此俱乐部")
+	}
 	m, err := get[ClubMember](r.Context(), tx, "members", id, true)
 	if err != nil {
 		return nil, err
 	}
+	if in.Status == "active" {
+		if c.Status != "active" || m.Status == "left" {
+			return nil, fail(409, "俱乐部需通过审核，成员退出后需重新申请")
+		}
+		if m.AppliedDepositCents != c.DepositCents || m.AppliedAssessment != c.Assessment || (c.DepositCents > 0 || c.Assessment != "") && !m.RequirementsAccepted {
+			return nil, fail(409, "入会规则已经变化，请成员重新确认后申请")
+		}
+		if c.Assessment != "" && !in.AssessmentPassed {
+			return nil, fail(400, "请完成并确认考核后再通过认证")
+		}
+		member, e := get[User](r.Context(), tx, "users", m.UserID, false)
+		if e != nil || member.Status != "active" || !member.ProviderEnabled {
+			return nil, fail(400, "该成员当前无法开启接单认证")
+		}
+	}
 	m.Status = in.Status
+	m.AssessmentPassed = in.Status == "active" && in.AssessmentPassed
+	m.ReviewNote = strings.TrimSpace(in.ReviewNote)
 	if err = put(r.Context(), tx, "members", id, m); err != nil {
 		return nil, err
 	}
-	if err = audit(r.Context(), tx, u.ID, "club.member."+in.Status, id, ""); err != nil {
+	if err = audit(r.Context(), tx, u.ID, "club.member."+in.Status, id, m.ReviewNote); err != nil {
 		return nil, err
 	}
 	return map[string]bool{"ok": true}, tx.Commit(r.Context())

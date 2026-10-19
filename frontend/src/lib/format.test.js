@@ -22,7 +22,7 @@ test('空值和无效时间安全显示，未知状态保留原值', () => {
 
 test('上传封面采用后端地址，内置图片保持小程序相对路径', () => {
   assert.equal(assetUrl('/api/media/cover123'), 'http://127.0.0.1:8090/api/media/cover123')
-  assert.equal(assetUrl('/static/covers/delta-1.jpg'), '/static/covers/delta-1.jpg')
+  assert.equal(assetUrl('/static/covers/delta-1.jpg'), 'http://127.0.0.1:8090/static/covers/delta-1.jpg')
   assert.equal(assetUrl(null), '')
 })
 

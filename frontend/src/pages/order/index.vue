@@ -33,6 +33,7 @@ import { ref, computed, nextTick } from 'vue'
 import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import Icon from '../../components/Icon.vue'
+import { prepareImage } from '../../lib/media'
 import { api, uploadEvidence, API_BASE } from '../../lib/api'
 import { state, init } from '../../lib/store'
 import { money, time, statusLabel, notify } from '../../lib/format'
@@ -113,7 +114,7 @@ async function execute() {
 /** 发送纯文字消息，失败时保留输入，成功后才清空。 */
 async function sendMessage() { if (sending.value || !draft.value.trim()) return; sending.value = true; try { await api('/orders/' + id.value + '/messages','POST',{content:draft.value.trim()}); draft.value = ''; await load(); await scrollChat() } catch (e) { notify(e) } finally { sending.value = false } }
 /** 选择一张图片并作为订单证据发送，取消选择不显示错误。 */
-function sendImage() { if (sending.value) return; uni.chooseImage({ count:1, sizeType:['compressed'], success: async result => { sending.value = true; try { const evidence = await uploadEvidence(id.value,result.tempFilePaths[0]); await api('/orders/' + id.value + '/messages','POST',{content:'',image_url:evidence.url}); await load(); await scrollChat() } catch (e) { notify(e) } finally { sending.value = false } } }) }
+async function sendImage() { if (sending.value) return; sending.value = true; try { const path = await prepareImage('evidence'); const evidence = await uploadEvidence(id.value,path); await api('/orders/' + id.value + '/messages','POST',{content:'',image_url:evidence.url}); await load(); await scrollChat() } catch (e) { if(!e.cancelled) notify(e) } finally { sending.value = false } }
 /** 将安全的签名证据相对路径转换为实际服务地址。 */
 function evidenceUrl(url) { return url?.startsWith('/') ? API_BASE.replace(/\/api\/?$/, '') + url : url }
 const refreshingImages = new Set()
