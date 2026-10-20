@@ -14,7 +14,7 @@
 
 正式后端：`https://game.ai.58it.cn`，只提供接口和图片；正式小程序用微信开发者工具打开 `frontend/dist/build/mp-weixin`。本地小程序体验包在独立的 `frontend/dist/local/mp-weixin`，正式包未被覆盖。本地 H5 或本地小程序用于模拟角色与退款，不等于正式资金验收。
 
-2026-10-20 已重新通过完整自动验证：后端 63 项顶层测试与 27 个子场景、前端 52 项测试、Go 静态检查、H5/小程序构建；服务器镜像已更新为 `jijie-api:20261020`，54 个外网请求通过，其中 43 个为游戏图片。微信官方 `stable_token` 已验证后端 AppID/AppSecret 配对有效；实际小程序的 `wx.login` 与正式后端身份准备也已通过。小程序社区、导航和本地四方退款的实际点击记录来自 10 月 18 日。真人主动同意协议后建立最终会话、真实手机号、真实商户扣退款与真机验收尚未完成。完整证据见 [ACCEPTANCE.md](ACCEPTANCE.md)。
+2026-10-20 已重新通过完整自动验证：后端 63 项顶层测试与 27 个子场景、前端 52 项测试、Go 静态检查、H5/小程序构建；服务器已从 Gitee 提交 `6ea28d5` 构建为 `jijie-api:20261020-gitee-6ea28d5`，健康检查、13 款游戏、公开服务、协议和游戏图片复查通过。微信官方 `stable_token` 已验证当前后端 AppID/AppSecret 配对有效；实际小程序的 `wx.login` 与正式后端身份准备此前也已通过。小程序社区、导航和本地四方退款的实际点击记录来自 10 月 18 日。真人主动同意协议后建立最终会话、真实手机号、真实商户扣退款与真机验收尚未完成。完整证据见 [ACCEPTANCE.md](ACCEPTANCE.md)。
 
 正式小程序产物已生成，AppID、HTTPS API 与 `url_check=true` 已核对，最终体积见 [产物报告](../output/community/release-mini-20261020.json)。早先 `appid missing` 与域名失败来自自动化的错误执行上下文，已纠正；使用官方 `mini.callWxMethod` 后，原生网络请求为 200，登录 code 及服务端身份准备成功。正式页面已通过 6 步实测：目录请求、服务器演示服务与 HTTPS 图片、访客个人中心、订单提示、俱乐部主页、正式登录协议状态，见 [mini-production-20261020.json](../output/community/mini-production-20261020.json)。发布时仍应在微信后台核对 request、uploadFile、downloadFile 合法域名均为 `https://game.ai.58it.cn`。
 

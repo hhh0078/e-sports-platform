@@ -4,13 +4,13 @@
 
 ## 本次已部署状态
 
-2026-10-20 已完成最后修复更新，当前 API 镜像为 `jijie-api:20261020`。容器内 API 的 SHA256 为 `b2304d650064d16be4a976abab3638ce3c27ceedaf95738729589a3163a4f913`，与本地已测试构建一致；三个容器均为 healthy。更新前的数据库备份位于 `/opt/jijie/backup/preupdate-20261020.sql.gz`，配置备份为同目录 `config-20261020.env`，权限分别为600；旧二进制保留在 `releases/20261020-preupdate/`。数据库备份已通过 gzip 完整性检查。
+2026-10-20 已从 Gitee `master` 的提交 `6ea28d5` 完成源码部署，当前 API 镜像为 `jijie-api:20261020-gitee-6ea28d5`，三个容器均为 healthy。源码位于 `/www/wwwroot/game.ai.58it.cn`，生产配置为该目录下的 `deploy/.env`，权限 `600`；部署前数据库备份为 `.deploy-backups/pre-gitee-20261020.sql.gz`，并已通过 gzip 完整性检查。原 `/opt/jijie` 发布目录及历史备份仍保留，可用于故障回退。
 
 本次外网复查覆盖54项请求，其中43项为游戏图片，全部通过。完整非私密结果见 `output/community/production-http-check-20261020.json`，部署实屏见 `output/community/server-final-20261020.png`。演示数据数量与10月18日保持一致；演示清理保护、真实经营统计隔离及数据库错误脱敏已包含在新镜像中。
 
 正式小程序包为 `frontend/dist/build/mp-weixin`，连接上述 HTTPS API 并开启合法域名校验，体积与配置以 `output/community/release-mini-20261020.json` 为准。官方 SDK 原生 `wx.request` 已成功读取正式目录，`wx.login` 与正式后端身份准备接口也已返回成功；页面联网检查见 `output/community/mini-production-20261020.json`。迁移到买家自己的 AppID 时仍须完成第5节的微信域名配置。
 
-2026-10-18 已在 `43.228.79.108` 的 `/opt/jijie` 部署项目专属 Docker Compose：API、PostgreSQL 16、Redis 7 均为 healthy。Nginx 原有证书及验证规则保留，站点反代至 `127.0.0.1:18090`，`nginx -t` 已通过。`https://game.ai.58it.cn/health` 返回数据库/Redis正常且 dev_mode=false。
+2026-10-20 已在 `43.228.79.108` 的 `/www/wwwroot/game.ai.58it.cn/deploy` 运行项目专属 Docker Compose：API、PostgreSQL 16、Redis 7 均为 healthy。Compose 项目名仍为 `jijie`，因此沿用原 PostgreSQL 与 Redis 命名卷。Nginx 原有证书及验证规则保留，站点反代至 `127.0.0.1:18090`。`https://game.ai.58it.cn/health` 返回数据库/Redis正常且 dev_mode=false。
 
 正式域名已验证13款游戏配置、服务、俱乐部、协议及封面图片正常；开发体验账号接口404、未登录管理接口401、`.env`访问404。服务器 `.env` 权限600。60用户/6俱乐部/130服务/52订单/260消息/8评价的演示数据已经导入。
 
@@ -21,7 +21,7 @@
 - `backend/Dockerfile`：直接从 Go 源码构建 API 和演示工具。
 - `deploy/compose.yml`：独立的 API、PostgreSQL 16、Redis 7；不改现有其他项目。
 - `deploy/.env.example`：Redis、PostgreSQL 和微信的配置模板。
-- 服务器实际私密配置：`/opt/jijie/.env`，权限 `600`。里面有数据库密码、Redis 密码、微信密钥和支付配置加密主密钥，不可放进网站根目录，不可发给源码买家。
+- 当前服务器实际私密配置：`/www/wwwroot/game.ai.58it.cn/deploy/.env`，权限 `600`，并由 `.gitignore` 排除。里面有数据库密码、Redis 密码、微信密钥和支付配置加密主密钥，不可提交 Git、不可发给源码买家。Nginx 的 `/` 已反向代理到 API，不直接提供目录文件；部署后仍应验证公网访问 `.env` 返回非成功状态。
 - 后端只监听服务器回环地址 `127.0.0.1:18090`，由宝塔 Nginx 提供 HTTPS。PG 和 Redis 不映射公网端口。
 
 ## 2. 第一次从源码创建 Docker
@@ -122,7 +122,7 @@ curl -I https://game.ai.58it.cn/static/covers/official/delta-icon.jpg
 首次没有默认管理员密码。先使用自己的微信在此 AppID 下正常登录一次；从可信服务器运维渠道核对该用户私密 `identities` 记录里的 OpenID。把它填入服务器 `.env` 的 `BOOTSTRAP_ADMIN_OPENID`，重建 API 容器：
 
 ```bash
-cd /opt/jijie
+cd /www/wwwroot/game.ai.58it.cn/deploy
 docker compose up -d --force-recreate api
 ```
 
@@ -169,7 +169,7 @@ UNI_OUTPUT_DIR="$(pwd)/frontend/dist/local/mp-weixin" npm --prefix frontend run 
 ## 9. 演示数据与源码展示
 
 ```bash
-cd /opt/jijie
+cd /www/wwwroot/game.ai.58it.cn/deploy
 docker compose exec -T api /app/jijie-demo seed
 docker compose exec -T api /app/jijie-demo status
 ```
@@ -183,7 +183,7 @@ docker compose exec -T api /app/jijie-demo status
 ## 10. 备份、升级与回滚
 
 ```bash
-cd /opt/jijie
+cd /www/wwwroot/game.ai.58it.cn/deploy
 mkdir -p backup
 chmod 700 backup
 docker compose exec -T postgres sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB"' | gzip > backup/jijie-$(date +%Y%m%d-%H%M).sql.gz

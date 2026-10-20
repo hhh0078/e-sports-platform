@@ -4,7 +4,7 @@
 
 一个账号同时可以是老板和打手，挂靠俱乐部是可选项。客户端使用 uni-app / Vue 3，后端使用 Go，PostgreSQL 保存交易与证据，Redis 保存会话和限流状态。导航为「玩家、打手、订单、我的」，平台后台与俱乐部后台均在小程序内。
 
-2026-10-20：后端已部署到 `https://game.ai.58it.cn`，API、专用 PostgreSQL 与 Redis 均运行在服务器 Docker。服务器配置文件为 `/opt/jijie/.env`；源码模板为 `deploy/.env.example`。从源码创建 Docker、配置域名、微信、首次管理员与商户、备份回滚的完整步骤见 [发布指南](docs/DEPLOYMENT.md)。服务器已导入60个演示用户、6个俱乐部、130条服务、52个订单及260条消息，均有演示标记并隔离真实交易。
+2026-10-20：后端已部署到 `https://game.ai.58it.cn`，Gitee 源码位于服务器域名根目录 `/www/wwwroot/game.ai.58it.cn`，API、专用 PostgreSQL 与 Redis 均运行在 Docker。服务器私密配置为 `deploy/.env`（权限 `600`，已被 Git 忽略）；公开模板为 `deploy/.env.example`。从源码创建 Docker、配置域名、微信、首次管理员与商户、备份回滚的完整步骤见 [发布指南](docs/DEPLOYMENT.md)。服务器已导入60个演示用户、6个俱乐部、130条服务、52个订单及260条消息，均有演示标记并隔离真实交易。
 
 ## 直接体验
 
