@@ -9,7 +9,10 @@ COPY . .
 RUN go build -trimpath -ldflags="-s -w" -o /out/jijie-api ./cmd/server && go build -trimpath -ldflags="-s -w" -o /out/jijie-demo ./cmd/demo
 
 FROM alpine:3.21
-RUN apk add --no-cache ca-certificates tzdata && addgroup -S jijie && adduser -S -G jijie jijie
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk add --no-cache ca-certificates tzdata \
+    && addgroup -S jijie \
+    && adduser -S -G jijie jijie
 WORKDIR /app
 COPY --from=builder /out/ /app/
 USER jijie
