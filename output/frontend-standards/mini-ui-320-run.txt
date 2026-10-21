@@ -1,0 +1,6 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+390 !== 320
+
+    at run (/Users/Zhuanz/Desktop/三角洲/scripts/mini-ui-regression.ts:224:183)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

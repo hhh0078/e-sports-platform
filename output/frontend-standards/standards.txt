@@ -1,0 +1,5 @@
+
+> jijie-marketplace@1.0.0 check:standards
+> tsx ../scripts/check-frontend-standards.ts
+
+前端规范检查通过：18 个页面/视图，TypeScript、接口分层、唯一底栏及设计目录一致。

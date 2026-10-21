@@ -1,0 +1,308 @@
+[
+  {
+    "screen": "me",
+    "source_path": "design/pages/main/me/me.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/guest-me.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "me-authenticated",
+    "source_path": "design/pages/main/me/me.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/me-authenticated.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "player",
+    "source_path": "design/pages/main/player/player.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/guest-player.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "orders",
+    "source_path": "design/pages/main/orders/orders.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/guest-orders.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "worker-authenticated",
+    "source_path": "design/pages/main/worker/worker.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/worker-authenticated.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "profile",
+    "source_path": "design/pages/account/profile.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/account-profile-player.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "requests",
+    "source_path": "design/pages/requests/publish.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/requests-publish.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "login",
+    "source_path": "design/pages/account/login.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/account-login.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "agreements",
+    "source_path": "design/pages/account/agreements.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/account-agreements.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "services-detail",
+    "source_path": "design/pages/services/detail.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/services-detail-delta.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "services-publish",
+    "source_path": "design/pages/services/publish.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/services-publish.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "clubs-index",
+    "source_path": "design/pages/community/clubs/index.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/clubs-index.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "clubs-detail",
+    "source_path": "design/pages/community/clubs/detail.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/clubs-detail.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "clubs-edit",
+    "source_path": "design/pages/community/clubs/edit.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/clubs-edit-owner.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "players-detail",
+    "source_path": "design/pages/community/players/detail.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/players-detail.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "manage-index",
+    "source_path": "design/pages/manage/index.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/manage-index-admin.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  },
+  {
+    "screen": "manage-settings",
+    "source_path": "design/pages/manage/settings.png",
+    "implementation_path": "output/frontend-standards/mini-ui-final-390/manage-settings-admin.png",
+    "source": [
+      390,
+      844
+    ],
+    "actual": [
+      602,
+      1300
+    ],
+    "css": [
+      390,
+      844
+    ],
+    "normalization": "each resized to 390x844; 30px labels excluded"
+  }
+]

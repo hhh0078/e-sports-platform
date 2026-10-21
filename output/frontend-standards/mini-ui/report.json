@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "time": "2026-10-21T17:32:30.893Z",
+  "api": "http://127.0.0.1:18091/api",
+  "checks": [
+    "四个主导航连续切换 8 轮，页面实例保持不变",
+    "访客个人中心和订单正常展示登录空态",
+    "页面与返回：/pages/account/login",
+    "页面与返回：/pages/account/profile",
+    "页面与返回：/pages/account/agreements",
+    "页面与返回：/pages/services/detail",
+    "页面与返回：/pages/community/clubs/index",
+    "页面与返回：/pages/community/clubs/detail",
+    "页面与返回：/pages/community/players/detail",
+    "登录：云间旅人",
+    "页面与返回：/pages/account/profile",
+    "页面与返回：/pages/requests/publish",
+    "页面与返回：/pages/manage/index",
+    "页面与返回：/pages/manage/settings",
+    "登录：北辰",
+    "页面与返回：/pages/services/publish",
+    "页面与返回：/pages/community/clubs/edit",
+    "登录：山海主理人",
+    "页面与返回：/pages/community/clubs/detail",
+    "页面与返回：/pages/community/clubs/edit",
+    "登录：集结管理员",
+    "页面与返回：/pages/manage/index",
+    "页面与返回：/pages/manage/settings",
+    "页面与返回：/pages/orders/detail"
+  ],
+  "runtime_exceptions": [],
+  "remaining": [
+    "真实微信授权与商户资金不由本地模拟回归替代",
+    "订单聊天与售后由独立交易回归脚本覆盖"
+  ]
+}

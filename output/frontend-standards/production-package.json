@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "appid": "wxd33b969516933076",
+  "api_base": "https://game.ai.58it.cn/api",
+  "url_check": true,
+  "package_bytes": 724676,
+  "files": 161,
+  "vendor_bytes": 77531,
+  "local_api_in_bundle": false,
+  "literal_private_credentials": false,
+  "local_accepted_package": "frontend/dist/local/mp-weixin",
+  "upload_to_wechat": false,
+  "backend_redeployed_this_round": false
+}

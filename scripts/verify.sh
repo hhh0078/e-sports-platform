@@ -21,6 +21,6 @@ if database.path != '/jijie_dev' or database.hostname not in ('localhost', '127.
 PY
 bash -n scripts/dev-start.sh scripts/dev-stop.sh scripts/verify.sh
 (cd backend && TEST_INTEGRATION=true go test -race -count=1 -v ./... && go vet ./...)
-(cd frontend && npm test && npm run build:h5 && npm run build:mp-weixin)
+(cd frontend && npm run check:standards && npm run typecheck && npm test && npm run build:h5 && npm run build:mp-weixin)
 echo '自动验收完成：后端集成测试、竞态检查、静态检查、前端测试与 H5/微信构建均通过。'
 echo '真实微信登录/支付及真机验收需要实际 AppID、商户和 HTTPS 域名，见 docs/WECHAT_SETUP.md。'

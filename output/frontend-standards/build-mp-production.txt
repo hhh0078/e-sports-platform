@@ -1,0 +1,12 @@
+正式 API：https://game.ai.58it.cn/api
+小程序 AppID：wxd33b969516933076
+
+> jijie-marketplace@1.0.0 build:mp-weixin
+> uni build -p mp-weixin
+
+Compiler version: 5.26（vue3）
+Compiling...
+DONE  Build complete.
+Run method: open Weixin Mini Program Devtools, import dist/build/mp-weixin run.
+正式产物已启用合法域名校验。
+发布目录：frontend/dist/build/mp-weixin。请导入微信开发者工具，核验合法域名后上传。

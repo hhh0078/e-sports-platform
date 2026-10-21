@@ -1,0 +1,13 @@
+CHECK 登录 云间旅人
+CHECK 登录页已打开 云间旅人
+CHECK 体验身份列表 云间旅人
+CHECK 完善资料弹层 云间旅人
+CHECK 登录 北辰
+CHECK 登录页已打开 北辰
+CHECK 体验身份列表 北辰
+CHECK 完善资料弹层 北辰
+AssertionError [ERR_ASSERTION]: 上限金额或成交数超出卡片正文
+    at maximumPriceLayout (/Users/Zhuanz/Desktop/三角洲/scripts/mini-ui-regression.ts:214:89)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async workerLayout (/Users/Zhuanz/Desktop/三角洲/scripts/mini-ui-regression.ts:199:3)
+    at async run (/Users/Zhuanz/Desktop/三角洲/scripts/mini-ui-regression.ts:406:114)

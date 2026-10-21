@@ -1,6 +1,6 @@
 # 微信登录与支付接入指南
 
-文件作用：保留早期本地版微信接入说明。2026-10-20 的实际部署、配置与验收请以 [DEPLOYMENT.md](DEPLOYMENT.md)、[WECHAT_BACKEND_SETUP.md](WECHAT_BACKEND_SETUP.md) 和 [ACCEPTANCE.md](ACCEPTANCE.md) 为准；下文的游客 AppID 与尚无域名描述属于历史状态，不代表当前版本。本文不包含真实密钥。
+文件作用：保留早期本地版微信接入说明，并在末节提供2026-10-22更新的本地模拟器复测命令。实际部署、配置与验收请以 [DEPLOYMENT.md](DEPLOYMENT.md)、[WECHAT_BACKEND_SETUP.md](WECHAT_BACKEND_SETUP.md) 和 [前端规范重构验收](FRONTEND_REFACTOR_ACCEPTANCE.md) 为准；下文早期接入说明中的游客AppID与尚无域名描述属于历史状态，不代表当前版本。本文不包含真实密钥。
 
 ## 当前可用方式
 
@@ -55,13 +55,48 @@
 
 官方入口：[微信公众平台](https://mp.weixin.qq.com/)、[微信支付商户平台](https://pay.weixin.qq.com/)、[微信支付开发文档](https://pay.wechatpay.cn/doc/v3/)。采用常规 `/v3/pay/transactions/jsapi`；不能因文档出现灰度中的新能力，就假定当前商户已经有权限。
 
-## 复现微信模拟器 UI 验收
+## 复现微信模拟器 UI 验收（当前命令）
 
-已安装官方 `miniprogram-automator` 为前端开发依赖。构建后在微信开发者工具中开启自动化端口：
+在项目根目录操作，依赖已安装时使用官方 `miniprogram-automator`。常规本地启动脚本固定使用8090；本轮保存的独立验收环境使用18091。两者不能只改测试脚本地址，客户端编译地址也必须相同：
+
+| 环境 | API地址 | 客户端与脚本要求 |
+| --- | --- | --- |
+| 常规本地开发 | `http://127.0.0.1:8090/api` | `./scripts/dev-start.sh` 启动；编译与复测均显式使用8090 |
+| 本轮独立验收 | `http://127.0.0.1:18091/api` | 需另行已启动本项目的独立开发后端；编译与复测均显式使用18091，不能给 `dev-start.sh` 改端口 |
+| 正式发布 | `https://game.ai.58it.cn/api` | 用 `./scripts/release-mini.sh` 生成 `frontend/dist/build/mp-weixin`；不运行本地模拟交易脚本 |
+
+常规本地复测先运行以下命令；后端需返回 `dev_mode=true`，并有五种体验身份及本地种子服务/俱乐部：
 
 ```sh
-/Applications/wechatwebdevtools.app/Contents/MacOS/cli auto --project "$PWD/frontend/dist/build/mp-weixin" --auto-port 9420 --trust-project
-node scripts/mini-e2e.cjs
+./scripts/dev-start.sh
+JIJIE_TEST_API=http://127.0.0.1:8090/api
+VITE_API_BASE="$JIJIE_TEST_API" UNI_OUTPUT_DIR="$PWD/frontend/dist/local/mp-weixin" npm --prefix frontend run build:mp-weixin
+/Applications/wechatwebdevtools.app/Contents/MacOS/cli open --project "$PWD/frontend/dist/local/mp-weixin"
 ```
 
-若游客工具出现 AppID 提示，使用游客模式打开项目；构建过程中 `dist` 会先重建，不要把短暂的 app.json 缺失当作最终产物缺失，构建完成后重新编译即可。脚本只允许本地 DEV_MODE=true，实际点击五个身份，创建测试单并完成付款、接单、交付、四方聊天、退款拒绝、平台介入、裁决退款与无关人拒绝，截图和结果位于 `output/playwright/mini-*`。它会保留新测试订单与证据，不改旧订单。
+以上可打开人工预览。首次自动化先在开发者工具主页正式导入并登记此目录，确认AppID与本地数据正常，再启用：
+
+```sh
+/Applications/wechatwebdevtools.app/Contents/MacOS/cli auto --project "$PWD/frontend/dist/local/mp-weixin" --auto-port 9420 --trust-project
+```
+
+首次自动化复测前，先在微信开发者工具主页选择“导入项目”，登记`frontend/dist/local/mp-weixin`目录和manifest中的AppID，再执行`cli auto`。`cli open`可正常人工预览，但新目录会以临时项目打开，不能代替正式导入登记。本轮实测直接对未登记目录调用auto会丢失项目元信息、拦截localhost，SDK可能读取不到版本；本轮36条完整自动化报告实际在原已登记build目录生成，local目录用于保留人工预览。正式包不用于本地模拟脚本。
+
+确认开发者工具打开的是本次编译的 `frontend/dist/local/mp-weixin`，完成编译并选择390px宽机型后运行：
+
+```sh
+UI_TEST_PROJECT="$PWD/frontend/dist/local/mp-weixin" UI_TEST_API="$JIJIE_TEST_API" UI_EXPECT_WIDTH=390 UI_TEST_OUTPUT=output/frontend-standards/recheck/mini-ui-390 ./frontend/node_modules/.bin/tsx scripts/mini-ui-regression.ts
+TEST_API_BASE="$JIJIE_TEST_API" TEST_EVIDENCE_DIR=output/frontend-standards/recheck/transaction ./frontend/node_modules/.bin/tsx scripts/mini-transaction.ts
+```
+
+再把模拟器切换为320px宽机型，执行：
+
+```sh
+UI_TEST_PROJECT="$PWD/frontend/dist/local/mp-weixin" UI_TEST_API="$JIJIE_TEST_API" UI_EXPECT_WIDTH=320 UI_TEST_OUTPUT=output/frontend-standards/recheck/mini-ui-320 ./frontend/node_modules/.bin/tsx scripts/mini-ui-regression.ts
+```
+
+如需连接本轮独立18091环境，先确认该开发后端已就绪，将 `JIJIE_TEST_API` 改为 `http://127.0.0.1:18091/api`，重新执行上面的本地包编译和工具打开命令，再运行同一组复测命令。仅设置 `UI_TEST_API` 或 `TEST_API_BASE` 不会改变小程序内部请求地址；客户端的 `VITE_API_BASE` 必须在构建时一致。两个脚本当前默认18091，文档命令显式传参以避免与常规8090启动混淆。测试进程使用 `ws://127.0.0.1:9420`，可通过 `WX_AUTOMATOR_ENDPOINT` 指定其他自动化端口。
+
+上述命令的界面截图及 `report.json` 分别写入 `output/frontend-standards/recheck/mini-ui-390/`、`mini-ui-320/`；交易截图及 `mini-transaction.json` 写入 `output/frontend-standards/recheck/transaction/`，不会覆盖本轮最终验收目录。不传输出变量时，UI脚本默认为 `output/frontend-standards/mini-ui/`，交易脚本默认为 `output/standards-refactor/transaction/`。
+
+脚本实际点击五个本地身份，核对页面、导航及四方交易。交易脚本会新建测试订单并保留沟通证据；模拟付款和手机号不代表真实微信能力通过。正式包连接线上后端，不用于这些本地模拟测试。需要复核当前AppID的真实登录、手机号或商户支付时，按发布指南中的正式步骤独立验收，不切换游客AppID规避。

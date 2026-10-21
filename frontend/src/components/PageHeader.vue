@@ -1,10 +1,23 @@
-<!-- 文件作用：二级页面的标题、说明和返回导航。 -->
-<template><view class="page-header"><view v-if="back" class="back" @click="returnPage"><Icon name="back" :size="19" /><text>返回</text></view><text v-if="eyebrow" class="eyebrow">{{ eyebrow }}</text><view class="page-heading">{{ title }}</view><view v-if="subtitle" class="muted intro">{{ subtitle }}</view></view></template>
-<script setup>
-import Icon from './Icon.vue'
-import { go } from '../lib/format'
-defineProps({ title: String, subtitle: String, eyebrow: String, back: Boolean })
-/** 优先返回上一页，无历史时跳转首页。 */
-function returnPage() { if (getCurrentPages().length > 1) uni.navigateBack(); else go('/pages/index/index') }
+<!-- 文件作用：基于官方 uni-nav-bar 统一顶栏、微信安全区与所有二级页面返回。 -->
+<template>
+  <view class="page-navigation" :class="{ 'main-navigation': main }">
+    <UniNavBar :title="title" :left-icon="back ? 'left' : ''" :left-width="main && title === '集结' ? 0 : sideWidth" :right-width="sideWidth" :height="44" :status-bar="native" :border="false" color="var(--text)" background-color="var(--bg)" @click-left="goBack">
+      <view v-if="main && title === '集结'" class="brand-title"><text class="brand-square">集</text><text>集结</text></view><view v-else class="navigation-title">{{ title }}</view>
+    </UniNavBar>
+  </view>
+</template>
+<script setup lang="ts">
+import UniNavBar from '@dcloudio/uni-ui/lib/uni-nav-bar/uni-nav-bar.vue'
+import { back as goBack } from '../lib/navigation'
+import { readSafeArea } from '../lib/safe-area'
+withDefaults(defineProps<{ title?: string; subtitle?: string; eyebrow?: string; back?: boolean; main?: boolean }>(), { title: '', back: true, main: false })
+const sideWidth = Math.max(44, readSafeArea().capsuleRightInset)
+let native = false
+// #ifdef MP-WEIXIN
+native = true
+// #endif
 </script>
-<style scoped>.page-header{padding:8px 0 24px}.back{display:flex;align-items:center;gap:3px;color:#9baaa0;font-size:11px;margin-bottom:16px}.eyebrow{display:block;margin-bottom:8px}.intro{margin-top:10px;line-height:1.7;max-width:400px}</style>
+<style scoped>
+.page-navigation{position:sticky;top:0;z-index:30;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--line-subtle)}
+.main-navigation{border-bottom:0}.navigation-title{display:flex;align-items:center;justify-content:center;width:100%;font-size:16px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand-title{display:flex;align-items:center;gap:8px;font-size:21px;font-weight:800;letter-spacing:1px}.brand-square{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:var(--accent);color:#071b13;font-size:17px}
+</style>

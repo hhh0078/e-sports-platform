@@ -1,13 +1,39 @@
-<!-- 文件作用：以独立图片与悬浮文案展示服务，紧凑展示真实价格、认证和成交数。 -->
-<template><view class="service-card" @click="go('/pages/service/index?id=' + service.id)"><image class="card-backdrop" :src="assetUrl(service.cover_url)" mode="aspectFill"/><CoverArt :src="service.cover_url" :labels="service.labels" :reserve-bottom="50"/><view class="service-body"><view class="service-title">{{ service.title }}</view><view class="service-tags"><view v-if="service.club_verified" class="cert"><Icon name="shield" :size="10" />俱乐部认证</view><text v-else class="service-tag">{{ service.category }}</text><text v-for="tag in visibleTags" :key="tag" class="service-tag">{{ tag }}</text></view><view class="service-price"><view><text class="currency">¥</text><text class="amount">{{ money(service.price_cents) }}</text><text class="unit"> / {{ service.unit || '单' }}</text></view><text class="count">{{ service.completed_count || 0 }} 单</text></view></view></view></template>
-<script setup>
+<!-- 文件作用：统一服务卡片，封面内独立展示标签标题并预留自定义文案空间，价格和操作保持图下正常流。 -->
+<template>
+  <view class="service-card" :style="pageTheme(service.game_id)" @click="openDetail">
+    <CoverArt :src="service.cover_url" :labels="service.labels" :aspect-ratio="4 / 3" :reserve-bottom-pixels="48">
+      <view class="service-overlay">
+        <view class="service-tags"><view v-if="service.club_verified" class="service-cert"><Icon name="shield" :size="9" /><text>俱乐部认证</text></view><text v-if="gameLabel" class="service-tag">{{ gameLabel }}</text><text v-if="service.category" class="service-category">{{ service.category }}</text></view>
+        <text class="service-title">{{ service.title }}</text>
+      </view>
+    </CoverArt>
+    <view v-if="!coverOnly" class="service-body">
+      <view class="service-price"><view class="price-value"><text class="currency">¥</text><text class="amount">{{ money(service.price_cents) }}</text><text class="unit">/{{ service.unit || '单' }}</text></view><text class="count">成交 {{ service.completed_count || 0 }}</text></view>
+      <view v-if="$slots.actions" class="service-actions" @click.stop><slot name="actions" /></view>
+    </view>
+  </view>
+</template>
+<script setup lang="ts">
 import { computed } from 'vue'
 import CoverArt from './CoverArt.vue'
 import Icon from './Icon.vue'
-import { money, go, assetUrl } from '../lib/format'
-const props = defineProps({ service: { type: Object, required: true } })
-const visibleTags = computed(() => (props.service.tags || []).filter(tag => tag !== '俱乐部认证').slice(0, 1))
+import { money, go } from '../lib/format'
+import { state, pageTheme } from '../lib/store'
+import type { Service } from '../types/models'
+const props = withDefaults(defineProps<{ service: Service; interactive?: boolean; coverOnly?: boolean }>(), { interactive: true, coverOnly: false })
+const gameLabel = computed(() => { const game = state.games.find(item => item.id === props.service.game_id); return game?.short_name || game?.name || '' })
+/** 通过当前业务路由打开服务，发布预览可关闭跳转。 */
+function openDetail(): void { if (props.interactive) go('/pages/services/detail?id=' + encodeURIComponent(props.service.id)) }
 </script>
 <style scoped>
-.service-card{position:relative;isolation:isolate;border:1px solid #ffffff33;background:var(--surface);border-radius:10px;overflow:hidden;cursor:pointer}.card-backdrop{position:absolute;inset:0;width:100%;height:100%;z-index:-1}.service-body{position:relative;margin-top:-24px;padding:5px 8px 8px;background:linear-gradient(180deg,rgba(8,14,11,.3),rgba(8,14,11,.93) 38%,#080e0b 100%)}.service-title{text-shadow:0 1px 5px #000}.service-title{font-weight:750;font-size:13px;line-height:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.service-tags{display:flex;gap:4px;min-height:20px;align-items:center;overflow:hidden;white-space:nowrap}.service-tag,.cert{font-size:10px;line-height:15px;border:1px solid #ffffff30;padding:0 4px;border-radius:3px;color:#bdc8c1;display:inline-flex;align-items:center;gap:2px}.cert{color:#c7d2cb}.service-price{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-top:2px;height:25px;line-height:1}.currency{color:var(--accent);font-size:12px;font-weight:700;margin-right:1px}.amount{color:var(--accent);font-size:23px;font-weight:800;line-height:1;letter-spacing:-.7px}.unit{font-size:10px;color:#bcc6bf}.count{font-size:10px;color:#a7b4ac;white-space:nowrap}@media(max-width:350px){.service-body{padding-left:6px;padding-right:6px}.service-title{font-size:12px}.service-tag,.cert{font-size:9px}.unit,.count{font-size:9px}}
+.service-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid var(--line-subtle);background:var(--surface);border-radius:10px}
+.service-overlay{position:absolute;right:8px;bottom:0;left:8px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;height:48px;padding-bottom:8px;box-sizing:border-box;min-width:0;pointer-events:none}
+.service-body{display:flex;flex-direction:column;gap:8px;min-width:0;padding:4px 8px 6px}
+.service-title{display:block;flex-shrink:0;min-width:0;font-size:13px;line-height:18px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.service-tags{display:flex;align-items:center;gap:4px;flex-shrink:0;height:16px;min-width:0;overflow:hidden;color:var(--muted);font-size:8px;line-height:12px}
+.service-category,.service-tag{display:block;flex-shrink:1;min-width:0;max-width:45%;padding:1px 4px;border:1px solid #ffffff0d;background:#ffffff08;border-radius:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.service-cert{display:inline-flex;flex-shrink:0;align-items:center;gap:2px;padding:1px 3px;border:1px solid #dfbb7133;border-radius:3px;background:#a17d191a;color:#dfc27f;white-space:nowrap}
+.service-price{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 4px;min-width:0}
+.price-value{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 1px;min-width:0;max-width:100%}.currency{font-size:12px;color:var(--accent);font-weight:700}.amount{font-size:21px;line-height:25px;color:var(--accent);font-weight:750;white-space:nowrap}.unit{max-width:100%;font-size:10px;color:var(--muted);overflow-wrap:anywhere}.count{max-width:100%;font-size:9px;color:var(--muted);white-space:nowrap}.service-actions{display:block;border-top:1px solid var(--line-subtle);padding-top:8px}
+@media(max-width:350px){.service-title{font-size:12px}.amount{font-size:19px}.count{font-size:8px}}
 </style>

@@ -1,0 +1,3 @@
+
+> jijie-marketplace@1.0.0 typecheck
+> vue-tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.tests.json

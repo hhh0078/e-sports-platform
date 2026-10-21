@@ -1,103 +1,85 @@
 {
   "pages": [
     {
-      "path": "pages/index/index",
+      "path": "pages/main/index",
       "style": {
-        "navigationBarTitleText": "集结 · 玩家"
+        "navigationBarTitleText": "集结"
       }
     },
     {
-      "path": "pages/worker/index",
-      "style": {
-        "navigationBarTitleText": "打手工作台"
-      }
-    },
-    {
-      "path": "pages/orders/index",
-      "style": {
-        "navigationBarTitleText": "我的订单"
-      }
-    },
-    {
-      "path": "pages/me/index",
-      "style": {
-        "navigationBarTitleText": "我的集结"
-      }
-    },
-    {
-      "path": "pages/service/index",
+      "path": "pages/services/detail",
       "style": {
         "navigationBarTitleText": "服务详情"
       }
     },
     {
-      "path": "pages/login/index",
-      "style": {
-        "navigationBarTitleText": "登录集结"
-      }
-    },
-    {
-      "path": "pages/order/index",
-      "style": {
-        "navigationBarTitleText": "订单详情"
-      }
-    },
-    {
-      "path": "pages/publish/index",
+      "path": "pages/services/publish",
       "style": {
         "navigationBarTitleText": "发布服务"
       }
     },
     {
-      "path": "pages/request/index",
+      "path": "pages/requests/publish",
       "style": {
         "navigationBarTitleText": "发布需求"
       }
     },
     {
-      "path": "pages/clubs/index",
+      "path": "pages/orders/detail",
       "style": {
-        "navigationBarTitleText": "俱乐部"
+        "navigationBarTitleText": "订单详情"
       }
     },
     {
-      "path": "pages/club/index",
+      "path": "pages/account/login",
       "style": {
-        "navigationBarTitleText": "俱乐部详情"
+        "navigationBarTitleText": "登录集结"
       }
     },
     {
-      "path": "pages/admin/index",
-      "style": {
-        "navigationBarTitleText": "管理中心"
-      }
-    },
-    {
-      "path": "pages/profile/index",
+      "path": "pages/account/profile",
       "style": {
         "navigationBarTitleText": "个人资料"
       }
     },
     {
-      "path": "pages/player/index",
-      "style": {
-        "navigationBarTitleText": "玩家主页"
-      }
-    },
-    {
-      "path": "pages/club-edit/index",
-      "style": {
-        "navigationBarTitleText": "俱乐部装修"
-      }
-    },
-    {
-      "path": "pages/agreements/index",
+      "path": "pages/account/agreements",
       "style": {
         "navigationBarTitleText": "平台协议"
       }
     },
     {
-      "path": "pages/admin-settings/index",
+      "path": "pages/community/clubs/index",
+      "style": {
+        "navigationBarTitleText": "俱乐部"
+      }
+    },
+    {
+      "path": "pages/community/clubs/detail",
+      "style": {
+        "navigationBarTitleText": "俱乐部主页"
+      }
+    },
+    {
+      "path": "pages/community/clubs/edit",
+      "style": {
+        "navigationBarTitleText": "俱乐部装修"
+      }
+    },
+    {
+      "path": "pages/community/players/detail",
+      "style": {
+        "navigationBarTitleText": "玩家主页"
+      }
+    },
+    {
+      "path": "pages/manage/index",
+      "style": {
+        "navigationBarTitleText": "管理中心"
+      }
+    },
+    {
+      "path": "pages/manage/settings",
       "style": {
         "navigationBarTitleText": "平台配置"
       }
@@ -108,5 +90,11 @@
     "backgroundColor": "#0a1110",
     "backgroundTextStyle": "light",
     "navigationBarTextStyle": "white"
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+    }
   }
 }

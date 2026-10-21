@@ -30,7 +30,17 @@ func (a *App) clubs(w http.ResponseWriter, r *http.Request) (any, error) {
 			return nil, err
 		}
 	}
-	items, err := list[Club](r.Context(), a.DB, "clubs", "ORDER BY data->>'created_at' DESC")
+	query := strings.TrimSpace(r.URL.Query().Get("q"))
+	if !length(query, 0, 100) {
+		return nil, fail(400, "搜索关键词最多 100 字")
+	}
+	where, args := "ORDER BY data->>'created_at' DESC, id DESC", []any{}
+	if query != "" {
+		// 搜索词作为绑定参数按普通文本匹配，先过滤再应用挂靠范围和分页。
+		where = "WHERE strpos(lower(concat_ws(' ',data->>'name',data->>'description')),lower($1))>0 " + where
+		args = append(args, query)
+	}
+	items, err := list[Club](r.Context(), a.DB, "clubs", where, args...)
 	if err != nil {
 		return nil, err
 	}

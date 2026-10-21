@@ -3,10 +3,65 @@ package app
 
 import (
 	"encoding/json"
+	"net/url"
 	"strings"
 	"sync"
 	"testing"
 )
+
+// TestIntegrationClubSearchBeforePagination 验证名称简介字面搜索、分页与本人挂靠范围同时生效。
+func TestIntegrationClubSearchBeforePagination(t *testing.T) {
+	api := newTestAPI(t)
+	fixtures := []Club{
+		{ID: "search-owned-name", Name: "检索 Alpha", Description: "常规小队介绍", OwnerID: "clubowner", Status: "active", CreatedAt: "2026-10-22T00:00:01Z"},
+		{ID: "search-owned-description", Name: "普通小队", Description: "检索：描述关键词", OwnerID: "clubowner", Status: "active", CreatedAt: "2026-10-22T00:00:02Z"},
+		{ID: "search-member", Name: "检索认证小队", Description: "另一位负责人创建的俱乐部", OwnerID: "outsider", Status: "active", CreatedAt: "2026-10-22T00:00:03Z"},
+		{ID: "search-owned-pending", Name: "检索待审核小队", Description: "只有本人可以看到的申请", OwnerID: "clubowner", Status: "pending", CreatedAt: "2026-10-22T00:00:04Z"},
+		{ID: "search-foreign", Name: "检索独立小队", Description: "没有本人挂靠记录", OwnerID: "outsider", Status: "active", CreatedAt: "2026-10-22T00:00:05Z"},
+		{ID: "search-unmatched", Name: "无关小队", Description: "不应占用搜索结果页", OwnerID: "clubowner", Status: "active", CreatedAt: "2026-10-22T00:00:06Z"},
+	}
+	for _, club := range fixtures {
+		if err := put(t.Context(), api.App.DB, "clubs", club.ID, club); err != nil {
+			t.Fatal(err)
+		}
+	}
+	member := ClubMember{UserID: "worker", ClubID: "search-member", Status: "active", CreatedAt: "2026-10-22T00:00:07Z"}
+	if err := put(t.Context(), api.App.DB, "members", member.ClubID+":"+member.UserID, member); err != nil {
+		t.Fatal(err)
+	}
+	checks := []struct {
+		name, actor, query, extra string
+		want                      []string
+	}{
+		{"名称忽略大小写并去除空白", "", " alpha ", "", []string{"search-owned-name"}},
+		{"简介关键词", "", "描述关键词", "", []string{"search-owned-description"}},
+		{"不匹配为空", "", "不存在的专属关键词", "", nil},
+		{"SQL文本不是指令", "", "' OR 1=1 --", "", nil},
+		{"百分号不是通配符", "", "%", "", nil},
+		{"筛选后第一页", "", "检索", "&limit=2", []string{"search-foreign", "search-member"}},
+		{"筛选后第二页", "", "检索", "&limit=2&offset=2", []string{"search-owned-description", "search-owned-name"}},
+		{"翻页结束", "", "检索", "&limit=2&offset=4", nil},
+		{"本人负责含待审核", "clubowner", "检索", "&mine=1", []string{"search-owned-pending", "search-owned-description", "search-owned-name"}},
+		{"本人范围筛选后分页", "clubowner", "检索", "&mine=1&limit=1&offset=1", []string{"search-owned-description"}},
+		{"成员挂靠范围", "worker", "检索", "&mine=1", []string{"search-member"}},
+	}
+	for _, check := range checks {
+		t.Run(check.name, func(t *testing.T) {
+			var clubs []Club
+			api.call(check.actor, "GET", "/clubs?q="+url.QueryEscape(check.query)+check.extra, nil, 200, &clubs)
+			if len(clubs) != len(check.want) {
+				t.Fatalf("搜索结果数量不正确：期望 %v，实际 %+v", check.want, clubs)
+			}
+			for i, club := range clubs {
+				if club.ID != check.want[i] {
+					t.Fatalf("搜索分页顺序或可见范围不正确：期望 %v，实际 %+v", check.want, clubs)
+				}
+			}
+		})
+	}
+	api.call("", "GET", "/clubs?mine=1&q="+url.QueryEscape("检索"), nil, 401, nil)
+	api.call("", "GET", "/clubs?q="+url.QueryEscape(strings.Repeat("字", 101)), nil, 400, nil)
+}
 
 // TestIntegrationCommunityClubLifecycle 覆盖俱乐部装修、重新审核、入会考核及跨俱乐部隔离。
 func TestIntegrationCommunityClubLifecycle(t *testing.T) {

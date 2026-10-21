@@ -1,7 +1,7 @@
 <!-- 文件作用：统一空内容、未登录和错误后重试的占位状态。 -->
-<template><view class="empty-state"><view class="empty-icon"><Icon :name="icon" :size="30" /></view><text class="empty-title">{{ title }}</text><text v-if="detail" class="empty-detail">{{ detail }}</text><slot /></view></template>
-<script setup>
+<template><view :class="['empty-state',{'empty-state-illustrated':!!illustration}]"><image v-if="illustration" class="empty-illustration" :src="illustration" mode="aspectFit"/><view v-else-if="icon" class="empty-icon"><Icon :name="icon" :size="30"/></view><text class="empty-title">{{ title }}</text><text v-if="detail" class="empty-detail">{{ detail }}</text><slot/></view></template>
+<script setup lang="ts">
 import Icon from './Icon.vue'
-defineProps({ title: { type: String, default: '暂时还没有内容' }, detail: String, icon: { type: String, default: 'orders' } })
+withDefaults(defineProps<{title?:string;detail?:string;icon?:string;illustration?:string}>(),{title:'暂时还没有内容',icon:'orders',illustration:''})
 </script>
-<style scoped>.empty-state{display:flex;flex-direction:column;align-items:center;gap:12px;padding:48px 20px;text-align:center;border:1px dashed rgba(255,255,255,.1);border-radius:16px;background:rgba(255,255,255,.015)}.empty-icon{color:var(--accent);opacity:.8;margin-bottom:3px}.empty-title{font-size:15px;font-weight:600}.empty-detail{font-size:12px;color:#87988c;line-height:1.7;max-width:270px}</style>
+<style scoped>.empty-state{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;min-width:0;padding:40px 16px;text-align:center}.empty-icon{color:var(--accent);opacity:.8;margin-bottom:3px}.empty-title{font-size:15px;line-height:24px;font-weight:600;color:var(--text)}.empty-detail{font-size:12px;color:var(--muted);line-height:1.7;max-width:280px}.empty-state-illustrated{padding:20px 0}.empty-illustration{display:block;width:300px;height:200px;max-width:100%;margin-bottom:8px}.empty-state-illustrated .empty-title{font-size:20px;line-height:28px;font-weight:650}@media(max-width:350px){.empty-illustration{width:250px;height:166.7px}.empty-state-illustrated .empty-title{font-size:18px}.empty-detail{font-size:11px}}</style>

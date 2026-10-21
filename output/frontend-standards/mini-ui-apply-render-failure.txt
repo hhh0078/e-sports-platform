@@ -1,0 +1,49 @@
+CHECK 页面 /pages/services/detail?id=eggy-service-2
+PASS 页面与返回 /pages/services/detail
+CHECK 页面 /pages/account/login
+PASS 页面与返回 /pages/account/login
+CHECK 页面 /pages/account/profile
+PASS 页面与返回 /pages/account/profile
+CHECK 页面 /pages/account/agreements?type=user_agreement
+PASS 页面与返回 /pages/account/agreements
+CHECK 页面 /pages/services/detail?id=eggy-service-2
+PASS 页面与返回 /pages/services/detail
+CHECK 页面 /pages/community/clubs/index
+PASS 页面与返回 /pages/community/clubs/index
+CHECK 页面 /pages/community/clubs/detail?id=wild
+PASS 页面与返回 /pages/community/clubs/detail
+CHECK 页面 /pages/community/players/detail?id=worker
+PASS 页面与返回 /pages/community/players/detail
+CHECK 页面 /pages/services/detail?id=delta-service-8
+PASS 页面与返回 /pages/services/detail
+CHECK 登录 云间旅人
+CHECK 登录页已打开 云间旅人
+CHECK 体验身份列表 云间旅人
+CHECK 完善资料弹层 云间旅人
+CHECK 页面 /pages/account/profile
+PASS 页面与返回 /pages/account/profile
+CHECK 页面 /pages/requests/publish
+PASS 页面与返回 /pages/requests/publish
+CHECK 页面 /pages/manage/index
+PASS 页面与返回 /pages/manage/index
+CHECK 页面 /pages/manage/settings
+PASS 页面与返回 /pages/manage/settings
+CHECK 登录 北辰
+CHECK 登录页已打开 北辰
+CHECK 体验身份列表 北辰
+CHECK 完善资料弹层 北辰
+CHECK 页面 /pages/services/publish
+PASS 页面与返回 /pages/services/publish
+CHECK 页面 /pages/community/clubs/edit?id=wild
+PASS 页面与返回 /pages/community/clubs/edit
+CHECK 登录 自由玩家
+CHECK 登录页已打开 自由玩家
+CHECK 体验身份列表 自由玩家
+CHECK 完善资料弹层 自由玩家
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  visit('/pages/requests/publish','requests-publish',main)
+
+    at phoneOverlay (/Users/Zhuanz/Desktop/三角洲/scripts/mini-ui-regression.ts:353:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async run (/Users/Zhuanz/Desktop/三角洲/scripts/mini-ui-regression.ts:431:3)

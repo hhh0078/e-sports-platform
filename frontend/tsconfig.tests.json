@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/lib/**/*.ts",
+    "src/api/**/*.ts",
+    "src/types/**/*.ts",
+    "src/env.d.ts",
+    "../scripts/mini-transaction.ts",
+    "../scripts/mini-ui-regression.ts",
+    "../scripts/check-frontend-standards.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

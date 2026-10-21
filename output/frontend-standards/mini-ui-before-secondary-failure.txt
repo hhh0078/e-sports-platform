@@ -1,0 +1,40 @@
+CHECK 页面 /pages/services/detail?id=eggy-service-2
+PASS 页面与返回 /pages/services/detail
+CHECK 页面 /pages/account/login
+PASS 页面与返回 /pages/account/login
+CHECK 页面 /pages/account/profile
+PASS 页面与返回 /pages/account/profile
+CHECK 页面 /pages/account/agreements?type=user_agreement
+PASS 页面与返回 /pages/account/agreements
+CHECK 页面 /pages/services/detail?id=eggy-service-2
+PASS 页面与返回 /pages/services/detail
+CHECK 页面 /pages/community/clubs/index
+PASS 页面与返回 /pages/community/clubs/index
+CHECK 页面 /pages/community/clubs/detail?id=wild
+PASS 页面与返回 /pages/community/clubs/detail
+CHECK 页面 /pages/community/players/detail?id=worker
+PASS 页面与返回 /pages/community/players/detail
+CHECK 登录 云间旅人
+CHECK 页面 /pages/account/profile
+PASS 页面与返回 /pages/account/profile
+CHECK 页面 /pages/requests/publish
+PASS 页面与返回 /pages/requests/publish
+CHECK 页面 /pages/manage/index
+PASS 页面与返回 /pages/manage/index
+CHECK 页面 /pages/manage/settings
+PASS 页面与返回 /pages/manage/settings
+CHECK 登录 北辰
+CHECK 页面 /pages/services/publish
+PASS 页面与返回 /pages/services/publish
+CHECK 页面 /pages/community/clubs/edit?id=wild
+Error: timeout waiting for automator response
+    at Connection.onMessage (/Users/Zhuanz/Desktop/三角洲/frontend/node_modules/miniprogram-automator/out/Connection.js:1:1077)
+    at Transport.emit (node:events:519:28)
+    at WebSocket.<anonymous> (/Users/Zhuanz/Desktop/三角洲/frontend/node_modules/miniprogram-automator/out/Transport.js:1:354)
+    at WebSocket.onMessage (/Users/Zhuanz/Desktop/三角洲/frontend/node_modules/miniprogram-automator/node_modules/ws/lib/event-target.js:120:16)
+    at WebSocket.emit (node:events:519:28)
+    at Receiver.receiverOnMessage (/Users/Zhuanz/Desktop/三角洲/frontend/node_modules/miniprogram-automator/node_modules/ws/lib/websocket.js:807:20)
+    at Receiver.emit (node:events:519:28)
+    at Receiver.dataMessage (/Users/Zhuanz/Desktop/三角洲/frontend/node_modules/miniprogram-automator/node_modules/ws/lib/receiver.js:448:14)
+    at Receiver.getData (/Users/Zhuanz/Desktop/三角洲/frontend/node_modules/miniprogram-automator/node_modules/ws/lib/receiver.js:377:17)
+    at Receiver.startLoop (/Users/Zhuanz/Desktop/三角洲/frontend/node_modules/miniprogram-automator/node_modules/ws/lib/receiver.js:158:22)

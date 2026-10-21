@@ -1,8 +1,53 @@
-/* 文件作用：集结客户端的统一深色设计体系与跨端基础布局。 */
-page{--accent:#00e18a;--bg:#0a1110;--surface:#15201e;--text:#f2f5f3;background:#0a1110;color:#f2f5f3;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;font-size:14px;line-height:1.5}
-view,text,input,textarea,button,scroll-view,uni-view,uni-text,uni-input,uni-textarea,uni-button,uni-scroll-view{box-sizing:border-box}button::after,uni-button::after{border:0}button,uni-button{margin:0;font:inherit}image{display:block}input,textarea{font-family:inherit;font-size:14px;color:var(--text);min-width:0}input{height:24px}textarea{width:100%;min-height:90px}.app-frame{min-height:100vh;background:var(--bg);color:var(--text);transition:background .25s}.app-body{max-width:720px;margin:0 auto;padding:0 20px 104px}.page-heading{font-size:26px;line-height:1.2;font-weight:750;letter-spacing:-1px}.eyebrow{font-size:10px;font-weight:700;letter-spacing:2.6px;color:var(--accent);text-transform:uppercase}.muted{color:#8a9993;font-size:12px}.small{font-size:12px}.accent{color:var(--accent)}.danger{color:#ff8479}.row{display:flex;align-items:center;gap:10px}.between{justify-content:space-between}.stack{display:flex;flex-direction:column;gap:14px}.panel{background:var(--surface);border:1px solid rgba(255,255,255,.075);border-radius:16px;padding:18px}.section-title{font-size:18px;font-weight:700;letter-spacing:-.4px}.section-row{display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px}.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:6px;background:rgba(255,255,255,.065);color:#bcc7c2;font-size:10px;font-weight:600}.pill-accent{color:var(--accent);border:1px solid var(--accent);background:transparent}.field{display:flex;flex-direction:column;gap:8px;margin-bottom:17px}.field-label{font-size:12px;color:#b9c4bf;font-weight:600}.input{width:100%;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;min-height:46px;line-height:22px;color:var(--text)}input.input{height:46px}textarea.input{height:110px}.btn,.btn-secondary{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:12px 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#06140d;font-size:14px;line-height:20px;font-weight:700;text-align:center;cursor:pointer}.btn[disabled]{opacity:.5}.btn-secondary{background:transparent;border-color:rgba(255,255,255,.16);color:var(--text)}.btn-danger{background:rgba(255,114,103,.08);border-color:rgba(255,114,103,.3);color:#ff8479}.btn-small{min-height:32px;padding:6px 11px;font-size:11px;border-radius:7px}.text-btn{background:none;border:0;padding:0;min-height:auto;color:var(--accent);font-size:12px;line-height:24px}.divider{height:1px;background:rgba(255,255,255,.075);margin:16px 0}.avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#27342e;color:var(--accent);font-size:18px;font-weight:700;flex-shrink:0}.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.notice{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:11px 13px;color:#9ca9a3;font-size:11px;line-height:1.7}.error-box{padding:18px;border:1px solid #864c42;border-radius:12px;background:#2b1b16;color:#ffb0a3}.loading-line{padding:40px 0;text-align:center;font-size:12px;color:#89968f}.safe-bottom{padding-bottom:env(safe-area-inset-bottom)}.form-actions{display:flex;gap:10px}.form-actions>.btn{flex:1}.nowrap{white-space:nowrap}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cover-preview{overflow:hidden;border-radius:12px}.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:3px}.tab{flex-shrink:0;padding:8px 14px;color:#a7b3ac;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:8px;font-size:12px;cursor:pointer}.tab.active{color:var(--accent);border-color:var(--accent);background:transparent}.balance{font-size:28px;font-weight:750;letter-spacing:-1px}.list-card{padding:16px;background:var(--surface);border:1px solid rgba(255,255,255,.075);border-radius:13px}.hint{font-size:11px;color:#829188;line-height:1.7}.status-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);display:inline-block}.mt{margin-top:16px}.mb{margin-bottom:16px}@media(min-width:760px){.app-body{padding-left:30px;padding-right:30px}.card-grid{gap:18px}}
-/* uni-app 的 H5 按钮默认左右 auto；提高重置权重，使跨端 flex/grid 操作按钮按设计对齐。 */
-.app-frame button,.app-frame uni-button{margin-left:0;margin-right:0}
-
-/* 限制独立横向内容的宽度，防止滚动标签或长文本挤压同排操作。 */
-.app-frame,.app-body{width:100%;min-width:0;max-width:100%}.row,.section-row,.form-actions{min-width:0}.row>view,.row>text,.section-row>view{min-width:0}.tabs{max-width:100%;min-width:0}.tab,.pill{flex-shrink:0}.panel,.list-card{min-width:0;overflow-wrap:anywhere}scroll-view,uni-scroll-view{min-width:0;max-width:100%}.input{max-width:100%}.text-btn{flex-shrink:0}.form-actions{flex-wrap:wrap}.form-actions>button{min-width:0}
+/* 文件作用：统一跨端色彩、文字、间距、按钮、输入与通用布局；页面只补业务布局。 */
+page{--accent:#83e7b7;--bg:#0a1110;--surface:#111e19;--text:#edf3ef;--muted:#91a299;--line:#ffffff20;--line-subtle:#ffffff12;--radius:12px;--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-8:32px;--control-height:44px;--compact-height:36px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;font-size:14px;line-height:1.5}
+view,text,input,textarea,button,scroll-view,uni-view,uni-text,uni-input,uni-textarea,uni-button,uni-scroll-view{box-sizing:border-box}
+button,uni-button{margin:0;font:inherit;line-height:1.4;border-radius:var(--radius);color:var(--text)}
+button::after,uni-button::after{border:0}
+button[disabled]{opacity:.45}
+image{display:block;flex-shrink:0}
+input,textarea{min-width:0;max-width:100%;font-family:inherit;font-size:14px;color:var(--text)}
+input{height:24px}textarea{width:100%;min-height:96px}
+.app-frame{min-height:100vh;background:var(--bg);color:var(--text)}
+.app-frame,.app-body,.main-shell{width:100%;min-width:0;max-width:100%}
+.app-body{max-width:600px;margin:0 auto;padding:16px 16px calc(24px + env(safe-area-inset-bottom))}
+.page-heading{font-size:24px;line-height:1.3;font-weight:750}
+.eyebrow{font-size:11px;font-weight:600;color:var(--accent)}
+.muted,.hint{color:var(--muted);font-size:12px;line-height:1.7}
+.small{font-size:12px}.accent{color:var(--accent)}.danger{color:#f19a88}
+.row{display:flex;align-items:center;gap:12px;min-width:0}.row>view,.row>text,.section-row>view{min-width:0}
+.between{justify-content:space-between}.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel,.list-card{background:var(--surface);border:1px solid var(--line-subtle);border-radius:var(--radius);padding:16px;min-width:0;overflow-wrap:anywhere}
+.section-title{font-size:17px;line-height:24px;font-weight:700}
+.section-row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-width:0;margin:24px 0 12px}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:4px;max-width:100%;padding:3px 7px;border-radius:5px;background:#ffffff08;color:#b7c7bd;font-size:10px;line-height:16px;font-weight:500}
+.pill-accent{color:var(--accent);border:1px solid #83e7b740;background:transparent}
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;min-width:0}.field:last-child{margin-bottom:0}
+.field-label{font-size:13px;color:#c8d4cd;font-weight:600}
+.input{display:flex;align-items:center;width:100%;background:#ffffff04;border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;line-height:22px;color:var(--text)}
+input.input{height:44px}textarea.input{display:block;height:112px}
+.btn,.btn-secondary{display:flex;align-items:center;justify-content:center;gap:8px;height:var(--control-height);min-height:var(--control-height);padding:0 16px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#0a2116;font-size:14px;line-height:20px;font-weight:650;text-align:center;cursor:pointer}
+.btn-secondary{background:transparent;border-color:var(--line);color:var(--text)}
+.btn-danger{background:#f19a8810;border-color:#f19a8840;color:#f19a88}
+.btn-small{height:var(--compact-height);min-height:var(--compact-height);padding:0 12px;font-size:12px;border-radius:8px}
+.text-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;flex-shrink:0;min-height:28px;padding:0 4px;color:var(--accent);font-size:12px;line-height:20px;background:transparent;border:0}
+.icon-btn{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:44px;height:44px;padding:0;background:transparent;color:var(--text)}
+.divider{height:1px;background:var(--line-subtle);margin:16px 0}
+.avatar{display:flex;align-items:center;justify-content:center;width:44px;height:44px;overflow:hidden;border-radius:50%;background:#25382d;color:var(--accent);font-size:18px;font-weight:700;flex-shrink:0}
+.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-width:0}
+.notice{background:#ffffff04;border:1px solid var(--line-subtle);border-radius:10px;padding:12px;color:var(--muted);font-size:12px;line-height:1.7}
+.error-box{padding:16px;border:1px solid #e7a58d44;border-radius:var(--radius);background:#251c17;color:#f4bda5;font-size:13px;line-height:1.6}
+.loading-line{padding:40px 16px;text-align:center;font-size:12px;color:var(--muted)}
+.safe-bottom{padding-bottom:env(safe-area-inset-bottom)}
+.form-actions{display:flex;flex-wrap:wrap;gap:12px;min-width:0}.form-actions>.btn,.form-actions>.btn-secondary{flex:1;min-width:0}
+/* 普通编辑页以开放分节和细线输入组织内容，不再逐层叠加外框。 */
+.form-section{min-width:0;padding:24px 0;border-bottom:1px solid var(--line-subtle);overflow-wrap:anywhere}.form-section>.section-title{display:block;margin-bottom:16px}.form-section .field-label{color:var(--muted);font-size:12px}.form-section .input{border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:10px 0}.form-section textarea.input{border:1px solid var(--line-subtle);border-radius:8px;background:#ffffff03;padding:12px}.subtle-note{display:block;padding:12px 0;color:var(--muted);font-size:12px;line-height:1.7}.action-footer{display:flex;align-items:center;gap:16px;min-width:0;padding:24px 0 8px}.action-footer>.btn{flex:1;min-width:0}.action-footer>.text-btn{flex-shrink:0;min-width:68px}
+.nowrap{white-space:nowrap}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cover-preview{overflow:hidden;border-radius:10px}
+.tabs{display:flex;gap:8px;min-width:0;max-width:100%;overflow-x:auto;padding-bottom:4px}
+.tab{display:inline-flex;flex-shrink:0;align-items:center;justify-content:center;min-height:36px;padding:0 12px;color:#a7b6ae;background:transparent;border:1px solid var(--line);border-radius:8px;font-size:12px;line-height:20px;cursor:pointer}
+.tab.active{color:var(--accent);border-color:var(--accent)}
+.balance{font-size:28px;font-weight:750;font-variant-numeric:tabular-nums}
+.status-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.mt{margin-top:16px}.mb{margin-bottom:16px}
+scroll-view,uni-scroll-view{min-width:0;max-width:100%}
+.app-frame button,.app-frame uni-button,.main-shell button,.main-shell uni-button{margin-left:0;margin-right:0}
+@media(max-width:350px){.card-grid{gap:8px}.btn,.btn-secondary{padding-left:12px;padding-right:12px}}

@@ -2,12 +2,15 @@
   "name": "jijie-marketplace",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "集结多游戏服务平台 uni-app 客户端",
   "scripts": {
     "dev:h5": "uni --host 0.0.0.0 --port 5173",
     "build:h5": "uni build",
     "build:mp-weixin": "uni build -p mp-weixin",
-    "test": "node --test src/lib/*.test.js"
+    "test": "tsx --test src/lib/*.test.ts",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.tests.json",
+    "check:standards": "tsx ../scripts/check-frontend-standards.ts"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-5020620260917001",
@@ -20,8 +23,12 @@
   "devDependencies": {
     "@dcloudio/types": "3.4.31",
     "@dcloudio/vite-plugin-uni": "3.0.0-5020620260917001",
+    "@types/node": "^22.20.5",
     "miniprogram-automator": "^0.13.0",
     "sass": "1.77.8",
-    "vite": "5.2.8"
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vite": "5.2.8",
+    "vue-tsc": "^2.2.0"
   }
 }

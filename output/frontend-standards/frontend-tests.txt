@@ -1,0 +1,931 @@
+
+> jijie-marketplace@1.0.0 test
+> tsx --test src/lib/*.test.ts
+
+TAP version 13
+# Subtest: 请求统一附带当前令牌并只解包业务data
+ok 1 - 请求统一附带当前令牌并只解包业务data
+  ---
+  duration_ms: 0.970625
+  type: 'test'
+  ...
+# Subtest: HTTP401保留状态和服务端消息，网络错误不伪装身份失效
+ok 2 - HTTP401保留状态和服务端消息，网络错误不伪装身份失效
+  ---
+  duration_ms: 0.349458
+  type: 'test'
+  ...
+# Subtest: 上传错误响应不冒充有效媒体地址
+ok 3 - 上传错误响应不冒充有效媒体地址
+  ---
+  duration_ms: 0.172083
+  type: 'test'
+  ...
+# Subtest: 接单API保留当前挂靠选择，消息游标独立编码
+ok 4 - 接单API保留当前挂靠选择，消息游标独立编码
+  ---
+  duration_ms: 0.247666
+  type: 'test'
+  ...
+# Subtest: 非法业务响应拒绝解析，微信原生errMsg保留可读诊断
+ok 5 - 非法业务响应拒绝解析，微信原生errMsg保留可读诊断
+  ---
+  duration_ms: 0.169958
+  type: 'test'
+  ...
+# Subtest: 开发手机号API发送与Go一致的phone_number字段
+ok 6 - 开发手机号API发送与Go一致的phone_number字段
+  ---
+  duration_ms: 0.078208
+  type: 'test'
+  ...
+# Subtest: 俱乐部筛选只接收最新请求，旧成功和旧错误均不能覆盖新列表
+    # Subtest: success
+    ok 1 - success
+      ---
+      duration_ms: 202.634708
+      type: 'test'
+      ...
+    # Subtest: error
+    ok 2 - error
+      ---
+      duration_ms: 131.58725
+      type: 'test'
+      ...
+    1..2
+ok 7 - 俱乐部筛选只接收最新请求，旧成功和旧错误均不能覆盖新列表
+  ---
+  duration_ms: 334.91125
+  type: 'test'
+  ...
+# Subtest: 我的俱乐部切换账号立即清空原资料，旧响应不回填新身份
+ok 8 - 我的俱乐部切换账号立即清空原资料，旧响应不回填新身份
+  ---
+  duration_ms: 53.231792
+  type: 'test'
+  ...
+# Subtest: 俱乐部旧创建的成功或失败不能导航、关闭或解锁新身份的申请
+    # Subtest: success
+    ok 1 - success
+      ---
+      duration_ms: 51.370833
+      type: 'test'
+      ...
+    # Subtest: error
+    ok 2 - error
+      ---
+      duration_ms: 75.8105
+      type: 'test'
+      ...
+    1..2
+ok 9 - 俱乐部旧创建的成功或失败不能导航、关闭或解锁新身份的申请
+  ---
+  duration_ms: 130.955875
+  type: 'test'
+  ...
+# Subtest: 离开俱乐部目录后在途读取与创建结果均不再影响界面
+    # Subtest: hide
+    ok 1 - hide
+      ---
+      duration_ms: 52.729083
+      type: 'test'
+      ...
+    # Subtest: unload
+    ok 2 - unload
+      ---
+      duration_ms: 58.8405
+      type: 'test'
+      ...
+    1..2
+ok 10 - 离开俱乐部目录后在途读取与创建结果均不再影响界面
+  ---
+  duration_ms: 112.366333
+  type: 'test'
+  ...
+# Subtest: 同一用户会话更新后旧创建结果被丢弃但提交锁仍正常恢复
+ok 11 - 同一用户会话更新后旧创建结果被丢弃但提交锁仍正常恢复
+  ---
+  duration_ms: 109.990042
+  type: 'test'
+  ...
+# Subtest: CoverArt按测量宽度动态转换48像素预留，4:3和尺寸变化后仍不侵入标题区
+ok 12 - CoverArt按测量宽度动态转换48像素预留，4:3和尺寸变化后仍不侵入标题区
+  ---
+  duration_ms: 175.365792
+  type: 'test'
+  ...
+# Subtest: CoverArt旧reserveBottom保持画布单位，比例或像素参数无效时安全回退
+ok 13 - CoverArt旧reserveBottom保持画布单位，比例或像素参数无效时安全回退
+  ---
+  duration_ms: 32.609708
+  type: 'test'
+  ...
+# Subtest: CoverArt沉浸模式按实测宽度同时保留顶部安全区与底部系统信息区
+ok 14 - CoverArt沉浸模式按实测宽度同时保留顶部安全区与底部系统信息区
+  ---
+  duration_ms: 30.582209
+  type: 'test'
+  ...
+# Subtest: 320宽沉浸详情按文字带增高，六条最长标签全部锚点实际字号至少10像素
+ok 15 - 320宽沉浸详情按文字带增高，六条最长标签全部锚点实际字号至少10像素
+  ---
+  duration_ms: 52.891583
+  type: 'test'
+  ...
+# Subtest: 不同标签数量的文字带使用最终高度布局，实际宽度扩大后仍可回到原比例
+ok 16 - 不同标签数量的文字带使用最终高度布局，实际宽度扩大后仍可回到原比例
+  ---
+  duration_ms: 55.192583
+  type: 'test'
+  ...
+# Subtest: 六条最长最大字号文案在全部九宫格锚点不越界不重叠
+ok 17 - 六条最长最大字号文案在全部九宫格锚点不越界不重叠
+  ---
+  duration_ms: 54.358666
+  type: 'test'
+  ...
+# Subtest: 混合位置、字号与英文文本仍能安全布局
+ok 18 - 混合位置、字号与英文文本仍能安全布局
+  ---
+  duration_ms: 649.749625
+  type: 'test'
+  ...
+# Subtest: 默认左下、无数据和超量标签处理
+ok 19 - 默认左下、无数据和超量标签处理
+  ---
+  duration_ms: 35.901916
+  type: 'test'
+  ...
+# Subtest: 浅色封面标签采用深色字，深色标签采用白字
+ok 20 - 浅色封面标签采用深色字，深色标签采用白字
+  ---
+  duration_ms: 0.199584
+  type: 'test'
+  ...
+# Subtest: 新建随机选底图，主动换图避开当前，单图空图库和无效随机数安全处理
+ok 21 - 新建随机选底图，主动换图避开当前，单图空图库和无效随机数安全处理
+  ---
+  duration_ms: 0.2605
+  type: 'test'
+  ...
+# Subtest: 截字保持旗帜、肤色、连接符表情与组合音标完整，并遵守后端十二码点上限
+ok 22 - 截字保持旗帜、肤色、连接符表情与组合音标完整，并遵守后端十二码点上限
+  ---
+  duration_ms: 0.213834
+  type: 'test'
+  ...
+# Subtest: 默认左下按加入顺序向右排，颜色透明层保留且不修改原始配置
+ok 23 - 默认左下按加入顺序向右排，颜色透明层保留且不修改原始配置
+  ---
+  duration_ms: 1.678917
+  type: 'test'
+  ...
+# Subtest: emoji、极宽英文、中文在不同字号九宫格组合下都有安全间距
+ok 24 - emoji、极宽英文、中文在不同字号九宫格组合下都有安全间距
+  ---
+  duration_ms: 549.678334
+  type: 'test'
+  ...
+# Subtest: 空配置、无效位置与字号不会导致无效坐标或渲染异常
+ok 25 - 空配置、无效位置与字号不会导致无效坐标或渲染异常
+  ---
+  duration_ms: 2.425209
+  type: 'test'
+  ...
+# Subtest: 卡片信息叠层预留区域内六段文案无碰撞
+ok 26 - 卡片信息叠层预留区域内六段文案无碰撞
+  ---
+  duration_ms: 4.663667
+  type: 'test'
+  ...
+# Subtest: 4:3卡片与详情按实际宽度保留48/92像素系统文字区，六标签在全部锚点均不碰撞
+ok 27 - 4:3卡片与详情按实际宽度保留48/92像素系统文字区，六标签在全部锚点均不碰撞
+  ---
+  duration_ms: 226.261458
+  type: 'test'
+  ...
+# Subtest: 底部预留超过55画布单位仍全部生效，空间耗尽时不输出越界或负字号标签
+ok 28 - 底部预留超过55画布单位仍全部生效，空间耗尽时不输出越界或负字号标签
+  ---
+  duration_ms: 104.6225
+  type: 'test'
+  ...
+# Subtest: 沉浸详情顶部避让返回和胶囊、底部保留108像素，六标签不消失也不碰撞
+ok 29 - 沉浸详情顶部避让返回和胶囊、底部保留108像素，六标签不消失也不碰撞
+  ---
+  duration_ms: 200.131459
+  type: 'test'
+  ...
+# Subtest: 金额按分准确展示，保留有效小数
+ok 30 - 金额按分准确展示，保留有效小数
+  ---
+  duration_ms: 0.508
+  type: 'test'
+  ...
+# Subtest: 空值和无效时间安全显示，未知状态保留原值
+ok 31 - 空值和无效时间安全显示，未知状态保留原值
+  ---
+  duration_ms: 0.0935
+  type: 'test'
+  ...
+# Subtest: 上传封面采用后端地址，内置图片保持小程序相对路径
+ok 32 - 上传封面采用后端地址，内置图片保持小程序相对路径
+  ---
+  duration_ms: 0.090834
+  type: 'test'
+  ...
+# Subtest: 主导航归一化保留筛选，同一主页面切换不重建，二级详情保留返回路径
+ok 33 - 主导航归一化保留筛选，同一主页面切换不重建，二级详情保留返回路径
+  ---
+  duration_ms: 0.474708
+  type: 'test'
+  ...
+# Subtest: 共享返回优先沿历史返回，无历史或返回失败时进入唯一主页面
+ok 34 - 共享返回优先沿历史返回，无历史或返回失败时进入唯一主页面
+  ---
+  duration_ms: 0.134958
+  type: 'test'
+  ...
+# Subtest: 未勾选协议时不调用微信也不建立会话
+ok 35 - 未勾选协议时不调用微信也不建立会话
+  ---
+  duration_ms: 63.472333
+  type: 'test'
+  ...
+# Subtest: 真实微信登录失败显示开发者工具登录态过期，并恢复按钮
+ok 36 - 真实微信登录失败显示开发者工具登录态过期，并恢复按钮
+  ---
+  duration_ms: 47.836333
+  type: 'test'
+  ...
+# Subtest: 登录期间离开页面后迟到的票据不会建立会话或弹出资料层
+ok 37 - 登录期间离开页面后迟到的票据不会建立会话或弹出资料层
+  ---
+  duration_ms: 71.982917
+  type: 'test'
+  ...
+# Subtest: 当前登录按微信票据后再建立会话的顺序显示可选资料层
+ok 38 - 当前登录按微信票据后再建立会话的顺序显示可选资料层
+  ---
+  duration_ms: 55.783417
+  type: 'test'
+  ...
+# Subtest: 订单深链每个导航版本只消费一次，详情返回保留用户之后选择的筛选
+ok 39 - 订单深链每个导航版本只消费一次，详情返回保留用户之后选择的筛选
+  ---
+  duration_ms: 238.541541
+  type: 'test'
+  ...
+# Subtest: 订单标签激活和新深链同帧到达仅发起一次列表读取
+ok 40 - 订单标签激活和新深链同帧到达仅发起一次列表读取
+  ---
+  duration_ms: 147.255541
+  type: 'test'
+  ...
+# Subtest: 三类列表返回时保留超过一百条的已加载内容，并正确判断后续页
+    # Subtest: player
+    ok 1 - player
+      ---
+      duration_ms: 68.652125
+      type: 'test'
+      ...
+    # Subtest: worker
+    ok 2 - worker
+      ---
+      duration_ms: 78.332375
+      type: 'test'
+      ...
+    # Subtest: orders
+    ok 3 - orders
+      ---
+      duration_ms: 175.213708
+      type: 'test'
+      ...
+    1..3
+ok 41 - 三类列表返回时保留超过一百条的已加载内容，并正确判断后续页
+  ---
+  duration_ms: 322.765542
+  type: 'test'
+  ...
+# Subtest: 返回刷新不会把已经到底的列表错误标记为仍有下一页
+ok 42 - 返回刷新不会把已经到底的列表错误标记为仍有下一页
+  ---
+  duration_ms: 57.489458
+  type: 'test'
+  ...
+# Subtest: 重显刷新失败保留旧列表与分页，不用整页错误态截断滚动容器
+    # Subtest: player
+    ok 1 - player
+      ---
+      duration_ms: 82.888834
+      type: 'test'
+      ...
+    # Subtest: worker
+    ok 2 - worker
+      ---
+      duration_ms: 59.188833
+      type: 'test'
+      ...
+    # Subtest: orders
+    ok 3 - orders
+      ---
+      duration_ms: 76.293
+      type: 'test'
+      ...
+    1..3
+ok 43 - 重显刷新失败保留旧列表与分页，不用整页错误态截断滚动容器
+  ---
+  duration_ms: 239.615208
+  type: 'test'
+  ...
+# Subtest: 三类列表在初始化尚未完成时隐藏，不再发起业务列表请求
+    # Subtest: player
+    ok 1 - player
+      ---
+      duration_ms: 34.383458
+      type: 'test'
+      ...
+    # Subtest: worker
+    ok 2 - worker
+      ---
+      duration_ms: 68.955875
+      type: 'test'
+      ...
+    # Subtest: orders
+    ok 3 - orders
+      ---
+      duration_ms: 57.027625
+      type: 'test'
+      ...
+    1..3
+ok 44 - 三类列表在初始化尚未完成时隐藏，不再发起业务列表请求
+  ---
+  duration_ms: 160.935875
+  type: 'test'
+  ...
+# Subtest: 私有常驻视图隐藏时同账号会话轮换也立即清空缓存
+    # Subtest: worker
+    ok 1 - worker
+      ---
+      duration_ms: 63.4755
+      type: 'test'
+      ...
+    # Subtest: orders
+    ok 2 - orders
+      ---
+      duration_ms: 32.338375
+      type: 'test'
+      ...
+    # Subtest: me
+    ok 3 - me
+      ---
+      duration_ms: 22.027
+      type: 'test'
+      ...
+    1..3
+ok 45 - 私有常驻视图隐藏时同账号会话轮换也立即清空缓存
+  ---
+  duration_ms: 120.953375
+  type: 'test'
+  ...
+# Subtest: 工作台新账号请求等待期间保持空态，旧账号迟到服务不能重新出现
+ok 46 - 工作台新账号请求等待期间保持空态，旧账号迟到服务不能重新出现
+  ---
+  duration_ms: 43.586084
+  type: 'test'
+  ...
+# Subtest: 保留有效订单深链，拒绝未知身份与筛选
+ok 47 - 保留有效订单深链，拒绝未知身份与筛选
+  ---
+  duration_ms: 0.786916
+  type: 'test'
+  ...
+# Subtest: 付款入口只向本人买方显示，售后与履约优先级明确
+ok 48 - 付款入口只向本人买方显示，售后与履约优先级明确
+  ---
+  duration_ms: 0.231
+  type: 'test'
+  ...
+# Subtest: 手机号授权前后连续提交只创建一笔需求订单
+ok 49 - 手机号授权前后连续提交只创建一笔需求订单
+  ---
+  duration_ms: 251.720792
+  type: 'test'
+  ...
+# Subtest: 关闭手机号授权不创建订单并允许重新提交
+ok 50 - 关闭手机号授权不创建订单并允许重新提交
+  ---
+  duration_ms: 200.532625
+  type: 'test'
+  ...
+# Subtest: 手机号状态读取失败被页面处理且提交锁恢复
+ok 51 - 手机号状态读取失败被页面处理且提交锁恢复
+  ---
+  duration_ms: 31.439125
+  type: 'test'
+  ...
+# Subtest: 授权等待期间切换账号不能替新账号创建旧草稿
+ok 52 - 授权等待期间切换账号不能替新账号创建旧草稿
+  ---
+  duration_ms: 54.033791
+  type: 'test'
+  ...
+# Subtest: 创建订单的旧结果不能把新账号或已销毁页面跳转到旧订单
+    # Subtest: switch
+    ok 1 - switch
+      ---
+      duration_ms: 63.184416
+      type: 'test'
+      ...
+    # Subtest: unload
+    ok 2 - unload
+      ---
+      duration_ms: 25.021083
+      type: 'test'
+      ...
+    1..2
+ok 53 - 创建订单的旧结果不能把新账号或已销毁页面跳转到旧订单
+  ---
+  duration_ms: 88.729667
+  type: 'test'
+  ...
+# Subtest: H5安全区全部为零且不依赖原生接口
+ok 54 - H5安全区全部为零且不依赖原生接口
+  ---
+  duration_ms: 95.036042
+  type: 'test'
+  ...
+# Subtest: 微信读取独立水平胶囊避让宽度，悬浮按钮对齐胶囊顶部
+ok 55 - 微信读取独立水平胶囊避让宽度，悬浮按钮对齐胶囊顶部
+  ---
+  duration_ms: 25.658625
+  type: 'test'
+  ...
+# Subtest: 微信接口异常、非有限值及无效胶囊都有安全回退
+ok 56 - 微信接口异常、非有限值及无效胶囊都有安全回退
+  ---
+  duration_ms: 29.558458
+  type: 'test'
+  ...
+# Subtest: 服务下单和发布的手机号读取失败均被捕获并保留草稿
+    # Subtest: purchase
+    ok 1 - purchase
+      ---
+      duration_ms: 164.360791
+      type: 'test'
+      ...
+    # Subtest: publish
+    ok 2 - publish
+      ---
+      duration_ms: 60.533292
+      type: 'test'
+      ...
+    1..2
+ok 57 - 服务下单和发布的手机号读取失败均被捕获并保留草稿
+  ---
+  duration_ms: 227.502666
+  type: 'test'
+  ...
+# Subtest: 服务下单和发布授权期间切换账号不会创建旧草稿
+    # Subtest: purchase
+    ok 1 - purchase
+      ---
+      duration_ms: 36.250792
+      type: 'test'
+      ...
+    # Subtest: publish
+    ok 2 - publish
+      ---
+      duration_ms: 46.941375
+      type: 'test'
+      ...
+    1..2
+ok 58 - 服务下单和发布授权期间切换账号不会创建旧草稿
+  ---
+  duration_ms: 83.661875
+  type: 'test'
+  ...
+# Subtest: 服务下单和发布在手机号授权与创建期间连点均只写入一次
+    # Subtest: purchase
+    ok 1 - purchase
+      ---
+      duration_ms: 30.645875
+      type: 'test'
+      ...
+    # Subtest: publish
+    ok 2 - publish
+      ---
+      duration_ms: 32.839584
+      type: 'test'
+      ...
+    1..2
+ok 59 - 服务下单和发布在手机号授权与创建期间连点均只写入一次
+  ---
+  duration_ms: 64.031625
+  type: 'test'
+  ...
+# Subtest: 服务创建的迟到结果不能触发新账号或已销毁页面的导航
+    # Subtest: purchase-switch
+    ok 1 - purchase-switch
+      ---
+      duration_ms: 29.781375
+      type: 'test'
+      ...
+    # Subtest: purchase-unload
+    ok 2 - purchase-unload
+      ---
+      duration_ms: 14.903125
+      type: 'test'
+      ...
+    # Subtest: publish-switch
+    ok 3 - publish-switch
+      ---
+      duration_ms: 45.495209
+      type: 'test'
+      ...
+    # Subtest: publish-unload
+    ok 4 - publish-unload
+      ---
+      duration_ms: 34.63225
+      type: 'test'
+      ...
+    1..4
+ok 60 - 服务创建的迟到结果不能触发新账号或已销毁页面的导航
+  ---
+  duration_ms: 125.287042
+  type: 'test'
+  ...
+# Subtest: 启用接单身份的迟到响应不能继续刷新新账号或发布服务
+    # Subtest: enable
+    ok 1 - enable
+      ---
+      duration_ms: 52.37525
+      type: 'test'
+      ...
+    # Subtest: refresh
+    ok 2 - refresh
+      ---
+      duration_ms: 18.334583
+      type: 'test'
+      ...
+    1..2
+ok 61 - 启用接单身份的迟到响应不能继续刷新新账号或发布服务
+  ---
+  duration_ms: 71.109459
+  type: 'test'
+  ...
+# Subtest: 服务详情按非空自定义标签数量保留24、48、72像素文字带
+ok 62 - 服务详情按非空自定义标签数量保留24、48、72像素文字带
+  ---
+  duration_ms: 16.423792
+  type: 'test'
+  ...
+# Subtest: 发布页切换账号后服务与挂靠的旧成功或旧错误都不能回填
+    # Subtest: service-success
+    ok 1 - service-success
+      ---
+      duration_ms: 27.709
+      type: 'test'
+      ...
+    # Subtest: service-error
+    ok 2 - service-error
+      ---
+      duration_ms: 21.568958
+      type: 'test'
+      ...
+    # Subtest: clubs-success
+    ok 3 - clubs-success
+      ---
+      duration_ms: 24.715833
+      type: 'test'
+      ...
+    # Subtest: clubs-error
+    ok 4 - clubs-error
+      ---
+      duration_ms: 12.70175
+      type: 'test'
+      ...
+    1..4
+ok 63 - 发布页切换账号后服务与挂靠的旧成功或旧错误都不能回填
+  ---
+  duration_ms: 87.189334
+  type: 'test'
+  ...
+# Subtest: 发布页隐藏再显示后旧服务或挂靠响应不能覆盖新读取与草稿
+    # Subtest: service-success
+    ok 1 - service-success
+      ---
+      duration_ms: 17.913958
+      type: 'test'
+      ...
+    # Subtest: service-error
+    ok 2 - service-error
+      ---
+      duration_ms: 19.036875
+      type: 'test'
+      ...
+    # Subtest: clubs-success
+    ok 3 - clubs-success
+      ---
+      duration_ms: 26.370958
+      type: 'test'
+      ...
+    # Subtest: clubs-error
+    ok 4 - clubs-error
+      ---
+      duration_ms: 18.972125
+      type: 'test'
+      ...
+    1..4
+ok 64 - 发布页隐藏再显示后旧服务或挂靠响应不能覆盖新读取与草稿
+  ---
+  duration_ms: 82.887709
+  type: 'test'
+  ...
+# Subtest: 发布页读取完成后同身份隐藏返回保留全部草稿且不重新初始化
+ok 65 - 发布页读取完成后同身份隐藏返回保留全部草稿且不重新初始化
+  ---
+  duration_ms: 42.435792
+  type: 'test'
+  ...
+# Subtest: 发布页隐藏期间换账号，重显只接收新账号挂靠且旧响应不清除新选择
+ok 66 - 发布页隐藏期间换账号，重显只接收新账号挂靠且旧响应不清除新选择
+  ---
+  duration_ms: 17.199875
+  type: 'test'
+  ...
+# Subtest: 发布页首次加载紧接显示生命周期不会重复读取
+ok 67 - 发布页首次加载紧接显示生命周期不会重复读取
+  ---
+  duration_ms: 15.07025
+  type: 'test'
+  ...
+# Subtest: 个人中心手机号读取失败正常提示且不会产生未处理拒绝
+ok 68 - 个人中心手机号读取失败正常提示且不会产生未处理拒绝
+  ---
+  duration_ms: 105.563083
+  type: 'test'
+  ...
+# Subtest: 离页或换账号后的手机号读取失败不弹到其他页面或身份
+    # Subtest: hide
+    ok 1 - hide
+      ---
+      duration_ms: 48.095959
+      type: 'test'
+      ...
+    # Subtest: switch
+    ok 2 - switch
+      ---
+      duration_ms: 31.056125
+      type: 'test'
+      ...
+    1..2
+ok 69 - 离页或换账号后的手机号读取失败不弹到其他页面或身份
+  ---
+  duration_ms: 79.433
+  type: 'test'
+  ...
+# Subtest: 个人中心正常打开手机号门槛，关闭只取消授权不提示失败
+ok 70 - 个人中心正常打开手机号门槛，关闭只取消授权不提示失败
+  ---
+  duration_ms: 23.841
+  type: 'test'
+  ...
+# Subtest: 旧账号资料成功或401都不能覆盖后来登录的账号
+    # Subtest: success
+    ok 1 - success
+      ---
+      duration_ms: 52.92825
+      type: 'test'
+      ...
+    # Subtest: 401
+    ok 2 - 401
+      ---
+      duration_ms: 29.875583
+      type: 'test'
+      ...
+    1..2
+ok 71 - 旧账号资料成功或401都不能覆盖后来登录的账号
+  ---
+  duration_ms: 83.02875
+  type: 'test'
+  ...
+# Subtest: 当前401仍清理身份，旧退出请求不能退出新账号
+    # Subtest: current401
+    ok 1 - current401
+      ---
+      duration_ms: 20.856417
+      type: 'test'
+      ...
+    # Subtest: oldLogout
+    ok 2 - oldLogout
+      ---
+      duration_ms: 39.866583
+      type: 'test'
+      ...
+    1..2
+ok 72 - 当前401仍清理身份，旧退出请求不能退出新账号
+  ---
+  duration_ms: 61.276709
+  type: 'test'
+  ...
+# Subtest: 资料页和个人中心的旧读取不能覆盖刚保存的资料或接单开关
+    # Subtest: profile
+    ok 1 - profile
+      ---
+      duration_ms: 28.185375
+      type: 'test'
+      ...
+    # Subtest: provider
+    ok 2 - provider
+      ---
+      duration_ms: 41.7325
+      type: 'test'
+      ...
+    1..2
+ok 73 - 资料页和个人中心的旧读取不能覆盖刚保存的资料或接单开关
+  ---
+  duration_ms: 70.207875
+  type: 'test'
+  ...
+# Subtest: 个人中心和资料页的跨会话回调及隐藏后的统计不再提交
+    # Subtest: me-old401
+    ok 1 - me-old401
+      ---
+      duration_ms: 19.006917
+      type: 'test'
+      ...
+    # Subtest: profile-old401
+    ok 2 - profile-old401
+      ---
+      duration_ms: 65.77525
+      type: 'test'
+      ...
+    # Subtest: oldPatch
+    ok 3 - oldPatch
+      ---
+      duration_ms: 17.174416
+      type: 'test'
+      ...
+    # Subtest: hiddenStats
+    ok 4 - hiddenStats
+      ---
+      duration_ms: 32.81275
+      type: 'test'
+      ...
+    # Subtest: logoutBeforeOldRead
+    ok 5 - logoutBeforeOldRead
+      ---
+      duration_ms: 21.537625
+      type: 'test'
+      ...
+    1..5
+ok 74 - 个人中心和资料页的跨会话回调及隐藏后的统计不再提交
+  ---
+  duration_ms: 156.968125
+  type: 'test'
+  ...
+# Subtest: 微信预登录票据不修改身份，只有同意协议后的登录建立会话
+ok 75 - 微信预登录票据不修改身份，只有同意协议后的登录建立会话
+  ---
+  duration_ms: 11.403708
+  type: 'test'
+  ...
+# Subtest: 迟到的微信登录响应不能覆盖后来完成的身份切换
+ok 76 - 迟到的微信登录响应不能覆盖后来完成的身份切换
+  ---
+  duration_ms: 27.405625
+  type: 'test'
+  ...
+# Subtest: 订单当前401切回可登录空态，旧账号响应不影响新账号
+    # Subtest: expiredSession
+    ok 1 - expiredSession
+      ---
+      duration_ms: 31.442333
+      type: 'test'
+      ...
+    # Subtest: old401
+    ok 2 - old401
+      ---
+      duration_ms: 29.183834
+      type: 'test'
+      ...
+    # Subtest: oldOrders
+    ok 3 - oldOrders
+      ---
+      duration_ms: 26.746208
+      type: 'test'
+      ...
+    1..3
+ok 77 - 订单当前401切回可登录空态，旧账号响应不影响新账号
+  ---
+  duration_ms: 87.781833
+  type: 'test'
+  ...
+# Subtest: 俱乐部押金按十进制分计算，并拒绝超额及非法小数
+ok 78 - 俱乐部押金按十进制分计算，并拒绝超额及非法小数
+  ---
+  duration_ms: 133.736375
+  type: 'test'
+  ...
+# Subtest: 俱乐部空图文段落阻止保存，合法图文去除本地编号并保存准确金额
+ok 79 - 俱乐部空图文段落阻止保存，合法图文去除本地编号并保存准确金额
+  ---
+  duration_ms: 52.344709
+  type: 'test'
+  ...
+# Subtest: 管理员只接收支付公开字段，隐藏页面立即清除秘密且不持久缓存
+ok 80 - 管理员只接收支付公开字段，隐藏页面立即清除秘密且不持久缓存
+  ---
+  duration_ms: 50.833583
+  type: 'test'
+  ...
+# Subtest: 管理员跨身份迟到的配置读取不能写入新身份页面
+ok 81 - 管理员跨身份迟到的配置读取不能写入新身份页面
+  ---
+  duration_ms: 29.8745
+  type: 'test'
+  ...
+# Subtest: 管理员跨身份迟到的支付或协议保存不能覆盖新配置
+    # Subtest: payment
+    ok 1 - payment
+      ---
+      duration_ms: 57.736208
+      type: 'test'
+      ...
+    # Subtest: agreements
+    ok 2 - agreements
+      ---
+      duration_ms: 46.52825
+      type: 'test'
+      ...
+    1..2
+ok 82 - 管理员跨身份迟到的支付或协议保存不能覆盖新配置
+  ---
+  duration_ms: 105.10775
+  type: 'test'
+  ...
+# Subtest: 原生选图隐藏再显示时保留未保存的昵称和简介
+    # Subtest: showBeforeUpload
+    ok 1 - showBeforeUpload
+      ---
+      duration_ms: 16.823792
+      type: 'test'
+      ...
+    # Subtest: showAfterUpload
+    ok 2 - showAfterUpload
+      ---
+      duration_ms: 60.577625
+      type: 'test'
+      ...
+    1..2
+ok 83 - 原生选图隐藏再显示时保留未保存的昵称和简介
+  ---
+  duration_ms: 78.398666
+  type: 'test'
+  ...
+# Subtest: 原生选图迟到响应不能回填另一身份的资料草稿
+ok 84 - 原生选图迟到响应不能回填另一身份的资料草稿
+  ---
+  duration_ms: 31.38475
+  type: 'test'
+  ...
+# Subtest: 读取其它游戏的局部主题不改变主游戏或写入本地缓存
+ok 85 - 读取其它游戏的局部主题不改变主游戏或写入本地缓存
+  ---
+  duration_ms: 40.605666
+  type: 'test'
+  ...
+# Subtest: 指定游戏不存在或未指定时回退主游戏，空配置也有完整默认变量
+ok 86 - 指定游戏不存在或未指定时回退主游戏，空配置也有完整默认变量
+  ---
+  duration_ms: 40.94475
+  type: 'test'
+  ...
+# Subtest: 只有显式选择有效游戏持久化，局部计算能响应后台主题更新
+ok 87 - 只有显式选择有效游戏持久化，局部计算能响应后台主题更新
+  ---
+  duration_ms: 37.491
+  type: 'test'
+  ...
+# Subtest: 俱乐部的原生授权勾选色与局部主题一致，不改写用户主游戏偏好
+ok 88 - 俱乐部的原生授权勾选色与局部主题一致，不改写用户主游戏偏好
+  ---
+  duration_ms: 68.240583
+  type: 'test'
+  ...
+# Subtest: 玩家主页初始加载和无封面刷新保持普通顶栏，已知有封面刷新保持沉浸
+ok 89 - 玩家主页初始加载和无封面刷新保持普通顶栏，已知有封面刷新保持沉浸
+  ---
+  duration_ms: 30.058042
+  type: 'test'
+  ...
+1..89
+# tests 149
+# suites 0
+# pass 149
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4348.381083
