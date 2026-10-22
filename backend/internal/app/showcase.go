@@ -14,6 +14,8 @@ import (
 	"image/png"
 	"strings"
 	"time"
+
+	"jijie/internal/assets"
 )
 
 var showcaseTables = []string{"users", "clubs", "members", "services", "orders", "messages", "reviews", "evidence"}
@@ -28,8 +30,8 @@ type showcaseRecord struct {
 // showcaseID 构造可辨识且可重复导入的稳定演示编号。
 func showcaseID(kind string, index int) string { return fmt.Sprintf("demo_%s_%03d", kind, index+1) }
 
-// showcaseAvatar 生成自然色系几何头像，无需网络、个人照片或新增素材依赖。
-func showcaseAvatar(index int) ([]byte, error) {
+// legacyShowcaseAvatar 复现旧版几何图的准确字节，仅用于迁移时鉴别旧默认而不覆盖自定义头像。
+func legacyShowcaseAvatar(index int) ([]byte, error) {
 	palette := []color.RGBA{{57, 146, 116, 255}, {174, 132, 67, 255}, {78, 137, 157, 255}, {160, 91, 84, 255}, {139, 146, 82, 255}, {139, 110, 78, 255}}
 	base := palette[index%len(palette)]
 	canvas := image.NewRGBA(image.Rect(0, 0, 256, 256))
@@ -49,6 +51,11 @@ func showcaseAvatar(index int) ([]byte, error) {
 	var result bytes.Buffer
 	err := png.Encode(&result, canvas)
 	return result.Bytes(), err
+}
+
+// showcaseAvatar 从内置MIT动物图库读取演示头像，保留旧证据数量以继续覆盖演示清理的引用保护。
+func showcaseAvatar(index int) ([]byte, error) {
+	return assets.DefaultAvatarData(stableDefaultAvatar("user", showcaseID("user", index)))
 }
 
 // showcaseRecords 根据现有十三款游戏配置建立完整虚构关系，不改动管理员配置。
@@ -76,7 +83,7 @@ func showcaseRecords(ctx context.Context, q querier) ([]showcaseRecord, error) {
 	second := []string{"同学", "队友", "小鹿", "阿鱼", "北北", "队长"}
 	for i := range users {
 		game := games[i%len(games)]
-		u := User{ID: showcaseID("user", i), Nickname: first[i%len(first)] + second[i/len(first)] + "·演示", Avatar: "/api/media/" + showcaseID("avatar", i), ProfileCover: game.CoverURL, Bio: "演示账号，非真实用户。喜欢" + game.Name + "，偏好耐心沟通、团队配合与轻松组队。", Role: "user", Status: "active", ProviderEnabled: true, CreatedAt: stamp(i)}
+		u := User{ID: showcaseID("user", i), Nickname: first[i%len(first)] + second[i/len(first)] + "·演示", Avatar: stableDefaultAvatar("user", showcaseID("user", i)), ProfileCover: game.CoverURL, Bio: "演示账号，非真实用户。喜欢" + game.Name + "，偏好耐心沟通、团队配合与轻松组队。", Role: "user", Status: "active", ProviderEnabled: true, CreatedAt: stamp(i)}
 		users[i] = u
 		records = append(records, showcaseRecord{"users", u.ID, u})
 		raw, err := showcaseAvatar(i)
@@ -95,6 +102,7 @@ func showcaseRecords(ctx context.Context, q querier) ([]showcaseRecord, error) {
 	for i := range clubs {
 		assessment := "完成一局配合考核，确认沟通态度和服务范围。演示规则，不涉及真实招募。"
 		club := Club{ID: showcaseID("club", i), Name: clubNames[i] + "·演示", Description: "这是源码演示用的虚构俱乐部。展示多游戏服务、成员挂靠、考核说明与订单协作，不代表真实机构或平台背书。", OwnerID: users[i].ID, OwnerName: users[i].Nickname, GameIDs: gameIDs, Status: "active", Verified: i%2 == 0, CoverURL: games[i].CoverURL, DetailBlocks: []CommunityBlock{{Type: "text", Text: "欢迎查看演示俱乐部。这里展示图文介绍、游戏范围与认证成员，所有人物、订单及评价均为虚构示例。"}, {Type: "image", ImageURL: games[i].CoverURL}, {Type: "text", Text: "服务约定：先沟通需求，再确认服务范围。资料中的押金仅为规则展示，不代表平台已收款或托管。"}}, DepositCents: int64(i%3) * 20000, Assessment: assessment, CreatedAt: stamp(i)}
+		club.AvatarURL = defaultClubAvatar(club.ID)
 		clubs[i] = club
 		records = append(records, showcaseRecord{"clubs", club.ID, club})
 	}

@@ -203,6 +203,9 @@ func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction
 	if o.Status != "pending_payment" || o.PaymentStatus != "unpaid" {
 		return fail(409, "订单支付状态不匹配，请人工核查")
 	}
+	o.PaymentTransactionID = v.TransactionID
+	o.PaymentMerchantID = v.MerchantID
+	o.PaymentAppID = v.AppID
 	if err = accountWalletPayment(ctx, tx, &o, "wechat", ""); err != nil {
 		return err
 	}
@@ -268,7 +271,7 @@ func (a *App) applyWXRefund(ctx context.Context, c wxPayConfig, v wxRefund) erro
 	}
 	message := "微信已确认全额退款，交易关闭。"
 	if status == "SUCCESS" {
-		if err = refundWalletEscrow(ctx, tx, &o); err != nil {
+		if err = refundWalletEscrow(ctx, tx, &o, true); err != nil {
 			return err
 		}
 		if v.SuccessTime != "" {

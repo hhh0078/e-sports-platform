@@ -4,7 +4,7 @@ import type { Club, ClubDetail, ClubMember, ListQuery, Order } from '../types/mo
 /** 俱乐部列表筛选。 */
 export interface ClubQuery extends ListQuery { mine?: 0 | 1 }
 /** 新俱乐部或装修资料。 */
-export type ClubInput = Pick<Club, 'name' | 'description' | 'game_ids'> & Partial<Pick<Club, 'cover_url' | 'detail_blocks' | 'deposit_cents' | 'assessment'>>
+export type ClubInput = { request_id?: string } & Pick<Club, 'name' | 'description' | 'game_ids'> & Partial<Pick<Club, 'cover_url' | 'detail_blocks' | 'deposit_cents' | 'assessment' | 'commission_rate_bps' | 'join_note' | 'avatar_url' | 'contact_qr_url' | 'contact_phone' | 'contact_wechat'>>
 /** 读取公开俱乐部或本人挂靠。 */
 export function listClubs(query: ClubQuery = {}): Promise<Club[]> { return request('/clubs' + queryString(query)) }
 /** 读取俱乐部资料及有权限的成员信息。 */

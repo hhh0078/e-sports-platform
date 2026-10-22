@@ -1,12 +1,12 @@
 /** 文件作用：封装钱包账目、充值、提现、押金和管理员审核配置接口。 */
 import { request, queryString } from './client'
-import type { Wallet,WalletEntry,WalletTopup,WalletTopupPayment,WalletWithdrawal,WalletDepositRefund,WalletSettings,WalletSettingsResult } from '../types/wallet'
+import type { Wallet,WalletEntry,WalletTopup,WalletTopupPayment,WalletWithdrawal,WalletDepositRefund,WalletSettings,WalletSettingsResult,WalletTopupPurpose,DepositScope } from '../types/wallet'
 /** 读取真实资金分区余额。 */
 export function getWallet():Promise<Wallet>{return request('/wallet')}
 /** 分页读取不可变流水。 */
 export function listWalletEntries(query:{limit?:number;offset?:number}={}):Promise<WalletEntry[]>{return request('/wallet/entries'+queryString(query))}
 /** 使用稳定请求号建立充值或押金支付单。 */
-export function createWalletTopup(body:{purpose:'balance'|'deposit';amount_cents:number;request_id:string}):Promise<WalletTopupPayment>{return request('/wallet/topups','POST',body)}
+export function createWalletTopup(body:{purpose:WalletTopupPurpose;club_id?:string;amount_cents:number;request_id:string}):Promise<WalletTopupPayment>{return request('/wallet/topups','POST',body)}
 /** 查看最近付款单。 */
 export function listWalletTopups():Promise<WalletTopup[]>{return request('/wallet/topups')}
 /** 跨设备恢复本人未付款原单，沿用服务端已绑定单号。 */
@@ -20,7 +20,7 @@ export function listWalletWithdrawals():Promise<WalletWithdrawal[]>{return reque
 /** 查询原微信转账单，未知结果不解冻余额。 */
 export function syncWalletWithdrawal(id:string):Promise<WalletWithdrawal>{return request('/wallet/withdrawals/'+encodeURIComponent(id)+'/sync','POST',{})}
 /** 申请原路退还押金，资格由服务端事务校验。 */
-export function createDepositRefund(body:{amount_cents?:number;request_id:string}):Promise<WalletDepositRefund>{return request('/wallet/deposit-refunds','POST',body)}
+export function createDepositRefund(body:{amount_cents?:number;request_id:string;scope?:DepositScope;club_id?:string}):Promise<WalletDepositRefund>{return request('/wallet/deposit-refunds','POST',body)}
 /** 查看本人押金退款进度。 */
 export function listDepositRefunds():Promise<WalletDepositRefund[]>{return request('/wallet/deposit-refunds')}
 /** 同步各原支付单的退款结果。 */

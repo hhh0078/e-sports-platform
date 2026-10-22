@@ -193,6 +193,11 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
+	if in.Action == "claim" && in.ClubID != "" {
+		if err = lockClubFinance(r.Context(), tx, in.ClubID); err != nil {
+			return nil, err
+		}
+	}
 	o, err := lockWalletOrder(r.Context(), tx, r.PathValue("id"), u.ID)
 	if err != nil {
 		return nil, err
@@ -228,6 +233,12 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 			if e != nil || c.Status != "active" || !contains(c.GameIDs, o.GameID) || (c.OwnerID != u.ID && (me != nil || m.Status != "active")) {
 				return nil, fail(403, "只能代表本人已通过挂靠且支持该游戏的俱乐部接单")
 			}
+			if err = guardClubDeposit(r.Context(), tx, in.ClubID); err != nil {
+				return nil, err
+			}
+			if err = lockWalletUsers(r.Context(), tx, clubWalletID(in.ClubID)); err != nil {
+				return nil, err
+			}
 			o.ClubID = in.ClubID
 		}
 	}
@@ -239,6 +250,9 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 	}
 	if in.Action == "claim" {
+		if err = freezeOrderSettlement(r.Context(), tx, &o); err != nil {
+			return nil, err
+		}
 		if err = claimWalletEscrow(r.Context(), tx, o); err != nil {
 			return nil, err
 		}

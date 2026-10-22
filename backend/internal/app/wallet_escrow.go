@@ -19,7 +19,8 @@ func accountWalletPayment(ctx context.Context, q querier, o *Order, channel, req
 	if !missing(err) {
 		return err
 	}
-	e := WalletEscrow{OrderID: o.ID, BuyerID: o.BuyerID, ProviderID: o.ProviderID, AmountCents: o.AmountCents, Channel: channel, Status: "holding", CreatedAt: now()}
+	s := settlementForOrder(*o)
+	e := WalletEscrow{FundingVersion: 1, OrderID: o.ID, BuyerID: o.BuyerID, ProviderID: o.ProviderID, AmountCents: o.AmountCents, Channel: channel, Status: "holding", CreatedAt: now()}
 	if channel == "balance" {
 		wallet, err := lockedWallet(ctx, q, o.BuyerID)
 		if err != nil {
@@ -46,7 +47,36 @@ func accountWalletPayment(ctx context.Context, q querier, o *Order, channel, req
 		if err != nil {
 			return err
 		}
-		if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "order_pending", ReferenceID: o.ID, AmountCents: o.AmountCents, PendingDelta: o.AmountCents, Note: "订单付款托管，完成后等待7天售后期"}); err != nil {
+		if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "order_pending", ReferenceID: o.ID, AmountCents: s.ProviderIncomeCents, PendingDelta: s.ProviderIncomeCents, Note: "订单付款托管，完成后等待7天售后期"}); err != nil {
+			return err
+		}
+	}
+	if channel == "balance" {
+		for _, part := range []struct {
+			bucket string
+			amount int64
+		}{{"recharge", e.RechargeUsed}, {"available", e.IncomeUsed}} {
+			if part.amount > 0 {
+				if err = moveFunding(ctx, q, "order-pay:"+o.ID+":"+part.bucket, o.BuyerID, part.bucket, part.amount, []fundDestination{{AccountID: "escrow:" + o.ID, Bucket: "escrow", OrderID: o.ID, AmountCents: part.amount, PreserveReturn: true}}); err != nil {
+					return err
+				}
+			}
+		}
+	} else {
+		transaction := o.PaymentTransactionID
+		if channel == "dev" {
+			transaction = "DEVORDER" + o.ID
+		}
+		if err = addFundingRoot(ctx, q, "order", o.ID, transaction, o.AmountCents, channel, "escrow:"+o.ID, "escrow", o.ID, o.PaymentMerchantID, o.PaymentAppID); err != nil {
+			return err
+		}
+	}
+	if e.ProviderID != "" && s.ClubFeeCents > 0 {
+		wallet, err := lockedWallet(ctx, q, clubWalletID(o.ClubID))
+		if err != nil {
+			return err
+		}
+		if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "club_order_pending", ReferenceID: o.ID, AmountCents: s.ClubFeeCents, PendingDelta: s.ClubFeeCents, Note: "俱乐部佣金等待订单履约及7天售后"}); err != nil {
 			return err
 		}
 	}
@@ -81,15 +111,24 @@ func claimWalletEscrow(ctx context.Context, q querier, o Order) error {
 	if err != nil {
 		return err
 	}
-	if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "order_pending", ReferenceID: o.ID, AmountCents: o.AmountCents, PendingDelta: o.AmountCents, Note: "订单付款托管，完成后等待7天售后期"}); err != nil {
+	if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "order_pending", ReferenceID: o.ID, AmountCents: settlementForOrder(o).ProviderIncomeCents, PendingDelta: settlementForOrder(o).ProviderIncomeCents, Note: "订单付款托管，完成后等待7天售后期"}); err != nil {
 		return err
+	}
+	if s := settlementForOrder(o); s.ClubFeeCents > 0 {
+		wallet, err := lockedWallet(ctx, q, clubWalletID(o.ClubID))
+		if err != nil {
+			return err
+		}
+		if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "club_order_pending", ReferenceID: o.ID, AmountCents: s.ClubFeeCents, PendingDelta: s.ClubFeeCents, Note: "俱乐部佣金等待结算"}); err != nil {
+			return err
+		}
 	}
 	e.ProviderID = o.ProviderID
 	return put(ctx, q, "wallet_escrows", o.ID, e)
 }
 
 // refundWalletEscrow 退款成功后撤回待结算收入，余额支付严格恢复原先支付的两类余额。
-func refundWalletEscrow(ctx context.Context, q querier, o *Order) error {
+func refundWalletEscrow(ctx context.Context, q querier, o *Order, verifiedWX ...bool) error {
 	if o.RefundedAt == "" {
 		o.RefundedAt = now()
 	}
@@ -109,12 +148,40 @@ func refundWalletEscrow(ctx context.Context, q querier, o *Order) error {
 	if e.Status != "holding" {
 		return fail(409, "该笔收入已结算，需平台人工核账")
 	}
+	legacyRefund, err := legacyEscrowRefund(ctx, q, *o, e, len(verifiedWX) > 0 && verifiedWX[0])
+	if err != nil {
+		return err
+	}
 	if e.ProviderID != "" {
 		wallet, err := lockedWallet(ctx, q, e.ProviderID)
 		if err != nil {
 			return err
 		}
-		if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "order_refund_reversal", ReferenceID: o.ID, AmountCents: -e.AmountCents, PendingDelta: -e.AmountCents, Note: "订单退款，撤回待结算款"}); err != nil {
+		if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "order_refund_reversal", ReferenceID: o.ID, AmountCents: -settlementForOrder(*o).ProviderIncomeCents, PendingDelta: -settlementForOrder(*o).ProviderIncomeCents, Note: "订单退款，撤回待结算款"}); err != nil {
+			return err
+		}
+	}
+	if s := settlementForOrder(*o); s.ClubFeeCents > 0 && e.ProviderID != "" {
+		wallet, err := lockedWallet(ctx, q, clubWalletID(o.ClubID))
+		if err != nil {
+			return err
+		}
+		if err = appendWalletEntry(ctx, q, &wallet, WalletEntry{Kind: "club_refund_reversal", ReferenceID: o.ID, AmountCents: -s.ClubFeeCents, PendingDelta: -s.ClubFeeCents, Note: "订单退款撤回俱乐部待结算佣金"}); err != nil {
+			return err
+		}
+	}
+	if legacyRefund {
+		o.FinancialReconciliationRequired = true
+		e.ReconciliationRequired = true
+		if err = audit(ctx, q, "system", "wallet.legacy_refund", o.ID, "历史"+e.Channel+"退款已核验原付款凭证；缺来源批次仅反冲旧待结算及恢复原余额分区，不补造可消费或可提现来源，待平台核账"); err != nil {
+			return err
+		}
+	} else if e.Channel == "balance" {
+		if err = restoreEscrowFunding(ctx, q, *o, e); err != nil {
+			return err
+		}
+	} else {
+		if err = moveFunding(ctx, q, "order-refund:"+o.ID, "escrow:"+o.ID, "escrow", e.AmountCents, nil); err != nil {
 			return err
 		}
 	}
@@ -170,7 +237,25 @@ func (a *App) releaseWalletIncome(ctx context.Context, userID string) error {
 			wallet, readErr := lockedWallet(ctx, tx, userID)
 			err = readErr
 			if err == nil {
-				err = appendWalletEntry(ctx, tx, &wallet, WalletEntry{Kind: "order_settlement", ReferenceID: o.ID, AmountCents: o.AmountCents, PendingDelta: -o.AmountCents, AvailableDelta: o.AmountCents, Note: "订单已满7天售后期，服务收入可提现"})
+				err = appendWalletEntry(ctx, tx, &wallet, WalletEntry{Kind: "order_settlement", ReferenceID: o.ID, AmountCents: settlementForOrder(o).ProviderIncomeCents, PendingDelta: -settlementForOrder(o).ProviderIncomeCents, AvailableDelta: settlementForOrder(o).ProviderIncomeCents, Note: "订单已满7天售后期，服务收入可提现"})
+			}
+			if err == nil {
+				s := settlementForOrder(o)
+				targets := []fundDestination{{AccountID: userID, Bucket: "available", OrderID: o.ID, AmountCents: s.ProviderIncomeCents}}
+				if s.ClubFeeCents > 0 {
+					wallet, e := lockedWallet(ctx, tx, clubWalletID(o.ClubID))
+					err = e
+					if err == nil {
+						err = appendWalletEntry(ctx, tx, &wallet, WalletEntry{Kind: "club_order_settlement", ReferenceID: o.ID, AmountCents: s.ClubFeeCents, PendingDelta: -s.ClubFeeCents, AvailableDelta: s.ClubFeeCents, Note: "订单佣金已满7天售后期"})
+					}
+					targets = append(targets, fundDestination{AccountID: clubWalletID(o.ClubID), Bucket: "available", OrderID: o.ID, AmountCents: s.ClubFeeCents})
+				}
+				if s.PlatformFeeCents > 0 {
+					targets = append(targets, fundDestination{AccountID: "platform", Bucket: "available", OrderID: o.ID, AmountCents: s.PlatformFeeCents})
+				}
+				if err == nil {
+					err = moveFunding(ctx, tx, "settlement:"+o.ID, "escrow:"+o.ID, "escrow", o.AmountCents, targets)
+				}
 			}
 			if err == nil {
 				current.Status = "released"
@@ -185,6 +270,24 @@ func (a *App) releaseWalletIncome(ctx context.Context, userID string) error {
 		}
 		if err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+// releaseClubIncome 为负责人查询及提现前释放已满足售后条件的组织佣金。
+func (a *App) releaseClubIncome(ctx context.Context, clubID string) error {
+	orders, e := list[Order](ctx, a.DB, "orders", "WHERE data->>'club_id'=$1 AND data->>'payment_status'='paid'", clubID)
+	if e != nil {
+		return e
+	}
+	seen := map[string]bool{}
+	for _, o := range orders {
+		if o.ProviderID != "" && !seen[o.ProviderID] {
+			seen[o.ProviderID] = true
+			if e = a.releaseWalletIncome(ctx, o.ProviderID); e != nil {
+				return e
+			}
 		}
 	}
 	return nil

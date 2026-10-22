@@ -76,7 +76,10 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 	if s.ProviderID == u.ID {
 		return nil, fail(400, "不能给自己的服务下单")
 	}
-	if err = lockWalletUsers(r.Context(), tx, u.ID, s.ProviderID); err != nil {
+	if err = lockClubFinance(r.Context(), tx, s.ClubID); err != nil {
+		return nil, err
+	}
+	if err = lockWalletUsers(r.Context(), tx, u.ID, s.ProviderID, clubWalletID(s.ClubID)); err != nil {
 		return nil, err
 	}
 	if err = guardDepositRefunding(r.Context(), tx, u.ID, s.ProviderID); err != nil {
@@ -86,8 +89,8 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 	if readErr != nil {
 		return nil, readErr
 	}
-	if lockedService.ProviderID != s.ProviderID {
-		return nil, fail(409, "服务归属已更新，请重试")
+	if lockedService.ProviderID != s.ProviderID || lockedService.ClubID != s.ClubID {
+		return nil, fail(409, "服务打手或俱乐部归属已更新，请刷新后重试")
 	}
 	s = lockedService
 	if s.Status != "active" {
@@ -120,6 +123,14 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 		if ce == nil && c.Status == "active" && contains(c.GameIDs, s.GameID) && (c.OwnerID == s.ProviderID || (me == nil && m.Status == "active")) {
 			o.ClubID = s.ClubID
 		}
+	}
+	if o.ClubID != "" {
+		if err = guardClubDeposit(r.Context(), tx, o.ClubID); err != nil {
+			return nil, err
+		}
+	}
+	if err = freezeOrderSettlement(r.Context(), tx, &o); err != nil {
+		return nil, err
 	}
 	if o.AmountCents > 10000000 {
 		return nil, fail(400, "订单总金额不能超过 100000 元")
@@ -175,6 +186,9 @@ func (a *App) createRequest(w http.ResponseWriter, r *http.Request) (any, error)
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
+	if err = freezeOrderSettlement(r.Context(), tx, &o); err != nil {
+		return nil, err
+	}
 	if err = lockWalletUsers(r.Context(), tx, u.ID); err != nil {
 		return nil, err
 	}
@@ -319,6 +333,11 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, fail(409, "当前订单无法付款")
 	}
 
+	if o.ClubID != "" {
+		if err = guardClubDeposit(r.Context(), tx, o.ClubID); err != nil {
+			return nil, err
+		}
+	}
 	if err = guardDepositRefunding(r.Context(), tx, o.BuyerID, o.ProviderID); err != nil {
 		return nil, err
 	}

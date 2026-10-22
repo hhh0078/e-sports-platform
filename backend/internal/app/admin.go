@@ -178,6 +178,14 @@ func (a *App) moderateClub(w http.ResponseWriter, r *http.Request) (any, error) 
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
+	if err = lockClubFinance(r.Context(), tx, r.PathValue("id")); err != nil {
+		return nil, err
+	}
+	if in.Status == "active" {
+		if err = guardClubDeposit(r.Context(), tx, r.PathValue("id")); err != nil {
+			return nil, err
+		}
+	}
 	c, err := get[Club](r.Context(), tx, "clubs", r.PathValue("id"), true)
 	if err != nil {
 		return nil, err
@@ -245,32 +253,103 @@ func (a *App) saveGame(w http.ResponseWriter, r *http.Request) (any, error) {
 	return g, tx.Commit(r.Context())
 }
 
-// saveSettings 校验平台运营文字并写入审计。
+// saveSettings 合并本次明确提供的平台运营及客服字段，防止独立配置页互相覆盖。
 func (a *App) saveSettings(w http.ResponseWriter, r *http.Request) (any, error) {
 	u, err := a.admin(r)
 	if err != nil {
 		return nil, err
 	}
-	var in Settings
+	var in struct {
+		SiteName      *string `json:"site_name"`
+		Announcement  *string `json:"announcement"`
+		SupportQRURL  *string `json:"support_qr_url"`
+		SupportPhone  *string `json:"support_phone"`
+		SupportWechat *string `json:"support_wechat"`
+	}
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
-	if !length(in.SiteName, 2, 24) || !length(in.Announcement, 0, 300) {
-		return nil, fail(400, "平台名称 2 至 24 字，公告最多 300 字")
+	normalizeContactPatch(in.SupportPhone, in.SupportWechat, in.SupportQRURL)
+	if in.SiteName != nil {
+		*in.SiteName = strings.TrimSpace(*in.SiteName)
+		if !length(*in.SiteName, 2, 24) {
+			return nil, fail(400, "平台名称须为2至24字")
+		}
 	}
-	in.SiteName = strings.TrimSpace(in.SiteName)
+	if in.Announcement != nil && !length(*in.Announcement, 0, 300) {
+		return nil, fail(400, "公告最多300字")
+	}
+	before, err := get[Settings](r.Context(), a.DB, "settings", "platform", false)
+	if err != nil {
+		return nil, err
+	}
+	phone, wechat := before.SupportPhone, before.SupportWechat
+	if in.SupportPhone != nil {
+		phone = *in.SupportPhone
+	}
+	if in.SupportWechat != nil {
+		wechat = *in.SupportWechat
+	}
+	if err = validateSupportContact(phone, wechat); err != nil {
+		return nil, err
+	}
+	parts := []string{}
+	if in.SiteName != nil {
+		parts = append(parts, *in.SiteName)
+	}
+	if in.Announcement != nil {
+		parts = append(parts, *in.Announcement)
+	}
+	if err = a.moderateText(r, u, "平台运营设置", parts...); err != nil {
+		return nil, err
+	}
+	if err = a.moderateContactPatch(r, u, "平台客服联系方式", in.SupportPhone, in.SupportWechat); err != nil {
+		return nil, err
+	}
+	if in.SupportQRURL != nil && *in.SupportQRURL != before.SupportQRURL {
+		if err = a.moderateOwnedImage(r, u, *in.SupportQRURL, "support_qr", u.ID, ""); err != nil {
+			return nil, err
+		}
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
-	if err = put(r.Context(), tx, "settings", "platform", in); err != nil {
+	current, err := get[Settings](r.Context(), tx, "settings", "platform", true)
+	if err != nil {
 		return nil, err
 	}
-	if err = audit(r.Context(), tx, u.ID, "settings.save", "platform", ""); err != nil {
+	if in.SiteName != nil {
+		current.SiteName = *in.SiteName
+	}
+	if in.Announcement != nil {
+		current.Announcement = *in.Announcement
+	}
+	if in.SupportPhone != nil {
+		current.SupportPhone = *in.SupportPhone
+	}
+	if in.SupportWechat != nil {
+		current.SupportWechat = *in.SupportWechat
+	}
+	if in.SupportQRURL != nil {
+		if *in.SupportQRURL != current.SupportQRURL {
+			if err = validateOwnedImage(r.Context(), tx, *in.SupportQRURL, "support_qr", u.ID, "", u); err != nil {
+				return nil, err
+			}
+		}
+		current.SupportQRURL = *in.SupportQRURL
+	}
+	if err = validateSupportContact(current.SupportPhone, current.SupportWechat); err != nil {
 		return nil, err
 	}
-	return in, tx.Commit(r.Context())
+	if err = put(r.Context(), tx, "settings", "platform", current); err != nil {
+		return nil, err
+	}
+	if err = audit(r.Context(), tx, u.ID, "settings.save", "platform", "更新本次提交的平台运营或公开客服字段"); err != nil {
+		return nil, err
+	}
+	return current, tx.Commit(r.Context())
 }
 
 // resolve 平台可裁决退款或恢复履约，不可把未交付订单强制结算。

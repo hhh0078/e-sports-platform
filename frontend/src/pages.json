@@ -161,6 +161,48 @@
       "style": {
         "navigationBarTitleText": "发送消息"
       }
+    },
+    {
+      "path": "pages/community/clubs/console",
+      "style": {
+        "navigationBarTitleText": "俱乐部管理"
+      }
+    },
+    {
+      "path": "pages/community/clubs/funds",
+      "style": {
+        "navigationBarTitleText": "俱乐部资金"
+      }
+    },
+    {
+      "path": "pages/community/clubs/deposit",
+      "style": {
+        "navigationBarTitleText": "成员押金"
+      }
+    },
+    {
+      "path": "pages/manage/finance/index",
+      "style": {
+        "navigationBarTitleText": "资金审核"
+      }
+    },
+    {
+      "path": "pages/manage/finance/detail",
+      "style": {
+        "navigationBarTitleText": "审核明细"
+      }
+    },
+    {
+      "path": "pages/manage/finance/settings",
+      "style": {
+        "navigationBarTitleText": "交易规则"
+      }
+    },
+    {
+      "path": "pages/manage/support",
+      "style": {
+        "navigationBarTitleText": "客服配置"
+      }
     }
   ],
   "globalStyle": {

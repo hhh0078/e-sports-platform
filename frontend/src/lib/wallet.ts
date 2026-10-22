@@ -1,9 +1,9 @@
 /** 文件作用：统一钱包金额输入、状态文案与可恢复的资金请求号，不在客户端推导资金到账。 */
 /** 金额输入转整数分，拒绝指数、负数和超过两位小数。 */
-export function parseWalletAmount(value:string,maxCents=10000000):number{
+export function parseWalletAmount(value:string,maxCents=10000000,minCents=100):number{
   if(!/^\d+(\.\d{1,2})?$/.test(value.trim()))throw new Error('金额最多填写两位小数')
   const cents=Math.round(Number(value)*100)
-  if(!Number.isSafeInteger(cents)||cents<100||cents>maxCents)throw new Error('金额须为1至'+maxCents/100+'元')
+  if(!Number.isSafeInteger(cents)||cents<minCents||cents>maxCents)throw new Error('金额须为'+minCents/100+'至'+maxCents/100+'元')
   return cents
 }
 /** 创建幂等请求号；它只是业务去重标识，不是安全凭据。 */

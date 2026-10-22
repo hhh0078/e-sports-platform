@@ -50,7 +50,10 @@ func lockWalletOrder(ctx context.Context, q querier, id string, extraUser string
 	if err != nil {
 		return before, err
 	}
-	if err = lockWalletUsers(ctx, q, before.BuyerID, before.ProviderID, extraUser); err != nil {
+	if err = lockClubFinance(ctx, q, before.ClubID); err != nil {
+		return before, err
+	}
+	if err = lockWalletUsers(ctx, q, before.BuyerID, before.ProviderID, extraUser, clubWalletID(before.ClubID)); err != nil {
 		return before, err
 	}
 	current, err := get[Order](ctx, q, "orders", id, true)
@@ -159,11 +162,7 @@ func (a *App) walletSummary(w http.ResponseWriter, r *http.Request) (any, error)
 	} else if err != nil {
 		return nil, err
 	}
-	spendable, err := checkedWalletAmount(wallet.RechargeCents, wallet.AvailableCents)
-	if err != nil {
-		return nil, err
-	}
-	return map[string]any{"available_cents": wallet.AvailableCents, "recharge_cents": wallet.RechargeCents, "spendable_cents": spendable, "pending_cents": wallet.PendingCents, "withdrawal_frozen_cents": wallet.WithdrawalFrozenCents, "deposit_cents": wallet.DepositCents, "deposit_refunding_cents": wallet.DepositRefundingCents, "currency": "CNY", "settlement_hold_days": 7, "dev_mode": a.Config.DevMode}, nil
+	return a.walletSummaryValue(r.Context(), wallet, "")
 }
 
 // walletEntries 返回本人不可变账单，分页始终在账号过滤之后执行。
@@ -203,4 +202,50 @@ func claimWalletRequest(ctx context.Context, q querier, userID, requestID, kind 
 		return err
 	}
 	return put(ctx, q, "wallet_requests", id, expected)
+}
+
+// walletSummaryValue 将未履约净收入与已完成待售后净收入分开展示，不重复计算总余额。
+func (a *App) walletSummaryValue(ctx context.Context, wallet Wallet, clubID string) (any, error) {
+	spendable, e := checkedWalletAmount(wallet.RechargeCents, wallet.AvailableCents)
+	if e != nil {
+		return nil, e
+	}
+	where := "WHERE data->>'provider_id'=$1 AND data->>'status'='holding'"
+	arg := wallet.UserID
+	if clubID != "" {
+		where = "WHERE data->>'status'='holding' AND EXISTS(SELECT 1 FROM orders o WHERE o.id=wallet_escrows.id AND o.data->>'club_id'=$1)"
+		arg = clubID
+	}
+	escrows, e := list[WalletEscrow](ctx, a.DB, "wallet_escrows", where, arg)
+	if e != nil {
+		return nil, e
+	}
+	var ongoing, settling int64
+	for _, esc := range escrows {
+		o, e := get[Order](ctx, a.DB, "orders", esc.OrderID, false)
+		if e != nil {
+			return nil, e
+		}
+		s := settlementForOrder(o)
+		amount := s.ProviderIncomeCents
+		if clubID != "" {
+			amount = s.ClubFeeCents
+		}
+		if o.Status == "completed" {
+			settling += amount
+		} else {
+			ongoing += amount
+		}
+	}
+	minimum := int64(1)
+	nameRequired := false
+	if !a.Config.DevMode {
+		minimum = 10
+		if clubID != "" {
+			minimum = 30
+			nameRequired = true
+		}
+	}
+	daily := guardDailyWithdrawal(ctx, a.DB, wallet.UserID, time.Now()) == nil
+	return map[string]any{"withdrawal_min_cents": minimum, "withdrawal_name_required": nameRequired, "daily_withdrawal_available": daily, "available_cents": wallet.AvailableCents, "recharge_cents": wallet.RechargeCents, "spendable_cents": spendable, "pending_cents": wallet.PendingCents, "ongoing_cents": ongoing, "settling_cents": settling, "withdrawal_frozen_cents": wallet.WithdrawalFrozenCents, "deposit_cents": wallet.DepositCents, "deposit_refunding_cents": wallet.DepositRefundingCents, "currency": "CNY", "settlement_hold_days": 7, "dev_mode": a.Config.DevMode, "club_id": clubID}, nil
 }

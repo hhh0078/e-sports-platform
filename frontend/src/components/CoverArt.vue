@@ -3,7 +3,7 @@
 	<view class="cover-art" :style="coverStyle">
 		<image v-if="src" class="cover-image" :src="assetUrl(src)" mode="aspectFill" />
 		<view v-if="shade" class="cover-shade" />
-		<view v-for="label in arranged" :key="label.id" class="cover-label" :style="labelStyle(label)">{{ label.text }}
+		<view v-for="label in arranged" :key="label.id" :class="['cover-label',{'cover-label-readable':readable}]" :style="labelStyle(label)">{{ label.text }}
 		</view>
 		<slot />
 	</view>
@@ -30,8 +30,9 @@
 	import type { CSSProperties } from 'vue'
 	import type { CoverLabel } from '../types/models'
 	import type { PlacedLabel } from '../lib/cover'
+	import {layoutReadableCover} from '../lib/cover-readable'
 	import { mainNavigation } from '../lib/navigation'
-	const props = withDefaults(defineProps<{ src?: string; labels?: CoverLabel[]; shade?: boolean; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number; aspectRatio?: number }>(), { labels: () => [], shade: true, reserveBottom: 0, reserveBottomPixels: 0, reserveTopPixels: 0, minLabelAreaPixels: 0, aspectRatio: 16 / 9 })
+	const props = withDefaults(defineProps<{ src?: string; labels?: CoverLabel[]; shade?: boolean; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number; aspectRatio?: number;readable?:boolean;minFontPixels?:number }>(), { labels: () => [], shade: true, reserveBottom: 0, reserveBottomPixels: 0, reserveTopPixels: 0, minLabelAreaPixels: 0, aspectRatio: 16 / 9,readable:false,minFontPixels:10 })
 	const width = ref(0)
 	const instance = getCurrentInstance()
 	const ratio = computed(() => Number.isFinite(props.aspectRatio) && props.aspectRatio >= .5 && props.aspectRatio <= 4 ? props.aspectRatio : 16 / 9)
@@ -40,9 +41,12 @@
 	/** 沉浸封面中的用户文字避开状态栏、胶囊与悬浮返回按钮。 */
 	const reservedTop = computed(() => width.value > 0 && Number.isFinite(props.reserveTopPixels) ? Math.max(0, props.reserveTopPixels) * 360 / width.value : 0)
 	/** 详情明确要求可读文字带时才增高，默认0保持所有卡片及旧调用的原比例。 */
-	const canvasHeight = computed(() => width.value > 0 && Number.isFinite(props.minLabelAreaPixels) && props.minLabelAreaPixels > 0 ? Math.max(360 / ratio.value, reservedTop.value + reserved.value + (props.minLabelAreaPixels + 16) * 360 / width.value) : 360 / ratio.value)
+	const baseCanvasHeight = computed(() => width.value > 0 && Number.isFinite(props.minLabelAreaPixels) && props.minLabelAreaPixels > 0 ? Math.max(360 / ratio.value, reservedTop.value + reserved.value + (props.minLabelAreaPixels + 16) * 360 / width.value) : 360 / ratio.value)
+	/** 可读模式以真实像素计算，拥挤时只增高图片，不缩小或隐藏用户文字。 */
+	const readableLayout=computed(()=>layoutReadableCover(props.labels||[],width.value,baseCanvasHeight.value*width.value/360,reserved.value*width.value/360,reservedTop.value*width.value/360,props.minFontPixels))
+	const canvasHeight=computed(()=>props.readable&&width.value>0?readableLayout.value.height*360/width.value:baseCanvasHeight.value)
 	const coverStyle = computed<CSSProperties>(() => ({ paddingTop: canvasHeight.value / 360 * 100 + '%' }))
-	const arranged = computed(() => layoutLabels(props.labels || [], reserved.value, canvasHeight.value, reservedTop.value))
+	const arranged = computed(() =>props.readable?readableLayout.value.labels:layoutLabels(props.labels || [], reserved.value, canvasHeight.value, reservedTop.value))
 	let active = false
 	let resizeObserver: ResizeObserver | undefined
 	/** 将画布坐标转换为当前卡片的相对位置与字号。 */
@@ -94,6 +98,7 @@
 <style scoped>
 	.cover-art {
 		position: relative;
+		z-index: 0;
 		width: 100%;
 		padding-top: 56.25%;
 		overflow: hidden;
@@ -102,6 +107,7 @@
 
 	.cover-image {
 		position: absolute;
+		z-index: 0;
 		inset: 0;
 		width: 100%;
 		height: 100%;
@@ -110,6 +116,7 @@
 
 	.cover-shade {
 		position: absolute;
+		z-index: 1;
 		inset: 0;
 		pointer-events: none;
 		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 38%, var(--surface) 100%)
@@ -117,6 +124,7 @@
 
 	.cover-label {
 		position: absolute;
+		z-index: 2;
 		display: flex;
 		align-items: center;
 		padding: 0 1.3%;
@@ -129,4 +137,5 @@
 		text-overflow: ellipsis;
 		pointer-events: none
 	}
+	.cover-label-readable{padding:3px 6px;white-space:normal;word-break:break-all;overflow:visible;text-overflow:clip;line-height:1.25}
 </style>

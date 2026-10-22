@@ -179,6 +179,7 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 func (a *App) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("GET /static/covers/", assets.Handler())
+	mux.Handle("GET /static/avatars/", assets.AvatarHandler())
 	a.registerIdentityRoutes(mux)
 	a.registerPaymentSettingsRoutes(mux)
 	a.registerWalletRoutes(mux)
@@ -246,6 +247,8 @@ func publicValue(value any) any {
 		}
 		return out
 	case Order:
+		v.PaymentMerchantID = ""
+		v.PaymentAppID = ""
 		v.WalletRequestID = ""
 		v.PayOpenID = ""
 		v.PaymentTransactionID = ""

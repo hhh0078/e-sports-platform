@@ -18,11 +18,11 @@ function harness(t: TestContext){
   const storage=new Map<string,string>([['jijie_token','token-A']]),requests: DeferredRequest[]=[],notices: unknown[]=[],navigations: string[]=[]
   const lifecycle: PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
   const context=vm.createContext({
-    reactive,ref,computed,watch,
+    reactive,ref,computed,watch,requirePhone:async()=>true,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},
     token:()=>storage.get('jijie_token')||'',
     /** 每次请求都由用例显式结束，迟到响应不会被模拟器自动丢弃。 */
-    api(path:string,method='GET',body:Record<string,unknown>={}){return new Promise<unknown>((resolve,reject)=>requests.push({path,method,body,resolve,reject,taken:false}))},
+    api(path:string,method='GET',body:Record<string,unknown>={}){if(path==='/financial-rules'&&method==='GET')return Promise.resolve({free_platform_rate_bps:0,club_platform_rate_bps:0,club_creation_deposit_cents:10000});return new Promise<unknown>((resolve,reject)=>requests.push({path,method,body,resolve,reject,taken:false}))},
     notify:(value:unknown)=>notices.push(value),go:(value:string)=>navigations.push(value),
     onLoad:(callback:PageLifecycle['load'])=>{lifecycle.load=callback},onShow:(callback:()=>void)=>{lifecycle.show=callback},onHide:(callback:()=>void)=>{lifecycle.hide=callback},onUnload:(callback:()=>void)=>{lifecycle.unload=callback},
   })
@@ -86,13 +86,13 @@ test('我的俱乐部切换账号立即清空原资料，旧响应不回填新�
 test('俱乐部旧创建的成功或失败不能导航、关闭或解锁新身份的申请',async t=>{
   for(const oldResult of ['success','error'])await t.test(oldResult,async child=>{
     const subject=harness(child);prepareDraft(subject,'原账号俱乐部')
-    const oldCreating=subject.page.create(),old=subject.take('/clubs','POST')
+    const oldCreating=subject.page.create();await flush();const old=subject.take('/clubs','POST')
     await subject.page.create()
     assert.equal(subject.requests.filter(item=>item.method==='POST').length,1,'连续点击只创建一次')
     await switchAccount(subject)
     subject.take('/clubs').resolve([]);await flush()
     prepareDraft(subject,'新账号俱乐部')
-    const creating=subject.page.create(),latest=subject.take('/clubs','POST')
+    const creating=subject.page.create();await flush();const latest=subject.take('/clubs','POST')
     assert.equal(latest.body.name,'新账号俱乐部')
     if(oldResult==='success')old.resolve({id:'old-A'});else old.reject(new Error('原账号申请失败'))
     await oldCreating
@@ -110,7 +110,7 @@ test('俱乐部旧创建的成功或失败不能导航、关闭或解锁新身�
 test('离开俱乐部目录后在途读取与创建结果均不再影响界面',async t=>{
   for(const boundary of ['hide','unload'] as const)await t.test(boundary,async child=>{
     const subject=harness(child),loading=subject.page.load();await flush();const oldList=subject.take('/clubs')
-    prepareDraft(subject);const creating=subject.page.create(),oldCreation=subject.take('/clubs','POST')
+    prepareDraft(subject);const creating=subject.page.create();await flush();const oldCreation=subject.take('/clubs','POST')
     subject.lifecycle[boundary]()
     oldList.resolve([{id:'late-list'}]);oldCreation.resolve({id:'late-club'});await Promise.all([loading,creating])
     assert.equal(subject.page.clubs.value.length,0)
@@ -126,11 +126,21 @@ test('离开俱乐部目录后在途读取与创建结果均不再影响界面',
 
 test('同一用户会话更新后旧创建结果被丢弃但提交锁仍正常恢复',async t=>{
   const subject=harness(t);prepareDraft(subject)
-  const creating=subject.page.create(),old=subject.take('/clubs','POST')
+  const creating=subject.page.create();await flush();const old=subject.take('/clubs','POST')
   const login=subject.store.login('A')
   subject.take('/auth/dev','POST').resolve({token:'refreshed-token-A',user:{...accountA}})
   await login;await flush();old.resolve({id:'stale-session-club'});await creating
   assert.deepEqual(subject.navigations,[])
   assert.deepEqual(subject.notices,[])
   assert.equal(subject.page.busy.value,false)
+})
+
+
+test('创建草稿响应丢失时复用请求号，待缴状态进入组织资金页',async t=>{
+  const subject=harness(t);prepareDraft(subject)
+  const first=subject.page.create();await flush();const original=subject.take('/clubs','POST');assert.ok(original.body.request_id);original.reject(new Error('响应丢失'));await first
+  const retry=subject.page.create();await flush();const second=subject.take('/clubs','POST');assert.equal(second.body.request_id,original.body.request_id)
+  second.resolve({id:'draft-A',status:'pending_deposit'});await retry
+  assert.equal(subject.navigations.at(-1),'/pages/community/clubs/funds?id=draft-A')
+  assert.equal(subject.page.creating.value,false)
 })

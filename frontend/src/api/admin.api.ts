@@ -18,7 +18,7 @@ export function createGame(body: Game): Promise<Game> { return request('/admin/g
 /** 保存游戏主题。 */
 export function updateGame(id: string, body: Game): Promise<Game> { return request('/admin/games/' + encodeURIComponent(id), 'PATCH', body) }
 /** 保存平台公告和名称。 */
-export function updateSettings(body: Settings): Promise<Settings> { return request('/admin/settings', 'PATCH', body) }
+export function updateSettings(body: Partial<Settings>): Promise<Settings> { return request('/admin/settings', 'PATCH', body) }
 /** 读取后台平台设置。 */
 export function getAdminSettings(): Promise<Settings> { return request('/admin/settings') }
 /** 平台裁定订单售后。 */

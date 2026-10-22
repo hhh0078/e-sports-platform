@@ -47,6 +47,31 @@ func testIncome(api *testAPI, user string, amount int64) {
 	if err = appendWalletEntry(ctx, tx, &wallet, WalletEntry{Kind: "test_service_income", ReferenceID: newID(), AmountCents: amount, AvailableDelta: amount, Note: "测试隔离schema收入夹具"}); err != nil {
 		api.t.Fatal(err)
 	}
+	id := newID()
+	channel := "dev"
+	transaction := "DEVFIXTURE" + id
+	if !api.App.Config.DevMode {
+		channel = "wechat"
+		transaction = "WXFIXTURE" + id
+	}
+	order := Order{ID: id, OrderNo: "FIXTURE" + id, BuyerID: "fixture-buyer", ProviderID: user, AmountCents: amount, PaymentStatus: "paid", PaymentChannel: channel, PaymentTransactionID: transaction, Status: "completed", WalletAccounted: true, CompletedAt: time.Now().Add(-8 * 24 * time.Hour).Format(time.RFC3339Nano), CreatedAt: now()}
+	if !api.App.Config.DevMode {
+		c, e := api.App.loadWXPay()
+		if e != nil {
+			api.t.Fatal(e)
+		}
+		order.PaymentMerchantID = c.MerchantID
+		order.PaymentAppID = c.AppID
+	}
+	if err = put(ctx, tx, "orders", id, order); err != nil {
+		api.t.Fatal(err)
+	}
+	if err = addFundingRoot(ctx, tx, "order", id, transaction, amount, channel, "escrow:"+id, "escrow", id, order.PaymentMerchantID, order.PaymentAppID); err != nil {
+		api.t.Fatal(err)
+	}
+	if err = moveFunding(ctx, tx, "fixture:"+id, "escrow:"+id, "escrow", amount, []fundDestination{{AccountID: user, Bucket: "available", OrderID: id, AmountCents: amount}}); err != nil {
+		api.t.Fatal(err)
+	}
 	if err = tx.Commit(ctx); err != nil {
 		api.t.Fatal(err)
 	}
@@ -292,5 +317,41 @@ func TestIntegrationWalletProductionRejectsDevFunds(t *testing.T) {
 	if err == nil {
 		app.Close()
 		t.Fatal("生产启动接受了模拟资金")
+	}
+}
+
+// TestIntegrationWalletPersonalDepositSmallRefund 验证个人押金分次退款后不足1元的尾款也能精确原路退清，缴纳门槛保持1元。
+func TestIntegrationWalletPersonalDepositSmallRefund(t *testing.T) {
+	api := newTestAPI(t)
+	payment := testTopup(api, "outsider", "deposit", "personal-small-deposit-pay", 150)
+	api.call("outsider", "POST", "/wallet/topups", map[string]any{"purpose": "deposit", "amount_cents": 50, "request_id": "personal-small-topup-denied"}, 400, nil)
+	for _, part := range []struct {
+		amount  int64
+		request string
+	}{{100, "personal-small-refund-one"}, {49, "personal-small-refund-cents"}} {
+		var refund WalletDepositRefund
+		api.call("outsider", "POST", "/wallet/deposit-refunds", map[string]any{"amount_cents": part.amount, "request_id": part.request}, 200, &refund)
+		if refund.Status != "success" || refund.AmountCents != part.amount {
+			t.Fatalf("小额押金退款失败:%+v", refund)
+		}
+	}
+	if wallet := testWallet(api, "outsider"); wallet.DepositCents != 1 || wallet.DepositRefundingCents != 0 {
+		t.Fatalf("一分尾款状态错误:%+v", wallet)
+	}
+	for i := 0; i < 2; i++ {
+		var tail WalletDepositRefund
+		api.call("outsider", "POST", "/wallet/deposit-refunds", map[string]any{"request_id": "personal-small-refund-tail"}, 200, &tail)
+		if tail.AmountCents != 1 || tail.Status != "success" {
+			t.Fatalf("一分尾款未原路退清:%+v", tail)
+		}
+	}
+	api.call("outsider", "POST", "/wallet/deposit-refunds", map[string]any{"amount_cents": 0, "request_id": "personal-zero-refund-denied"}, 400, nil)
+	wallet := testWallet(api, "outsider")
+	if wallet.DepositCents != 0 || wallet.DepositRefundingCents != 0 || wallet.AvailableCents != 0 || wallet.RechargeCents != 0 {
+		t.Fatalf("小额退款产生可用余额或残留:%+v", wallet)
+	}
+	stored, e := get[WalletTopup](t.Context(), api.App.DB, "wallet_topups", payment.ID, false)
+	if e != nil || stored.RefundedCents != 150 || stored.ReservedCents != 0 || stored.Status != "refunded" {
+		t.Fatalf("分笔原支付退款来源不守恒:%+v %v", stored, e)
 	}
 }

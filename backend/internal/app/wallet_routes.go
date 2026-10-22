@@ -6,6 +6,9 @@ import "net/http"
 // registerWalletRoutes 集中挂载钱包API，避免页面或通用管理资源绕过资金业务状态机。
 func (a *App) registerWalletRoutes(mux *http.ServeMux) {
 	routes := map[string]func(http.ResponseWriter, *http.Request) (any, error){
+		"GET /api/financial-rules": a.financialRules, "GET /api/clubs/{id}/entries": a.clubWalletEntries,
+		"GET /api/admin/financial-settings": a.financialSettingsAPI, "PATCH /api/admin/financial-settings": a.financialSettingsAPI,
+		"GET /api/clubs/{id}/deposits": a.clubDeposits, "GET /api/clubs/{id}/wallet": a.clubWalletSummary, "GET /api/clubs/{id}/withdrawals": a.clubWalletWithdrawals, "POST /api/clubs/{id}/withdrawals": a.clubWalletWithdrawals, "GET /api/admin/wallet/withdrawals/{id}/audit": a.adminWithdrawalAudit,
 		"GET /api/wallet": a.walletSummary, "GET /api/wallet/entries": a.walletEntries,
 		"GET /api/wallet/topups": a.walletTopups, "POST /api/wallet/topups": a.createWalletTopup, "POST /api/wallet/topups/{id}/sync": a.syncWalletTopup, "POST /api/wallet/topups/{id}/pay": a.resumeWalletTopup,
 		"GET /api/wallet/withdrawals": a.walletWithdrawals, "POST /api/wallet/withdrawals": a.createWalletWithdrawal, "POST /api/wallet/withdrawals/{id}/sync": a.syncWalletWithdrawal,

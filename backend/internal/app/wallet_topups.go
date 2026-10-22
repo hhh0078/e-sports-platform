@@ -29,6 +29,7 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 	}
 	var in struct {
 		Purpose     string `json:"purpose"`
+		ClubID      string `json:"club_id"`
 		AmountCents int64  `json:"amount_cents"`
 		RequestID   string `json:"request_id"`
 	}
@@ -38,8 +39,8 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 	if err = walletRequestID(in.RequestID); err != nil {
 		return nil, err
 	}
-	if !contains([]string{"balance", "deposit"}, in.Purpose) || in.AmountCents < 100 || in.AmountCents > 10000000 {
-		return nil, fail(400, "充值用途无效或金额不在1至100000元范围内")
+	if !contains([]string{"balance", "deposit", "club_platform", "member_club"}, in.Purpose) || in.AmountCents < 1 || in.AmountCents > 10000000 || (in.Purpose == "balance" || in.Purpose == "deposit") && in.AmountCents < 100 {
+		return nil, fail(400, "充值用途或金额无效，个人充值至少1元，组织押金必须为正数且不超过100000元")
 	}
 	var paymentConfig wxPayConfig
 	if !a.Config.DevMode {
@@ -53,16 +54,20 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-	if err = lockWalletUsers(ctx, tx, u.ID); err != nil {
+	accountID, err := a.depositAccount(ctx, tx, u, in.Purpose, in.ClubID)
+	if err != nil {
 		return nil, err
 	}
-	if err = claimWalletRequest(ctx, tx, u.ID, in.RequestID, "topup", map[string]any{"purpose": in.Purpose, "amount_cents": in.AmountCents}); err != nil {
+	if err = lockWalletUsers(ctx, tx, u.ID, accountID); err != nil {
+		return nil, err
+	}
+	if err = claimWalletRequest(ctx, tx, u.ID, in.RequestID, "topup", map[string]any{"purpose": in.Purpose, "amount_cents": in.AmountCents, "club_id": in.ClubID}); err != nil {
 		return nil, err
 	}
 	id := walletKey("topup", u.ID, in.RequestID)
 	payment, err := get[WalletTopup](ctx, tx, "wallet_topups", id, true)
 	if missing(err) {
-		payment = WalletTopup{ID: id, UserID: u.ID, RequestID: in.RequestID, Purpose: in.Purpose, AmountCents: in.AmountCents, Status: "pending_payment", OrderNo: "WT" + strings.ToUpper(id[:30]), CreatedAt: now(), UpdatedAt: now()}
+		payment = WalletTopup{AccountID: accountID, ClubID: in.ClubID, ID: id, UserID: u.ID, RequestID: in.RequestID, Purpose: in.Purpose, AmountCents: in.AmountCents, Status: "pending_payment", OrderNo: "WT" + strings.ToUpper(id[:30]), CreatedAt: now(), UpdatedAt: now()}
 		if !a.Config.DevMode {
 			identity, e := get[map[string]string](ctx, tx, "identities", u.ID, false)
 			if e != nil || identity["openid"] == "" {
@@ -77,7 +82,7 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 		}
 	} else if err != nil {
 		return nil, err
-	} else if payment.AmountCents != in.AmountCents || payment.Purpose != in.Purpose {
+	} else if payment.AmountCents != in.AmountCents || payment.Purpose != in.Purpose || payment.ClubID != in.ClubID {
 		return nil, fail(409, "同一request_id不能修改充值金额或用途")
 	}
 	if err = tx.Commit(ctx); err != nil {
@@ -107,7 +112,7 @@ func (a *App) walletTopupPayment(r *http.Request, u User, payment WalletTopup) (
 	if payment.MerchantID != "" && (payment.MerchantID != c.MerchantID || payment.AppID != c.AppID) {
 		return nil, fail(409, "支付商户配置已变更，请联系平台核查原充值意图，勿重新付款")
 	}
-	result, err := a.prepay(r, u, Order{ID: payment.ID, OrderNo: payment.OrderNo, Title: map[string]string{"balance": "集结钱包充值", "deposit": "集结自愿平台押金"}[payment.Purpose], AmountCents: payment.AmountCents, PayOpenID: payment.PayOpenID})
+	result, err := a.prepay(r, u, Order{ID: payment.ID, OrderNo: payment.OrderNo, Title: map[string]string{"balance": "集结钱包充值", "deposit": "集结自愿平台押金", "club_platform": "俱乐部平台押金", "member_club": "俱乐部成员托管押金"}[payment.Purpose], AmountCents: payment.AmountCents, PayOpenID: payment.PayOpenID})
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +127,10 @@ func (a *App) applyWalletTopup(ctx context.Context, snapshot WalletTopup, v wxTr
 		return err
 	}
 	defer tx.Rollback(ctx)
-	if err = lockWalletUsers(ctx, tx, snapshot.UserID); err != nil {
+	if err = lockClubFinance(ctx, tx, snapshot.ClubID); err != nil {
+		return err
+	}
+	if err = lockWalletUsers(ctx, tx, snapshot.UserID, topupAccount(snapshot)); err != nil {
 		return err
 	}
 	p, err := get[WalletTopup](ctx, tx, "wallet_topups", snapshot.ID, true)
@@ -141,12 +149,12 @@ func (a *App) applyWalletTopup(ctx context.Context, snapshot WalletTopup, v wxTr
 	if p.Status != "pending_payment" {
 		return fail(409, "充值状态异常，请平台核查")
 	}
-	wallet, err := lockedWallet(ctx, tx, p.UserID)
+	wallet, err := lockedWallet(ctx, tx, topupAccount(p))
 	if err != nil {
 		return err
 	}
 	entry := WalletEntry{Kind: "topup", ReferenceID: p.ID, AmountCents: p.AmountCents, Note: "充值余额，不支持提现"}
-	if p.Purpose == "deposit" {
+	if p.Purpose != "balance" {
 		entry.DepositDelta = p.AmountCents
 		entry.Note = "自愿缴纳平台押金，独立保管，可申请原路退还"
 	} else {
@@ -158,6 +166,31 @@ func (a *App) applyWalletTopup(ctx context.Context, snapshot WalletTopup, v wxTr
 	p.Status = "paid"
 	p.TransactionID = v.TransactionID
 	p.UpdatedAt = now()
+	if p.Purpose == "balance" {
+		channel := "wechat"
+		if dev {
+			channel = "dev"
+		}
+		if err = addFundingRoot(ctx, tx, "topup", p.ID, p.TransactionID, p.AmountCents, channel, p.UserID, "recharge", "", p.MerchantID, p.AppID); err != nil {
+			return err
+		}
+	}
+	if p.Purpose == "club_platform" {
+		c, e := get[Club](ctx, tx, "clubs", p.ClubID, true)
+		if e != nil {
+			return e
+		}
+		settings, e := financialSettings(ctx, tx)
+		if e != nil {
+			return e
+		}
+		if c.Status == "pending_deposit" && wallet.DepositCents >= clubRequiredDeposit(c, settings) {
+			c.Status = "pending"
+			if e = put(ctx, tx, "clubs", c.ID, c); e != nil {
+				return e
+			}
+		}
+	}
 	if err = put(ctx, tx, "wallet_topups", p.ID, p); err != nil {
 		return err
 	}
@@ -212,4 +245,12 @@ func (a *App) resumeWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 		return nil, fail(403, "无权支付他人充值记录")
 	}
 	return a.walletTopupPayment(r, u, p)
+}
+
+// topupAccount 兼容历史个人充值，同时确保组织押金只进入绑定专户。
+func topupAccount(p WalletTopup) string {
+	if p.AccountID != "" {
+		return p.AccountID
+	}
+	return p.UserID
 }

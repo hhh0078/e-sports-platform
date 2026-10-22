@@ -1,0 +1,25 @@
+<!-- 文件作用：提供俱乐部负责人控制台，将佣金押金、成员、团队订单和装修拆分为清晰入口。 -->
+<template>
+  <AppShell title="俱乐部管理" back>
+    <view v-if="error" class="error-box" @click="load">{{ error }} · 点击重试</view>
+    <view v-if="loading&&!club" class="loading-line">正在读取管理权限…</view>
+    <template v-if="club&&canManage">
+      <view class="club-console-identity"><image v-if="club.avatar_url" class="club-console-avatar" :src="assetUrl(club.avatar_url)" mode="aspectFill"/><view class="club-console-copy"><text class="club-console-title">{{ club.name }}</text><text class="subtle-note">负责人控制台</text></view></view>
+      <view class="club-console-summary"><text>认证成员</text><text>{{ club.member_count }} 人</text></view>
+      <view class="club-console-links"><button v-for="item in links" :key="item.page" class="club-console-link" @click="go(item.page+encodeURIComponent(id))"><view class="club-console-icon"><Icon :name="item.icon" :size="22"/></view><view class="club-console-copy"><text class="club-console-label">{{ item.title }}</text><text class="subtle-note">{{ item.detail }}</text></view><Icon name="arrow" :size="14"/></button></view>
+      <text class="subtle-note">押金、佣金和负责人的个人资产分别记账。资金操作须通过平台核验。</text>
+    </template>
+    <text v-else-if="club" class="subtle-note">仅俱乐部负责人可访问控制台。</text>
+  </AppShell>
+</template>
+<script setup lang="ts">
+import AppShell from '../../../components/AppShell.vue'
+import Icon from '../../../components/Icon.vue'
+import { useClubFunds } from '../../../lib/use-club-funds'
+import { assetUrl, go } from '../../../lib/format'
+const {id,club,canManage,loading,error,load}=useClubFunds('club_platform')
+const links=[{title:'俱乐部资金',detail:'平台押金、佣金与提现',icon:'wallet',page:'/pages/community/clubs/funds?id='},{title:'加入规则与装修',detail:'抽成、备注、封面与图文',icon:'edit',page:'/pages/community/clubs/edit?id='},{title:'联系方式',detail:'客服二维码、电话与微信号',icon:'phone',page:'/pages/community/clubs/edit?section=contact&id='},{title:'成员管理',detail:'申请审核与认证',icon:'club',page:'/pages/community/clubs/detail?tab=manage&id='},{title:'团队订单',detail:'查看履约进度与售后',icon:'orders',page:'/pages/community/clubs/detail?tab=orders&id='}]
+</script>
+<style scoped>
+.club-console-identity{display:flex;align-items:center;gap:16px;min-width:0;padding:20px 0}.club-console-avatar{width:56px;height:56px;border-radius:16px;background:var(--surface);flex-shrink:0}.club-console-copy{flex:1;min-width:0}.club-console-title{display:block;font-size:23px;line-height:32px;font-weight:700;overflow-wrap:anywhere}.club-console-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 0;border-bottom:1px solid var(--line-subtle);font-size:14px;color:var(--muted)}.club-console-links{display:flex;flex-direction:column;gap:12px;padding:28px 0}.club-console-link{display:flex;align-items:center;gap:12px;width:100%;min-width:0;min-height:76px;padding:12px 16px;border-radius:12px;background:var(--surface);color:var(--muted);text-align:left}.club-console-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:36px;color:var(--accent)}.club-console-label{display:block;font-size:16px;color:var(--text);line-height:24px}
+</style>

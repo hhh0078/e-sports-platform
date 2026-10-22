@@ -139,9 +139,17 @@ func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	hash := sha256.Sum256([]byte(identity.AppID + ":" + identity.OpenID))
 	id := "wx_" + hex.EncodeToString(hash[:16])
-	u := User{ID: id, Nickname: "新队友", Role: "user", Status: "active", ProviderEnabled: true, CreatedAt: now()}
-	userRaw, _ := json.Marshal(u)
-	if _, err = tx.Exec(r.Context(), "INSERT INTO users(id,data) VALUES($1,$2) ON CONFLICT(id) DO NOTHING", id, userRaw); err != nil {
+	u, err := get[User](r.Context(), tx, "users", id, false)
+	if missing(err) {
+		avatar, avatarErr := randomDefaultAvatar()
+		if avatarErr != nil {
+			return nil, fail(503, "默认头像暂时无法分配，请稍后重试")
+		}
+		u = User{ID: id, Nickname: "新队友", Avatar: avatar, Role: "user", Status: "active", ProviderEnabled: true, CreatedAt: now()}
+		userRaw, _ := json.Marshal(u)
+		_, err = tx.Exec(r.Context(), "INSERT INTO users(id,data) VALUES($1,$2) ON CONFLICT(id) DO NOTHING", id, userRaw)
+	}
+	if err != nil {
 		return nil, err
 	}
 	u, err = get[User](r.Context(), tx, "users", id, true)

@@ -222,7 +222,8 @@ test('发布页读取完成后同身份隐藏返回保留全部草稿且不重�
   const draft=subject.draft(),requestCount=subject.requests.length
   subject.lifecycle.hide();subject.lifecycle.show();await flush()
   assert.equal(subject.draft(),draft)
-  assert.equal(subject.requests.length,requestCount)
+  assert.equal(subject.requests.slice(requestCount).every(request=>request.path==='/wallet'||request.path==='/clubs/club-A/deposits'),true)
+  assert.equal(subject.requests.filter(request=>request.path==='/clubs?mine=1').length,1)
 })
 
 test('发布页隐藏期间换账号，重显只接收新账号挂靠且旧响应不清除新选择',async()=>{
@@ -271,6 +272,7 @@ test('编辑预览只使用本人服务端押金，草稿不能伪造或提交�
   subject.take('/me').resolve({...accountA,phone_verified:true});await flush()
   const writing=subject.take('/services/service-A','PATCH')
   assert.equal('provider_deposit_cents' in writing.body,false)
+  assert.equal('provider_club_deposit_cents' in writing.body,false)
   writing.resolve({id:'service-A'});await saving
 })
 
@@ -282,4 +284,33 @@ test('发布预览换身份立即清除已读押金，旧身份迟到响应不�
   old.resolve({...serviceData('旧身份服务'),provider_id:'A',provider_deposit_cents:20000});await loading
   assert.equal(subject.page.previewService.value.provider_deposit_cents,0)
   assert.equal(subject.store.state.user.id,'B')
+})
+
+test('新建服务完整预览读取本人两类实缴押金，不使用规则或组织平台押金',async()=>{
+  const subject=publishLoadSubject(),loading=subject.page.load();await flush()
+  subject.take('/clubs?mine=1').resolve([clubData('club-A')]);await loading
+  subject.take('/wallet').resolve({deposit_cents:12500});await flush()
+  assert.equal(subject.page.previewService.value.provider_deposit_cents,12500)
+  subject.page.form.club_id='club-A'
+  subject.take('/clubs/club-A/deposits').resolve({platform:{amount_cents:999999},membership:{amount_cents:23000,required_cents:50000}});await flush()
+  assert.equal(subject.page.previewService.value.provider_club_deposit_cents,23000)
+  subject.page.form.provider_deposit_cents=999999;subject.page.form.provider_club_deposit_cents=999999
+  assert.equal(subject.page.previewService.value.provider_deposit_cents,12500);assert.equal(subject.page.previewService.value.provider_club_deposit_cents,23000)
+  const source=readFileSync(new URL('../pages/services/publish.vue',import.meta.url),'utf8')
+  assert.match(source,/<ServiceCard :service="previewService" :interactive="false"\s*\/>/)
+  assert.doesNotMatch(source,/cover-only/)
+})
+
+test('发布预览切换俱乐部或账号后，迟到押金响应不能恢复旧徽标',async()=>{
+  const subject=publishLoadSubject(),loading=subject.page.load();await flush()
+  subject.take('/clubs?mine=1').resolve([clubData('club-A'),clubData('club-B')]);await loading
+  const oldWallet=subject.take('/wallet')
+  subject.page.form.club_id='club-A';const oldClub=subject.take('/clubs/club-A/deposits')
+  subject.page.form.club_id='club-B';assert.equal(subject.page.previewService.value.provider_club_deposit_cents,0)
+  subject.take('/clubs/club-B/deposits').resolve({membership:{amount_cents:34000}});await flush()
+  oldClub.resolve({membership:{amount_cents:12000}});await flush()
+  assert.equal(subject.page.previewService.value.provider_club_deposit_cents,34000)
+  await switchAccount(subject);assert.equal(subject.page.previewService.value.provider_deposit_cents,0);assert.equal(subject.page.previewService.value.provider_club_deposit_cents,0)
+  oldWallet.resolve({deposit_cents:99999});await flush()
+  assert.equal(subject.page.previewService.value.provider_deposit_cents,0);assert.equal(subject.page.previewService.value.provider_club_deposit_cents,0)
 })

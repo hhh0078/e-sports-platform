@@ -1,27 +1,17 @@
-# 玩家首页 · 左文右操作
+# main/player/player · 本轮设计
 
-文件作用：对应 `frontend/src/pages/main/player/player.vue` 的先行局部设计和实施依据；2026-10-22按用户最新局部修改编辑。上一版图及说明已归档 `design/history/20261022-before-game-refinements/pages/`。本图先保存后通知实现。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 本轮仅调整顶部hero：文字组在左、发布需求按钮在右，同一横向业务行；不把按钮放回文案下方。右按钮紧凑36px、约96～104px宽、不可收缩，左文案min-width:0、两者至少12px间隔。
-- 这行须位于原生胶囊底部安全距离之后，不按旧status+8直接排到胶囊下方；320px时标题可在左区自然换行、hero适度增高，禁止按钮遮字或进入胶囊区域。
-- 游戏背景来自当前game.cover_url，示例使用项目已有官方delta素材；不硬编码当前游戏或替换为无来源角色。四主视图无应用顶栏。
-- 游戏目录仍固定一行横滑，右端全部打开选择弹框。服务分类、搜索排序、服务卡、发现俱乐部和状态/滚动保留。
-- 游戏弹框抽为共享GameSelector，三列图标/搜索/选中样式保持已批准首页风格；对应打开状态见[player-game-picker.design.md](player-game-picker.design.md)和同名PNG。横排GamePicker仅保留触发器及显式全局偏好绑定，其他页面复用弹框不能误写首页游戏缓存。
-- 服务卡仍是图底透明至主题深色渐变，标签在上、标题在下独立图层，价格成交图下正常流，自定义文字防碰撞。
-- 唯一底栏的玩家手柄在选中时必须跟随当前主题accent着色，不是固定白色；未选中为次要灰色。Root负责Icon实现，本图只表达正确选中视觉。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-## 共同边界
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-390×844，内置ImageGen精确局部编辑后机械等比缩放；保留既有自然黑绿设计、字段和安全区。图中文字误差/示例数值以真实业务与本说明为准。图片只作设计参照，实际页面使用现有官方素材和独立组件。验收截图另存output。
+## 页面布局与状态
 
-## 完整编辑提示词
+首页主要结构与已有官方游戏素材不变。服务卡按上述新约定展示。四主视图底部自然流添加“该平台由开机电竞、瓜瓜提供技术支持”，点击共享说明弹层，主容器只挂一个弹层。
 
-Use case: ui-mockup. PRECISE LOCAL EDIT of the attached existing Chinese390x844 design. Preserve the approved naturaldarkgreen UI (#0a1110,white#edf4ef,mintaccent#8de8b6), existingbusinessfields, spacing, hierarchy, thinseparators, typography, officialiconstyle andnativeWeChatstatus/capsulesafearea. DO NOT redesign unrelatedparts, addfeatures/headlines/English, inventnewgamesorcharacters, or introduceblue/purpleneongradients. Exact390:844flatportraitUI,no deviceframe,nooutside margins. Existingartreferencesareprojectofficialassets. TextremainsindependentUI, neverbakedintobackground. Ordinarysecondarypagesretainsharedbackheader;primarytabsNOtopnavbar. Thisisprimaryplayerhome. ChangeONLYtopheroarrangement: textgrouponLEFTand发布需求compact36pxbuttononRIGHTintheSAMEhorizontalrow, alignedvertically, withmin12pxgap. Hero's meaningfulrowmustbeginBELOWnativecapsulebottom(abouty88-96), so rightbuttondoesNOTsitunderWeChatcapsule. Lefttextgroupmaycontainexisting集结brand, 好队友，即刻集结headline andcurrentgame/categorysmallline, compactreadable, canwrapwithinboundedwidth; rightbuttonwidthabout100pxdoesnotshrinkoroverlaptextat320px. DoNOTput发布需求belowtextasoldimage. Keepgamebackground/graydarkshade, singlehorizontalgamecatalogwithfixed全部entry,categoryfilters,servicecardsandbottomnavunchanged. Bottomnav玩家activegamepadiconmustbeMINTTHEMECOLOR, notplainwhite; othericonsmuted. Preservegameartfromexistingtarget;supportingofficialassetclarifiessource,don'tinventalternategameart. No primaryappnavbar. Allotherpartsremainasexistingdesign.
+## 生成提示词与实施边界
 
-## 2026-10-22自愿平台押金局部增补
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
 
-仅当真实provider_deposit_cents>0时，在服务图下价格区域的独立小行显示“平台押金”标识（可带实际金额）；0/未知不显示。此信息不进入图内自定义六条文字、标签/标题或俱乐部认证区，不代表担保/赔付；正文随标识自然增高。
-
-完整局部编辑提示词：
-
-Use case: ui-mockup. PreciseLOCALeditofattachedChinese390x844design. Preserveallunrelatedstyle/fields/layout/gameart/safeareas,approved#0a1110darknaturalgreenand#8de8b6mint, thinseparatorsandcentredofficialicons. No newfeatures, no giantcards, no Englishdecoration/no bluepurplegradient. AllnewtextindependentUI,nobakedgameart. Exact390:844portraitflatUI,noframe/nooutside margins. ChangeONLYservicecards: addsmallsubtle平台押金badgeinitsOWNnormal-flowrow BELOWtheimage andbeside/underpricebody, onlyoneortwosamplecardswithpositivedepositshowit;cardswithzerodepositdonotshowanything. Badgeplainmutedmint/graytextandtinywalleticon,noguaranteeshield,no赔付/担保promises. NEVERputbadgeinsidethecovergradient/customtext/clubcertificationarea. Keepall sixcustomtextsafezonesandimagecontentsunchanged. Allowcardbodygrowabout18-22pxandlowercardsfallbelowviewport,noshrinkingtypography. PreserveheroLEFTcopy/RIGHT发布需求, officialbackground,singlegamecatalog/allentry,andmintACTIVEplayergamepadiconunchanged.
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。

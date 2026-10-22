@@ -60,24 +60,7 @@
 					</button></scroll-view>
 			</view>
 		</view>
-		<view v-if="profileOffer" class="login-mask" @click="finishLogin">
-			<view class="login-sheet profile-offer" @click.stop>
-				<view class="sheet-heading"><text>让队友认识你</text><button class="sheet-close" :disabled="profileBusy"
-						@click="finishLogin">
-						<Icon name="close" :size="21" />
-					</button></view><text class="sheet-hint">头像和昵称随时可以修改，也可以稍后完善。</text><button class="offer-avatar"
-					:disabled="profileBusy" @click="pickAvatar">
-					<image class="offer-avatar-image" v-if="draft.avatar" :src="assetUrl(draft.avatar)"
-						mode="aspectFill" />
-					<Icon v-else name="user" :size="30" />
-				</button>
-				<view class="form-section offer-field"><text class="field-label">昵称</text><input
-						v-model="draft.nickname" type="nickname" class="input" maxlength="24" placeholder="2—24个字的昵称" />
-				</view><button class="btn login-primary" :disabled="profileBusy"
-					@click="saveOptionalProfile">{{profileBusy?'正在保存…':'保存并进入'}}</button><button class="finish-later"
-					:disabled="profileBusy" @click="finishLogin">先这样，稍后完善</button>
-			</view>
-		</view>
+        <view v-if="profileOffer" class="login-mask" @click="finishLogin"><view class="login-sheet profile-offer" @click.stop><view class="offer-handle"/><view class="sheet-heading"><text>完善游戏名片</text><button class="sheet-close" :disabled="profileBusy" aria-label="稍后完善" @click="finishLogin"><Icon name="close" :size="21"/></button></view><text class="sheet-hint">让队友更快认识你，也可稍后填写。</text><view class="offer-identity"><button class="offer-avatar" open-type="chooseAvatar" :disabled="profileBusy" @chooseavatar="chooseWechatAvatar" @click="pickAvatarForWeb"><image v-if="draft.avatar" class="offer-avatar-image" :src="assetUrl(draft.avatar)" mode="aspectFill"/><Icon v-else name="user" :size="28"/><view class="offer-camera"><Icon name="photo" :size="12"/></view></button><view class="offer-avatar-copy"><button class="offer-wechat-avatar" open-type="chooseAvatar" :disabled="profileBusy" @chooseavatar="chooseWechatAvatar" @click="pickAvatarForWeb">微信头像<Icon name="arrow" :size="13"/></button><button class="offer-image-choice" :disabled="profileBusy" @click="pickAvatar()">或选择图片<Icon name="arrow" :size="12"/></button></view></view><view class="offer-nickname"><text class="offer-field-label">昵称</text><input v-model="draft.nickname" type="nickname" class="offer-name-input" maxlength="24" placeholder="2—24个字的昵称" :disabled="profileBusy"/></view><text class="offer-public-note">头像与昵称将展示在个人主页</text><button class="btn login-primary" :disabled="profileBusy" @click="saveOptionalProfile">{{profileBusy?'正在保存…':'保存并进入'}}</button><button class="finish-later" :disabled="profileBusy" @click="finishLogin">稍后完善</button></view></view>
 	</AppShell>
 </template>
 <script setup lang="ts">
@@ -134,7 +117,15 @@
 		// #endif
 	}
 	/** 通过统一裁剪压缩上传流程选择头像，取消时保持现有草稿。 */
-	async function pickAvatar() { if (profileBusy.value) return; const revision = sessionRevision(), savedToken = token(); profileBusy.value = true; try { const url = await chooseUploadImage('avatar'); if (!disposed && revision === sessionRevision() && savedToken === token() && url) draft.avatar = url } catch (err) { if (!disposed && revision === sessionRevision() && !isCancelled(err)) notify(err) } finally { profileBusy.value = false } }
+	async function pickAvatar(filePath?: string) { if (profileBusy.value) return; const revision = sessionRevision(), savedToken = token(); profileBusy.value = true; try { const url = await chooseUploadImage('avatar',{filePath}); if (!disposed && revision === sessionRevision() && savedToken === token() && url) draft.avatar = url } catch (err) { if (!disposed && revision === sessionRevision() && !isCancelled(err)) notify(err) } finally { profileBusy.value = false } }
+    /** 微信头像回调只接收临时路径，仍执行统一裁剪压缩与服务端审核。 */
+    async function chooseWechatAvatar(event:{detail:{avatarUrl?:string}}):Promise<void>{const filePath=event.detail?.avatarUrl;if(filePath)await pickAvatar(filePath)}
+    /** H5预览使用相册，微信端由原生chooseAvatar处理，不同时弹两次选择。 */
+    function pickAvatarForWeb():void{
+      // #ifdef H5
+      void pickAvatar()
+      // #endif
+    }
 	/** 保存可选资料前检查长度，并丢弃切换会话后的返回结果。 */
 	async function saveOptionalProfile() { if (profileBusy.value || !state.user) return; const nickname = draft.nickname.trim(); if (Array.from(nickname).length < 2 || Array.from(nickname).length > 24) return notify('昵称需要 2—24 个字'); const revision = sessionRevision(), savedToken = token(); profileBusy.value = true; try { const user = await updateProfile({ nickname, avatar: draft.avatar }); if (!disposed && revision === sessionRevision() && savedToken === token()) { state.user = user; profileOffer.value = false; go(next) } } catch (err) { if (revision === sessionRevision()) notify(err) } finally { profileBusy.value = false } }
 	/** 关闭可选资料弹层并返回原本想访问的页面。 */
@@ -474,6 +465,8 @@
 		color: var(--muted);
 		font-size: 12px
 	}
+
+    .profile-offer{padding:12px 20px calc(20px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;background:var(--bg)}.offer-handle{width:30px;height:4px;border-radius:4px;background:var(--muted);opacity:.5;margin:0 auto 18px}.offer-identity{display:flex;align-items:center;gap:16px;margin:22px 0}.offer-avatar{position:relative;width:68px;height:68px;margin:0;overflow:visible;border:1px solid var(--line)}.offer-avatar-image{display:block;width:100%;height:100%;border-radius:50%}.offer-camera{position:absolute;right:-2px;bottom:-2px;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:2px solid var(--bg);border-radius:50%;background:var(--accent);color:var(--bg)}.offer-avatar-copy{display:flex;flex-direction:column;gap:6px;min-width:0}.offer-wechat-avatar,.offer-image-choice{display:flex;align-items:center;justify-content:flex-start;gap:5px;min-height:28px;padding:0;background:transparent;font-size:14px;color:var(--text)}.offer-image-choice{font-size:12px;color:var(--muted)}.offer-nickname{display:flex;align-items:center;gap:16px;min-height:48px;border-bottom:1px solid var(--line)}.offer-field-label{flex-shrink:0;font-size:14px;line-height:22px;color:var(--text)}.offer-name-input{flex:1;min-width:0;height:44px;padding:0;background:transparent;font-size:15px;color:var(--text)}.offer-public-note{display:block;margin:12px 0 24px;color:var(--muted);font-size:11px;line-height:18px}
 
 	@media(max-width:350px) {
 		.login-headline {

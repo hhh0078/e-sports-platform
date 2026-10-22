@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "scope": "club-phone",
+  "time": "2026-10-22T18:32:43.871Z",
+  "api": "http://127.0.0.1:18091/api",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "statusBarHeight": 47,
+    "capsuleBottom": 83
+  },
+  "checks": [
+    "登录：自由玩家",
+    "俱乐部申请中的手机号官方弹层位于上层，可关闭并保留申请草稿，未发送加入申请"
+  ],
+  "runtime_exceptions": [],
+  "remaining": [
+    "真实微信授权与商户资金不由本地模拟回归替代",
+    "订单聊天与售后由独立交易回归脚本覆盖"
+  ]
+}

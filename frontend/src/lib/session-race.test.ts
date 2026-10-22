@@ -33,7 +33,7 @@ function harness(pageName: 'me' | 'profile' | 'orders' = 'me') {
   context.store.state.ready = true
   if(pageName==='me')vm.runInContext('(function(){'+executable(phoneSource)+';globalThis.requirePhone=requirePhone;globalThis.phone={phoneGate,finishPhone}})()',context)
   const source = { me: meSource, profile: profileSource, orders: ordersSource }[pageName]
-  const exposed = { me: 'load, verifyPhone, hidePage, stats', profile: 'load, saveProfile, signOut, hidePage, form, saving', orders: 'load, orders, loading, error, hasMore' }[pageName]
+  const exposed = { me: 'load, verifyPhone, hidePage, stats,wallet,walletError,orderCount,walletAmount', profile: 'load, saveProfile, signOut, hidePage, form, saving', orders: 'load, orders, loading, error, hasMore' }[pageName]
   vm.runInContext(executable(source) + '\nglobalThis.page = { ' + exposed + ' }', context)
   if (pageName === 'me' || pageName === 'orders') vm.runInContext('visible = true', context)
   return {
@@ -167,10 +167,13 @@ test('个人中心和资料页的跨会话回调及隐藏后的统计不再提�
     subject.take('/me').resolve({ ...accountA })
     await flush()
     const old = subject.take('/me/stats')
+    const oldWallet=subject.take('/wallet')
     subject.page.hidePage()
     old.resolve({ buyer_order_count: 999 })
+    oldWallet.resolve({available_cents:99900})
     await reading
     assert.equal(Object.keys(subject.page.stats.value).length, 0)
+    assert.equal(subject.page.wallet.value,null)
   })
   await t.test('logoutBeforeOldRead', async () => {
     const subject = harness('profile'), reading = subject.page.load()
@@ -184,6 +187,29 @@ test('个人中心和资料页的跨会话回调及隐藏后的统计不再提�
     assert.equal(subject.storage.has('jijie_token'), false)
     assert.equal(subject.page.form.nickname, '')
     assert.equal(subject.navigations.at(-1), '/pages/main/index?tab=me')
+  })
+})
+
+test('个人中心钱包分区与订单角标读取真实数据，充值不混入可提现余额',async()=>{
+  const subject=harness(),reading=subject.page.load();await flush();subject.take('/me').resolve({...accountA});await flush()
+  subject.take('/me/stats').resolve({buyer_pending_payment_count:2,buyer_working_count:120,buyer_delivered_count:0,buyer_refund_count:-1})
+  subject.take('/wallet').resolve({available_cents:1000,recharge_cents:6000,ongoing_cents:2500,settling_cents:3000,withdrawal_frozen_cents:500})
+  await reading
+  assert.equal(subject.page.walletAmount('available_cents'),'¥10.00');assert.equal(subject.page.walletAmount('recharge_cents'),'¥60.00');assert.equal(subject.page.walletAmount('ongoing_cents'),'¥25.00')
+  assert.equal(subject.page.orderCount('buyer_pending_payment_count'),'2');assert.equal(subject.page.orderCount('buyer_working_count'),'99+');assert.equal(subject.page.orderCount('buyer_delivered_count'),'');assert.equal(subject.page.orderCount('buyer_refund_count'),'')
+})
+
+test('旧钱包迟到不能暴露给新账号，资金失败保持未知而不假报零',async t=>{
+  await t.test('oldWallet',async()=>{
+    const subject=harness(),reading=subject.page.load();await flush();subject.take('/me').resolve({...accountA});await flush()
+    const stats=subject.take('/me/stats'),wallet=subject.take('/wallet');await loginB(subject)
+    stats.resolve({buyer_pending_payment_count:999});wallet.resolve({available_cents:99900});await reading
+    assert.equal(subject.store.state.user.id,'B');assert.equal(subject.page.wallet.value,null);assert.equal(subject.page.orderCount('buyer_pending_payment_count'),'')
+  })
+  await t.test('walletFailure',async()=>{
+    const subject=harness(),reading=subject.page.load();await flush();subject.take('/me').resolve({...accountA});await flush()
+    subject.take('/me/stats').resolve({buyer_pending_payment_count:2});subject.take('/wallet').reject(new Error('钱包连接失败'));await reading
+    assert.equal(subject.page.walletAmount('available_cents'),'—');assert.equal(subject.page.orderCount('buyer_pending_payment_count'),'2');assert.match(subject.page.walletError.value,/暂未同步/)
   })
 })
 

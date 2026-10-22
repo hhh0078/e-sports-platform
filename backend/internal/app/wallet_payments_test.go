@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 // productionWalletAPI 切换到真实协议校验但以临时密钥和本地隔离schema运行，不接触线上商户或真实用户资金。
@@ -292,6 +293,12 @@ func TestIntegrationWalletWXWithdrawalUnknown(t *testing.T) {
 	badTerminal.State = "FAIL"
 	if code := deliverWalletNotice(t, api, c, key, "MCHTRANSFER.BILL.FINISHED", badTerminal, "transfer"); code != 409 {
 		t.Fatalf("冲突终态覆盖成功:%d", code)
+	}
+	api.call("worker", "POST", "/wallet/withdrawals", map[string]any{"amount_cents": 300, "request_id": "same-day-blocked"}, 409, nil)
+	successful, _ := get[WalletWithdrawal](t.Context(), api.App.DB, "wallet_withdrawals", withdrawal.ID, false)
+	successful.CreatedAt = time.Now().Add(-48 * time.Hour).Format(time.RFC3339Nano)
+	if e := put(t.Context(), api.App.DB, "wallet_withdrawals", successful.ID, successful); e != nil {
+		t.Fatal(e)
 	}
 	var failed WalletWithdrawal
 	api.call("worker", "POST", "/wallet/withdrawals", map[string]any{"amount_cents": 300, "request_id": "wx-withdraw-0002"}, 200, &failed)

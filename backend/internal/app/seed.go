@@ -105,5 +105,8 @@ func (a *App) seed(ctx context.Context) error {
 			}
 		}
 	}
+	if err = migrateDefaultAvatars(ctx, tx); err != nil {
+		return err
+	}
 	return tx.Commit(ctx)
 }

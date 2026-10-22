@@ -45,7 +45,7 @@ export function useWallet(){
   /** 充值只有付款确认或退还后才完成意图，未付款和未知状态保留原号用于恢复。
    */
   function reconcileTopup(owner:ReturnType<typeof session>,record:WalletTopup,fallbackRequestID?:string){
-    if(record.status==='paid'||record.status==='refunded')reconcileRequest(owner,record.purpose,record.amount_cents,record.request_id||fallbackRequestID)
+    if((record.purpose==='balance'||record.purpose==='deposit')&&(record.status==='paid'||record.status==='refunded'))reconcileRequest(owner,record.purpose,record.amount_cents,record.request_id||fallbackRequestID)
   }
   /** 余额和资金单整体更新；失败保留上次真实金额并显示错误，绝不写假零余额。 */
   async function load(append=false){
@@ -72,7 +72,7 @@ export function useWallet(){
   /** 用户关闭普通表单时释放姓名，处理中保持交易锁。 */
   function close(){if(busy.value)return;operation.value=null;userName.value='';formError.value=''}
   /** 创建充值/押金支付并查原单，微信本地回调不会修改余额。 */
-  async function payTopup(owner:ReturnType<typeof session>,kind:'balance'|'deposit',cents:number,intent?:ReturnType<typeof intentID>,originalID?:string){
+  async function payTopup(owner:ReturnType<typeof session>,kind:WalletTopup['purpose'],cents:number,intent?:ReturnType<typeof intentID>,originalID?:string){
     if(!originalID&&!intent)throw new Error('付款原请求缺失，请重新打开付款单')
     const result=originalID?await payWalletTopup(originalID):await createWalletTopup({purpose:kind,amount_cents:cents,request_id:intent!.id})
     if(!same(owner)||!visible)return
@@ -99,7 +99,7 @@ export function useWallet(){
     if(busy.value||!operation.value||!visible||!state.user)return
     const owner=session(),kind=operation.value;busy.value=true;formError.value=''
     try{
-      const cents=parseWalletAmount(amount.value,kind==='withdrawal'?20000000:10000000)
+      const cents=parseWalletAmount(amount.value,kind==='withdrawal'?20000000:10000000,kind==='withdrawal'?(wallet.value?.withdrawal_min_cents||1):kind==='refund'?1:100)
       if(kind==='withdrawal'&&wallet.value&&cents>wallet.value.available_cents)throw new Error('提现金额超过可提现服务收入')
       const requestName=userName.value.trim()
       if(kind==='withdrawal'&&cents>=200000&&!requestName)throw new Error('单笔提现达到2000元，请填写微信实名认证姓名')

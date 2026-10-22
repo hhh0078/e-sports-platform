@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "scope": "support",
+  "viewport": {
+    "pixelRatio": 3,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "screenTop": 0,
+    "windowWidth": 390,
+    "windowHeight": 844,
+    "statusBarHeight": 47
+  },
+  "checks": [
+    "创建俱乐部保存前显示官方手机号门槛",
+    "取消手机号不创建俱乐部且草稿保留",
+    "platform已配置合法托管二维码，支持官方长按属性，未打开客服会话",
+    "platform微信号复制及电话参数正确，仅spy无真实拨号",
+    "club已配置合法托管二维码，支持官方长按属性，未打开客服会话",
+    "club微信号复制及电话参数正确，仅spy无真实拨号"
+  ],
+  "runtime_exceptions": [],
+  "canvas_color_warnings": [],
+  "clipboard_spy_calls": 2,
+  "phone_spy_calls": 2,
+  "phone_spy_numbers": [
+    "4001234567",
+    "4001234567"
+  ],
+  "phone_verification": "仅SDK mock记录示例号码，未实际拨号",
+  "forbidden_native_calls": [],
+  "remaining": [
+    "真实微信授权、支付、提现与实际客服电话/客服会话未执行；本地SDK及电话spy不能替代真机或商户验收。"
+  ]
+}

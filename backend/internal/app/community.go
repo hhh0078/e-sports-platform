@@ -105,6 +105,16 @@ func (a *App) playerProfile(w http.ResponseWriter, r *http.Request) (any, error)
 	for i := range clubs {
 		clubs[i] = a.decorateClub(r.Context(), clubs[i])
 	}
+	if wallet, e := accountBalance(r.Context(), a.DB, u.ID); e == nil {
+		profile["platform_deposit_cents"] = wallet.DepositCents
+	}
+	deposits := []map[string]any{}
+	for _, club := range clubs {
+		if wallet, e := accountBalance(r.Context(), a.DB, memberDepositAccount(club.ID, u.ID)); e == nil && wallet.DepositCents > 0 {
+			deposits = append(deposits, map[string]any{"club_id": club.ID, "club_name": club.Name, "amount_cents": wallet.DepositCents})
+		}
+	}
+	profile["club_deposits"] = deposits
 	return map[string]any{"profile": profile, "services": services, "clubs": clubs}, nil
 }
 

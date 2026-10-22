@@ -1,17 +1,17 @@
-# 无封面的玩家主页新版设计
+# community/players/detail · 本轮设计
 
-文件作用：对应 `frontend/src/pages/community/players/detail.vue` 的先行设计图与实施约束；2026-10-22 根据用户最新要求编辑。旧版保存在 `design/history/20261022-before-immersive/pages/`。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 用户未设置profile_cover时参考detail.png，保留普通统一顶部返回、居中标题及必要分享按钮，避开微信胶囊；不凭空增加默认大封面，无主底栏。
-- 用户有profile_cover时改为detail-cover.png及对应说明：封面沉浸起始、图上圆返回、图下身份正常流。两种状态不能同时套顶栏。
-- 身份、简介、三列统计与认证俱乐部按正常流展示，保持真实数据和业务权限。
-- 服务卡统一源图16:9、展示裁切约4:3。图底透明到主题背景不透明渐变，标签在上、标题在下，均为独立图层；自定义文字保持防越界/防碰撞。价格和成交放在图下正常流，不重复图外标题。
-- 游戏图仅示意，使用项目已核验的官方资产；图片文字不合成进资产。统一16px水平边距、8/12/16/24间距、44/36/28控件规格。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-## 生成与实施边界
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-使用内置ImageGen编辑同路径旧图后等比缩放至390×844。图片用于可读首屏设计，所有界面需实现为真实组件；生成文字误差以本说明和真实业务为准。图中省略的微信胶囊仍必须按系统API真实避让。实际验收截图单独放output，不得替换设计图。
+## 页面布局与状态
 
-## 完整编辑指令
+无封面时保留普通返回顶栏。身份区昵称下显示已认证俱乐部，只有无俱乐部时才写自由打手。身份下独立显示平台实缴押金和各俱乐部实缴押金（带俱乐部名称与跳转）；多个俱乐部自然换行，不把加入门槛当实缴。共享服务卡按最新约定展示，不添加假统计。
 
-Use case: ui-mockup. Edit the attached exact Chinese 390x844 player profile design. Keep native statusbar, ordinary shared app navbar with back chevron, centered 玩家主页 and small share icon, because this user has NO custom profile cover. Do NOT add a cover, no bottom primarynavigation. Keep the existing identity row 北辰, smallclubcertification, bio, three unboxed stats, single compact 山海电竞 clubentry, 发布的服务 heading. Preserve charcoalgreen#0a1110, panel#121d18, mint#8de8b6,16pxinsets and centered officialstyleicons. Change ONLY the service cards to the latest unified layout: each card is ONE component with game image at top; image bottom has a transparent-at-top to fullyopaque darkthemebackground gradient. Small certification/game labels are independently overlaid in a row ABOVE the service title, and the bold title is INSIDE image nearbottom. Userdefined 耐心沟通 chip remains an independent safe positioned layer, never merged intoasset and never collideswith title/tags. Below image only mintprice ¥68/小时 and 已完成12 normalflow, no duplicatetitle, no certificationblock. Examples 大坝任务协作 排位陪练 航天基地协作 全面战场上分 机密行动协作 跑刀资源陪玩. Keep readable compact cards two columns and all existing information hierarchy. Exactaspect390:844 flat raster UI, no deviceframe,no marginsoutside,no bluepurplegradients. Image is designreference; runtimeart uses existingofficialassets.
+## 生成提示词与实施边界
+
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
+
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。

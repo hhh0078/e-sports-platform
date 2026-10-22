@@ -1,17 +1,17 @@
-# 有封面的玩家主页新版设计
+# community/players/detail-cover · 本轮设计
 
-文件作用：对应 `frontend/src/pages/community/players/detail.vue` 的先行设计图与实施约束；2026-10-22 根据用户最新要求编辑。旧版保存在 `design/history/20261022-before-immersive/pages/`。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 仅当用户已设置profile_cover时使用本图。取消整条应用顶栏与“玩家主页”重复标题，用户封面从顶部沉浸开始，16:9全宽展示；左上36px圆形细边返回，避开状态栏/胶囊。分享动作同样避让胶囊。
-- 封面下16px正向间距后，正常流展示头像、昵称、认证与简介，再显示统计、俱乐部和服务列表；禁止负margin、身份图层叠封面。
-- 服务卡统一源图16:9、展示裁切约4:3。图底透明到主题背景不透明渐变，标签在上、标题在下，均为独立图层；自定义文字保持防越界/防碰撞。价格和成交放在图下正常流。
-- 山景只是用户自设封面的示意，运行时禁止作为默认封面；无profile_cover时按detail.png的普通统一返回状态展示。
-- 页面没有主底栏。使用真实用户/俱乐部/服务数据，保留分享和跳转；16px水平边距与统一图标/文字/控件规格。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-## 生成与实施边界
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-使用内置ImageGen编辑同路径旧图后等比缩放至390×844。图片用于可读首屏设计，所有界面需实现为真实组件；生成文字误差以本说明和真实业务为准。图中省略的微信胶囊仍必须按系统API真实避让。实际验收截图单独放output，不得替换设计图。
+## 页面布局与状态
 
-## 完整编辑指令
+仅用户自己上传封面时显示16:9沉浸封面和圆返回。图下身份正常流，与无封面版本使用同一认证身份和实缴押金规则。不得把示意山景设置成默认封面。
 
-Use case: ui-mockup. Edit the attached 390x844 Chinese WeChat mini-program design. Output one flat 390:844 portrait UI, no device frame, no outside margins. Preserve brand 集结, dark charcoal-green #0a1110, white #edf4ef, muted graygreen #9dafA3, mint accent #8de8b6, fine restrained dividers, 16px horizontal insets and legible Chinese. Native statusbar and top-right WeChat capsule safe area are real constraints. Avoid generic AI dashboard appearance: no repeated big rounded boxes, no dashed placeholders, no decorative giant buttons, no blue/purple gradients. Official icons aligned centrally. Any game artwork is design-reference only. Primary tabs have only ONE persistent bottom nav 玩家 打手 订单 我的. This is a PUBLIC PLAYER PROFILE SECONDARY page with a user-uploadedcover, so NO primary bottomnav. Remove existing full topnavbar and centered 玩家主页 title. User scenic mountain-lake cover begins at y0 fullwidth behind native status/capsule with16:9 approximate ratio, no inset rounded frame. Overlay only circular36px subtle fineborder backbutton at x16 y52 with whitechevron; shareicon can be small belowcapsule, no bar. Below cover leave16px normal positiveflowgap then identity with medium52avatar 北辰, small俱乐部认证 tag, mutedintro 耐心沟通，认真履约; do not overlay avatar or identity oncover. Refined unboxed stats28已完成 5.0好评 3在售. Small singleline clubentry 山海电竞 已认证 with36pxlogo/chevron, mutedsubcaption. 发布的服务 section with two-column SINGLE servicecards. Each card16:9 art has transparent-to-opaque #121d18 verticalgradient at bottom; smallcertification/game labels ABOVE the bold service title, BOTH independently overlaid INSIDE image; below image only mintprice ¥68/小时 and 已完成12 normalflow, never a duplicate title outside. Examples 大坝任务协作 排位陪练 航天基地协作 全面战场上分. All titles/tags safely fitted, no overlap. The mountaincover is only illustrative of user's own asset, never product fallback. Clearimmersiveback and elegant highquality spacing.
+## 生成提示词与实施边界
+
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
+
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。

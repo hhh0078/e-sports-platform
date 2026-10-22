@@ -1,25 +1,19 @@
-# 服务详情沉浸式设计
+# services/detail · 本轮设计
 
-文件作用：对应 `frontend/src/pages/services/detail.vue` 的先行设计图和新版实施约束；2026-10-22 根据用户最新视觉要求编辑。旧图和旧说明归档于 `design/history/20261022-before-immersive/pages/`。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 展示型二级页取消整条应用顶栏。封面从顶部开始沉浸展示，状态栏与微信胶囊保留系统安全空间；左上圆形36px细边返回按钮浮在图片上，不能与胶囊重叠。
-- 封面底部从透明渐变到主题背景完全不透明，标签行在上、标题行在下，均为独立悬浮文字。用户自定义文案保持独立图层，层间布局防重叠。
-- 价格/成交数置于图下正常流；作者改为32px头像、昵称、认证和查看主页的单行紧凑信息条，不再占用大卡片。
-- 服务说明、数量、预约要求和固定下单操作继续保留，内容自然滚动；无主导航底栏。安全区和底部操作高度应为正文预留空间。
-- 水平16px，主按钮44px。封面游戏图为版式示意，产品运行使用已有官方素材。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-- 服务封面源图保持16:9；本次新版图内展示区按设计约4:3裁切，为标签、标题及自定义文案留足空间。所有独立文字按实际显示宽高适配，不能按源图尺寸写死坐标。
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-## 生成方式与指令
+## 页面布局与状态
 
-使用内置 ImageGen 编辑现有同路径图片，完成后机械等比缩至390×844；先设计后实施。生成图中的文字误差和系统胶囊缺省，以本说明和真实系统安全区为准。
+沉浸封面保留圆返回与微信安全区。标题在上、标签在下；右下方金额徽标写“平台押金xx元”与“俱乐部押金xx元”。底部文字区预留足够高度，金额允许换行。紧凑作者条、说明、下单表单和固定下单操作不变。
 
-Use case: ui-mockup. Edit the attached existing 390x844 Chinese mini-program design. Deliver exactly one flat portrait UI screenshot, same 390:844 aspect, no device frame, no surrounding space. Preserve the restrained dark charcoal-green theme #0a1110, panels #121d18, mint #8de8b6, 16px insets, 12px radii, clean Chinese type, 44px primary buttons and fine centered icons. Preserve correct Chinese words and existing screen purpose. Native WeChat status bar and native top-right capsule are present; reserve capsule-safe space. This is a design reference only: game artwork remains illustrative and app runtime uses official assets. Do not invent blue/purple gradients. Primary request: make service-detail an immersive image-led secondary screen. REMOVE the existing full top navigation bar and centered 服务详情 title entirely. A tactical dam cover fills screen width starting at y0 behind native status and capsule; its height about300px. Only a circular back button at x16 y52, 36px, subtle fine light border and dark translucent background with centered white left chevron; never a full bar. Native WeChat capsule stays at top right and all meaningful art/text avoids it. At the bottom of image add the REQUIRED gradient from fully transparent upper image to fully opaque #121d18 at bottom. Inside image, at its lower edge, put independent labels 俱乐部认证 三角洲 任务协作 in a small row ABOVE a bold service title 三角洲 · 大坝任务协作, white 22px. Place user custom words 耐心沟通 稳定撤离 as small separate overlay chips above those labels if needed, do not bake typography into artwork. Below image a compact ordinary flow price row, ¥68/小时 left and 已成交236右. NO large standalone title/price panel. Replace existing huge author card with a single compact line about48px tall: small32px avatar 北辰 and a small mint verified icon, right chevron 查看主页; no big completed-count second line. Then elegant 服务说明 panel containing concise paragraphs and compact service traits. 下单信息 section with 数量（小时）, stepper, optional appointment textarea. Fixed bottom row ¥68合计 and mint 立即下单. No main bottom tab nav. Preserve all transaction content, readable calm spacing, no overlap.
+## 生成提示词与实施边界
 
-## 2026-10-22自愿平台押金局部增补
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
 
-作者行附近、封面之外，在真实provider_deposit_cents>0时显示“已缴平台押金 ¥实际金额”，小字“仅展示缴纳金额，不是赔付承诺”；0/未知不显示。保留俱乐部认证身份原有意义，不把平台押金解释为担保，也不侵入封面独立文案区。
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。
 
-完整局部编辑提示词：
-
-Use case: ui-mockup. PreciseLOCALeditofattachedChinese390x844design. Preserveallunrelatedstyle/fields/layout/gameart/safeareas,approved#0a1110darknaturalgreenand#8de8b6mint, thinseparatorsandcentredofficialicons. No newfeatures, no giantcards, no Englishdecoration/no bluepurplegradient. AllnewtextindependentUI,nobakedgameart. Exact390:844portraitflatUI,noframe/nooutside margins. ChangeONLYnearcompactauthorrow: below/samedocflowbeneathsmallavatar北辰/verified/name/viewhome, addquietsmalltext 已缴平台押金¥100.00 asILLUSTRATIVEpositiveamount, withtinywalleticon, andsecondarynote 仅展示缴纳金额，不是赔付承诺. Renderactualamountfrombackendonly,zerodepositomitsentireline. Keeptextoutsidecover/customlabelareaandawayfromexistingclubcertification. No largebadgecard,noguarantee/担保/可赔付promises. DoNOTredesignunrelateddescription/orderfields/CTA orhero. Allowlowercontentscrollasneeded.
+双押金的长金额在320窄屏可换成两行；封面为两行金额保留64px，单种押金保留32px。渐变始终低于自定义文字层，不能改变用户选择的文字或背景颜色。

@@ -26,7 +26,7 @@ func (a *App) bootstrap(w http.ResponseWriter, r *http.Request) (any, error) {
 			mode = "local_simulation"
 		}
 	}
-	return map[string]any{"games": games, "moderation_mode": mode, "dev_mode": a.Config.DevMode, "site_name": s.SiteName, "announcement": s.Announcement}, nil
+	return map[string]any{"games": games, "moderation_mode": mode, "dev_mode": a.Config.DevMode, "site_name": s.SiteName, "announcement": s.Announcement, "support_qr_url": s.SupportQRURL, "support_phone": s.SupportPhone, "support_wechat": s.SupportWechat}, nil
 }
 
 // games 返回已启用的游戏主题。
@@ -51,6 +51,7 @@ func (a *App) decorateService(ctx context.Context, s Service) Service {
 	if wallet, err := get[Wallet](ctx, a.DB, "wallets", s.ProviderID, false); err == nil {
 		s.ProviderDepositCents = wallet.DepositCents
 	}
+	s.ProviderClubDepositCents = 0
 	s.ClubVerified = false
 	s.ClubName = ""
 	if s.ClubID != "" {
@@ -59,6 +60,11 @@ func (a *App) decorateService(ctx context.Context, s Service) Service {
 			s.ClubName = c.Name
 			m, e := get[ClubMember](ctx, a.DB, "members", s.ClubID+":"+s.ProviderID, false)
 			s.ClubVerified = c.Verified && (c.OwnerID == s.ProviderID || (e == nil && m.Status == "active"))
+			if e == nil && m.Status == "active" {
+				if wallet, e := accountBalance(ctx, a.DB, memberDepositAccount(s.ClubID, s.ProviderID)); e == nil {
+					s.ProviderClubDepositCents = wallet.DepositCents
+				}
+			}
 		}
 	}
 	return s

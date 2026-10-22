@@ -47,6 +47,8 @@ func (a *App) createWalletDepositRefund(w http.ResponseWriter, r *http.Request) 
 	}
 	var in struct {
 		AmountCents *int64 `json:"amount_cents"`
+		Scope       string `json:"scope"`
+		ClubID      string `json:"club_id"`
 		RequestID   string `json:"request_id"`
 	}
 	if err = decode(r, &in); err != nil {
@@ -55,8 +57,10 @@ func (a *App) createWalletDepositRefund(w http.ResponseWriter, r *http.Request) 
 	if err = walletRequestID(in.RequestID); err != nil {
 		return nil, err
 	}
-	if in.AmountCents != nil && (*in.AmountCents < 100 || *in.AmountCents > 10000000) {
-		return nil, fail(400, "单次退押金金额须在1至100000元范围内")
+	// 原路退款可退到最后一分；缴纳押金的1元门槛不应限制退款尾款。
+	minimum := int64(1)
+	if in.AmountCents != nil && (*in.AmountCents < minimum || *in.AmountCents > 10000000) {
+		return nil, fail(400, "单次退押金金额须在0.01至100000元范围内")
 	}
 	if !a.Config.DevMode {
 		if _, err = a.loadWXPay(); err != nil {
@@ -69,13 +73,23 @@ func (a *App) createWalletDepositRefund(w http.ResponseWriter, r *http.Request) 
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-	if err = lockWalletUsers(ctx, tx, u.ID); err != nil {
+	purpose := "deposit"
+	if in.Scope == "club_platform" || in.Scope == "member_club" {
+		purpose = in.Scope
+	} else if in.Scope != "" && in.Scope != "personal" {
+		return nil, fail(400, "押金退还类型无效")
+	}
+	accountID, err := a.depositRefundAccount(ctx, tx, u, purpose, in.ClubID)
+	if err != nil {
+		return nil, err
+	}
+	if err = lockWalletUsers(ctx, tx, u.ID, accountID); err != nil {
 		return nil, err
 	}
 	id := walletKey("deposit_refund", u.ID, in.RequestID)
 	v, err := get[WalletDepositRefund](ctx, tx, "wallet_deposit_refunds", id, true)
 	if err == nil {
-		if in.AmountCents != nil && v.AmountCents != *in.AmountCents {
+		if v.ClubID != in.ClubID || v.Scope != in.Scope || in.AmountCents != nil && v.AmountCents != *in.AmountCents {
 			return nil, fail(409, "同一request_id不能修改退押金金额")
 		}
 		if err = tx.Commit(ctx); err != nil {
@@ -91,10 +105,17 @@ func (a *App) createWalletDepositRefund(w http.ResponseWriter, r *http.Request) 
 	if !missing(err) {
 		return nil, err
 	}
-	if err = guardDepositOrders(ctx, tx, u.ID); err != nil {
+	if purpose == "club_platform" {
+		err = guardClubDepositRefund(ctx, tx, in.ClubID)
+	} else if purpose == "member_club" {
+		err = guardMemberDepositRefund(ctx, tx, in.ClubID, u.ID)
+	} else {
+		err = guardDepositOrders(ctx, tx, u.ID)
+	}
+	if err != nil {
 		return nil, err
 	}
-	wallet, err := lockedWallet(ctx, tx, u.ID)
+	wallet, err := lockedWallet(ctx, tx, accountID)
 	if err != nil {
 		return nil, err
 	}
@@ -102,14 +123,14 @@ func (a *App) createWalletDepositRefund(w http.ResponseWriter, r *http.Request) 
 	if in.AmountCents != nil {
 		amount = *in.AmountCents
 	}
-	if amount < 100 || amount > wallet.DepositCents {
-		return nil, fail(409, "有效平台押金不足1元或申请金额超过可退余额")
+	if amount < minimum || amount > wallet.DepositCents {
+		return nil, fail(409, "有效押金不足最低退款金额或申请金额超过可退余额")
 	}
-	topups, err := list[WalletTopup](ctx, tx, "wallet_topups", "WHERE data->>'user_id'=$1 AND data->>'purpose'='deposit' AND data->>'status'='paid' ORDER BY (data->>'created_at')::timestamptz,id", u.ID)
+	topups, err := list[WalletTopup](ctx, tx, "wallet_topups", "WHERE data->>'user_id'=$1 AND data->>'purpose'=$2 AND COALESCE(data->>'club_id','')=$3 AND data->>'status'='paid' ORDER BY (data->>'created_at')::timestamptz,id", u.ID, purpose, in.ClubID)
 	if err != nil {
 		return nil, err
 	}
-	v = WalletDepositRefund{ID: id, UserID: u.ID, RequestID: in.RequestID, AmountCents: amount, Status: "processing", Parts: []DepositRefundPart{}, CreatedAt: now(), UpdatedAt: now()}
+	v = WalletDepositRefund{AccountID: accountID, Scope: in.Scope, ClubID: in.ClubID, ID: id, UserID: u.ID, RequestID: in.RequestID, AmountCents: amount, Status: "processing", Parts: []DepositRefundPart{}, CreatedAt: now(), UpdatedAt: now()}
 	remaining := amount
 	for _, p := range topups {
 		available := p.AmountCents - p.RefundedCents - p.ReservedCents
@@ -131,7 +152,7 @@ func (a *App) createWalletDepositRefund(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 	}
-	if err = claimWalletRequest(ctx, tx, u.ID, in.RequestID, "deposit_refund", map[string]int64{"amount_cents": amount}); err != nil {
+	if err = claimWalletRequest(ctx, tx, u.ID, in.RequestID, "deposit_refund", map[string]any{"amount_cents": amount, "scope": in.Scope, "club_id": in.ClubID}); err != nil {
 		return nil, err
 	}
 	if remaining != 0 {
@@ -167,7 +188,7 @@ func (a *App) processDepositRefund(ctx context.Context, snapshot WalletDepositRe
 		if err != nil {
 			return err
 		}
-		if err = lockWalletUsers(ctx, tx, snapshot.UserID); err != nil {
+		if err = lockWalletUsers(ctx, tx, snapshot.UserID, refundAccount(snapshot)); err != nil {
 			tx.Rollback(ctx)
 			return err
 		}
@@ -257,7 +278,7 @@ func (a *App) applyDepositRefund(ctx context.Context, c wxPayConfig, result wxRe
 		return err
 	}
 	defer tx.Rollback(ctx)
-	if err = lockWalletUsers(ctx, tx, snapshot.UserID); err != nil {
+	if err = lockWalletUsers(ctx, tx, snapshot.UserID, refundAccount(snapshot)); err != nil {
 		return err
 	}
 	v, err := get[WalletDepositRefund](ctx, tx, "wallet_deposit_refunds", id, true)
@@ -279,7 +300,7 @@ func (a *App) applyDepositRefund(ctx context.Context, c wxPayConfig, result wxRe
 	if err != nil {
 		return err
 	}
-	if p.Purpose != "deposit" || p.UserID != v.UserID {
+	if p.Purpose == "balance" || p.UserID != v.UserID || topupAccount(p) != refundAccount(v) {
 		return fail(409, "押金退款来源与申请用户不一致，请平台核账")
 	}
 	if result.OrderNo != p.OrderNo || result.TransactionID != p.TransactionID || p.TransactionID == "" || result.Amount.Total != p.AmountCents || result.Amount.Refund != part.AmountCents || (result.Amount.Currency != "" && result.Amount.Currency != "CNY") {
@@ -291,7 +312,7 @@ func (a *App) applyDepositRefund(ctx context.Context, c wxPayConfig, result wxRe
 	if status != "SUCCESS" {
 		return nil
 	}
-	wallet, err := lockedWallet(ctx, tx, v.UserID)
+	wallet, err := lockedWallet(ctx, tx, refundAccount(v))
 	if err != nil {
 		return err
 	}
@@ -343,4 +364,12 @@ func (a *App) syncWalletDepositRefund(w http.ResponseWriter, r *http.Request) (a
 		}
 	}
 	return get[WalletDepositRefund](r.Context(), a.DB, "wallet_deposit_refunds", v.ID, false)
+}
+
+// refundAccount 兼容旧个人记录并按冻结时绑定的押金账户完成原路退款。
+func refundAccount(v WalletDepositRefund) string {
+	if v.AccountID != "" {
+		return v.AccountID
+	}
+	return v.UserID
 }

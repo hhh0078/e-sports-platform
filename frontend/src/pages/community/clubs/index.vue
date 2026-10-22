@@ -9,12 +9,12 @@
     <ClubCard v-for="club in clubs" :key="club.id" :club="club"/>
     <view v-if="creating" class="modal-mask" @click="creating=false"><view class="modal" @click.stop>
       <scroll-view scroll-y class="modal-scroll"><view class="create-form form-section">
-        <text class="section-title">创建俱乐部</text><text class="create-hint hint">提交平台审核后开放成员挂靠。</text>
+        <text class="section-title">创建俱乐部</text><text class="create-hint hint">先保存草稿，按平台要求缴纳押金后提交审核。</text>
         <view class="field"><text class="field-label">俱乐部名称</text><input v-model="form.name" class="input" maxlength="30" placeholder="俱乐部名称"/></view>
         <view class="field"><text class="field-label">团队介绍</text><textarea v-model="form.description" class="input intro-input" maxlength="500" placeholder="介绍团队擅长的游戏、招募要求与服务风格"/></view>
-        <view class="field club-create-game-field"><text class="field-label">主要游戏 · 可多选</text><button class="input selector-trigger club-games-trigger" :disabled="busy" @click="clubGameSelector?.open()"><Icon name="game" :size="24"/><text class="club-games-summary">{{ clubGameSelector?.summary || '请选择游戏' }}</text><Icon name="arrow" :size="14"/></button></view>
+        <text class="create-deposit-note">{{ creationDeposit===null?'平台押金金额将在缴纳前明确展示，保存草稿不会扣款。':creationDeposit>0?'创建需缴平台押金 ¥'+money(creationDeposit)+'，由平台独立托管。':'当前平台配置免缴押金，保存后提交审核。' }}</text><view class="field club-create-game-field"><text class="field-label">主要游戏 · 可多选</text><button class="input selector-trigger club-games-trigger" :disabled="busy" @click="clubGameSelector?.open()"><Icon name="game" :size="24"/><text class="club-games-summary">{{ clubGameSelector?.summary || '请选择游戏' }}</text><Icon name="arrow" :size="14"/></button></view>
       </view></scroll-view>
-      <view class="action-footer modal-actions"><button class="text-btn" @click="creating=false">取消</button><button class="btn" :disabled="busy" @click="create">{{ busy?'正在提交…':'提交申请' }}</button></view>
+      <view class="action-footer modal-actions"><button class="text-btn" @click="creating=false">取消</button><button class="btn" :disabled="busy" @click="create">{{ busy?'正在保存…':'保存草稿并继续' }}</button></view>
     </view></view>
     <GameSelector ref="clubGameSelector" v-model:values="form.game_ids" multiple title="主要游戏" :field="false" :active="creating" :disabled="busy"/>
   </AppShell>
@@ -29,10 +29,14 @@ import Icon from '../../../components/Icon.vue'
 import ClubCard from '../../../components/ClubCard.vue'
 import { state,init,sessionRevision } from '../../../lib/store'
 import { listClubs, createClub } from '../../../api/clubs.api'
+import { getFinancialRules } from '../../../api/finance.api'
+import { newWalletRequestID } from '../../../lib/wallet'
+import { requirePhone } from '../../../lib/phone'
 import type { Club } from '../../../types/models'
 import { token,errorMessage } from '../../../api/client'
-import { go,notify } from '../../../lib/format'
+import { go,notify,money } from '../../../lib/format'
 const clubs=ref<Club[]>([]),query=ref(''),mine=ref(false),loading=ref(false),error=ref(''),creating=ref(false),busy=ref(false),form=reactive({name:'',description:'',game_ids:[] as string[]})
+const creationDeposit=ref<number|null>(null)
 const clubGameSelector=ref<InstanceType<typeof GameSelector>|null>(null)
 let listVersion=0,pageVersion=0,createVersion=0,visible=true,disposed=false
 /** 捕获当前身份和会话，防止旧身份的列表或创建结果回填。 */
@@ -49,9 +53,30 @@ function applyRoute(options: Record<string,string | undefined> = {}){mine.value=
 /** 刷新俱乐部列表，仅登录后才能读取个人挂靠。 */
 async function load(){if(!visible||disposed)return;const current=++listVersion,onlyMine=mine.value,search=query.value.trim();let session: ReturnType<typeof currentSession> | undefined;loading.value=true;error.value='';try{await init();if(!visible||disposed||current!==listVersion)return;session=currentSession();if(onlyMine&&!state.user){clubs.value=[];return}const result=await listClubs({...onlyMine?{mine:1}:{},q:search});if(currentList(current,session))clubs.value=result}catch(e){if(visible&&!disposed&&current===listVersion&&(!session||sameSession(session)))error.value=errorMessage(e)}finally{if(current===listVersion)loading.value=false}}
 /** 打开创建表单，默认选择当前游戏。 */
-function openCreate(){if(!state.user)return go('/pages/account/login');form.game_ids=[state.gameId];creating.value=true}
-/** 验证资料并创建待审核俱乐部。 */
-async function create(){if(busy.value||!state.user||!visible||disposed)return;if(!form.name.trim()||!form.description.trim()||!form.game_ids.length)return notify('请填写名称、介绍并选择游戏');const current=pageVersion,operation=++createVersion,session=currentSession();busy.value=true;try{const club=await createClub({name:form.name.trim(),description:form.description.trim(),game_ids:[...form.game_ids]});if(!visible||disposed||current!==pageVersion||!sameSession(session))return;creating.value=false;notify('俱乐部申请已提交');go('/pages/community/clubs/detail?id='+club.id)}catch(e){if(visible&&!disposed&&current===pageVersion&&sameSession(session))notify(e)}finally{if(operation===createVersion)busy.value=false}}
+function openCreate(){if(!state.user)return go('/pages/account/login');form.game_ids=[state.gameId];creating.value=true;void loadCreationRule()}
+/** 只读当前创建门槛；最终支付前以草稿快照和资金页金额为准。 */
+async function loadCreationRule(){const session=currentSession();try{const rules=await getFinancialRules();if(!disposed&&sameSession(session))creationDeposit.value=rules.club_creation_deposit_cents}catch{/* 读取失败不伪造价格，私有草稿保存不扣款。 */}}
+/** 校验公开资料，以同一请求号保存草稿，缴纳成功后才提交审核。 */
+async function create(){
+  if(busy.value||!state.user||!visible||disposed)return
+  if(!form.name.trim()||!form.description.trim()||!form.game_ids.length)return notify('请填写名称、介绍并选择游戏')
+  const current=pageVersion,operation=++createVersion,session=currentSession()
+  const body={name:form.name.trim(),description:form.description.trim(),game_ids:[...form.game_ids]}
+  const fingerprint=JSON.stringify(body),key='jijie_club_creation:'+session.userId
+  const stored=uni.getStorageSync(key) as {fingerprint?:string;request_id?:string}|undefined
+  const requestID=stored?.fingerprint===fingerprint&&stored.request_id?stored.request_id:newWalletRequestID()
+  uni.setStorageSync(key,{fingerprint,request_id:requestID});busy.value=true
+  try{
+    if(!(await requirePhone())||!visible||disposed||current!==pageVersion||!sameSession(session))return
+    const club=await createClub({...body,request_id:requestID})
+    if(!visible||disposed||current!==pageVersion||!sameSession(session))return
+    const cached=uni.getStorageSync(key) as {request_id?:string}|undefined
+    if(cached?.request_id===requestID)uni.removeStorageSync(key)
+    creating.value=false
+    notify(club.status==='pending_deposit'?'草稿已保存，请缴纳平台押金':'俱乐部申请已提交')
+    go('/pages/community/clubs/'+(club.status==='pending_deposit'?'funds':'detail')+'?id='+club.id)
+  }catch(e){if(visible&&!disposed&&current===pageVersion&&sameSession(session))notify(e)}finally{if(operation===createVersion)busy.value=false}
+}
 /** 回到列表时刷新数据，同一身份的创建草稿仍保留。 */
 function showPage(){visible=true;load()}
 /** 离开页面后使在途列表和创建结果失效。 */
@@ -62,7 +87,7 @@ onHide(hidePage)
 onUnload(()=>{disposed=true;hidePage()})
 </script>
 <style scoped>
-.club-search{display:flex;align-items:center;gap:10px;min-width:0;border-bottom:1px solid var(--line);color:var(--muted)}.search-input{flex:1;min-width:0;height:44px;padding:0;background:transparent;font-size:14px}.club-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;margin:8px 0 16px}.club-tabs{display:flex;gap:20px;min-width:0;max-width:calc(100% - 44px)}.club-tab{display:flex;align-items:center;justify-content:center;min-width:0;height:44px;padding:0;border-radius:0;border-bottom:2px solid transparent;background:transparent;font-size:14px;color:var(--muted);white-space:nowrap}.club-tab.active{border-bottom-color:var(--accent);color:var(--text);font-weight:650}.create-entry{padding:0;min-width:32px;font-size:14px}.list-error{padding:12px 0;color:#efb299;font-size:12px;overflow-wrap:anywhere}.club-empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:48px 0;text-align:center;min-width:0}.empty-title{font-size:15px;color:var(--text)}
+.club-search{display:flex;align-items:center;gap:10px;min-width:0;border-bottom:1px solid var(--line);color:var(--muted)}.search-input{flex:1;min-width:0;height:44px;padding:0;background:transparent;font-size:14px}.club-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;margin:8px 0 16px}.club-tabs{display:flex;gap:20px;min-width:0;max-width:calc(100% - 44px)}.club-tab{display:flex;align-items:center;justify-content:center;min-width:0;height:44px;padding:0;border-radius:0;border-bottom:2px solid transparent;background:transparent;font-size:14px;color:var(--muted);white-space:nowrap}.club-tab.active{border-bottom-color:var(--accent);color:var(--text);font-weight:650}.create-deposit-note{display:block;font-size:14px;line-height:22px;color:var(--accent);margin:0 0 20px;overflow-wrap:anywhere}.create-entry{padding:0;min-width:32px;font-size:14px}.list-error{padding:12px 0;color:#efb299;font-size:12px;overflow-wrap:anywhere}.club-empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:48px 0;text-align:center;min-width:0}.empty-title{font-size:15px;color:var(--text)}
 .modal-mask{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;padding:20px;background:#000b}.modal{width:100%;max-width:460px;overflow:hidden;background:var(--surface);border-radius:12px;min-width:0}.modal-scroll{height:60vh;max-height:560px;padding:20px 20px 0;box-sizing:border-box}.create-form{padding:0;border:0}.create-hint{display:block;margin:-8px 0 20px}.intro-input{height:112px}.club-games-trigger{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;margin:0;text-align:left}.club-games-summary{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:var(--text)}.modal-actions{padding:20px;gap:12px}
 @media(max-width:350px){.club-tabs{gap:16px}.club-tab{font-size:13px}.modal-mask{padding:16px}.modal-scroll{padding:16px 16px 0}.modal-actions{padding:16px}}
 </style>

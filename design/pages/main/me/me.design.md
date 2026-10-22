@@ -1,26 +1,17 @@
-# 个人中心 · 默认接单与钱包入口
+# main/me/me · 本轮设计
 
-文件作用：对应 `frontend/src/pages/main/me/me.vue` 的先行设计及用户最新局部要求；2026-10-22生成/编辑。已有页面上一版归档在 `design/history/20261022-before-game-refinements/pages/`，钱包为本次新增，无旧版。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 保留当前game.cover_url全宽背景、中性灰黑蒙版和底部自然淡出；64px头像/昵称/简介及三列统计正常流、避开状态栏和胶囊，所有数据仍来自真实用户。
-- 删除接单身份NativeSwitch及所有账户级开启/关闭操作，改为静态“接单身份 · 默认开启”，说明无需挂靠，自由接单。所有新老用户默认可接单且无法关闭，访客可显示“登录后即可接单”。
-- 在身份说明后的菜单增加轻量“我的钱包”入口，官方钱包图标和箭头、同48px细分隔行；这里只是跳转，不显示假余额、不堆充值大卡。未登录按原站内回跳登录。
-- 在钱包之后增加同48px规格的“消息中心”轻入口，官方通知图标与箭头；真实未读状态可用小圆点，禁止伪造数量。消息页面保持访客轻空态，不能因新增入口压缩其他菜单。
-- 保留我的订单、个人主页/俱乐部、手机号、协议和真实管理权限入口。新增菜单使首屏变长时自然滚动，不能压缩整页字号/行高。
-- 默认接单身份不绕过手机号、冻结、简介及交易校验；单服务审核/暂停仍属服务状态。无主应用顶栏，唯一底栏和主题选中图标规则保留。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-## 生成与验收边界
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-390×844，使用内置ImageGen。既有页面仅局部编辑，钱包新建；输出仅机械等比缩放。生成示例文字/数字/局部比例以真实业务、本说明和系统安全区为准，不能作为真实资金凭证。实际SDK与交易验收由root执行，本图不代表支付/真机通过。
+## 页面布局与状态
 
-## 完整生成或编辑提示词
+保留当前游戏背景与灰黑蒙版。移除顶部三个重复数据和接单身份。我的订单四个图标显示服务端实际数量角标，零值隐藏、超过99显示99+。紧接订单下方独立钱包卡：可提现余额、进行中、结算中、提现中；充值余额单独标“可消费充值余额”。未知资金显示—，访客为零值和登录入口。菜单增加在线客服（官方微信会话/二维码/电话），技术支持与业务客服分开。
 
-最新消息能力局部编辑（优先于下方保留的原始指令）：
+## 生成提示词与实施边界
 
-Use case: ui-mockup. Preciselocaleditofattached390x844personalcenter. PreserveEXACTLYexistingdynamicgamebackground/neutralgrayblackoverlay/avatar/nickname/stats/orders/dualhomeclubentry/staticprovider默认开启/钱包/个人资料/phone/agreements/privacy/admin/bottomnav. AddONLYonequietmenurow 消息中心,officialnotificationoutlineicon+rightchevron,matchingexisting48pxrowandthinseparator,immediatelyafter我的钱包. Smallunreaddotmayappearonlyfromactualcachedunreadstate,nofakeunreadcount. Morecontentmustscrollbelowfold,allowadminentrybelowfirstscreen;NO shrinkingtextorremovingexistingentries, no redesign,newart,bigcards,banners,bluepurplegradient. Bottomnav我的activeunchanged. Flat390:844,no frame.
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
 
-
-Use case: ui-mockup. PRECISE LOCAL EDIT of attachedexistingChinese390x844design. Preserveallunrelatedapprovedlayout, naturaldarkgreen#0a1110,mint#8de8b6,thinsectiondividers,16pxinsets,officialcenteredicons,existingfieldsandnativeWeChatsafearea. DoNOTinventfeatures,newart,headlines,English,bluepurplegradients,orreplacegameartsource. Onlyedittheexplicitprovideridentitypoint. Exact390:844flatportrait,no deviceframe,nooutside margins. TextisindependentUI, notbakedintoimages. ThisisprimaryMytab,noapptopnavbar. Keepcurrentgamefullwidthbackgroundhero,neutralgrayblackoverlay,64pxavatar/nickname/bioandnormalflowstats unchanged; usesdynamicselectedgamecoveratruntime,supportingImage2isjustofficialexample. Keeplowerorders/dualhomeclubentries/accountmenuandbottomnavunchanged. ChangeONLY接单身份row: REMOVEtheentiretoggle/switchandthumbfromright; replacewithSTATICsmallminttext 默认开启 at right, optionallysmallcheckicon, plainnoninteractive. Rowleft接单身份,subline 无需挂靠，自由接单. Thiscapabilityisdefaultonforallnew/existingusersandcannotbeturnedoff; NO 开启/关闭 controlor去开启link. Guestvariantmayusetiny 登录后即可接单 sublineandzeroactualstats,notshownasloginwall. Keepallotherareasidentical. Bottomnav我的active,playerinactive; whenplayerisactiveinotherpagesgamepadshouldtheme-mint.
-
-钱包轻入口局部追加：
-Use case: ui-mockup. PRECISELOCALedit attached390x844personalcenter. PreserveEXACTLYallcurrentgamebackground/neutralgrayoverlay/avatar/stats/orders/dualhomeclubentry/staticprovider默认开启row, typography/colors/safeareasandbottomnav. AddONLYonequietmenuentry 我的钱包 withofficialwalletoutlineiconandchevron, same48pxrow/fine-dividerstyleas个人资料/手机号验证, belowstaticproviderrowbefore个人资料. No balancefigure/no fakefunds/no bigwalletcard/no rechargebuttonhere. Ifcontentheightincreases,letlowerrowsnaturallyscrollandlastplatformadminrowfallbelowfirstscreen;doNOTshrink/compressallcontent. ProvideridentityremainsSTATICdefaulton,no toggle/关闭/去开启. Onepersistentbottomnav我的active. Noappnavbar,no inventedart,no extraotherchanges. Flat390:844output,no deviceframe,no surroundingmargins.
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。

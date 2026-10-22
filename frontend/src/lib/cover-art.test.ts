@@ -7,13 +7,14 @@ import vm from 'node:vm'
 import { computed, ref, reactive, watch, nextTick, effectScope } from 'vue'
 import { executable } from './sfc-test'
 import { layoutLabels, POSITIONS } from './cover'
+import {layoutReadableCover} from './cover-readable'
 import type { CoverLabel } from '../types/models'
 
 /** 测量器替身保留真实选择器、nextTick及尺寸回调顺序。 */
 interface TestQuery { in: () => TestQuery; select: () => TestQuery; boundingClientRect: (callback: (rect: { width: number }) => void) => TestQuery; exec: () => void }
 
 /** 只控制原生测量结果，实际布局与生命周期仍使用生产组件脚本。 */
-function harness(t: TestContext, initialWidth: number, options: { aspectRatio?: number; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number } = {}) {
+function harness(t: TestContext, initialWidth: number, options: { aspectRatio?: number; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number;readable?:boolean;minFontPixels?:number } = {}) {
   const source = readFileSync(new URL('../components/CoverArt.vue',import.meta.url),'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)?.[1]
   assert.ok(source)
   const labels: CoverLabel[] = Array.from({length:6},(_,id)=>({id,text:'六条最长独立文字标签护航',font_size:24,position:'bottom-left'}))
@@ -21,7 +22,7 @@ function harness(t: TestContext, initialWidth: number, options: { aspectRatio?: 
   const mounted: Array<()=>void> = [], unmounted: Array<()=>void> = [], shown: Array<()=>void> = [], resized: Array<()=>void> = []
   let actualWidth = initialWidth, callback: ((rect: {width:number})=>void) | undefined, measureCount = 0
   const query: TestQuery = { in:()=>query,select:()=>query,boundingClientRect:read=>{callback=read;return query},exec:()=>{measureCount++;callback?.({width:actualWidth})} }
-  const context = vm.createContext({ computed,ref,watch,nextTick,layoutLabels,defineProps:()=>props,withDefaults:(value:object)=>value,getCurrentInstance:()=>({proxy:{}}),
+  const context = vm.createContext({ computed,ref,watch,nextTick,layoutLabels,layoutReadableCover,defineProps:()=>props,withDefaults:(value:object)=>value,getCurrentInstance:()=>({proxy:{}}),
     mainNavigation:reactive({revision:0}),onMounted:(hook:()=>void)=>mounted.push(hook),onShow:(hook:()=>void)=>shown.push(hook),onBeforeUnmount:(hook:()=>void)=>unmounted.push(hook),
     uni:{createSelectorQuery:()=>query,onWindowResize:(hook:()=>void)=>resized.push(hook),offWindowResize:(hook:()=>void)=>{const index=resized.indexOf(hook);if(index>=0)resized.splice(index,1)}},
   })
@@ -38,6 +39,17 @@ function harness(t: TestContext, initialWidth: number, options: { aspectRatio?: 
 
 /** 排空真实nextTick测量与Vue侦听。 */
 async function flush():Promise<void>{await new Promise<void>(resolve=>setImmediate(resolve))}
+
+test('可读封面按实际宽度换行增高，九宫格六文案与双角标预留均生效',async t=>{
+  const subject=harness(t,136,{aspectRatio:4/3,reserveBottomPixels:52,reserveTopPixels:44,readable:true,minFontPixels:10})
+  subject.mounted.forEach(hook=>hook());await flush()
+  for(const width of [136,171,320,390]){
+    subject.resize(width);await flush()
+    const height=subject.subject.canvasHeight.value*width/360
+    assert.equal(subject.subject.arranged.value.length,6)
+    for(const label of subject.subject.arranged.value){assert.ok(Number.parseFloat(subject.subject.labelStyle(label).fontSize)>=9.999);assert.ok(label.top/100*height>=51.99);assert.ok((label.top+label.height)/100*height<=height-59.99)}
+  }
+})
 
 test('CoverArt按测量宽度动态转换48像素预留，4:3和尺寸变化后仍不侵入标题区',async t=>{
   const subject=harness(t,138,{aspectRatio:4/3,reserveBottomPixels:48})

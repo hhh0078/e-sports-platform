@@ -1,15 +1,12 @@
-<!-- 文件作用：统一服务卡片，封面内独立展示标签标题并预留自定义文案空间，价格和操作保持图下正常流。 -->
+<!-- 文件作用：统一服务卡片，封面内按标题在上标签在下展示并为角标预留自定义文案空间，价格和操作保持图下正常流。 -->
 <template>
   <view class="service-card" :style="pageTheme(service.game_id)" @click="openDetail">
-    <CoverArt :src="service.cover_url" :labels="service.labels" :aspect-ratio="4 / 3" :reserve-bottom-pixels="48">
-      <view class="service-overlay">
-        <view class="service-tags"><view v-if="service.club_verified" class="service-cert"><Icon name="shield" :size="9" /><text>俱乐部认证</text></view><text v-if="gameLabel" class="service-tag">{{ gameLabel }}</text><text v-if="service.category" class="service-category">{{ service.category }}</text></view>
-        <text class="service-title">{{ service.title }}</text>
-      </view>
+    <CoverArt :src="service.cover_url" :labels="service.labels" :aspect-ratio="4 / 3" :reserve-bottom-pixels="52" :reserve-top-pixels="hasDeposit&&hasClubDeposit?44:hasDeposit||hasClubDeposit?23:0" readable :min-font-pixels="10">
+      <view v-if="hasDeposit||hasClubDeposit" class="service-deposits"><DepositBadge v-if="hasDeposit" :amount-cents="service.provider_deposit_cents"/><DepositBadge v-if="hasClubDeposit" kind="user_club" :amount-cents="service.provider_club_deposit_cents"/></view>
+      <view class="service-overlay"><text class="service-title">{{ service.title }}</text><view class="service-tags"><view v-if="service.club_verified" class="service-cert"><Icon name="shield" :size="9"/><text>俱乐部认证</text></view><text v-if="gameLabel" class="service-tag">{{ gameLabel }}</text><text v-if="service.category" class="service-category">{{ service.category }}</text></view></view>
     </CoverArt>
-    <view v-if="!coverOnly||hasDeposit" class="service-body">
+    <view v-if="!coverOnly" class="service-body">
       <view v-if="!coverOnly" class="service-price"><view class="price-value"><text class="currency">¥</text><text class="amount">{{ money(service.price_cents) }}</text><text class="unit">/{{ service.unit || '单' }}</text></view><text class="count">成交 {{ service.completed_count || 0 }}</text></view>
-      <DepositBadge v-if="hasDeposit" :amount-cents="service.provider_deposit_cents"/>
       <view v-if="!coverOnly&&$slots.actions" class="service-actions" @click.stop><slot name="actions" /></view>
     </view>
   </view>
@@ -23,16 +20,19 @@ import { money, go } from '../lib/format'
 import { state, pageTheme } from '../lib/store'
 import type { Service } from '../types/models'
 const props = withDefaults(defineProps<{ service: Service; interactive?: boolean; coverOnly?: boolean }>(), { interactive: true, coverOnly: false })
-/** 仅对后端当前有效的正整数平台押金显示独立标识，封面文字区不增加新层。 */
+/** 仅对后端当前有效的正整数平台押金显示角标，布局同步预留顶部安全带。 */
 const hasDeposit = computed(() => Number.isSafeInteger(props.service.provider_deposit_cents) && (props.service.provider_deposit_cents || 0) > 0)
+/** 只展示服务当前挂靠俱乐部内已实缴的押金，不使用俱乐部规则金额。 */
+const hasClubDeposit = computed(() => Number.isSafeInteger(props.service.provider_club_deposit_cents) && (props.service.provider_club_deposit_cents || 0) > 0)
 const gameLabel = computed(() => { const game = state.games.find(item => item.id === props.service.game_id); return game?.short_name || game?.name || '' })
 /** 通过当前业务路由打开服务，发布预览可关闭跳转。 */
 function openDetail(): void { if (props.interactive) go('/pages/services/detail?id=' + encodeURIComponent(props.service.id)) }
 </script>
 <style scoped>
 .service-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid var(--line-subtle);background:var(--surface);border-radius:10px}
-.service-overlay{position:absolute;right:8px;bottom:0;left:8px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;height:48px;padding-bottom:8px;box-sizing:border-box;min-width:0;pointer-events:none}
-.service-body{display:flex;flex-direction:column;gap:8px;min-width:0;padding:4px 8px 6px}
+.service-deposits{position:absolute;top:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:2px;max-width:100%;line-height:0;pointer-events:none}
+.service-overlay{position:absolute;z-index:3;right:8px;bottom:0;left:8px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;height:52px;padding-bottom:10px;box-sizing:border-box;min-width:0;pointer-events:none}
+.service-body{display:flex;flex-direction:column;gap:6px;min-width:0;padding:0 8px 6px}
 .service-title{display:block;flex-shrink:0;min-width:0;font-size:13px;line-height:18px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .service-tags{display:flex;align-items:center;gap:4px;flex-shrink:0;height:16px;min-width:0;overflow:hidden;color:var(--muted);font-size:8px;line-height:12px}
 .service-category,.service-tag{display:block;flex-shrink:1;min-width:0;max-width:45%;padding:1px 4px;border:1px solid #ffffff0d;background:#ffffff08;border-radius:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

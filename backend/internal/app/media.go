@@ -7,6 +7,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"image"
+	"image/color"
+	"image/draw"
 	"image/jpeg"
 	"image/png"
 	"net/http"
@@ -36,6 +38,10 @@ func validateImageDimensions(purpose string, width, height int) error {
 		if width < 128 || width > 2048 || width != height {
 			return fail(400, "头像需裁剪为 1:1，边长 128 至 2048 像素")
 		}
+	case "support_qr", "club_contact_qr":
+		if width < 128 || width > 2048 || width != height {
+			return fail(400, "客服二维码需裁剪为1:1，边长128至2048像素")
+		}
 	case "profile_cover", "club_cover":
 		difference := width*9 - height*16
 		if width < 320 || height < 180 || width > 2560 || height > 1440 || difference < -16 || difference > 16 {
@@ -64,6 +70,15 @@ func normalizePublicImage(raw []byte, purpose string) ([]byte, string, image.Con
 	if err != nil {
 		return nil, "", cfg, fail(400, "图片内容不完整或无法读取")
 	}
+	// 微信原生图片预览不继承页面白底，透明黑码只在客服二维码用途合成白底，避免码点落到黑底消失。
+	if (purpose == "support_qr" || purpose == "club_contact_qr") && !publicImageOpaque(decoded) {
+		bounds := decoded.Bounds()
+		flattened := image.NewRGBA(bounds)
+		draw.Draw(flattened, bounds, &image.Uniform{C: color.White}, image.Point{}, draw.Src)
+		draw.Draw(flattened, bounds, decoded, bounds.Min, draw.Over)
+		decoded = flattened
+		format = "png"
+	}
 	var output bytes.Buffer
 	mime := "image/jpeg"
 	if format == "png" {
@@ -85,11 +100,14 @@ func (a *App) uploadImage(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	purpose, clubID := r.URL.Query().Get("purpose"), r.URL.Query().Get("club_id")
-	if !contains([]string{"avatar", "profile_cover", "club_cover", "club_detail"}, purpose) {
+	if !contains([]string{"avatar", "profile_cover", "club_cover", "club_detail", "support_qr", "club_contact_qr"}, purpose) {
 		return nil, fail(400, "图片用途不支持")
 	}
+	if purpose == "support_qr" && u.Role != "admin" {
+		return nil, fail(403, "仅平台管理员可上传平台客服二维码")
+	}
 	if clubID != "" {
-		if !contains([]string{"club_cover", "club_detail"}, purpose) {
+		if !contains([]string{"club_cover", "club_detail", "club_contact_qr"}, purpose) {
 			return nil, fail(400, "个人图片不能关联俱乐部")
 		}
 		if _, err = a.clubManager(r, u, clubID); err != nil {
@@ -134,6 +152,9 @@ func validateOwnedImage(ctx context.Context, q querier, raw, purpose, ownerID, c
 	if raw == "" {
 		return nil
 	}
+	if trustedDefaultAvatar(raw, purpose) {
+		return nil
+	}
 	match := publicImagePath.FindStringSubmatch(raw)
 	if match == nil {
 		return fail(400, "请使用本平台上传的图片")
@@ -141,6 +162,18 @@ func validateOwnedImage(ctx context.Context, q querier, raw, purpose, ownerID, c
 	v, err := get[PublicImage](ctx, q, "evidence", match[1], false)
 	if err != nil || !v.Public || v.OrderID != "" || v.Purpose != purpose {
 		return fail(400, "图片不存在或用途不匹配")
+	}
+	if purpose == "support_qr" {
+		if actor.Role != "admin" || v.OwnerID != actor.ID || v.ClubID != "" {
+			return fail(403, "平台客服二维码必须由当前管理员本人上传")
+		}
+		return validateImageDimensions(purpose, v.Width, v.Height)
+	}
+	if purpose == "club_contact_qr" {
+		if v.OwnerID != actor.ID || v.ClubID != "" && v.ClubID != clubID {
+			return fail(403, "俱乐部客服二维码须由本人上传且属于当前俱乐部")
+		}
+		return validateImageDimensions(purpose, v.Width, v.Height)
 	}
 	if clubID == "" {
 		if v.ClubID != "" || v.OwnerID != ownerID {
@@ -150,4 +183,21 @@ func validateOwnedImage(ctx context.Context, q querier, raw, purpose, ownerID, c
 		return fail(403, "图片不属于此俱乐部")
 	}
 	return validateImageDimensions(purpose, v.Width, v.Height)
+}
+
+// publicImageOpaque 检查图片是否完全不透明，标准解码结果优先使用自身判定以避免额外逐像素扫描。
+func publicImageOpaque(source image.Image) bool {
+	if opaque, ok := source.(interface{ Opaque() bool }); ok {
+		return opaque.Opaque()
+	}
+	bounds := source.Bounds()
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			_, _, _, alpha := source.At(x, y).RGBA()
+			if alpha != 65535 {
+				return false
+			}
+		}
+	}
+	return true
 }

@@ -137,6 +137,9 @@ func (a *App) moderateOwnedImage(r *http.Request, u User, raw, purpose, ownerID,
 	if raw == "" {
 		return nil
 	}
+	if trustedDefaultAvatar(raw, purpose) {
+		return nil
+	}
 	if err := validateOwnedImage(r.Context(), a.DB, raw, purpose, ownerID, clubID, u); err != nil {
 		return err
 	}

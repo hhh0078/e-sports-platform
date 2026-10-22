@@ -203,10 +203,22 @@ func (a *App) stats(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err = a.DB.QueryRow(r.Context(), "SELECT count(*) FROM services WHERE data->>'provider_id'=$1", u.ID).Scan(&servicesCount); err != nil {
 		return nil, err
 	}
-	out := map[string]int64{"buying_count": 0, "working_count": 0, "completed_count": 0, "earnings_cents": 0, "provider_working_count": 0, "provider_completed_count": 0, "services_count": servicesCount, "buyer_order_count": 0, "completed_order_count": 0}
+	out := map[string]int64{"buying_count": 0, "working_count": 0, "completed_count": 0, "earnings_cents": 0, "provider_working_count": 0, "provider_completed_count": 0, "services_count": servicesCount, "buyer_pending_payment_count": 0, "buyer_working_count": 0, "buyer_delivered_count": 0, "buyer_refund_count": 0, "buyer_order_count": 0, "completed_order_count": 0}
 	for _, o := range orders {
 		if o.BuyerID == u.ID {
 			out["buyer_order_count"]++
+			if o.Status == "pending_payment" {
+				out["buyer_pending_payment_count"]++
+			}
+			if contains(workingOrderStatuses, o.Status) {
+				out["buyer_working_count"]++
+			}
+			if o.Status == "delivered" {
+				out["buyer_delivered_count"]++
+			}
+			if contains([]string{"requested", "escalated", "processing"}, o.RefundStatus) || o.Status == "refunded" {
+				out["buyer_refund_count"]++
+			}
 		}
 		if o.BuyerID == u.ID && !contains([]string{"completed", "cancelled", "refunded"}, o.Status) {
 			out["buying_count"]++
@@ -227,7 +239,7 @@ func (a *App) stats(w http.ResponseWriter, r *http.Request) (any, error) {
 		if o.Status == "completed" && !contains([]string{"requested", "escalated", "processing"}, o.RefundStatus) {
 			out["completed_count"]++
 			if o.ProviderID == u.ID {
-				out["earnings_cents"] += o.AmountCents
+				out["earnings_cents"] += settlementForOrder(o).ProviderIncomeCents
 			}
 		}
 	}

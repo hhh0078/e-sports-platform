@@ -1,18 +1,17 @@
-# 俱乐部沉浸主页新版设计
+# community/clubs/detail · 本轮设计
 
-文件作用：对应 `frontend/src/pages/community/clubs/detail.vue` 的先行设计图与实施约束；2026-10-22 根据用户最新要求编辑。旧版保存在 `design/history/20261022-before-immersive/pages/`。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 展示型二级页面取消整条应用顶栏和“俱乐部主页”重复标题。用户封面从顶部沉浸开始，16:9等比裁切展示；原生状态栏/胶囊安全区保留。
-- 左上使用36px圆形细边返回按钮，浮在封面上。分享入口避开胶囊，可放下方或正文，不能与系统控件重叠；无主导航底栏。
-- 封面下16px正向间距后正常流展示俱乐部Logo、名称、认证、主理人与统计，禁止头像负margin/身份侵入封面。
-- 支持游戏单行受控展示。门槛条区分考核、押金规则及平台不代收押金说明；申请加入/分享维持真实权限与流程，控件44/36px。
-- 详细信息/成员列表切换，正文为管理员上传的图文，成员为已认证打手。说明文字自然排版，减少多层套卡；不虚构认证或自动代收押金。
-- 上传封面和文章图片仅使用用户实际资产；生成图仅示意构图。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-## 生成与实施边界
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-使用内置ImageGen编辑同路径旧图后等比缩放至390×844。图片用于可读首屏设计，所有界面需实现为真实组件；生成文字误差以本说明和真实业务为准。图中省略的微信胶囊仍必须按系统API真实避让。实际验收截图单独放output，不得替换设计图。
+## 页面布局与状态
 
-## 完整编辑指令
+俱乐部实缴平台押金只在本主页显示；标识为黑金金额版。覆盖游戏放在标签右边，以已有官方游戏圆角图标叠放，最多5项，其余+N；不撑宽页面。成员列表改3列宫格，64px非人像头像、单行昵称省略、认证小角标。加入规则写成员押金、抽成、考核与支持换行的加入备注。公开主页仅保留管理俱乐部轻入口至console；原成员审核/团队订单保留，支持tab=manage/orders路由并由服务端确认权限。已申请或认证用户可进入成员押金页；在线客服联系只提供二维码/电话。
 
-Use case: ui-mockup. Edit the attached 390x844 Chinese WeChat mini-program design. Output one flat 390:844 portrait UI, no device frame, no outside margins. Preserve brand 集结, dark charcoal-green #0a1110, white #edf4ef, muted graygreen #9dafA3, mint accent #8de8b6, fine restrained dividers, 16px horizontal insets and legible Chinese. Native statusbar and top-right WeChat capsule safe area are real constraints. Avoid generic AI dashboard appearance: no repeated big rounded boxes, no dashed placeholders, no decorative giant buttons, no blue/purple gradients. Official icons aligned centrally. Any game artwork is design-reference only. Primary tabs have only ONE persistent bottom nav 玩家 打手 订单 我的. This is an image-led SECONDARY club profile, so NO primary bottom tabnav. Remove top navbar entirely including centered 俱乐部主页. A fullwidth16:9 scenic tactical community COVER begins at y0 behind native status and capsule, no border/margins and heightabout220px. Overlay a circular36px subtle fineborder backbutton at x16 y52 on cover; official share control below capsule if needed but no fullbar. After cover leave16px NORMAL POSITIVE flow gap, then clubidentity with circular64 logo 山海, 山海电竞 and small平台认证, smallhostline. No negative margin, identity must not overlap cover. Stats24认证成员 3覆盖游戏 in same compactrow. Onegame chiprow 三角洲 王者荣耀 和平精英 constrainedwidth. Joining conditionrow with shield, 加入门槛, 需考核·押金规则¥200, tiny 平台不代收押金 explanatorylink. Main44申请加入 and secondary36分享主页 aligned and tasteful, not oversized. Detail/membertabs in normalflow, 詳细信息 active underline. The article 关于我们 uses simple readable richtext and a landscape uploadedimage; avoid giant redundant panels. Cover-focused immersive rendering with no header title, back clear and capsule avoidance. Maintain existing content and polishedspacing.
+## 生成提示词与实施边界
+
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
+
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。

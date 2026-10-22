@@ -32,20 +32,25 @@ type WalletEntry struct {
 
 // WalletEscrow 逐单记录实付来源与托管状态，退款严格还原原支出，历史无账本订单不会凭空产生收入。
 type WalletEscrow struct {
-	OrderID      string `json:"order_id"`
-	BuyerID      string `json:"buyer_id"`
-	ProviderID   string `json:"provider_id"`
-	AmountCents  int64  `json:"amount_cents"`
-	Channel      string `json:"channel"`
-	RechargeUsed int64  `json:"recharge_used_cents"`
-	IncomeUsed   int64  `json:"income_used_cents"`
-	Status       string `json:"status"`
-	CreatedAt    string `json:"created_at"`
-	ReleasedAt   string `json:"released_at,omitempty"`
+	FundingVersion         int    `json:"funding_version"`
+	LegacySourceGap        bool   `json:"legacy_source_gap,omitempty"`
+	ReconciliationRequired bool   `json:"reconciliation_required,omitempty"`
+	OrderID                string `json:"order_id"`
+	BuyerID                string `json:"buyer_id"`
+	ProviderID             string `json:"provider_id"`
+	AmountCents            int64  `json:"amount_cents"`
+	Channel                string `json:"channel"`
+	RechargeUsed           int64  `json:"recharge_used_cents"`
+	IncomeUsed             int64  `json:"income_used_cents"`
+	Status                 string `json:"status"`
+	CreatedAt              string `json:"created_at"`
+	ReleasedAt             string `json:"released_at,omitempty"`
 }
 
 // WalletTopup 保存充值付款意图和微信核验结果；私密支付标识只在服务端使用。
 type WalletTopup struct {
+	AccountID     string `json:"account_id,omitempty"`
+	ClubID        string `json:"club_id,omitempty"`
 	MerchantID    string `json:"merchant_id,omitempty"`
 	AppID         string `json:"app_id,omitempty"`
 	ID            string `json:"id"`
@@ -65,6 +70,9 @@ type WalletTopup struct {
 
 // WalletWithdrawal 先冻结服务收入，再由已核验的官方转账终态扣除或解冻；充值余额不能提现。
 type WalletWithdrawal struct {
+	AccountID      string         `json:"account_id,omitempty"`
+	AccountType    string         `json:"account_type"`
+	ClubID         string         `json:"club_id,omitempty"`
 	MerchantID     string         `json:"merchant_id,omitempty"`
 	AppID          string         `json:"app_id,omitempty"`
 	ID             string         `json:"id"`
@@ -94,6 +102,9 @@ type DepositRefundPart struct {
 
 // WalletDepositRefund 在事务内移除有效押金，再等待各笔微信退款；未知外部结果保持冻结。
 type WalletDepositRefund struct {
+	AccountID   string              `json:"account_id,omitempty"`
+	Scope       string              `json:"scope,omitempty"`
+	ClubID      string              `json:"club_id,omitempty"`
 	ID          string              `json:"id"`
 	UserID      string              `json:"user_id"`
 	RequestID   string              `json:"request_id"`

@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "scope": "admin",
+  "viewport": {
+    "pixelRatio": 3,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "screenTop": 0,
+    "windowWidth": 390,
+    "windowHeight": 844,
+    "statusBarHeight": 47
+  },
+  "checks": [
+    "管理员钱包保留转账配置，提现处理必须进入来源审核",
+    "钱包入口实际跳转资金来源审核，列表仅进入逐笔来源明细"
+  ],
+  "runtime_exceptions": [],
+  "remaining": [
+    "真实微信手机号与商户资金未用本地模拟替代"
+  ]
+}

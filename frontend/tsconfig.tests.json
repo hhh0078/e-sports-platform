@@ -10,7 +10,9 @@
     "../scripts/mini-wallet-regression.ts",
     "../scripts/mini-admin-console.ts",
     "../scripts/mini-ai-messages.ts",
-    "../scripts/check-frontend-standards.ts"
+    "../scripts/check-frontend-standards.ts",
+    "../scripts/mini-card-matrix.ts",
+    "../scripts/mini-finance-smoke.ts"
   ],
   "exclude": [
     "node_modules",

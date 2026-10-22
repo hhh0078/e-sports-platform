@@ -1,28 +1,21 @@
-# 发布服务 · 开放式编辑
+# services/publish · 本轮设计
 
-文件作用：对应 `frontend/src/pages/services/publish.vue` 的先行新版设计与实施依据；2026-10-22按二级页面统一任务编辑。旧图/说明已归档 `design/history/20261022-before-secondary-unify/pages/`。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 已移除选择游戏、封面文字、服务信息等整段外层panel；以裸背景、24px节距和细分隔形成分区。input透明底线、textarea低对比灰底8px，单个真实控件可保留自身边界。
-- 普通统一顶部返回，无主底栏。游戏选择为44px轻量单行，换底图为预览标题右侧文字入口。
-- 选择游戏字段统一打开共享GameSelector自定义搜索/三列图标弹层，单选即选即回，取消保留草稿。先行打开状态见[publish-game-picker.design.md](publish-game-picker.design.md)与同名PNG；不再使用原生游戏滚轮，服务分类/单位/挂靠等其他picker不在本次范围。
-- 发布预览复用同一ServiceCard的cover-only模式，源图16:9、约4:3显示裁切；图底从透明渐变到主题背景，标签在上、标题在下独立悬浮。此处不显示价格/成交正文，替代此前预览价成交规则；列表仍正常展示价成交。
-- 自定义文案保持独立图层，与标签/标题预留区避让；最多6条，每条按实际工具规范化为最多12个字；字号实际12～24。生成图“最多6个字”、16～32滑块等示例误差不得照搬。
-- 保留全部真实编辑能力：游戏底图缩略图、添加/删除、字色/背景色和色值、九宫格位置、字号；每条编辑器通过细分隔区别，不套重复大框。首屏放不下自然滚动，不压扁预览。
-- 下方真实字段为标题40字、分类、价格/单位、说明1000字、最多4个标签、可选已认证俱乐部。保存/审核流程与手机号门槛保持不变。
-- 提交审核为44px唯一主操作；不新增图中示意字段，也不删除源码已有字段。图片比例、文字越界/碰撞及320px宽度仍需实际验收。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-## 统一实施约束
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-内置ImageGen编辑旧图，机械等比缩为390×844。采用自然黑绿/游戏主题色、16px水平边距、24px段落间距、细分隔，输入控件44px、textarea灰底8px，主提交44px、取消文字。图标固定盒双轴居中。生成文字和局部比例误差以真实源码字段、本说明及系统API安全区为准。设计图不是页面背景，实际验收截图另存output。
+## 页面布局与状态
 
-## 完整编辑提示词
+发布预览使用同一ServiceCard，包括标题/标签新顺序和黑金角标。自定义文字与底图始终分离；原选择游戏、文案颜色/位置/字号及审核流程保留。预览可覆盖0、1、6条文字和双押金状态；任何草稿不得伪造已缴押金。
 
-Use case: ui-mockup. Edit the attached Chinese390x844 mini-program design to approved OPEN editorial system: #0a1110 darkbackground, #edf4efwhite, #9dafA3muted, #8de8b6mint. NO largeenclosingpanels, no nestedroundedcards, no repeatedboxes, no dashedframes, no decorativehero/headline/English, no illustrationunlessexistingmeaningful. Thinsectiondividers,24pxverticalgaps,16pxhorizontalinsets. Textinputs44px transparentwithONLYbottomhairline;textarea lowcontrastgrayfill8pxradius. Maintransactionsubmit44px,otheractions36pxorquiettext. Officialiconscentered. Ordinarysharedback/titleheader withnativeWeChatstatusbar/capsulesafearea;NO primarybottomnav. Exact390:844flatportraitUI,no deviceframe,nooutside margins. Preserveactualfieldsandflows, no newfeatures. Title发布服务. Removeoldouterboxesaround选择游戏/封面预览/封面文字/服务信息; sectionsdirectlyondarkbackground. Gamepickerbare44pxunderlinedrow三角洲行动, notonepanelinsideanother. Previewheading封面预览 withquiet换一张底图 right. PreviewusesSAMEunifiedServiceCard inCOVER-ONLYmode: gameartsource16:9,displaycropabout4:3, bottomtransparent-to-opaque#121d18gradient, independentlabelsabove independentboldtitleINSIDEimage. Usercustomwords耐心沟通稳定撤离 safelayoutabovefixedmetadata, NOT bakedintoasset. Cover-onlymeansNO price/成交bodyinpreview,remove¥68/已成交0fromoldimage. Afterpreviewthinseparator/24gap then封面文字 header withsmall添加文字textaction; supportinghintonequietline. Showcompact16:9bottomcoveroptionsasthumbnailsifspace, then叠加文字1/6andremovequietlink,underlinedinput耐心沟通. Colorswatches/backgroundselection/position/字号slider inopenrows withnofullroundedlabel-editorbox. Preservefullactualeditorbelowviewport, don'tcramallintofirstscreen. 服务信息 continuesfurtherdownwithtitle,category,price/unit,description,tags,optionalclubpickerusingthesameunderlinedfieldstyle. Sole44pxmint提交审核actionatbottom. No fakehero,newfeatures,orbigplaceholderparagraph. Naturalworkingformwithclearhierarchy.
+## 生成提示词与实施边界
 
-## 2026-10-22自愿平台押金局部增补
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
 
-发布预览保持cover-only，不恢复虚假的¥0/成交0。当前打手真实provider_deposit_cents>0时图下另起小行显示平台押金标识；预览下增加轻量自愿说明“缴纳后展示平台押金标识，不影响发布”和“我的钱包”文字入口。未缴不阻止发布，不新增强制条件，不作担保/赔付承诺；图中OCR差异不得照搬。
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。
 
-完整局部编辑提示词：
+## 实缴预览刷新
 
-Use case: ui-mockup. PreciseLOCALeditofattachedChinese390x844design. Preserveallunrelatedstyle/fields/layout/gameart/safeareas,approved#0a1110darknaturalgreenand#8de8b6mint, thinseparatorsandcentredofficialicons. No newfeatures, no giantcards, no Englishdecoration/no bluepurplegradient. AllnewtextindependentUI,nobakedgameart. Exact390:844portraitflatUI,noframe/nooutside margins. ChangeONLYdepositvisibilitysupplement: cover-onlyServiceCardpreviewmayhaveoneSMALLindependentnormal-flowrowbelowtheimage 平台押金 ifthecurrentproviderhaspositivedeposit. DoNOTrestorefake¥0/成交0body. DoNOTputbadgeincustomcovertext/clubcertificationarea. Immediatelybelowpreviewaddquiet2-linevoluntaryhint 缴纳后展示平台押金标识，不影响发布 plus small我的钱包→textentry. Notmandatory,nocheckbox,no blockedsubmit,noguarantee/compensationpromise. Keepallactualcovereditor/formfields,controlsand44px提交审核; allowremainingfieldsscrollbelowviewport,nocrammingorremovingfields. Allotherlayoutunchanged.
+新建和同账号返回页面时刷新getWallet，平台押金仅取deposit_cents；挂靠选择后getClubDeposits仅取membership.amount_cents，不取platform或required_cents。两类金额为只读服务端状态，不属于表单保存内容。切号/切俱乐部/隐藏的迟到响应不得恢复旧徽标；支付或押金更新后返回不重置用户草稿。预览包含价格与成交区，不能只显示封面。

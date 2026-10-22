@@ -104,9 +104,11 @@ func TestIntegrationCommunityClubLifecycle(t *testing.T) {
 	}
 	api.call("outsider", "POST", "/clubs/shanhai/members/outsider", map[string]any{"status": "active", "assessment_passed": true}, 403, nil)
 	api.call("clubowner", "POST", "/clubs/shanhai/members/outsider", map[string]any{"status": "active"}, 400, nil)
+	api.call("clubowner", "POST", "/clubs/shanhai/members/outsider", map[string]any{"status": "active", "assessment_passed": true}, 409, nil)
+	api.call("outsider", "POST", "/wallet/topups", map[string]any{"purpose": "member_club", "club_id": "shanhai", "amount_cents": 50000, "request_id": "member-deposit-lifecycle"}, 200, nil)
 	api.call("clubowner", "POST", "/clubs/shanhai/members/outsider", map[string]any{"status": "active", "assessment_passed": true, "review_note": "PRIVATE-REVIEW-NOTE"}, 200, nil)
 	api.call("outsider", "GET", "/clubs/shanhai", nil, 200, &own)
-	if own.MyMembership["certified"] != true || own.MyMembership["deposit_status"] != "unverified" {
+	if own.MyMembership["certified"] != true || own.MyMembership["deposit_status"] != "paid" {
 		t.Fatalf("通过考核仍不得声称押金已经托管：%+v", own.MyMembership)
 	}
 	_, raw, _ = api.request("", "GET", "/clubs/shanhai", nil)
@@ -120,6 +122,7 @@ func TestIntegrationCommunityClubLifecycle(t *testing.T) {
 	api.call("admin", "PATCH", "/admin/clubs/shanhai", map[string]any{"status": "active", "verified": true}, 200, nil)
 	api.call("clubowner", "POST", "/clubs/shanhai/members/outsider", map[string]any{"status": "active", "assessment_passed": true}, 409, nil)
 	api.call("outsider", "POST", "/clubs/shanhai/join", map[string]any{"requirements_accepted": true}, 200, nil)
+	api.call("outsider", "POST", "/wallet/topups", map[string]any{"purpose": "member_club", "club_id": "shanhai", "amount_cents": 10000, "request_id": "member-deposit-additional"}, 200, nil)
 	api.call("admin", "POST", "/clubs/shanhai/members/outsider", map[string]any{"status": "active", "assessment_passed": true}, 200, nil)
 
 	adminCover := api.uploadCommunityImage("admin", "club_cover", "shanhai", communityPNG(t, 640, 360), 200)
@@ -180,11 +183,11 @@ func TestIntegrationCommunityPublicProfile(t *testing.T) {
 		Clubs    []Club         `json:"clubs"`
 	}
 	api.call("", "GET", "/players/worker", nil, 200, &public)
-	if len(public.Profile) != 6 || public.Profile["avatar"] != avatar || public.Profile["profile_cover"] != cover || len(public.Services) == 0 || len(public.Clubs) != 1 {
+	if len(public.Profile) != 8 || public.Profile["avatar"] != avatar || public.Profile["profile_cover"] != cover || len(public.Services) == 0 || len(public.Clubs) != 1 {
 		t.Fatalf("公开资料字段或关联服务异常：%+v", public)
 	}
 	_, raw, _ := api.request("", "GET", "/players/worker", nil)
-	if strings.Contains(string(raw), "PRIVATE-") || strings.Contains(string(raw), "phone") || strings.Contains(string(raw), "\"role\"") {
+	if strings.Contains(string(raw), "PRIVATE-") || strings.Contains(string(raw), "\"phone\":") || strings.Contains(string(raw), "\"phone_verified\":") || strings.Contains(string(raw), "\"phone_masked\":") || strings.Contains(string(raw), "\"role\"") {
 		t.Fatalf("公开主页泄漏未允许字段：%s", raw)
 	}
 	api.call("worker", "POST", "/services/delta-service-1/pause", map[string]any{}, 200, nil)

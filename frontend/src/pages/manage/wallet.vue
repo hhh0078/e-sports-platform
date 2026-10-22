@@ -1,21 +1,22 @@
-<!-- 文件作用：管理员审核真实提现申请、同步原转账单并维护不含密钥的商家转账公开配置。 -->
+<!-- 文件作用：管理员查看提现列表并进入来源审核，独立维护不含密钥的商家转账公开配置。 -->
 <template>
   <AppShell title="钱包管理" back>
     <view v-if="bootstrapError" class="error-box bootstrap-error"><text>{{ bootstrapError }}</text><button class="text-btn" :disabled="initializing" @click="showPage">重新加载</button></view>
     <view v-if="state.ready && state.user?.role !== 'admin'" class="access-note"><text>仅平台管理员可访问</text><button class="text-btn" @click="go('/pages/account/login')">切换账号</button></view>
     <template v-else-if="state.user?.role === 'admin'">
-      <view class="section-heading"><text class="section-title">提现申请</text><button class="text-btn" :disabled="listLoading || actionBusy" @click="loadList()"><Icon name="refresh" :size="14"/>刷新</button></view>
-      <scroll-view scroll-x :show-scrollbar="false" class="status-scroll"><view class="status-filters"><button v-for="item in filters" :key="item.value" :class="['status-filter', { selected: status === item.value }]" :disabled="actionBusy" @click="chooseStatus(item.value)">{{ item.label }}</button></view></scroll-view>
+      <view class="finance-links"><button class="finance-link" @click="go('/pages/manage/finance/index')"><view class="finance-link-copy"><text class="finance-link-title">资金来源审核</text><text class="hint finance-link-note">逐笔核验个人与俱乐部提现来源</text></view><Icon name="arrow" :size="16"/></button><button class="finance-link" @click="go('/pages/manage/finance/settings')"><view class="finance-link-copy"><text class="finance-link-title">交易规则</text><text class="hint finance-link-note">平台抽成与创建俱乐部押金</text></view><Icon name="arrow" :size="16"/></button></view>
+      <view class="section-heading"><text class="section-title">提现申请</text><button class="text-btn" :disabled="listLoading" @click="loadList()"><Icon name="refresh" :size="14"/>刷新</button></view>
+      <scroll-view scroll-x :show-scrollbar="false" class="status-scroll"><view class="status-filters"><button v-for="item in filters" :key="item.value" :class="['status-filter', { selected: status === item.value }]" @click="chooseStatus(item.value)">{{ item.label }}</button></view></scroll-view>
       <view v-if="listError" class="subtle-note error-copy">{{ listError }}<button class="text-btn" :disabled="listLoading" @click="loadList()">重试</button></view>
       <view v-if="listLoading && !withdrawals.length" class="loading-line">正在读取提现申请…</view>
       <view v-else-if="!withdrawals.length && !listError" class="empty-list"><Icon name="orders" :size="28"/><text>暂无{{ statusName(status) }}提现</text><text class="hint">用户提交申请后在此审核</text></view>
       <view v-for="item in withdrawals" :key="item.id" class="withdrawal-row">
         <view class="withdrawal-heading"><text class="amount">¥{{ money(item.amount_cents) }}</text><text class="state-label">{{ statusName(item.status) }}</text></view>
-        <text class="user-id">用户 {{ item.user_id }}</text><text class="hint">申请于 {{ time(item.created_at) }}</text>
+        <text class="user-id">{{ item.club_id?'俱乐部 '+item.club_id:'用户 '+item.user_id }}</text><text class="hint">申请于 {{ time(item.created_at) }}</text>
         <text v-if="item.failure_reason" class="failure-reason">{{ item.failure_reason }}</text>
-        <view v-if="!terminal(item.status)" class="withdrawal-actions"><button class="btn btn-small" :disabled="actionBusy || (!state.devMode && (!loaded || !transferReady))" @click="prepare(item, 'execute')">{{ item.status === 'pending_review' ? '审核并发起转账' : '同步转账结果' }}</button><button v-if="item.status === 'pending_review'" class="text-btn" :disabled="actionBusy" @click="prepare(item, 'reject')">拒绝申请</button></view>
+        <view class="withdrawal-actions"><button class="text-btn" @click="openAudit(item.id)">{{ item.status==='pending_review'?'查看来源并审核':'来源与处理记录' }}<Icon name="arrow" :size="13"/></button></view>
       </view>
-      <button v-if="hasMore" class="text-btn load-more" :disabled="listLoading || actionBusy" @click="loadList(true)">加载更多</button>
+      <button v-if="hasMore" class="text-btn load-more" :disabled="listLoading" @click="loadList(true)">加载更多</button>
       <text v-if="loaded && !transferReady && !state.devMode" class="subtle-note">提现通道尚未就绪，请先核对下方商家转账及支付配置。</text>
       <view class="form-section">
         <view class="section-heading"><text class="section-title">商家转账配置</text><text class="ready-label">{{ transferReady ? '已就绪' : '未就绪' }}</text></view>
@@ -33,13 +34,6 @@
       </view>
     </template>
     <view v-else-if="!bootstrapError" class="loading-line">正在读取管理员身份…</view>
-    <view v-if="pendingAction" class="modal-mask" @click="closeAction"><view class="action-sheet" @click.stop>
-      <view class="section-heading"><text class="section-title">{{ pendingAction.kind === 'reject' ? '拒绝提现申请' : '确认处理提现' }}</text><button class="text-btn" :disabled="actionBusy" @click="closeAction">关闭</button></view>
-      <text class="amount">¥{{ money(pendingAction.item.amount_cents) }}</text><text class="user-id">用户 {{ pendingAction.item.user_id }}</text><text class="hint">申请编号 {{ pendingAction.item.id }}</text>
-      <view v-if="pendingAction.kind === 'reject'" class="form-section reason-field"><textarea v-model="rejectReason" class="input" maxlength="500" :disabled="actionBusy" placeholder="填写2—500字拒绝原因，资金按服务端结果解冻"/></view>
-      <template v-else><text class="subtle-note">确认后按原申请发起或查询微信商家转账，未知结果不会直接解冻。</text><view v-if="state.devMode" class="dev-options"><text class="hint">仅本地测试，不发生真实转账</text><radio-group class="dev-choices" @change="changeDevOutcome"><label><radio value="success" :checked="devOutcome === 'success'"/>模拟成功</label><label><radio value="failed" :checked="devOutcome === 'failed'"/>模拟失败</label></radio-group></view></template>
-      <view class="action-footer"><button class="text-btn" :disabled="actionBusy" @click="closeAction">取消</button><button class="btn" :disabled="actionBusy" @click="confirmAction">{{ actionBusy ? '正在处理…' : pendingAction.kind === 'reject' ? '确认拒绝' : '确认处理' }}</button></view>
-    </view></view>
   </AppShell>
 </template>
 <script setup lang="ts">
@@ -50,21 +44,18 @@ import NativeSwitch from '../../components/NativeSwitch.vue'
 import Icon from '../../components/Icon.vue'
 import { state, game, init, sessionRevision } from '../../lib/store'
 import { token, errorMessage } from '../../api/client'
-import { listAdminWithdrawals, executeAdminWithdrawal, rejectAdminWithdrawal, getWalletSettings, saveWalletSettings } from '../../api/wallet.api'
+import { listAdminWithdrawals, getWalletSettings, saveWalletSettings } from '../../api/wallet.api'
 import type { WalletSettings, WalletSettingsResult, WalletWithdrawal } from '../../types/wallet'
 import type { SwitchChangeEvent } from '../../types/uni-components'
 import { go, notify, money, time } from '../../lib/format'
 
 /** 提现过滤仅使用服务端已支持的六种状态。 */
 type WithdrawalStatus = WalletWithdrawal['status']
-/** 确认弹层保存公开申请快照，不保存微信收款凭据。 */
-type PendingAction = { kind: 'execute' | 'reject'; item: WalletWithdrawal }
 const filters: Array<{ value: WithdrawalStatus; label: string }> = [{ value: 'pending_review', label: '待审核' }, { value: 'processing', label: '处理中' }, { value: 'wait_user_confirm', label: '待确认' }, { value: 'success', label: '成功' }, { value: 'failed', label: '失败' }, { value: 'rejected', label: '已拒绝' }]
 const status = ref<WithdrawalStatus>('pending_review'), withdrawals = ref<WalletWithdrawal[]>([]), listLoading = ref(false), hasMore = ref(false), listError = ref('')
 const form = reactive<WalletSettings>(emptySettings()), settingsLoading = ref(false), settingsError = ref(''), saving = ref(false), loaded = ref(false), transferReady = ref(false), configurationNotice = ref('')
-const pendingAction = ref<PendingAction | null>(null), rejectReason = ref(''), actionBusy = ref(false), devOutcome = ref<'success' | 'failed'>('success')
 const bootstrapError = ref(''), initializing = ref(false)
-let visible = false, pageRevision = 0, listVersion = 0, listOffset = 0, settingsVersion = 0, actionVersion = 0, saveVersion = 0, savedSettings = ''
+let visible = false, pageRevision = 0, listVersion = 0, listOffset = 0, settingsVersion = 0, saveVersion = 0, savedSettings = ''
 let loadedSession: ReturnType<typeof currentSession> | null = null
 
 /** 创建不含秘密的空配置，不预设商户获批场景。 */
@@ -75,8 +66,6 @@ function currentSession() { return { id: state.user?.id, token: token(), revisio
 function sameSession(session: ReturnType<typeof currentSession>): boolean { return visible && state.user?.role === 'admin' && session.id === state.user.id && session.token === token() && session.revision === sessionRevision() && session.page === pageRevision }
 /** 显示真实状态文案，不把处理中当作转账成功。 */
 function statusName(value: WithdrawalStatus): string { return filters.find(item => item.value === value)?.label || value }
-/** 终态申请不再显示转账和拒绝按钮。 */
-function terminal(value: WithdrawalStatus): boolean { return value === 'success' || value === 'failed' || value === 'rejected' }
 /** 只回填约定的公开配置，服务端额外字段不进入表单。 */
 function setDraft(value: WalletSettings): void { Object.assign(form, { withdrawal_enabled: value.withdrawal_enabled, transfer_scene_id: value.transfer_scene_id, transfer_scene_report_infos: value.transfer_scene_report_infos.map(item => ({ info_type: item.info_type, info_content: item.info_content })), transfer_notify_url: value.transfer_notify_url, transfer_remark: value.transfer_remark, user_recv_perception: value.user_recv_perception }) }
 /** 保存公开快照和服务端就绪状态，留给取消操作恢复。 */
@@ -98,26 +87,10 @@ async function loadSettings(): Promise<void> {
   catch (error) { if (current === settingsVersion && sameSession(session)) settingsError.value = errorMessage(error) }
   finally { if (current === settingsVersion) settingsLoading.value = false }
 }
-/** 切换真实状态过滤，同时关闭尚未提交的申请弹层。 */
-function chooseStatus(value: WithdrawalStatus): void { if (actionBusy.value || value === status.value) return; status.value = value; withdrawals.value = []; hasMore.value = false; pendingAction.value = null; void loadList() }
-/** 确认前固定用户和金额摘要；仅未发起申请可拒绝。 */
-function prepare(item: WalletWithdrawal, kind: PendingAction['kind']): void { if (!visible || actionBusy.value || state.user?.role !== 'admin' || terminal(item.status)) return; if (kind === 'reject' && item.status !== 'pending_review') return; pendingAction.value = { kind, item: { ...item } }; rejectReason.value = ''; devOutcome.value = 'success' }
-/** 处理期间禁止关闭弹层，避免把未知外部结果误当取消。 */
-function closeAction(): void { if (!actionBusy.value) { pendingAction.value = null; rejectReason.value = '' } }
-/** 开发模拟结果只接受枚举值，生产不会发送此字段。 */
-function changeDevOutcome(event: { detail: { value: string } }): void { if (event.detail.value === 'success' || event.detail.value === 'failed') devOutcome.value = event.detail.value }
-/** 执行真实具名接口，重复点击及迟到会话不能更新当前管理员页面。 */
-async function confirmAction(): Promise<void> {
-  const action = pendingAction.value
-  if (!visible || !action || actionBusy.value || state.user?.role !== 'admin') return
-  if (action.kind === 'execute' && !state.devMode && (!loaded.value || !transferReady.value)) return notify('提现通道尚未就绪，请先核对公开配置和支付配置')
-  const reason = rejectReason.value.trim()
-  if (action.kind === 'reject' && (Array.from(reason).length < 2 || Array.from(reason).length > 500)) return notify('请填写2—500字拒绝原因')
-  const current = ++actionVersion, session = currentSession(); actionBusy.value = true
-  try { const result = action.kind === 'reject' ? await rejectAdminWithdrawal(action.item.id, reason) : await executeAdminWithdrawal(action.item.id, state.devMode ? { dev_outcome: devOutcome.value } : {}); if (current !== actionVersion || !sameSession(session)) return; pendingAction.value = null; rejectReason.value = ''; notify('处理结果：' + statusName(result.status)); await loadList() }
-  catch (error) { if (current === actionVersion && sameSession(session)) { listError.value = errorMessage(error); notify(error) } }
-  finally { if (current === actionVersion) actionBusy.value = false }
-}
+/** 切换服务端状态分页，不混入上一状态的数据。 */
+function chooseStatus(value: WithdrawalStatus): void { if (value === status.value) return; status.value = value; withdrawals.value = []; hasMore.value = false; void loadList() }
+/** 所有提现操作必须先进入独立来源明细，旧列表不再绕过核验直接执行。 */
+function openAudit(id:string):void{if(visible&&state.user?.role==='admin')go('/pages/manage/finance/detail?id='+encodeURIComponent(id))}
 /** 只修改公开草稿开关，保存前不调用配置接口。 */
 function changeEnabled(event: SwitchChangeEvent): void { form.withdrawal_enabled = event.detail.value }
 /** 增加一条待填写的场景报备，真实字段不预填假数据。 */
@@ -145,16 +118,17 @@ async function saveSettings(): Promise<void> {
 /** 取消仅恢复同一管理员已经读取的公开配置，不发起写请求。 */
 function restoreSettings(): void { if (!saving.value && savedSettings) { setDraft(JSON.parse(savedSettings) as WalletSettings); notify('未保存的修改已取消') } }
 /** 清除旧管理员的资金列表、公开草稿和未确认操作。 */
-function clearData(): void { withdrawals.value = []; listOffset = 0; hasMore.value = false; loaded.value = false; loadedSession = null; savedSettings = ''; setDraft(emptySettings()); transferReady.value = false; configurationNotice.value = ''; pendingAction.value = null; rejectReason.value = ''; listError.value = ''; settingsError.value = ''; bootstrapError.value = '' }
+function clearData(): void { withdrawals.value = []; listOffset = 0; hasMore.value = false; loaded.value = false; loadedSession = null; savedSettings = ''; setDraft(emptySettings()); transferReady.value = false; configurationNotice.value = ''; listError.value = ''; settingsError.value = ''; bootstrapError.value = '' }
 /** 页面显示时核对身份；同管理员返回保留未保存的公开草稿。 */
 async function showPage(): Promise<void> { visible = true; if (initializing.value) return; const revision = pageRevision; initializing.value = true; bootstrapError.value = ''; try { await init(); if (!visible || revision !== pageRevision) return; if (state.user?.role !== 'admin') { clearData(); return }; if (loadedSession && loadedSession.id === state.user.id && loadedSession.token === token() && loadedSession.revision === sessionRevision() && loaded.value) { await loadList(); return }; await Promise.all([loadList(), loadSettings()]) } catch (error) { if (visible && revision === pageRevision) bootstrapError.value = errorMessage(error) } finally { if (revision === pageRevision) initializing.value = false } }
 /** 隐藏即作废回调和确认操作，不在客户端缓存资金信息。 */
-function hidePage(): void { visible = false; pageRevision++; listVersion++; settingsVersion++; actionVersion++; saveVersion++; listLoading.value = false; settingsLoading.value = false; initializing.value = false; actionBusy.value = false; saving.value = false; pendingAction.value = null; rejectReason.value = '' }
+function hidePage(): void { visible = false; pageRevision++; listVersion++; settingsVersion++; saveVersion++; if(settingsLoading.value||saving.value)loaded.value=false; listLoading.value = false; settingsLoading.value = false; initializing.value = false; saving.value = false }
 watch([() => state.user?.id, () => state.user?.role, sessionRevision], () => { const wasVisible = visible; hidePage(); clearData(); if (wasVisible) void showPage() }, { flush: 'sync' })
 onShow(showPage)
 onHide(hidePage)
 onUnload(() => { hidePage(); clearData() })
 </script>
 <style scoped>
-.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.status-scroll{width:100%;max-width:100%;margin:12px 0}.status-filters{display:inline-flex;min-width:100%;gap:6px;white-space:nowrap}.status-filter{display:flex;align-items:center;justify-content:center;flex-shrink:0;min-height:28px;padding:0 12px;border:1px solid var(--line-subtle);border-radius:20px;background:transparent;color:var(--muted);font-size:11px}.status-filter.selected{background:var(--accent);color:var(--bg);border-color:var(--accent)}.empty-list{display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px 0;color:var(--muted);font-size:13px}.withdrawal-row{display:flex;flex-direction:column;gap:6px;padding:20px 0;border-bottom:1px solid var(--line-subtle);min-width:0}.withdrawal-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.amount{display:block;font-size:23px;line-height:32px;font-weight:700;color:var(--accent);overflow-wrap:anywhere}.state-label,.ready-label{font-size:11px;color:var(--muted);flex-shrink:0}.user-id,.failure-reason{display:block;overflow-wrap:anywhere;font-size:12px;line-height:20px}.failure-reason,.error-copy{color:#e9b69d}.withdrawal-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:8px}.load-more{width:100%;margin-top:12px}.enabled-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;margin-bottom:20px;font-size:13px}.report-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) 28px;align-items:center;gap:8px;min-width:0}.report-row .input{font-size:12px}.payment-link{justify-content:flex-start;white-space:normal;text-align:left}.access-note{display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 0;color:var(--muted)}.modal-mask{position:fixed;inset:0;z-index:120;background:#000b;display:flex;align-items:flex-end;justify-content:center}.action-sheet{width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:20px 16px calc(16px + env(safe-area-inset-bottom));border-radius:16px 16px 0 0;background:var(--surface);min-width:0}.action-sheet .amount{margin:16px 0 8px}.reason-field{padding:16px 0}.dev-options{display:flex;flex-direction:column;gap:10px}.dev-choices{display:flex;flex-wrap:wrap;gap:12px;font-size:12px}.dev-choices label{display:flex;align-items:center;gap:4px}.dev-choices radio{transform:scale(.7);margin-right:-6px}.action-footer{flex-wrap:wrap}.action-footer .btn{min-width:130px}@media(max-width:350px){.status-filter{padding:0 10px}.report-row{gap:6px}.report-row .input{font-size:11px}.withdrawal-actions{gap:8px}}
+.finance-links{display:flex;flex-direction:column;gap:16px;margin:0 0 32px}.finance-link{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:80px;min-width:0;padding:16px;border-radius:10px;background:var(--surface);color:var(--text);text-align:left}.finance-link-copy{display:flex;flex:1;flex-direction:column;gap:6px;min-width:0}.finance-link-title{font-size:16px;line-height:24px}.finance-link-note{font-size:14px;line-height:22px;overflow-wrap:anywhere}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.status-scroll{width:100%;max-width:100%;margin:12px 0}.status-filters{display:inline-flex;min-width:100%;gap:6px;white-space:nowrap}.status-filter{display:flex;align-items:center;justify-content:center;flex-shrink:0;min-height:28px;padding:0 12px;border:1px solid var(--line-subtle);border-radius:20px;background:transparent;color:var(--muted);font-size:11px}.status-filter.selected{background:var(--accent);color:var(--bg);border-color:var(--accent)}.empty-list{display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px 0;color:var(--muted);font-size:13px}.withdrawal-row{display:flex;flex-direction:column;gap:6px;padding:20px 0;border-bottom:1px solid var(--line-subtle);min-width:0}.withdrawal-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.amount{display:block;font-size:23px;line-height:32px;font-weight:700;color:var(--accent);overflow-wrap:anywhere}.state-label,.ready-label{font-size:11px;color:var(--muted);flex-shrink:0}.user-id,.failure-reason{display:block;overflow-wrap:anywhere;font-size:12px;line-height:20px}.failure-reason,.error-copy{color:#e9b69d}.withdrawal-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:8px}.load-more{width:100%;margin-top:12px}.enabled-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;margin-bottom:20px;font-size:13px}.report-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) 28px;align-items:center;gap:8px;min-width:0}.report-row .input{font-size:12px}.payment-link{justify-content:flex-start;white-space:normal;text-align:left}.access-note{display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 0;color:var(--muted)}.action-footer{flex-wrap:wrap}.action-footer .btn{min-width:130px}@media(max-width:350px){.status-filter{padding:0 10px}.report-row{gap:6px}.report-row .input{font-size:11px}.withdrawal-actions{gap:8px}}
 </style>

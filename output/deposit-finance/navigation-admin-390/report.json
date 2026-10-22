@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "scope": "admin",
+  "time": "2026-10-22T18:42:26.572Z",
+  "api": "http://127.0.0.1:18091/api",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "statusBarHeight": 47,
+    "capsuleBottom": 83
+  },
+  "checks": [
+    "登录：集结管理员",
+    "控制台入口路由及两级返回：用户管理 → /pages/manage/users",
+    "控制台入口路由及两级返回：服务审核 → /pages/manage/services",
+    "控制台入口路由及两级返回：俱乐部管理 → /pages/manage/clubs",
+    "控制台入口路由及两级返回：订单与售后 → /pages/manage/orders",
+    "控制台入口路由及两级返回：游戏配置 → /pages/manage/games",
+    "控制台入口路由及两级返回：商家转账配置 → /pages/manage/wallet",
+    "控制台入口路由及两级返回：微信支付 → /pages/manage/settings?tab=payment",
+    "控制台入口路由及两级返回：协议管理 → /pages/manage/settings?tab=agreements",
+    "控制台入口路由及两级返回：平台设置 → /pages/manage/platform",
+    "控制台入口路由及两级返回：操作审计 → /pages/manage/audit",
+    "控制台入口路由及两级返回：AI 设置 → /pages/manage/ai",
+    "控制台入口路由及两级返回：发送平台消息 → /pages/manage/messages",
+    "控制台入口路由及两级返回：客服设置 → /pages/manage/support",
+    "控制台入口路由及两级返回：资金审核 → /pages/manage/finance/index",
+    "控制台入口路由及两级返回：交易规则 → /pages/manage/finance/settings",
+    "控制台15个独立入口逐项可访问，真实曲线与游戏编辑器窄屏无溢出，未保存配置",
+    "管理员支付配置可打开，已保存秘密不回显，未写入或提交支付设置",
+    "页面与返回：/pages/manage/settings"
+  ],
+  "runtime_exceptions": [],
+  "remaining": [
+    "真实微信授权与商户资金不由本地模拟回归替代",
+    "订单聊天与售后由独立交易回归脚本覆盖"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "scope": "club-owner",
+  "time": "2026-10-22T18:38:30.443Z",
+  "api": "http://127.0.0.1:18091/api",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "statusBarHeight": 47,
+    "capsuleBottom": 83
+  },
+  "checks": [
+    "登录：山海主理人",
+    "共享游戏选择：club-create 取消保留、确认回填且嵌套层级正确，主游戏偏好未改变",
+    "共享游戏选择：club-edit 取消保留、确认回填且嵌套层级正确，主游戏偏好未改变",
+    "页面与返回：/pages/community/clubs/detail",
+    "页面与返回：/pages/community/clubs/edit",
+    "页面与返回：/pages/community/clubs/console",
+    "页面与返回：/pages/community/clubs/funds"
+  ],
+  "runtime_exceptions": [],
+  "remaining": [
+    "真实微信授权与商户资金不由本地模拟回归替代",
+    "订单聊天与售后由独立交易回归脚本覆盖"
+  ]
+}

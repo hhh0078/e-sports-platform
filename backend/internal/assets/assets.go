@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-//go:embed covers
+//go:embed covers avatars
 var files embed.FS
 
 // Handler 仅提供已嵌入的图片文件，不列目录、不访问服务器其他文件。

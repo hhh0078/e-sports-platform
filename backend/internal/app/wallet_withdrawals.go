@@ -3,15 +3,12 @@ package app
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/sha1"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 // wxTransfer 同时接收微信查询与通知中的转账资料，付款结果必须与原申请逐项匹配。
@@ -29,6 +26,9 @@ type wxTransfer struct {
 
 // withdrawalResponse 仅向本人返回待确认收款参数，管理列表及其他状态不暴露微信身份或实名密文。
 func (a *App) withdrawalResponse(v WalletWithdrawal, own bool) any {
+	if v.AccountType == "" {
+		v.AccountType = "user"
+	}
 	pack := v.PackageInfo
 	safe := publicValue(v).(WalletWithdrawal)
 	raw, _ := json.Marshal(safe)
@@ -60,97 +60,6 @@ func (a *App) walletWithdrawals(w http.ResponseWriter, r *http.Request) (any, er
 	return out, nil
 }
 
-// createWalletWithdrawal 在同一账号锁下检查服务收入并冻结；充值款、押金和待结算均不可提现。
-func (a *App) createWalletWithdrawal(w http.ResponseWriter, r *http.Request) (any, error) {
-	u, err := a.actor(r)
-	if err != nil {
-		return nil, err
-	}
-	var in struct {
-		AmountCents int64  `json:"amount_cents"`
-		RequestID   string `json:"request_id"`
-		UserName    string `json:"user_name"`
-	}
-	if err = decode(r, &in); err != nil {
-		return nil, err
-	}
-	if err = walletRequestID(in.RequestID); err != nil {
-		return nil, err
-	}
-	in.UserName = strings.TrimSpace(in.UserName)
-	if in.AmountCents < 100 || in.AmountCents > 20000000 || !length(in.UserName, 0, 50) {
-		return nil, fail(400, "提现金额须在1至200000元范围内，实名最多50字")
-	}
-	if in.AmountCents >= 200000 && in.UserName == "" {
-		return nil, fail(400, "微信要求单笔2000元及以上提现填写真实姓名")
-	}
-	var settings WalletSettings
-	var c wxPayConfig
-	if !a.Config.DevMode {
-		settings, c, err = a.readyWalletTransfer(r.Context())
-		if err != nil {
-			return nil, err
-		}
-	}
-	if err = a.releaseWalletIncome(r.Context(), u.ID); err != nil {
-		return nil, err
-	}
-	ctx := r.Context()
-	tx, err := a.DB.Begin(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback(ctx)
-	if err = lockWalletUsers(ctx, tx, u.ID); err != nil {
-		return nil, err
-	}
-	if err = claimWalletRequest(ctx, tx, u.ID, in.RequestID, "withdrawal", map[string]any{"name_hash": walletKey(in.UserName), "amount_cents": in.AmountCents}); err != nil {
-		return nil, err
-	}
-	id := walletKey("withdrawal", u.ID, in.RequestID)
-	v, err := get[WalletWithdrawal](ctx, tx, "wallet_withdrawals", id, true)
-	if err == nil {
-		if v.AmountCents != in.AmountCents || v.NameHash != walletKey(in.UserName) {
-			return nil, fail(409, "同一request_id不能修改提现金额或实名")
-		}
-		return a.withdrawalResponse(v, true), nil
-	}
-	if !missing(err) {
-		return nil, err
-	}
-	v = WalletWithdrawal{ID: id, UserID: u.ID, RequestID: in.RequestID, AmountCents: in.AmountCents, Status: "pending_review", OutBillNo: "WD" + strings.ToUpper(id[:30]), NameHash: walletKey(in.UserName), TransferConfig: settings, CreatedAt: now(), UpdatedAt: now()}
-	if !a.Config.DevMode {
-		identity, e := get[map[string]string](ctx, tx, "identities", u.ID, false)
-		if e != nil || identity["openid"] == "" {
-			return nil, fail(503, "请先通过微信登录后申请提现")
-		}
-		v.PayOpenID = identity["openid"]
-		v.MerchantID = c.MerchantID
-		v.AppID = c.AppID
-		if in.UserName != "" {
-			encrypted, e := rsa.EncryptOAEP(sha1.New(), rand.Reader, c.PublicKey, []byte(in.UserName), nil)
-			if e != nil {
-				return nil, fail(503, "实名加密失败，请检查微信支付公钥")
-			}
-			v.EncryptedName = base64.StdEncoding.EncodeToString(encrypted)
-		}
-	}
-	wallet, err := lockedWallet(ctx, tx, u.ID)
-	if err != nil {
-		return nil, err
-	}
-	if err = appendWalletEntry(ctx, tx, &wallet, WalletEntry{Kind: "withdrawal_freeze", ReferenceID: id, AmountCents: in.AmountCents, AvailableDelta: -in.AmountCents, WithdrawalFrozenDelta: in.AmountCents, Note: "提现申请，冻结服务收入等待审核"}); err != nil {
-		return nil, err
-	}
-	if err = put(ctx, tx, "wallet_withdrawals", id, v); err != nil {
-		return nil, err
-	}
-	if err = tx.Commit(ctx); err != nil {
-		return nil, err
-	}
-	return a.withdrawalResponse(v, true), nil
-}
-
 // adminWalletWithdrawals 对管理员开放资金审核列表，仍剥离所有微信身份和实名资料。
 func (a *App) adminWalletWithdrawals(w http.ResponseWriter, r *http.Request) (any, error) {
 	if _, err := a.admin(r); err != nil {
@@ -176,7 +85,10 @@ func (a *App) finishWalletWithdrawal(ctx context.Context, snapshot WalletWithdra
 		return err
 	}
 	defer tx.Rollback(ctx)
-	if err = lockWalletUsers(ctx, tx, snapshot.UserID); err != nil {
+	if err = lockClubFinance(ctx, tx, snapshot.ClubID); err != nil {
+		return err
+	}
+	if err = lockWalletUsers(ctx, tx, snapshot.UserID, withdrawalAccount(snapshot)); err != nil {
 		return err
 	}
 	v, err := get[WalletWithdrawal](ctx, tx, "wallet_withdrawals", snapshot.ID, true)
@@ -212,7 +124,7 @@ func (a *App) finishWalletWithdrawal(ctx context.Context, snapshot WalletWithdra
 		return fail(409, "尚未审核发起的提现不能接收转账结果")
 	}
 	if desired == "success" || desired == "failed" {
-		wallet, e := lockedWallet(ctx, tx, v.UserID)
+		wallet, e := lockedWallet(ctx, tx, withdrawalAccount(v))
 		if e != nil {
 			return e
 		}
@@ -221,6 +133,9 @@ func (a *App) finishWalletWithdrawal(ctx context.Context, snapshot WalletWithdra
 			entry.AmountCents = v.AmountCents
 			entry.AvailableDelta = v.AmountCents
 			entry.Note = "微信确认转账失败或取消，解冻服务收入"
+		}
+		if err = finishWithdrawalSources(ctx, tx, v, desired == "success"); err != nil {
+			return err
 		}
 		if err = appendWalletEntry(ctx, tx, &wallet, entry); err != nil {
 			return err
@@ -265,7 +180,10 @@ func (a *App) rejectWalletWithdrawal(w http.ResponseWriter, r *http.Request) (an
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-	if err = lockWalletUsers(ctx, tx, before.UserID); err != nil {
+	if err = lockClubFinance(ctx, tx, before.ClubID); err != nil {
+		return nil, err
+	}
+	if err = lockWalletUsers(ctx, tx, before.UserID, withdrawalAccount(before)); err != nil {
 		return nil, err
 	}
 	v, err := get[WalletWithdrawal](ctx, tx, "wallet_withdrawals", before.ID, true)
@@ -278,8 +196,11 @@ func (a *App) rejectWalletWithdrawal(w http.ResponseWriter, r *http.Request) (an
 	if v.Status != "pending_review" {
 		return nil, fail(409, "仅尚未发起微信转账的申请可以审核拒绝")
 	}
-	wallet, err := lockedWallet(ctx, tx, v.UserID)
+	wallet, err := lockedWallet(ctx, tx, withdrawalAccount(v))
 	if err != nil {
+		return nil, err
+	}
+	if err = finishWithdrawalSources(ctx, tx, v, false); err != nil {
 		return nil, err
 	}
 	if err = appendWalletEntry(ctx, tx, &wallet, WalletEntry{Kind: "withdrawal_reject", ReferenceID: v.ID, AmountCents: v.AmountCents, AvailableDelta: v.AmountCents, WithdrawalFrozenDelta: -v.AmountCents, Note: "平台拒绝提现申请，解冻服务收入"}); err != nil {
@@ -337,7 +258,10 @@ func (a *App) executeWalletWithdrawal(w http.ResponseWriter, r *http.Request) (a
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-	if err = lockWalletUsers(ctx, tx, before.UserID); err != nil {
+	if err = lockClubFinance(ctx, tx, before.ClubID); err != nil {
+		return nil, err
+	}
+	if err = lockWalletUsers(ctx, tx, before.UserID, withdrawalAccount(before)); err != nil {
 		return nil, err
 	}
 	v, err := get[WalletWithdrawal](ctx, tx, "wallet_withdrawals", before.ID, true)
@@ -346,6 +270,19 @@ func (a *App) executeWalletWithdrawal(w http.ResponseWriter, r *http.Request) (a
 	}
 	if !a.Config.DevMode && v.MerchantID != "" && (v.MerchantID != c.MerchantID || v.AppID != c.AppID) {
 		return nil, fail(409, "商户配置已变更，请先核查原提现申请，不可换商户重发")
+	}
+	if v.ClubID != "" {
+		club, e := get[Club](ctx, tx, "clubs", v.ClubID, false)
+		if e != nil || club.OwnerID != v.UserID {
+			return nil, fail(409, "俱乐部负责人已变更，请拒绝此申请后由新负责人申请")
+		}
+	}
+	if sources, issues, e := auditWithdrawalSources(ctx, tx, v, a.Config.DevMode); e != nil {
+		return nil, e
+	} else if len(issues) > 0 {
+		return nil, fail(409, strings.Join(issues, "；"))
+	} else if e = recordFundingAudit(ctx, tx, v, "execute", sources, issues); e != nil {
+		return nil, e
 	}
 	first := v.Status == "pending_review"
 	if first {
@@ -481,4 +418,50 @@ func (a *App) transferCallback(w http.ResponseWriter, r *http.Request) {
 		err = a.applyWXTransfer(r.Context(), c, result)
 	}
 	wxNotifyResult(w, err)
+}
+
+// withdrawalAccount 兼容旧个人提现并固定原申请资金账号。
+func withdrawalAccount(v WalletWithdrawal) string {
+	if v.AccountID != "" {
+		return v.AccountID
+	}
+	return v.UserID
+}
+
+// guardDailyWithdrawal 按上海自然日限制有效申请，失败或审核拒绝不消耗次数，幂等重放由上层提前返回。
+func guardDailyWithdrawal(ctx context.Context, q querier, account string, stamp time.Time) error {
+	location := time.FixedZone("Asia/Shanghai", 8*3600)
+	local := stamp.In(location)
+	start := time.Date(local.Year(), local.Month(), local.Day(), 0, 0, 0, 0, location)
+	var n int
+	e := q.QueryRow(ctx, `SELECT count(*) FROM wallet_withdrawals WHERE COALESCE(NULLIF(data->>'account_id',''),data->>'user_id')=$1 AND data->>'status' NOT IN ('failed','rejected') AND (data->>'created_at')::timestamptz >= $2 AND (data->>'created_at')::timestamptz < $3`, account, start, start.AddDate(0, 0, 1)).Scan(&n)
+	if e != nil {
+		return e
+	}
+	if n > 0 {
+		return fail(409, "每天可提现一次，今日已有处理中或成功的提现申请")
+	}
+	return nil
+}
+
+// finishWithdrawalSources 成功消费已冻结来源，明确失败则原样恢复同一账户的服务收入来源。
+func finishWithdrawalSources(ctx context.Context, q querier, v WalletWithdrawal, success bool) error {
+	targets := []fundDestination(nil)
+	if !success {
+		targets = []fundDestination{{AccountID: withdrawalAccount(v), Bucket: "available", AmountCents: v.AmountCents}}
+	}
+	return moveFunding(ctx, q, "withdrawal-finish:"+v.ID, "withdrawal:"+v.ID, "withdrawal", v.AmountCents, targets)
+}
+
+// adminWithdrawalAudit 提供个人和俱乐部统一来源核验详情，只有平台管理员可查询。
+func (a *App) adminWithdrawalAudit(w http.ResponseWriter, r *http.Request) (any, error) {
+	if _, e := a.admin(r); e != nil {
+		return nil, e
+	}
+	v, e := get[WalletWithdrawal](r.Context(), a.DB, "wallet_withdrawals", r.PathValue("id"), false)
+	if e != nil {
+		return nil, e
+	}
+	sources, issues, e := auditWithdrawalSources(r.Context(), a.DB, v, a.Config.DevMode)
+	return map[string]any{"withdrawal": a.withdrawalResponse(v, false), "passed": len(issues) == 0, "issues": issues, "sources": sources, "total_cents": v.AmountCents}, e
 }

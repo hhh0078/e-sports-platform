@@ -23,7 +23,8 @@ node - "$PROJECT_DIR" <<'JS'
 // 正式产物启用微信合法域名校验，避免沿用本地调试的关闭状态。
 const fs = require('node:fs')
 const path = require('node:path')
-const configPath = path.join(process.argv[2], 'frontend/dist/build/mp-weixin/project.config.json')
+const outputDir = path.resolve(process.argv[2], 'frontend', process.env.UNI_OUTPUT_DIR || 'dist/build/mp-weixin')
+const configPath = path.join(outputDir, 'project.config.json')
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
 config.setting = { ...config.setting, urlCheck: true }
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n')
@@ -31,5 +32,6 @@ fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n')
 fs.rmSync(path.join(path.dirname(configPath), 'project.private.config.json'), { force: true })
 if (!config.appid || config.setting.urlCheck !== true) throw new Error('正式小程序配置校验失败')
 console.log('正式产物已启用合法域名校验。')
+console.log('发布目录：' + outputDir)
 JS
-echo '发布目录：frontend/dist/build/mp-weixin。请导入微信开发者工具，核验合法域名后上传。'
+echo '请导入上述发布目录，核验合法域名后上传。'

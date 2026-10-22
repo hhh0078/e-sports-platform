@@ -101,6 +101,13 @@ test('退押金的服务端进行中订单拒绝保留金额且不移除实际�
   assert.equal(s.page.wallet.value.deposit_cents,10000);assert.equal(s.page.amount.value,'100');assert.match(s.page.formError.value,/进行中/)
 })
 
+test('个人押金不足1元的尾款可申请原路退清，不能被充值最低额误拦',async t=>{
+  const s=harness(t);s.balance.deposit_cents=50;s.hooks.show();await flush();s.page.open('refund')
+  assert.equal(s.page.amount.value,'0.5');const submitting=s.page.submit();await flush();const original=s.take('/wallet/deposit-refunds')
+  assert.equal(original.body.amount_cents,50);original.resolve({id:'small-refund',amount_cents:50,status:'processing'});await submitting
+  assert.equal(s.page.operation.value,null)
+})
+
 test('隐藏或销毁清除实名与短暂收款凭据',async t=>{
   const s=harness(t);s.hooks.show();await flush();s.page.userName.value='不应缓存';s.page.withdrawals.value=[{id:'w',confirmation:{package_info:'secret'}}];s.hooks.hide()
   assert.equal(s.page.userName.value,'');assert.equal(s.page.withdrawals.value[0].confirmation,undefined)

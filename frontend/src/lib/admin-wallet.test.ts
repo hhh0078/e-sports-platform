@@ -1,4 +1,4 @@
-/** 文件作用：执行钱包管理页真实脚本，验证资金审核防连点、旧会话隔离和公开转账配置边界。 */
+/** 文件作用：执行钱包管理页真实脚本，验证来源审核入口、分页隔离和公开转账配置边界。 */
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import vm from 'node:vm'
@@ -9,14 +9,14 @@ import type { WalletSettingsResult, WalletWithdrawal } from '../types/wallet'
 
 /** 建立真实脚本和业务API的受控边界，不复制页面资金逻辑。 */
 function harness(devMode = false) {
-  const requests: DeferredRequest[] = [], notices: unknown[] = []
+  const requests: DeferredRequest[] = [], notices: unknown[] = [], routes:string[]=[]
   const state = reactive({ ready: true, devMode, user: { id: 'admin-A', role: 'admin' } })
   let authToken = 'token-A', revision = 1
   const lifecycle = { show: () => {}, hide: () => {}, unload: () => {} }
-  const context = vm.createContext({ reactive, ref, watch, state, game: { primary_color: '#83e7b7' }, token: () => authToken, sessionRevision: () => revision, init: async () => {}, notify: (value: unknown) => notices.push(value), go: () => {}, onShow: (callback: () => void) => { lifecycle.show = callback }, onHide: (callback: () => void) => { lifecycle.hide = callback }, onUnload: (callback: () => void) => { lifecycle.unload = callback }, api(path: string, method = 'GET', body: Record<string, unknown> = {}) { return new Promise<unknown>((resolve, reject) => requests.push({ path, method, body, resolve, reject, taken: false })) } })
+  const context = vm.createContext({ reactive, ref, watch, state, game: { primary_color: '#83e7b7' }, token: () => authToken, sessionRevision: () => revision, init: async () => {}, notify: (value: unknown) => notices.push(value), go: (url:string) => routes.push(url), onShow: (callback: () => void) => { lifecycle.show = callback }, onHide: (callback: () => void) => { lifecycle.hide = callback }, onUnload: (callback: () => void) => { lifecycle.unload = callback }, api(path: string, method = 'GET', body: Record<string, unknown> = {}) { return new Promise<unknown>((resolve, reject) => requests.push({ path, method, body, resolve, reject, taken: false })) } })
   injectBusinessAPIs(context)
-  vm.runInContext(executable(pageScript('manage/wallet.vue')) + '\nglobalThis.page = { showPage, loadList, loadSettings, chooseStatus, prepare, confirmAction, settingsBody, saveSettings, form, withdrawals, pendingAction, rejectReason, devOutcome, loaded, transferReady }', context)
-  return { page: context.page, requests, notices, lifecycle,
+  vm.runInContext(executable(pageScript('manage/wallet.vue')) + '\nglobalThis.page = { showPage, loadList, loadSettings, chooseStatus, openAudit, settingsBody, saveSettings, form, withdrawals, loaded, transferReady }', context)
+  return { page: context.page, requests, notices, routes, lifecycle,
     /** 取得确实发出的请求，缺失与重复读取立即失败。 */
     take(path: string, method = 'GET') { const request = requests.find(item => !item.taken && item.path === path && item.method === method); assert.ok(request, `缺少请求 ${method} ${path}`); request.taken = true; return request },
     /** 在隐藏页面后更换管理员，认证版本与令牌同时变化。 */
@@ -65,35 +65,13 @@ test('更换管理员后旧列表与配置不能覆盖新会话', async () => {
   assert.equal(subject.page.form.transfer_scene_id, 'B')
 })
 
-test('仅未发起申请可拒绝，拒绝原因校验后使用真实具名接口', async () => {
-  const subject = await ready()
-  for (const status of ['processing', 'wait_user_confirm', 'success', 'failed', 'rejected'] as const) { subject.page.prepare(withdrawal('other', status), 'reject'); assert.equal(subject.page.pendingAction.value, null) }
-  subject.page.prepare(withdrawal(), 'reject'); subject.page.rejectReason.value = '短'; await subject.page.confirmAction()
-  assert.equal(subject.requests.filter(item => item.method === 'POST').length, 0)
-  subject.page.rejectReason.value = '核对后不符合规则'
-  const confirming = subject.page.confirmAction(), request = subject.take('/admin/wallet/withdrawals/request-A/reject', 'POST')
-  assert.equal(request.body.reason, '核对后不符合规则'); request.resolve(withdrawal('request-A', 'rejected')); await flush()
-  subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve([]); await confirming
-  assert.equal(subject.page.pendingAction.value, null)
-})
-
-test('真实转账确认防连点且不发送开发参数，迟到结果不更新新管理员', async () => {
-  const subject = await ready(); subject.page.prepare(withdrawal(), 'execute')
-  const first = subject.page.confirmAction(); await subject.page.confirmAction()
-  const request = subject.take('/admin/wallet/withdrawals/request-A/execute', 'POST')
-  assert.equal(subject.requests.filter(item => item.method === 'POST').length, 1)
-  assert.deepEqual(Object.keys(request.body), [])
-  subject.switchAdmin(); const newLoading = subject.page.showPage(); await resolveLoad(subject, 'B'); await newLoading
-  request.resolve(withdrawal('request-A', 'success')); await first
-  assert.equal(subject.page.withdrawals.value[0].id, 'request-B')
-  assert.equal(subject.notices.length, 0)
-})
-
-test('开发模拟结果仅在开发环境显式发送', async () => {
-  const subject = await ready(true); subject.page.prepare(withdrawal(), 'execute'); subject.page.devOutcome.value = 'failed'
-  const pending = subject.page.confirmAction(), request = subject.take('/admin/wallet/withdrawals/request-A/execute', 'POST')
-  assert.equal(request.body.dev_outcome, 'failed'); request.resolve(withdrawal('request-A', 'failed')); await flush()
-  subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve([]); await pending
+test('旧提现列表只能跳转来源审核，不再直接转账或拒绝', async () => {
+  const subject=await ready()
+  subject.page.openAudit('request/A')
+  assert.equal(subject.routes[0],'/pages/manage/finance/detail?id=request%2FA')
+  assert.equal(subject.requests.filter(item=>item.method==='POST').length,0)
+  subject.lifecycle.hide();subject.page.openAudit('hidden')
+  assert.equal(subject.routes.length,1)
 })
 
 test('公开配置严格限制字段、金额外参数和报备数量，不把秘密带入保存', async () => {

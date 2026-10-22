@@ -3,20 +3,23 @@
   <view class="main-shell" :style="[themeStyle, safeStyle]">
     <view v-if="mainNavigation.tab !== 'player' && mainNavigation.tab !== 'me'" class="main-status-space" />
     <view class="main-viewport">
-      <scroll-view v-show="mainNavigation.tab === 'player'" scroll-y :show-scrollbar="false" class="main-scroll" :scroll-top="positions.player" @scroll="rememberScroll('player', $event)"><PlayerView :active="mainNavigation.tab === 'player'" /></scroll-view>
-      <scroll-view v-show="mainNavigation.tab === 'worker'" scroll-y :show-scrollbar="false" class="main-scroll" :scroll-top="positions.worker" @scroll="rememberScroll('worker', $event)"><WorkerView :active="mainNavigation.tab === 'worker'" /></scroll-view>
-      <scroll-view v-show="mainNavigation.tab === 'orders'" scroll-y :show-scrollbar="false" class="main-scroll" :scroll-top="positions.orders" @scroll="rememberScroll('orders', $event)"><OrdersView :active="mainNavigation.tab === 'orders'" /></scroll-view>
-      <scroll-view v-show="mainNavigation.tab === 'me'" scroll-y :show-scrollbar="false" class="main-scroll" :scroll-top="positions.me" @scroll="rememberScroll('me', $event)"><MeView :active="mainNavigation.tab === 'me'" /></scroll-view>
+      <scroll-view v-show="mainNavigation.tab === 'player'" scroll-y :show-scrollbar="false" class="main-scroll" :scroll-top="positions.player" @scroll="rememberScroll('player', $event)"><PlayerView :active="mainNavigation.tab === 'player'" /><TechSupportFooter @open="supportOpen=true"/></scroll-view>
+      <scroll-view v-show="mainNavigation.tab === 'worker'" scroll-y :show-scrollbar="false" class="main-scroll" :scroll-top="positions.worker" @scroll="rememberScroll('worker', $event)"><WorkerView :active="mainNavigation.tab === 'worker'" /><TechSupportFooter @open="supportOpen=true"/></scroll-view>
+      <scroll-view v-show="mainNavigation.tab === 'orders'" scroll-y :show-scrollbar="false" class="main-scroll" :scroll-top="positions.orders" @scroll="rememberScroll('orders', $event)"><OrdersView :active="mainNavigation.tab === 'orders'" /><TechSupportFooter @open="supportOpen=true"/></scroll-view>
+      <scroll-view v-show="mainNavigation.tab === 'me'" scroll-y :show-scrollbar="false" class="main-scroll" :scroll-top="positions.me" @scroll="rememberScroll('me', $event)"><MeView :active="mainNavigation.tab === 'me'" /><TechSupportFooter @open="supportOpen=true"/></scroll-view>
     </view>
     <BottomNav :active="mainNavigation.tab" @change="selectMainTab" />
     <PhoneVerification />
+    <TechSupportDialog :open="supportOpen" @close="supportOpen=false"/>
   </view>
 </template>
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive,ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import BottomNav from '../../components/BottomNav.vue'
 import PhoneVerification from '../../components/PhoneVerification.vue'
+import TechSupportFooter from '../../components/TechSupportFooter.vue'
+import TechSupportDialog from '../../components/TechSupportDialog.vue'
 import PlayerView from './player/player.vue'
 import WorkerView from './worker/worker.vue'
 import OrdersView from './orders/orders.vue'
@@ -28,6 +31,7 @@ import { applyMainQuery, mainNavigation, selectMainTab, type MainTab } from '../
 const safe = readSafeArea()
 const safeStyle = { '--status-bar-height': safe.statusBarHeight + 'px', '--capsule-space': safe.capsuleSpace + 'px', '--capsule-right-inset': safe.capsuleRightInset + 'px' }
 const positions = reactive<Record<MainTab, number>>({ player: 0, worker: 0, orders: 0, me: 0 })
+const supportOpen=ref(false)
 /** 保存各标签独立滚动位置，切换与详情返回时继续原浏览位置。 */
 function rememberScroll(tab: MainTab, event: { detail: { scrollTop: number } }): void { if (mainNavigation.tab === tab) positions[tab] = event.detail.scrollTop }
 onLoad(query => applyMainQuery(query))

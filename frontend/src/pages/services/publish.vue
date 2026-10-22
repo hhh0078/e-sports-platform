@@ -4,7 +4,7 @@
     <view v-if="error" class="error-box mb">{{ error }}</view>
     <template>
 
-      <view class="form-section game-selector"><view class="field service-game-field"><text class="field-label">选择游戏</text><GameSelector :value="form.game_id" :disabled="busy" @change="changeGame"/></view></view><view class="preview"><view class="preview-toolbar"><text>封面预览</text><button v-if="covers.length>1" class="text-btn" @click="changeCover">换一张底图</button></view><ServiceCard :service="previewService" :interactive="false" cover-only/></view>
+      <view class="form-section game-selector"><view class="field service-game-field"><text class="field-label">选择游戏</text><GameSelector :value="form.game_id" :disabled="busy" @change="changeGame"/></view></view><view class="preview"><view class="preview-toolbar"><text>封面预览</text><button v-if="covers.length>1" class="text-btn" @click="changeCover">换一张底图</button></view><ServiceCard :service="previewService" :interactive="false"/></view>
       <view class="platform-deposit-note"><Icon name="wallet" :size="17"/><view class="platform-deposit-copy"><text class="platform-deposit-title">平台押金 · 自愿缴纳</text><text class="subtle-note platform-deposit-detail">缴纳后展示平台押金标识，不影响发布</text></view><button class="text-btn platform-wallet-entry" @click="go(state.user?'/pages/account/wallet':'/pages/account/login?next='+encodeURIComponent('/pages/account/wallet'))">我的钱包<Icon name="arrow" :size="11"/></button></view>
       <view class="form-section form-panel"><text class="section-title">封面文字</text><text class="hint block">默认左下依次排列，位置和样式可独立设置。</text>
 
@@ -31,13 +31,15 @@ import Icon from '../../components/Icon.vue'
 import { state, init, sessionRevision } from '../../lib/store'
 import { getService, createService, updateService } from '../../api/services.api'
 import { listClubs } from '../../api/clubs.api'
+import {getWallet} from '../../api/wallet.api'
+import {getClubDeposits} from '../../api/finance.api'
 import type { Club, CoverLabel, Service } from '../../types/models'
 import { token, errorMessage } from '../../api/client'
 import { go, notify, assetUrl } from '../../lib/format'
 import { newLabel, POSITIONS, gameCovers, randomGameCover, normalizeLabelText } from '../../lib/cover'
 const positionEditor = ref('')
-/** 编辑预览只接受本账号服务端返回的有效押金，新建草稿不虚构已缴状态。 */
-const serverProviderDeposit=ref(0)
+/** 发布预览的两类押金只来自本账号服务端记录，不属于可保存的草稿字段。 */
+const serverProviderDeposit=ref(0),serverProviderClubDeposit=ref(0)
 const serviceId = ref(''), clubs = ref<Club[]>([]), error = ref(''), busy = ref(false)
 const form = reactive({ game_id:'delta', title:'', description:'', category:'', price:'', unit:'局', cover_url:'', labels:[] as CoverLabel[], tagsText:'', club_id:'' })
 const selectedGame = computed(() => state.games.find(item => item.id===form.game_id) || state.games[0])
@@ -46,21 +48,27 @@ const categoryIndex = computed(() => Math.max(0,(selectedGame.value?.categories 
 const clubOptions = computed(() => [{id:'',name:'自由打手 · 无需挂靠'},...clubs.value.filter(club=>club.status==='active'&&['owner','active'].includes(club.membership_status||'')&&(club.game_ids||[]).includes(form.game_id))])
 const clubIndex = computed(() => Math.max(0,clubOptions.value.findIndex(item=>item.id===form.club_id)))
 /** 使用正式服务卡片展示草稿，确保文字和价格区与列表共用同一布局。 */
-const previewService = computed<Service>(() => ({ provider_deposit_cents:serverProviderDeposit.value, id:serviceId.value, game_id:form.game_id, provider_id:state.user?.id||'', provider_name:state.user?.nickname||'', provider_avatar:state.user?.avatar||'', club_id:form.club_id, club_name:clubs.value.find(club=>club.id===form.club_id)?.name||'', club_verified:clubs.value.some(club=>club.id===form.club_id&&club.verified), title:form.title||'你的服务标题', description:form.description, category:form.category||'服务类型', price_cents:Number.isFinite(Number(form.price))?Math.max(0,Math.round(Number(form.price)*100)):0, unit:form.unit, cover_url:form.cover_url, labels:form.labels, tags:form.tagsText.split(/[,，]/).map(item=>item.trim()).filter(Boolean).slice(0,4), status:'draft', rating:0, completed_count:0, created_at:'' }))
+const previewService = computed<Service>(() => ({ provider_deposit_cents:serverProviderDeposit.value,provider_club_deposit_cents:serverProviderClubDeposit.value, id:serviceId.value, game_id:form.game_id, provider_id:state.user?.id||'', provider_name:state.user?.nickname||'', provider_avatar:state.user?.avatar||'', club_id:form.club_id, club_name:clubs.value.find(club=>club.id===form.club_id)?.name||'', club_verified:clubs.value.some(club=>club.id===form.club_id&&club.verified), title:form.title||'你的服务标题', description:form.description, category:form.category||'服务类型', price_cents:Number.isFinite(Number(form.price))?Math.max(0,Math.round(Number(form.price)*100)):0, unit:form.unit, cover_url:form.cover_url, labels:form.labels, tags:form.tagsText.split(/[,，]/).map(item=>item.trim()).filter(Boolean).slice(0,4), status:'draft', rating:0, completed_count:0, created_at:'' }))
 const units = ['局','小时','次','任务'], textColors = ['#ffffff','#00e18a','#f4c36c','#ff6b6b','#101714'], backgroundColors = ['transparent','#07130f','#00e18a','#b98132','#a43c3c']
-let disposed=false,visible=true,loadVersion=0,loading=false,loadedSession: ReturnType<typeof currentSession> | null=null
+let disposed=false,visible=true,loadVersion=0,loading=false,platformDepositVersion=0,clubDepositVersion=0,loadedSession: ReturnType<typeof currentSession> | null=null
 /** 捕获服务发布所属账号，防止手机号授权后切换会话继续写入。 */
 function currentSession(){return{id:state.user?.id,token:token(),revision:sessionRevision()}}
 /** 仅接收本页存活期间、同一用户令牌和会话版本的结果。 */
 function sameSession(session: ReturnType<typeof currentSession>): boolean {return !disposed&&session.id===state.user?.id&&session.token===token()&&session.revision===sessionRevision()}
 /** 只允许当前可见页面、最新加载与原会话回填服务和私人挂靠。 */
 function currentLoad(version: number,session: ReturnType<typeof currentSession>){return visible&&version===loadVersion&&sameSession(session)}
+/** 刷新本人平台实缴押金，旧页面、旧账号和旧请求不能恢复徽标。 */
+async function refreshPlatformDeposit(){const version=++platformDepositVersion,session=currentSession();if(!visible||!session.id)return;try{const wallet=await getWallet();if(!visible||version!==platformDepositVersion||!sameSession(session))return;serverProviderDeposit.value=Number.isSafeInteger(wallet.deposit_cents)&&wallet.deposit_cents>0?wallet.deposit_cents:0}catch{if(visible&&version===platformDepositVersion&&sameSession(session))serverProviderDeposit.value=0}}
+/** 按草稿当前挂靠读取本人实缴成员押金，不能拿俱乐部平台押金或门槛金额显示。 */
+async function refreshClubDeposit(){const version=++clubDepositVersion,session=currentSession(),clubId=form.club_id;serverProviderClubDeposit.value=0;if(!visible||!session.id||!clubId)return;try{const result=await getClubDeposits(clubId);if(!visible||version!==clubDepositVersion||!sameSession(session)||form.club_id!==clubId)return;const amount=result.membership.amount_cents;serverProviderClubDeposit.value=Number.isSafeInteger(amount)&&amount>0?amount:0}catch{if(visible&&version===clubDepositVersion&&sameSession(session)&&form.club_id===clubId)serverProviderClubDeposit.value=0}}
+/** 切换挂靠立即移除旧俱乐部徽标，只有当前账号新响应可回填。 */
+watch(()=>form.club_id,()=>{clubDepositVersion++;serverProviderClubDeposit.value=0;if(loadedSession&&sameSession(loadedSession))void refreshClubDeposit()},{flush:'sync'})
 /** 加载游戏和可挂靠俱乐部，每个异步边界都检查身份与页面版本。 */
 async function load() {
   if(!visible||disposed)return
   const current=++loadVersion,entryToken=token(),revision=sessionRevision()
   let session: ReturnType<typeof currentSession> | undefined
-  loading=true;error.value='';serverProviderDeposit.value=0
+  loading=true;loadedSession=null;error.value='';serverProviderDeposit.value=0;serverProviderClubDeposit.value=0;platformDepositVersion++;clubDepositVersion++
   try {
     await init()
     if(!visible||disposed||current!==loadVersion||entryToken!==token()||revision!==sessionRevision())return
@@ -72,16 +80,17 @@ async function load() {
     clubs.value=affiliations
     if(form.club_id&&!clubOptions.value.some(club=>club.id===form.club_id))form.club_id=''
     loadedSession=session
+    void refreshPlatformDeposit();void refreshClubDeposit()
   }catch(e){if(visible&&!disposed&&current===loadVersion&&(session?sameSession(session):entryToken===token()&&revision===sessionRevision()))error.value=errorMessage(e)}
   finally{if(current===loadVersion)loading=false}
 }
 /** 会话轮换立即移除原身份挂靠；下次显示时按新身份读取，不改其他草稿。 */
-function invalidateSession(){loadVersion++;loading=false;loadedSession=null;clubs.value=[];form.club_id='';serverProviderDeposit.value=0}
+function invalidateSession(){loadVersion++;platformDepositVersion++;clubDepositVersion++;loading=false;loadedSession=null;clubs.value=[];form.club_id='';serverProviderDeposit.value=0;serverProviderClubDeposit.value=0}
 watch(sessionRevision,invalidateSession,{flush:'sync'})
 /** 同一身份已完成加载时保留草稿，取消的读取则在重显后重新开始。 */
-function showPage(){visible=true;if(!loading&&(!loadedSession||!sameSession(loadedSession)))load()}
+function showPage(){visible=true;if(!loading&&(!loadedSession||!sameSession(loadedSession)))load();else if(!loading){void refreshPlatformDeposit();void refreshClubDeposit()}}
 /** 隐藏后使旧服务、挂靠和错误响应失效，保留已完成的同账号草稿。 */
-function hidePage(){visible=false;loadVersion++;loading=false}
+function hidePage(){visible=false;loadVersion++;platformDepositVersion++;clubDepositVersion++;loading=false}
 /** 为新建服务或新选游戏随机设置底图，并使用当前游戏默认分类。 */
 function chooseDefaults() { form.cover_url=randomGameCover(selectedGame.value);form.category=selectedGame.value?.categories?.[0] || '' }
 /** 仅更换底图，保留所有文字、颜色、位置和服务信息。 */

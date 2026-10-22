@@ -39,12 +39,12 @@
 		<view class="worker-tabs"><button class="worker-tab" :class="{selected:tab==='services'}"
 				@click="changeTab('services')">我的服务<text class="worker-tab-count"
 					v-if="serviceCountLabel">{{ serviceCountLabel }}</text></button><button class="worker-tab"
-				:class="{selected:tab==='jobs'}" @click="changeTab('jobs')">接单大厅</button></view>
+				:class="{selected:tab==='jobs'}" @click="changeTab('jobs')">接单大厅</button><button class="worker-tab" :class="{selected:tab==='clubs'}" @click="changeTab('clubs')">加入俱乐部</button></view>
 		<GamePicker v-if="tab==='jobs'" :active="props.active" />
 		<view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn"
 				@click="load()">重新加载</button></view>
-		<view v-else-if="loading&&!(tab==='services'?mine.length:jobs.length)" class="loading-line">
-			正在同步{{ tab==='services'?'服务':'需求' }}…</view>
+		<view v-else-if="loading&&!currentListCount" class="loading-line">
+			正在同步{{ tab==='services'?'服务':tab==='jobs'?'需求':'俱乐部' }}…</view>
 		<template v-else-if="tab==='services'">
 			<view v-if="mine.length" class="card-grid">
 				<ServiceCard v-for="service in mine" :key="service.id" :service="service"><template #actions>
@@ -62,7 +62,7 @@
 					<Icon name="arrow" :size="13" />
 				</button></EmptyState>
 		</template>
-		<template v-else>
+		<template v-else-if="tab==='jobs'">
 			<view v-if="jobs.length" class="jobs-list">
 				<view v-for="job in jobs" :key="job.id" class="job-card">
 					<view class="job-heading"><text>{{ game.short_name }} ·
@@ -75,19 +75,15 @@
 				</view>
 			</view>
 			<EmptyState v-else title="暂时没有待接需求" detail="试试其他游戏，下一位队友也许正在路上。"
-				illustration="/static/illustrations/empty-orders.png" />
+				illustration="/static/illustrations/empty-orders-light.png" compact />
 		</template>
+        <template v-else-if="tab==='clubs'"><view v-if="publicClubs.length" class="join-club-list"><button v-for="club in publicClubs" :key="club.id" class="join-club-row" @click="go('/pages/community/clubs/detail?id='+club.id)"><view class="join-club-avatar"><image v-if="club.avatar_url" class="join-club-image" :src="assetUrl(club.avatar_url)" mode="aspectFill"/><Icon v-else name="club" :size="26"/></view><view class="join-club-copy"><text class="join-club-name">{{ club.name }}</text><view class="join-club-count"><Icon name="club" :size="12"/><text>{{ club.member_count||0 }}位成员</text></view><text class="join-club-description">{{ club.description||'一起认真游戏，寻找合拍的队友。' }}</text></view><Icon name="arrow" :size="15"/></button></view><EmptyState v-else title="暂时没有俱乐部" detail="新的团队正在集结，稍后再来看看。" icon="club"/></template>
 		<view v-if="moreError" class="hint danger">{{ moreError }}</view><button v-if="hasMore&&!loading&&!error"
 			class="load-more" :disabled="loadingMore"
 			@click="load(true)">{{ loadingMore?'正在加载…':moreError?'重试加载':'加载更多' }}
 			<Icon name="bottom" :size="12" />
 		</button>
-		<button class="club-banner" @click="go('/pages/community/clubs/index')">
-			<Icon name="club" :size="22" />
-			<view class="club-banner-copy"><text class="club-banner-title">发现俱乐部</text><text
-					class="club-banner-detail">找到合拍的团队，一起认真游戏</text></view>
-			<Icon name="arrow" :size="14" />
-		</button>
+
 	</view>
 </template>
 <script setup lang="ts">
@@ -107,8 +103,10 @@
 	import type { Club, PublicJob, Service, UserStats } from '../../../types/models'
 	const props = defineProps<{ active : boolean }>()
 	const pageSize = 20
-	const claimClubs = ref<Club[]>([]), tab = ref<'services' | 'jobs'>('services'), jobs = ref<PublicJob[]>([]), mine = ref<Service[]>([]), stats = ref<Partial<UserStats>>({})
+	const claimClubs = ref<Club[]>([]), tab = ref<'services' | 'jobs' | 'clubs'>('services'), jobs = ref<PublicJob[]>([]), mine = ref<Service[]>([]), stats = ref<Partial<UserStats>>({})
 	const error = ref(''), moreError = ref(''), loading = ref(false), loadingMore = ref(false), hasMore = ref(false), claiming = ref(''), pausing = ref('')
+	const publicClubs=ref<Club[]>([])
+    const currentListCount=computed(()=>tab.value==='services'?mine.value.length:tab.value==='jobs'?jobs.value.length:publicClubs.value.length)
 	const serviceCountLabel = computed(() => stats.value.services_count === undefined ? '' : String(stats.value.services_count))
 	let version = 0, visible = false
 	/** 捕获当前私有数据及原生操作所属的账号与会话。 */
@@ -132,6 +130,14 @@
 		const currentRequest = () => visible && current === version && sameSession(session) && tab.value === selectedTab
 		try {
 			await init(); if (current !== version || !visible) return; session = currentSession()
+            if(selectedTab==='clubs'){
+                const readClubs=(limit:number,offset:number)=>listClubs({limit,offset,status:'active'})
+                const listing=preserve&&publicClubs.value.length?await refreshMainList(publicClubs.value.length,pageSize,readClubs,currentRequest):{items:await readClubs(pageSize,adding?publicClubs.value.length:0),hasMore:false}
+                if(!listing||!currentRequest())return
+                publicClubs.value=adding?[...publicClubs.value,...listing.items]:listing.items
+                hasMore.value=listing.hasMore||listing.items.length===pageSize
+                return
+            }
 			if (!state.user) { mine.value = []; stats.value = { earnings_cents: 0 }; claimClubs.value = []; if (selectedTab !== 'jobs') { jobs.value = []; return } }
 			const gameId = state.gameId
 			/** 使用选定页签和游戏读取服务或需求，刷新时保留此前加载的全部页。 */
@@ -147,13 +153,13 @@
 			else { const requests = listing.items.filter((item) : item is PublicJob => 'requirements' in item); jobs.value = adding ? [...jobs.value, ...requests] : requests }
 			hasMore.value = listing.hasMore
 			if (!adding) { stats.value = summary || {}; claimClubs.value = (clubs || []).filter(club => club.status === 'active' && ['owner', 'active'].includes(club.membership_status || '')) }
-		} catch (err) { if (currentRequest()) { if (errorStatus(err) === 401) clearSession(); else if (adding || (preserve && (selectedTab === 'services' ? mine.value.length : jobs.value.length))) moreError.value = errorMessage(err); else error.value = errorMessage(err) } }
+		} catch (err) { if (currentRequest()) { if (errorStatus(err) === 401) clearSession(); else if (adding || (preserve && currentListCount.value)) moreError.value = errorMessage(err); else error.value = errorMessage(err) } }
 		finally { if (current === version) { loading.value = false; loadingMore.value = false } }
 	}
 	/** 读取全部挂靠分页，俱乐部多时仍可选择。 */
 	async function loadClaimClubs(current : number) : Promise<Club[]> { const clubs : Club[] = []; while (current === version) { const batch = await listClubs({ mine: 1, limit: 100, offset: clubs.length }); clubs.push(...batch); if (batch.length < 100) break } return clubs }
 	/** 切换服务管理或接单大厅。 */
-	function changeTab(value : 'services' | 'jobs') : void { if (tab.value !== value) { tab.value = value; void load(false, true) } }
+	function changeTab(value : 'services' | 'jobs' | 'clubs') : void { if (tab.value !== value) { tab.value = value; void load(false, true) } }
 	/** 领取需求前明确选择挂靠，取消选择不创建交易。 */
 	async function claim(job : PublicJob) : Promise<void> {
 		if (!state.user) return go('/pages/account/login?next=' + encodeURIComponent('/pages/main/index?tab=worker'))
@@ -182,7 +188,7 @@
 	watch(() => state.gameId, () => { jobs.value = []; if (visible && tab.value === 'jobs') void load() })
 	useMainVisibility(() => props.active, showPage, stopLoading)
 	/** 隐藏时也立即清理上一会话的服务、挂靠和统计，不等待新账号请求完成。 */
-	watch([() => state.user?.id, sessionRevision], () => { version++; mine.value = []; jobs.value = []; stats.value = {}; claimClubs.value = []; hasMore.value = false; error.value = ''; moreError.value = ''; claiming.value = ''; pausing.value = ''; loading.value = false; loadingMore.value = false; if (visible) void load() }, { flush: 'sync' })
+	watch([() => state.user?.id, sessionRevision], () => { version++; mine.value = []; jobs.value = []; publicClubs.value=[]; stats.value = {}; claimClubs.value = []; hasMore.value = false; error.value = ''; moreError.value = ''; claiming.value = ''; pausing.value = ''; loading.value = false; loadingMore.value = false; if (visible) void load() }, { flush: 'sync' })
 </script>
 <style scoped>
 	.worker-content {
@@ -605,4 +611,5 @@
 			font-size: 18px
 		}
 	}
+.join-club-list{min-width:0}.join-club-row{display:flex;align-items:center;gap:14px;min-width:0;width:100%;padding:18px 0;border-radius:0;border-bottom:1px solid var(--line-subtle);background:transparent;text-align:left;color:var(--muted)}.join-club-avatar{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:56px;height:56px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--accent);overflow:hidden}.join-club-image{display:block;width:100%;height:100%}.join-club-copy{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}.join-club-name{font-size:16px;line-height:23px;font-weight:650;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.join-club-count{display:flex;align-items:center;gap:4px;font-size:11px;line-height:18px;color:var(--muted)}.join-club-description{display:block;font-size:12px;line-height:20px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>

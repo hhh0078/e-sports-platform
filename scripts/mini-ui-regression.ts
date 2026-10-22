@@ -48,7 +48,7 @@ async function child(scope:Page|Element,selectors:string[]):Promise<Element|null
 async function pageAt(route:string):Promise<Page> {return until(async()=>{const page=await instance().currentPage();return page?.path===route?page:null},route)}
 
 /** 官方SDK在部分权限页等待navigateTo回调会超时；直接发起同一原生API，再按真实路由和元素断言。 */
-async function openRoute(route:string):Promise<void> {await instance().evaluate((url:string)=>{wx.navigateTo({url});return true},route);await pageAt(route.split('?')[0].replace(/^\//,''))}
+async function openRoute(route:string):Promise<void> {await instance().evaluate((url:string)=>{setTimeout(()=>wx.navigateTo({url}),30);return true},route);await pageAt(route.split('?')[0].replace(/^\//,''))}
 
 /** 重启路由前先结束自动化RPC，避免逻辑层重启使SDK原回调悬挂；后续仍验证真实页面。 */
 async function restartRoute(route:string):Promise<void> {const previous=await instance().currentPage();await instance().evaluate((url:string)=>{setTimeout(()=>wx.reLaunch({url}),30);return true},route);await until(async()=>{const page=await instance().currentPage();return page?.path===route.split('?')[0].replace(/^\//,'')&&page!==previous?page:null},'新路由 '+route.split('?')[0])}
@@ -110,7 +110,7 @@ async function login(name:string):Promise<Page> {
   const account=await until(async()=>{const elements:Element[]=await page.$$('button');for(const element of elements)if((await element.text()).includes(name))return element;return null},'体验身份 '+name)
   await account.tap()
   console.log('CHECK 完善资料弹层 '+name)
-  await(await button('先这样，稍后完善')).tap()
+  await(await until(()=>page.$('.finish-later'),'资料弹层可跳过')).tap()
   const main=await pageAt('pages/main/index')
   checks.push('登录：'+name)
   return main
@@ -121,6 +121,16 @@ async function visit(route:string,name:string,main:Page):Promise<void> {
   console.log('CHECK 页面 '+route)
   await openRoute(route)
   const page=await pageAt(route.split('?')[0].replace(/^\//,''))
+  if(name.includes('denied-player')){
+    await until(async()=>{const access=await page.$('.access-note');if(access&&(await access.text()).includes('仅平台管理员'))return access;const shell=await child(page,['app-shell','components\\/AppShell']);const empty=await child(page,['empty-state','components\\/EmptyState'])||(shell?await child(shell,['empty-state','components\\/EmptyState']):null);const title=await page.$('.empty-title')||(empty?await empty.$('.empty-title'):null);return title&&(await title.text()).includes('仅平台管理员')?title:null},'普通玩家被平台管理权限拒绝')
+    for(const selector of ['.finance-input','.audit-card','.source-row','.support-input','.payment-panel'])assert.equal(await page.$(selector),null,'普通玩家读到管理内容：'+selector)
+    checks.push('平台管理权限拒绝：'+route.split('?')[0])
+  }
+  if(name==='clubs-console-denied-worker'||name==='clubs-funds-denied-worker'){
+    await until(async()=>{for(const item of await page.$$('.subtle-note') as Element[])if((await item.text()).includes('仅俱乐部负责人'))return item;return null},'非负责人被俱乐部管理权限拒绝')
+    assert.equal(await page.$('.club-console-link'),null);assert.equal(await page.$('.funds-primary'),null)
+    checks.push('俱乐部负责人权限拒绝：'+route.split('?')[0])
+  }
   await screenshot(name)
   if(name==='manage-settings-admin'){
     await(await button('微信支付')).tap()
@@ -134,29 +144,56 @@ async function visit(route:string,name:string,main:Page):Promise<void> {
   checks.push('页面与返回：'+route.split('?')[0]); console.log('PASS 页面与返回 '+route.split('?')[0])
 }
 
-/** 检查控制台十二个独立入口与下级游戏编辑器，验证层级返回且不保存配置。 */
+/** 检查十三个管理入口及两个资金入口，逐项打开真实路由并验证返回，不提交配置。 */
 async function adminControls(main:Page):Promise<void> {
   await openRoute('/pages/manage/index')
   const consolePage=await pageAt('pages/manage/index')
-  const cards:Element[]=await until(async()=>{const result=await consolePage.$$('.module-card');return result.length===12?result:null},'控制台十二个入口')
+  const expected=[
+    {label:'用户管理',route:'/pages/manage/users',selector:'.manage-search'},
+    {label:'服务审核',route:'/pages/manage/services',selector:'.manage-search'},
+    {label:'俱乐部管理',route:'/pages/manage/clubs',selector:'.manage-search'},
+    {label:'订单与售后',route:'/pages/manage/orders',selector:'.manage-search'},
+    {label:'游戏配置',route:'/pages/manage/games',selector:'.game-summary'},
+    {label:'商家转账配置',route:'/pages/manage/wallet',selector:'.payment-link'},
+    {label:'微信支付',route:'/pages/manage/settings?tab=payment',selector:'.payment-status'},
+    {label:'协议管理',route:'/pages/manage/settings?tab=agreements',selector:'.agreement-content'},
+    {label:'平台设置',route:'/pages/manage/platform',selector:'input[maxlength="24"]'},
+    {label:'操作审计',route:'/pages/manage/audit',selector:'.manage-search'},
+    {label:'AI 设置',route:'/pages/manage/ai',selector:'.ai-base-url'},
+    {label:'发送平台消息',route:'/pages/manage/messages',selector:'.notice-title'},
+    {label:'客服设置',route:'/pages/manage/support',selector:'.support-input'},
+    {label:'资金审核',route:'/pages/manage/finance/index',selector:'.audit-filters'},
+    {label:'交易规则',route:'/pages/manage/finance/settings',selector:'.finance-input'},
+  ]
+  const cards:Element[]=await until(async()=>{const modules:Element[]=await consolePage.$$('.module-card'),finance:Element[]=await consolePage.$$('.finance-module-card');return modules.length===13&&finance.length===2?[...modules,...finance]:null},'控制台十三个管理入口和两个资金入口')
+  assert.equal(cards.length,15)
   await until(async()=>!(await consolePage.$('.chart-loading')),'真实交易曲线读取')
   assert.equal(await consolePage.$('.admin-tabs'),null,'控制台仍残留旧大全页签')
-  for(const card of cards){const box=await rectangle(card);assert.ok(box.left>=15&&box.left+box.width<=viewport.width-15,'控制台入口卡片横向溢出')}
+  const labels:string[]=[]
+  for(const card of cards){const box=await rectangle(card);assert.ok(box.left>=15&&box.left+box.width<=viewport.width-15,'控制台入口卡片横向溢出');const name=await card.$('.module-label')||await card.$('.finance-module-title');assert.ok(name,'控制台卡片缺少真实标题');labels.push((await name.text()).trim())}
+  assert.deepEqual(labels.slice().sort(),expected.map(item=>item.label).sort(),'控制台入口有遗漏、重复或非预期替换')
   await screenshot('manage-console')
-  const platform=await button('平台设置');await instance().pageScrollTo(Math.max(0,(await rectangle(platform)).top-120));await platform.tap()
-  const platformPage=await pageAt('pages/manage/platform');await until(()=>platformPage.$('input[maxlength="24"]'),'平台设置字段')
-  await returnToMain(platformPage,consolePage,'pages/manage/index')
-  await until(async()=>!(await consolePage.$('.chart-loading')),'控制台返回数据读取')
-  const games=await button('游戏配置');await instance().pageScrollTo(Math.max(0,(await rectangle(games)).top-120));await games.tap()
-  const page=await pageAt('pages/manage/games');await until(()=>page.$('.game-summary'),'独立游戏管理列表')
-  await(await button('编辑')).tap()
-  const modal=await until(async()=>{const direct=await page.$('.game-sheet');if(direct)return direct;const popup=await child(page,['uni-popup','node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-popup\\/uni-popup']);return popup?popupNode(popup,'.game-sheet'):null},'游戏配置弹层') as ScrollViewElement
-  const area=await rectangle(modal);assert.ok(Number(await modal.scrollWidth())<=area.width+1,'游戏配置弹层横向溢出')
-  const tools=await modal.$('.upload-actions');assert.ok(tools);const toolsBox=await rectangle(tools)
-  assert.ok(toolsBox.left+toolsBox.width<=viewport.width+1,'游戏图标上传工具超出窄屏')
-  await screenshot('manage-game-modal');await(await button('关闭')).tap();await until(async()=>!(await page.$('.game-sheet')),'关闭游戏编辑器')
-  await returnToMain(page,consolePage,'pages/manage/index');await returnToMain(consolePage,main)
-  checks.push('控制台十二个卡片与真实曲线可见，独立平台/游戏页及两级返回可用，编辑器窄屏无溢出')
+  for(const entry of expected){
+    await instance().pageScrollTo(0)
+    const control=await until(async()=>{const all:Element[]=[...await consolePage.$$('.module-card'),...await consolePage.$$('.finance-module-card')];for(const item of all){const label=await item.$('.module-label')||await item.$('.finance-module-title');if(label&&(await label.text()).trim()===entry.label)return item}return null},'控制台入口 '+entry.label)
+    await instance().pageScrollTo(Math.max(0,(await rectangle(control)).top-120));await control.tap()
+    const page=await pageAt(entry.route.split('?')[0].slice(1))
+    await until(async()=>{const direct=await page.$(entry.selector);if(direct)return direct;const shell=await child(page,['app-shell','components\\/AppShell']);if(!shell)return null;const nested=await shell.$(entry.selector);if(nested)return nested;const list=await child(page,['manage-list','components\\/ManageList'])||await child(shell,['manage-list','components\\/ManageList']);return list?list.$(entry.selector):null},entry.label+'授权内容已渲染')
+    if(entry.route.includes('?tab=')){const query:unknown=page.query;assert.ok(typeof query==='object'&&query!==null&&'tab'in query);assert.equal(String(query.tab),entry.route.split('?tab=')[1],'配置页入口打开了错误页签')}
+    if(entry.label==='微信支付'){const secrets:Element[]=await page.$$('.key-content');assert.equal(secrets.length,2);for(const secret of secrets)assert.equal(await secret.value(),'','支付秘密不能回显')}
+    if(entry.label==='游戏配置'){
+      await(await button('编辑')).tap()
+      const modal=await until(async()=>{const direct=await page.$('.game-sheet');if(direct)return direct;const popup=await child(page,['uni-popup','node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-popup\\/uni-popup']);return popup?popupNode(popup,'.game-sheet'):null},'游戏配置弹层') as ScrollViewElement
+      const area=await rectangle(modal);assert.ok(Number(await modal.scrollWidth())<=area.width+1,'游戏配置弹层横向溢出')
+      const tools=await modal.$('.upload-actions');assert.ok(tools);const toolsBox=await rectangle(tools);assert.ok(toolsBox.left+toolsBox.width<=viewport.width+1,'游戏图标上传工具超出窄屏')
+      await screenshot('manage-game-modal');await(await button('关闭')).tap();await until(async()=>!(await page.$('.game-sheet')),'关闭游戏编辑器')
+    }
+    await screenshot('manage-module-'+entry.route.split('/').slice(-1)[0].replace('?tab=','-'))
+    await returnToMain(page,consolePage,'pages/manage/index')
+    checks.push('控制台入口路由及两级返回：'+entry.label+' → '+entry.route)
+  }
+  await returnToMain(consolePage,main)
+  checks.push('控制台15个独立入口逐项可访问，真实曲线与游戏编辑器窄屏无溢出，未保存配置')
 }
 
 /** 在专用本地账号暂存长昵称/简介，核验真实主页后立即恢复原资料。 */
@@ -172,11 +209,11 @@ async function longProfile(main:Page):Promise<void> {
     await returnToMain(page,main);const {items}=await bottomNavigation(main);await items[3].tap()
     const me=await child(main,['me-view','pages\\/main\\/me\\/me']);assert.ok(me)
     const title=await until(async()=>{const value=await me.$('.profile-name');return value&&(await value.text())===name?value:null},'主页长昵称已保存')
-    const biography=await me.$('.profile-bio'),identity=await me.$('.identity-row'),stats=await me.$('.stats-row');assert.ok(biography&&identity&&stats)
-    const titleBox=await rectangle(title),bioBox=await rectangle(biography),identityBox=await rectangle(identity),statsBox=await rectangle(stats)
+    const biography=await me.$('.profile-bio'),identity=await me.$('.identity-row'),orders=await me.$('.orders-section'),wallet=await me.$('.me-wallet');assert.ok(biography&&identity&&orders&&wallet);assert.equal(await me.$('.stats-row'),null,'重复顶部统计未删除');assert.equal(await me.$('.provider-row'),null,'接单身份说明未删除')
+    const titleBox=await rectangle(title),bioBox=await rectangle(biography),identityBox=await rectangle(identity),ordersBox=await rectangle(orders),walletBox=await rectangle(wallet)
     assert.ok(titleBox.left+titleBox.width<=viewport.width-16+1,'长昵称越出屏幕')
-    assert.ok(bioBox.height<=37&&statsBox.top>=identityBox.top+identityBox.height+12,'长简介挤压统计或超过两行')
-    await screenshot('me-long-content');checks.push('真实保存长昵称/长简介：昵称省略、简介最多两行、统计不重叠；随后恢复原资料')
+    assert.ok(bioBox.height<=37&&ordersBox.top>=identityBox.top+identityBox.height,'长简介挤压订单入口或超过两行');assert.ok(walletBox.top>=ordersBox.top+ordersBox.height-1,'独立钱包与订单入口重叠')
+    await screenshot('me-long-content');checks.push('真实保存长昵称/长简介：昵称省略、简介最多两行、订单与独立钱包不重叠；随后恢复原资料')
   }finally{
     if((await instance().currentPage())?.path!=='pages/account/profile')await openRoute('/pages/account/profile')
     page=await pageAt('pages/account/profile');nickname=await until(()=>page.$('input[maxlength="24"]'),'恢复昵称字段') as InputElement;intro=await page.$('.bio-input') as InputElement|null;assert.ok(intro)
@@ -197,7 +234,7 @@ async function workerLayout(main:Page):Promise<void> {
   const controls:Element[]=await worker.$$('.service-controls')
   assert.ok(controls.length,'服务管理缺少统一操作行')
   for(const row of controls.slice(0,4)){const buttons:Element[]=await row.$$('.service-control');const status=await row.$('.service-status');if(buttons.length===2){const a=await rectangle(buttons[0]),b=await rectangle(buttons[1]);assert.ok(Math.abs(a.top-b.top)<=1,'卡片两个操作被插槽包装挤成两行')}else if(buttons.length&&status){const a=await rectangle(buttons[0]),b=await rectangle(status);assert.ok(Math.abs((a.top+a.height/2)-(b.top+b.height/2))<=2,'卡片编辑与状态未在同一行居中')}}
-  await screenshot('worker-authenticated');checks.push('已登录打手工作台展示真实服务、收入统计及原创插画')
+  await screenshot('worker-authenticated');checks.push('已登录打手工作台展示真实服务和同排操作，保留用户精简布局')
   await maximumPriceLayout(worker)
 }
 
@@ -232,7 +269,7 @@ async function mainTabs(main:Page):Promise<void> {
     await until(async()=>String(await items[index].attribute('class')).includes('selected'),'主导航选中 '+names[index])
     if(round===0){
       const scrolls:ScrollViewElement[]=await main.$$('.main-scroll');assert.ok(Number(await scrolls[index].scrollWidth())<=viewport.width+1,'主视图横向溢出：'+names[index])
-      if(index===0){const player=await child(main,['player-view','pages\\/main\\/player\\/player']);assert.ok(player);const card=await until(()=>child(player,['service-card','components\\/ServiceCard']),'真实服务卡片');const art=await child(card,['cover-art','components\\/CoverArt']),body=await card.$('.service-body');assert.ok(art&&body);const cover=await rectangle(art),info=await rectangle(body);assert.ok(info.top>=cover.top+cover.height-1,'卡片价格侵入图片');const tags=await card.$('.service-tags'),title=await card.$('.service-title');assert.ok(tags&&title);const tagBox=await rectangle(tags),titleBox=await rectangle(title);assert.ok(tagBox.top>=cover.top&&titleBox.top>=tagBox.top+tagBox.height-1&&titleBox.top+titleBox.height<=cover.top+cover.height+1,'标签与标题未依次悬浮在图片底部');checks.push('服务卡片标签上标题下悬浮图内，价格在图下正常排列')}
+      if(index===0){const player=await child(main,['player-view','pages\\/main\\/player\\/player']);assert.ok(player);const card=await until(()=>child(player,['service-card','components\\/ServiceCard']),'真实服务卡片');const art=await child(card,['cover-art','components\\/CoverArt']),body=await card.$('.service-body');assert.ok(art&&body);const cover=await rectangle(art),info=await rectangle(body);assert.ok(info.top>=cover.top+cover.height-1,'卡片价格侵入图片');const tags=await card.$('.service-tags'),title=await card.$('.service-title');assert.ok(tags&&title);const tagBox=await rectangle(tags),titleBox=await rectangle(title);assert.ok(titleBox.top>=cover.top&&titleBox.top+titleBox.height<=tagBox.top+1&&tagBox.top+tagBox.height<=cover.top+cover.height+1,'标题与标签未依次悬浮在图片底部');checks.push('服务卡片标题上标签下悬浮图内，价格在图下紧凑排列')}
       await screenshot('guest-'+names[index])
     }
   }
@@ -330,7 +367,7 @@ async function selectedCatalogGames(selector:Element):Promise<string[]>{
 async function formGamePicker(main:Page,route:string,kind:'service'|'request'|'club-create'|'club-edit'):Promise<void>{
   await openRoute(route);const page=await pageAt(route.split('?')[0].slice(1)),multiple=kind.startsWith('club'),cache=String(await instance().callWxMethod('getStorageSync','jijie_game'))
   let clubName:InputElement|null=null
-  if(kind==='club-create'){await(await button('创建')).tap();clubName=await until(()=>page.$('.create-form input'),'俱乐部创建草稿') as InputElement;await clubName.input('本地未提交的俱乐部草稿')}
+  if(kind==='club-create'){await until(async()=>!await page.$('.loading-line')&&await page.$('.create-entry'),'俱乐部目录读取完成');const create=await page.$('.create-entry');assert.ok(create);await create.tap();clubName=await until(()=>page.$('.create-form input'),'俱乐部创建草稿') as InputElement;await clubName.input('本地未提交的俱乐部草稿')}
   const selector=await until(()=>child(page,['game-selector','components\\/GameSelector']),'共享游戏选择器 '+kind)
   const trigger=kind==='club-create'?await page.$('.club-games-trigger'):await selector.$('.selector-trigger');assert.ok(trigger)
   const original=await trigger.text();await trigger.tap();await until(()=>visibleGameSheet(selector),'表单游戏网格真实可见 '+kind)
@@ -377,7 +414,7 @@ async function coverDraft(main: Page): Promise<void> {
   for(let left=0;left<boxes.length;left++)for(let right=left+1;right<boxes.length;right++){const a=boxes[left],b=boxes[right];assert.ok(a.left+a.width<=b.left+1||b.left+b.width<=a.left+1||a.top+a.height<=b.top+1||b.top+b.height<=a.top+1,'独立文案互相重叠')}
   const system=await card.$('.service-overlay');assert.ok(system);const reserved=await rectangle(system)
   assert.ok(boxes.every(box=>box.top+box.height<=reserved.top+1),'用户文案侵入系统标签标题预留区')
-  assert.equal(await card.$('.service-body'),null,'编辑器应聚焦封面，避免价格占位挤出文案控件')
+  const body=await card.$('.service-body'),price=await card.$('.service-price');assert.ok(body&&price,'编辑预览必须包含完整卡片价格区');const priceBox=await rectangle(price);assert.ok(priceBox.top>=cover.top+cover.height-1,'预览价格侵入封面');for(const label of labels){assert.ok(parseFloat(await label.style('font-size'))>=9.9,'预览文案小于10px');assert.notEqual(await label.style('visibility'),'hidden','预览文案被隐藏')}
   const source=await art.$('.cover-image');assert.ok(source)
   const before=await source.property('src')
   await(await button('换一张底图')).tap()
@@ -385,13 +422,14 @@ async function coverDraft(main: Page): Promise<void> {
   assert.equal((await art.$$('.cover-label')).length,6,'换底图丢失独立文字')
   await screenshot('services-six-labels')
   await returnToMain(page,main)
-  checks.push('六条最大字号文案真实布局不越界、不重叠；编辑器聚焦封面，换图保留独立图层')
+  checks.push('六条最大字号文案真实布局不越界、不重叠；完整预览含价格，换图保留独立图层')
 }
 
 /** 俱乐部申请中的官方手机号弹层必须可见、位于上层，关闭后仍保留申请草稿。 */
 async function phoneOverlay(main: Page, clubId: string): Promise<void> {
   await openRoute('/pages/community/clubs/detail?id='+encodeURIComponent(clubId))
   const page=await pageAt('pages/community/clubs/detail')
+  await until(async()=>!await page.$('.loading-line')&&await page.$('.club-title'),'俱乐部资料渲染完成')
   await(await button('申请加入')).tap()
   const draft=await until(()=>page.$('.club-modal textarea'),'加入俱乐部申请草稿渲染') as InputElement
   const content='本地界面验收草稿：关闭手机号层后保留'
@@ -420,7 +458,7 @@ async function phoneOverlay(main: Page, clubId: string): Promise<void> {
 }
 
 /** 保存当前执行范围的实际断言，不把布局专项报告写成全业务通过。 */
-function report(scope: 'layout' | 'full' | 'admin' | 'long' | 'selectors'): void {
+function report(scope: 'layout' | 'full' | 'admin' | 'long' | 'selectors' | 'club-phone' | 'club-owner'): void {
   assert.deepEqual(exceptions,[],'小程序存在运行异常')
   const result={passed:true,scope,time:new Date().toISOString(),api:apiBase,viewport,checks,runtime_exceptions:exceptions,remaining:['真实微信授权与商户资金不由本地模拟回归替代','订单聊天与售后由独立交易回归脚本覆盖']}
   fs.writeFileSync(path.join(outputDir,'report.json'),JSON.stringify(result,null,2)+'\n')
@@ -447,6 +485,8 @@ async function run():Promise<void> {
   let main=await pageAt('pages/main/index')
   await new Promise<void>(resolve=>setTimeout(resolve,900))
   if(process.env.UI_TEST_SCOPE==='admin'){main=await login('集结管理员');await adminControls(main);await visit('/pages/manage/settings','manage-settings-admin',main);report('admin');return}
+  if(process.env.UI_TEST_SCOPE==='club-phone'){main=await login('自由玩家');await phoneOverlay(main,'shanhai');report('club-phone');return}
+  if(process.env.UI_TEST_SCOPE==='club-owner'){main=await login('山海主理人');await formGamePicker(main,'/pages/community/clubs/index','club-create');await formGamePicker(main,'/pages/community/clubs/edit?id=shanhai','club-edit');for(const[route,name]of [['/pages/community/clubs/detail?id=shanhai','clubs-detail-owner'],['/pages/community/clubs/edit?id=shanhai','clubs-edit-owner'],['/pages/community/clubs/console?id=shanhai','clubs-console-owner'],['/pages/community/clubs/funds?id=shanhai','clubs-funds-owner']])await visit(route,name,main);report('club-owner');return}
   if(process.env.UI_TEST_SCOPE==='long'){main=await login('云间旅人');await longProfile(main);main=await login('北辰');await workerLayout(main);const {items}=await bottomNavigation(main);await items[0].tap();await gameCatalog(main);report('long');return}
   await gameCatalog(main)
   if(process.env.UI_TEST_SCOPE==='selectors'){main=await login('云间旅人');await formGamePicker(main,'/pages/requests/publish','request');main=await login('北辰');await formGamePicker(main,'/pages/services/publish','service');main=await login('山海主理人');await formGamePicker(main,'/pages/community/clubs/index','club-create');await formGamePicker(main,'/pages/community/clubs/edit?id=shanhai','club-edit');report('selectors');return}
@@ -467,12 +507,16 @@ async function run():Promise<void> {
   await visit('/pages/requests/publish','requests-publish',main)
   await visit('/pages/manage/index','manage-denied-player',main)
   await visit('/pages/manage/settings','settings-denied-player',main)
+  for(const[route,name]of [['/pages/manage/finance/index','finance-index-denied-player'],['/pages/manage/finance/settings','finance-settings-denied-player'],['/pages/manage/finance/detail?id=missing-ui-regression','finance-detail-denied-player'],['/pages/manage/support','support-denied-player'],['/pages/manage/wallet','wallet-denied-player']])await visit(route,name,main)
   main=await login('北辰')
   await workerLayout(main)
   await formGamePicker(main,'/pages/services/publish','service')
   await coverDraft(main)
   await visit('/pages/services/publish','services-publish',main)
   await visit('/pages/community/clubs/edit?id='+club.id,'clubs-edit-denied-worker',main)
+  await visit('/pages/community/clubs/console?id=shanhai','clubs-console-denied-worker',main)
+  await visit('/pages/community/clubs/funds?id=shanhai','clubs-funds-denied-worker',main)
+  await visit('/pages/community/clubs/deposit?id=shanhai','clubs-member-deposit-worker',main)
   main=await login('自由玩家')
   await phoneOverlay(main,'shanhai')
   main=await login('山海主理人')
@@ -480,6 +524,8 @@ async function run():Promise<void> {
   await formGamePicker(main,'/pages/community/clubs/edit?id=shanhai','club-edit')
   await visit('/pages/community/clubs/detail?id=shanhai','clubs-detail-owner',main)
   await visit('/pages/community/clubs/edit?id=shanhai','clubs-edit-owner',main)
+  await visit('/pages/community/clubs/console?id=shanhai','clubs-console-owner',main)
+  await visit('/pages/community/clubs/funds?id=shanhai','clubs-funds-owner',main)
   main=await login('集结管理员')
   await adminControls(main)
   await visit('/pages/manage/index','manage-index-admin',main)

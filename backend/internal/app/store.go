@@ -20,7 +20,7 @@ type querier interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
 }
 
-var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts"}
+var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits"}
 
 // now 返回统一的 UTC 时间文本。
 func now() string { return time.Now().UTC().Format(time.RFC3339Nano) }
@@ -103,7 +103,7 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 	names := map[string]string{"users": "平台用户与权限", "games": "游戏主题与服务分类", "services": "服务发布与审核", "clubs": "俱乐部组织与认证", "members": "俱乐部挂靠申请与成员", "orders": "交易订单与状态", "messages": "订单沟通与文字证据", "reviews": "订单完成评价", "audit": "管理员操作审计", "settings": "平台运营配置", "evidence": "订单原始图片证据与完整性摘要", "identities": "微信私密身份映射", "inbox": "用户未读系统通知", "inbox_receipts": "同日审核拒绝通知防重复摘要"}
-	for table, label := range map[string]string{"wallets": "分区钱包余额与冻结资金", "wallet_entries": "不可变资金变动账单", "wallet_escrows": "逐订单实付托管及原路退款分账", "wallet_topups": "余额与押金充值付款记录", "wallet_withdrawals": "服务收入提现冻结与官方转账结果", "wallet_deposit_refunds": "平台押金多笔原路退还记录", "wallet_requests": "同账号幂等号资金用途与载荷绑定记录"} {
+	for table, label := range map[string]string{"fund_audits": "不可变提现来源审核快照", "fund_receipts": "已核验外部收款根凭证", "fund_lots": "逐笔资金来源批次及剩余容量", "fund_movements": "不可变资金分配与溯源凭证", "wallets": "分区钱包余额与冻结资金", "wallet_entries": "不可变资金变动账单", "wallet_escrows": "逐订单实付托管及原路退款分账", "wallet_topups": "余额与押金充值付款记录", "wallet_withdrawals": "服务收入提现冻结与官方转账结果", "wallet_deposit_refunds": "平台押金多笔原路退还记录", "wallet_requests": "同账号幂等号资金用途与载荷绑定记录"} {
 		names[table] = label
 	}
 	for _, table := range tables {
@@ -126,6 +126,9 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 	if err = migrateWallet(ctx, tx); err != nil {
+		return err
+	}
+	if err = migrateSupportContactComments(ctx, tx); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)

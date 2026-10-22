@@ -1,23 +1,17 @@
-# 个人资料 · 静态接单身份与钱包
+# account/profile · 本轮设计
 
-文件作用：对应 `frontend/src/pages/account/profile.vue` 的先行设计及用户最新局部要求；2026-10-22生成/编辑。已有页面上一版归档在 `design/history/20261022-before-game-refinements/pages/`，钱包为本次新增，无旧版。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 仅把接单身份改为静态只读行：标题只显示一次“接单身份”，右侧“默认开启”，不再有NativeSwitch、下拉箭头或“开启后…”文案，能力默认具备且无法关闭。
-- 手机号行之后增加“我的钱包”轻入口，使用同款官方图标/细分隔/箭头，跳转钱包，无假余额和本页充值操作。
-- 保留用户头像1:1裁剪压缩、昵称2～24字、简介300字、手机号验证、个人16:9封面、保存/取消、公开主页/退出登录；输入仍透明底线、textarea低对比8px，不恢复大外框。
-- 访客资料为空且不可编辑，接单说明可为“登录后即可接单”；默认身份不绕过冻结、手机号与发布简介等原校验。
-- 普通统一返回，无主底栏；内容自然滚动，不能为在首屏塞完新增钱包入口而压扁16:9封面。图中局部图片/文字示意以真实比例和本说明为准。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-## 生成与验收边界
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-390×844，使用内置ImageGen。既有页面仅局部编辑，钱包新建；输出仅机械等比缩放。生成示例文字/数字/局部比例以真实业务、本说明和系统安全区为准，不能作为真实资金凭证。实际SDK与交易验收由root执行，本图不代表支付/真机通过。
+## 页面布局与状态
 
-## 完整生成或编辑提示词
+个人资料保持开放式表单。头像1:1，微信端chooseAvatar与相册入口并列；微信临时文件仍通过统一官方裁剪压缩、最大文件限制和后端审核。删除冗余接单身份说明。昵称type=nickname、简介、手机号、封面、保存/取消/退出保持原会话保护。
 
-Use case: ui-mockup. PRECISE LOCAL EDIT of attachedexistingChinese390x844design. Preserveallunrelatedapprovedlayout, naturaldarkgreen#0a1110,mint#8de8b6,thinsectiondividers,16pxinsets,officialcenteredicons,existingfieldsandnativeWeChatsafearea. DoNOTinventfeatures,newart,headlines,English,bluepurplegradients,orreplacegameartsource. Onlyedittheexplicitprovideridentitypoint. Exact390:844flatportrait,no deviceframe,nooutside margins. TextisindependentUI, notbakedintoimages. Keepordinary个人资料sharedbackheaderandallactualprofilefields/avatar/phoneverification/cover/save/cancel/publichome/logoutunchanged. ChangeONLYproviderrow: removegreenONswitchentirelyandremoveold我可以接单/开启后他人可向我发起服务邀请copy. ReplacewithcleanSTATICread-onlyrow, smallofficialworkiconleft, title 接单身份,quietsubline 默认拥有接单能力, smallmint 默认开启 at right. No toggle, dropdown, disableoption,switchtrackorthumb. Gueststatecanread登录后即可接单withnoneditableprofilefields, nocapabilityenableaction. Preservephoneverificationrule, frozenaccountcontrols,andrequiredprofileintroforexistingpublishflow; defaultidentitydoesNOTbypasschecks. Inputstylesremaintransparentbottomlines44px/textareaquiet8px; doNOTaddnewoutercardsorfields. Keepwholelayoutandgamecoverphotofromtarget,allothercontentidentical.
+## 生成提示词与实施边界
 
-钱包轻入口局部追加：
-Use case: ui-mockup. PRECISELOCALedit attached390x844profileeditor. Preserveallordinary个人资料backheader/avatar/name/bio/phone/cover/save/cancel/publichome/logout, naturaldarkgreenstyle,formsandsafearea. AddONLYquiet44px 我的钱包 row withofficialwalletoutlineiconandchevron afterphoneverificationandbeforestaticproviderrow, thinseparatorssameasexistingrows. No balance/no fakefunds/no bigwalletcard/no rechargebuttonhere. ProvideridentityremainsoneSTATICread-onlyrow 接单身份 with 默认开启 at right, no switchtrack/thumb/dropdownorenableaction; removeanyduplicateextra接单身份headingabovethisrowsoitappearsjustonce. Ifnewrowpusheslowercover/savebelowfirstscreen,allow naturalscrollratherthancompressingallfieldsorimage. Inputtransparentbottomline44px/textareaquiet8px, doNOTreintroducebigouterformpanel. Keepactualbusinessfieldsandallotherartunchanged. Flat390:844portrait,no deviceframe,nooutside margins,no purplebluegradient.
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
 
-删除重复小标题的最终单点修正：
-Use case: precise-object-edit / ui-mockup. The attached390x844profileUI is ALMOST FINAL. Make EXACTLYONE small deletion: remove the SMALL section-caption text 接单身份 at x20 y535 (the one just below我的钱包row and just ABOVE the provider-iconrow). Keep the OTHER 接单身份 label INSIDE the providerrow, nearx60 y569, and keep its subtext 默认拥有接单能力 and righttext 默认开启. There must be onlyONE occurrence of接单身份onthepage. Replace deletedcaptionarea with matching plain#0a1110 background. DoNOT delete the providerrow itself. DoNOT moveorchangeanyotherpixelarea, walletrow, avatar, cover, fields, save/cancel buttons, text, colorsorlayout. No switch. No otheredits. Keepflat390:844portrait,no deviceframe.
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。

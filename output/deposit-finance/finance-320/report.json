@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "scope": "all",
+  "viewport": {
+    "pixelRatio": 2,
+    "safeArea": {
+      "top": 20,
+      "left": 0,
+      "right": 320,
+      "bottom": 568,
+      "width": 320,
+      "height": 548
+    },
+    "screenWidth": 320,
+    "screenHeight": 568,
+    "screenTop": 0,
+    "windowWidth": 320,
+    "windowHeight": 568,
+    "statusBarHeight": 20
+  },
+  "checks": [
+    "个人提现规则完整且只读",
+    "player钱包五类金额分开、押金自愿且未付款",
+    "平台空配置仍有官方contact，未自动进入会话",
+    "俱乐部空客服不回退平台且无官方contact",
+    "player导航页存在技术支持自然流入口",
+    "worker导航页存在技术支持自然流入口",
+    "orders导航页存在技术支持自然流入口",
+    "技术支持复制仅命中clipboard spy，无拨号或发送消息",
+    "me导航页存在技术支持自然流入口",
+    "普通身份不能读取 /pages/manage/finance/index",
+    "普通身份不能读取 /pages/manage/finance/settings",
+    "普通身份不能读取 /pages/manage/support",
+    "个人提现规则完整且只读",
+    "worker钱包五类金额分开、押金自愿且未付款",
+    "认证成员可查看本人俱乐部押金，金额与后端相同",
+    "普通成员不能访问俱乐部 funds",
+    "普通成员不能访问俱乐部 console",
+    "俱乐部负责人五个控制台入口可见",
+    "控制台联系方式入口定位可配置二维码电话微信号",
+    "俱乐部提现规则完整且只读",
+    "负责人佣金与平台押金分开，退还条件明确",
+    "普通身份不能读取 /pages/manage/finance/index",
+    "管理员交易规则两档抽成与创建押金正确",
+    "管理员独立客服设置可加载，未上传或保存",
+    "资金审核分页与后端真实待审条数一致",
+    "创建俱乐部保存前显示官方手机号门槛",
+    "取消手机号不创建俱乐部且草稿保留",
+    "platform已配置合法托管二维码，支持官方长按属性，未打开客服会话",
+    "platform微信号复制及电话参数正确，仅spy无真实拨号",
+    "club已配置合法托管二维码，支持官方长按属性，未打开客服会话",
+    "club微信号复制及电话参数正确，仅spy无真实拨号"
+  ],
+  "runtime_exceptions": [],
+  "canvas_color_warnings": [],
+  "clipboard_spy_calls": 3,
+  "phone_spy_calls": 2,
+  "phone_spy_numbers": [
+    "4001234567",
+    "4001234567"
+  ],
+  "phone_verification": "仅SDK mock记录示例号码，未实际拨号",
+  "forbidden_native_calls": [],
+  "remaining": [
+    "本地暂无待审提现，来源明细UI未执行；资金审核列表空态已验收。",
+    "真实微信授权、支付、提现与实际客服电话/客服会话未执行；本地SDK及电话spy不能替代真机或商户验收。"
+  ]
+}

@@ -1,17 +1,17 @@
-# 打手工作台 · 默认接单身份
+# main/worker/worker · 本轮设计
 
-文件作用：对应 `frontend/src/pages/main/worker/worker.vue` 的先行局部设计与实施依据；2026-10-22根据用户最新默认身份要求编辑。原图和说明在 `design/history/20261022-before-game-refinements/pages/`。
+文件作用：对应前端同路径页面的本轮先行设计与实现依据。使用内置 ImageGen 对已认可设计局部编辑并机械等比缩小至约390×844；不以验收截图替代设计图。旧图和旧说明保存在 `design/history/20261023-before-deposit-ui/`。
 
-- 仅移除账户级“休息中/去开启/在个人中心开启接单”等身份启停状态与提示；所有新老用户默认拥有接单身份且不能关闭，昵称旁为非交互的接单中状态，不留下拉箭头或启用开关。
-- 访客显示登录后查看和小字“登录后即可接单”，不做整页登录墙，不暗示还要手动开启身份。
-- 保留经营统计、纸感工作台插画、小发布入口、查看订单、我的服务/接单大厅、服务卡、俱乐部入口与唯一底栏；不新造钱包操作或其他按钮。
-- 单个服务的审核、上架/暂停与账户接单身份是不同状态，既有业务保留；默认身份不能绕过手机号、冻结、简介与发布/交易校验。
-- 四主视图无应用顶栏；第一行业务元素避开系统状态栏和原生胶囊。服务卡仍图内渐变标签/标题与独立文案、价格图下正常流。
-- 玩家手柄仅选中时为当前主题accent，此页打手选中；所有图标双轴居中，保留既有自然黑绿设计和320/390受控宽度。
-- 接单大厅的现有GamePicker横排改复用共享GameSelector；正常态版式不重做，弹框外观直接沿用[首页游戏弹框](../player/player-game-picker.design.md)。保持本页既有显式全局筛选语义，不让组件自行读取/写入全局偏好；单选即选即回，13项受控纵向滚动。
+统一要求：自然黑绿背景、当前游戏主题、16px水平边距、真实安全区；押金徽标独立采用黑金色，不随游戏主题变化。图中示例用户、金额、订单角标均不是运行数据，运行时只取服务端。生成文字误差以本说明及真实接口为准。正文不缩小来塞首屏，长内容自然滚动。
 
-## 生成边界与完整提示词
+共享服务卡最新约定：标题在上、认证/游戏/分类标签在下，均为独立封面图层，渐变底部与卡片底色一致；价格在图下紧凑正常流。押金贴右上边缘，不留外边距，黑金色、真实实心盾牌，仅左下圆角；平台短标“押金”、用户向俱乐部实缴短标“俱乐部”，金额版写明对应押金和元。0/未知/退款中不显示。卡片自定义文字至少10px，详情至少14px；六条长文字可换行并适度增高，不缩成几像素或隐藏，保留九宫格意图并避开系统信息和押金角标。
 
-390×844，内置ImageGen编辑原图后机械等比缩放。图中文字误差以真实数据、业务与本说明为准；不把设计图作为运行背景。实际SDK验收由root执行，本交付不代表真机通过。
+## 页面布局与状态
 
-Use case: ui-mockup. PRECISE LOCAL EDIT of attachedexistingChinese390x844design. Preserveallunrelatedapprovedlayout, naturaldarkgreen#0a1110,mint#8de8b6,thinsectiondividers,16pxinsets,officialcenteredicons,existingfieldsandnativeWeChatsafearea. DoNOTinventfeatures,newart,headlines,English,bluepurplegradients,orreplacegameartsource. Onlyedittheexplicitprovideridentitypoint. Exact390:844flatportrait,no deviceframe,nooutside margins. TextisindependentUI, notbakedintoimages. Thisisprimaryworkertab,noapptopnavbar. Keepidentity/stats/refinedworkbenchillustration/publishsmallentry/ordertlink/tabs/servicecards/clubbanner/bottomnavunchanged. Onlyclarifydefaultprovideridentity: nexttonickname北辰 showsSTATIC●接单中badgewithoutdropdownarroworclickcontrol; optionallytiny 默认开启 understateifneededbutavoidredundancy. Removeany休息中、去开启、在个人中心开启接单、去完善启用 notices/actions; thereisNOaccount-levelenabletoggleandNOrestingstate. New/existingusersallhaveprovidercapabilitybydefault; guestshows登录后查看andquiet登录后即可接单onlywhereappropriate,nobigloginwall. DoNOTaddnewbuttons. Existingindividualserviceliststatuses/editactionsareseparatefromaccountcapabilityandremainasactualbusiness, don'tinventpausedserviceexamplesforaccountstate. Retainnecessaryphoneverification/frozen/profileintrochecksintheactualflows. Allartunchanged,allotherlayoutunchanged. Bottomnav打手activeandmint,playerinactivegray.
+保留用户已删除顶部身份、统计和大插画的改动，不恢复旧元素。三个同级页签“我的服务 / 接单大厅 / 加入俱乐部”；第三页签展示56px非人像俱乐部头像、名称、人数、一行介绍省略和箭头；移除原底部发现俱乐部大banner。公开俱乐部无需登录即可浏览，分页与切号保护保留。
+
+## 生成提示词与实施边界
+
+Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
+
+验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。

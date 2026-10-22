@@ -9,6 +9,17 @@ import (
 
 // decorateClub 计算当前有效成员数量与负责人昵称。
 func (a *App) decorateClub(ctx context.Context, c Club) Club {
+	if c.AvatarURL == "" {
+		c.AvatarURL = defaultClubAvatar(c.ID)
+	}
+	if settings, e := financialSettings(ctx, a.DB); e == nil {
+		c.PlatformDepositRequiredCents = clubRequiredDeposit(c, settings)
+	}
+	if wallet, e := accountBalance(ctx, a.DB, clubDepositAccount(c.ID)); e == nil {
+		c.PlatformDepositCents = wallet.DepositCents
+		c.PlatformDepositRefundingCents = wallet.DepositRefundingCents
+		c.DepositReady = wallet.DepositRefundingCents == 0 && wallet.DepositCents >= c.PlatformDepositRequiredCents
+	}
 	if u, e := get[User](ctx, a.DB, "users", c.OwnerID, false); e == nil {
 		c.OwnerName = u.Nickname
 	}
@@ -88,10 +99,10 @@ func (a *App) club(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 		m.Nickname = member.Nickname
 		if m.UserID == u.ID {
-			my = communityMemberView(m, member, true)
+			my = a.memberFinancialView(r.Context(), m, member, true)
 		}
 		if manager || m.Status == "active" && member.Status == "active" {
-			out = append(out, communityMemberView(m, member, manager))
+			out = append(out, a.memberFinancialView(r.Context(), m, member, manager))
 		}
 	}
 	services, err := a.publicCommunityServices(r, "club", c.ID)
@@ -123,20 +134,52 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if r.PathValue("id") == "" {
+		if err = a.requireVerifiedPhone(r, u); err != nil {
+			return nil, err
+		}
+	}
 	var in struct {
-		Name         *string           `json:"name"`
-		Description  *string           `json:"description"`
-		GameIDs      *[]string         `json:"game_ids"`
-		CoverURL     *string           `json:"cover_url"`
-		DetailBlocks *[]CommunityBlock `json:"detail_blocks"`
-		DepositCents *int64            `json:"deposit_cents"`
-		Assessment   *string           `json:"assessment"`
+		ContactQRURL      *string           `json:"contact_qr_url"`
+		ContactPhone      *string           `json:"contact_phone"`
+		ContactWechat     *string           `json:"contact_wechat"`
+		RequestID         string            `json:"request_id"`
+		Name              *string           `json:"name"`
+		Description       *string           `json:"description"`
+		GameIDs           *[]string         `json:"game_ids"`
+		CoverURL          *string           `json:"cover_url"`
+		DetailBlocks      *[]CommunityBlock `json:"detail_blocks"`
+		DepositCents      *int64            `json:"deposit_cents"`
+		Assessment        *string           `json:"assessment"`
+		CommissionRateBPS *int64            `json:"commission_rate_bps"`
+		JoinNote          *string           `json:"join_note"`
 	}
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
+	normalizeContactPatch(in.ContactPhone, in.ContactWechat, in.ContactQRURL)
+	if in.JoinNote != nil {
+		if err = a.moderateText(r, u, "俱乐部加入备注", *in.JoinNote); err != nil {
+			return nil, err
+		}
+	}
 	if err = a.moderateClubDraft(r, u, in.Name, in.Description, in.Assessment, in.DetailBlocks); err != nil {
 		return nil, err
+	}
+	if in.ContactPhone != nil || in.ContactWechat != nil {
+		phone, wechat := "", ""
+		if in.ContactPhone != nil {
+			phone = *in.ContactPhone
+		}
+		if in.ContactWechat != nil {
+			wechat = *in.ContactWechat
+		}
+		if err = validateSupportContact(phone, wechat); err != nil {
+			return nil, err
+		}
+		if err = a.moderateContactPatch(r, u, "俱乐部客服联系方式", in.ContactPhone, in.ContactWechat); err != nil {
+			return nil, err
+		}
 	}
 	ownerID, clubID := u.ID, r.PathValue("id")
 	if clubID != "" {
@@ -145,6 +188,21 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 			return nil, e
 		}
 		ownerID = old.OwnerID
+	}
+	if in.ContactQRURL != nil {
+		previous := ""
+		if clubID != "" {
+			old, e := a.clubManager(r, u, clubID)
+			if e != nil {
+				return nil, e
+			}
+			previous = old.ContactQRURL
+		}
+		if *in.ContactQRURL != previous {
+			if err = a.moderateOwnedImage(r, u, *in.ContactQRURL, "club_contact_qr", u.ID, clubID); err != nil {
+				return nil, err
+			}
+		}
 	}
 	if in.CoverURL != nil {
 		if err = a.moderateOwnedImage(r, u, *in.CoverURL, "club_cover", ownerID, clubID); err != nil {
@@ -166,7 +224,29 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	defer tx.Rollback(r.Context())
 	c := Club{ID: newID(), OwnerID: u.ID, OwnerName: u.Nickname, CreatedAt: now()}
+	if r.PathValue("id") == "" && in.RequestID != "" {
+		if err = walletRequestID(in.RequestID); err != nil {
+			return nil, err
+		}
+		if err = lockWalletUsers(r.Context(), tx, u.ID); err != nil {
+			return nil, err
+		}
+		if err = claimWalletRequest(r.Context(), tx, u.ID, in.RequestID, "club_create", in); err != nil {
+			return nil, err
+		}
+		c.ID = walletKey("club-create", u.ID, in.RequestID)
+		old, e := get[Club](r.Context(), tx, "clubs", c.ID, false)
+		if e == nil {
+			return old, tx.Commit(r.Context())
+		} else if !missing(e) {
+			return nil, e
+		}
+	}
+
 	if id := r.PathValue("id"); id != "" {
+		if err = lockClubFinance(r.Context(), tx, id); err != nil {
+			return nil, err
+		}
 		c, err = get[Club](r.Context(), tx, "clubs", id, true)
 		if err != nil {
 			return nil, err
@@ -174,6 +254,23 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 		if c.OwnerID != u.ID && u.Role != "admin" {
 			return nil, fail(403, "只能管理自己的俱乐部")
 		}
+	}
+	if in.ContactQRURL != nil {
+		if *in.ContactQRURL != c.ContactQRURL {
+			if err = validateOwnedImage(r.Context(), tx, *in.ContactQRURL, "club_contact_qr", u.ID, c.ID, u); err != nil {
+				return nil, err
+			}
+		}
+		c.ContactQRURL = *in.ContactQRURL
+	}
+	if in.ContactPhone != nil {
+		c.ContactPhone = *in.ContactPhone
+	}
+	if in.ContactWechat != nil {
+		c.ContactWechat = *in.ContactWechat
+	}
+	if err = validateSupportContact(c.ContactPhone, c.ContactWechat); err != nil {
+		return nil, err
 	}
 	if in.Name != nil {
 		c.Name = strings.TrimSpace(*in.Name)
@@ -196,7 +293,36 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	if in.Assessment != nil {
 		c.Assessment = *in.Assessment
 	}
+	if in.CommissionRateBPS != nil {
+		c.CommissionRateBPS = *in.CommissionRateBPS
+	}
+	if in.JoinNote != nil {
+		c.JoinNote = strings.TrimSpace(*in.JoinNote)
+	}
+	if c.CommissionRateBPS < 0 || c.CommissionRateBPS > 10000 || !length(c.JoinNote, 0, 2000) {
+		return nil, fail(400, "俱乐部抽成须在0至100%，加入备注最多2000字")
+	}
+	if err = lockFinancialSettings(r.Context(), tx); err != nil {
+		return nil, err
+	}
+	settings, err := financialSettings(r.Context(), tx)
+	if err != nil {
+		return nil, err
+	}
+	if c.CommissionRateBPS+settings.ClubPlatformRateBPS > 10000 {
+		return nil, fail(400, "俱乐部与平台抽成合计不能超过100%")
+	}
+	if c.AvatarURL == "" {
+		c.AvatarURL = defaultClubAvatar(c.ID)
+	}
+	if r.PathValue("id") == "" {
+		c.CreationDepositVersion = 1
+		c.CreationDepositRequiredCents = settings.ClubCreationDepositCents
+	}
 	c.Status = "pending"
+	if r.PathValue("id") == "" && settings.ClubCreationDepositCents > 0 {
+		c.Status = "pending_deposit"
+	}
 	c.Verified = false
 	if err = validateClub(r.Context(), tx, c); err != nil {
 		return nil, err
@@ -258,6 +384,12 @@ func (a *App) joinClub(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
+	if err = lockClubFinance(r.Context(), tx, r.PathValue("id")); err != nil {
+		return nil, err
+	}
+	if err = guardClubDeposit(r.Context(), tx, r.PathValue("id")); err != nil {
+		return nil, err
+	}
 	c, err := get[Club](r.Context(), tx, "clubs", r.PathValue("id"), true)
 	if err != nil {
 		return nil, err
@@ -268,7 +400,7 @@ func (a *App) joinClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	if c.OwnerID == u.ID {
 		return map[string]bool{"ok": true}, nil
 	}
-	if (c.DepositCents > 0 || c.Assessment != "") && !in.RequirementsAccepted {
+	if (c.DepositCents > 0 || c.Assessment != "" || c.CommissionRateBPS > 0 || c.JoinNote != "") && !in.RequirementsAccepted {
 		return nil, fail(400, "请先阅读并确认入会规则；确认规则不表示押金已支付")
 	}
 	id := c.ID + ":" + u.ID
@@ -276,10 +408,10 @@ func (a *App) joinClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	if e != nil && !missing(e) {
 		return nil, e
 	}
-	if e == nil && (m.Status == "active" || m.Status == "pending" && m.AppliedDepositCents == c.DepositCents && m.AppliedAssessment == c.Assessment) {
+	if e == nil && (m.Status == "active" || m.Status == "pending" && m.AppliedDepositCents == c.DepositCents && m.AppliedAssessment == c.Assessment && m.AppliedCommissionRateBPS == c.CommissionRateBPS && m.AppliedJoinNote == c.JoinNote) {
 		return map[string]bool{"ok": true}, nil
 	}
-	m = ClubMember{UserID: u.ID, Nickname: u.Nickname, ClubID: c.ID, Status: "pending", CreatedAt: now(), ApplicationNote: strings.TrimSpace(in.ApplicationNote), RequirementsAccepted: in.RequirementsAccepted, AppliedDepositCents: c.DepositCents, AppliedAssessment: c.Assessment}
+	m = ClubMember{UserID: u.ID, Nickname: u.Nickname, ClubID: c.ID, Status: "pending", CreatedAt: now(), ApplicationNote: strings.TrimSpace(in.ApplicationNote), RequirementsAccepted: in.RequirementsAccepted, AppliedCommissionRateBPS: c.CommissionRateBPS, AppliedJoinNote: c.JoinNote, AppliedDepositCents: c.DepositCents, AppliedAssessment: c.Assessment}
 	if err = put(r.Context(), tx, "members", id, m); err != nil {
 		return nil, err
 	}
@@ -307,6 +439,9 @@ func (a *App) leaveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
+	if err = lockClubFinance(r.Context(), tx, c.ID); err != nil {
+		return nil, err
+	}
 	id := c.ID + ":" + u.ID
 	m, err := get[ClubMember](r.Context(), tx, "members", id, true)
 	if missing(err) {
@@ -343,7 +478,7 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
-	if !contains([]string{"active", "rejected"}, in.Status) || !length(in.ReviewNote, 0, 500) {
+	if !contains([]string{"active", "rejected", "removed"}, in.Status) || !length(in.ReviewNote, 0, 500) {
 		return nil, fail(400, "成员状态无效")
 	}
 	if err = a.moderateText(r, u, "俱乐部成员审核说明", in.ReviewNote); err != nil {
@@ -354,6 +489,14 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
+	if err = lockClubFinance(r.Context(), tx, c.ID); err != nil {
+		return nil, err
+	}
+	if in.Status == "active" {
+		if err = guardClubDeposit(r.Context(), tx, c.ID); err != nil {
+			return nil, err
+		}
+	}
 	id := c.ID + ":" + r.PathValue("user_id")
 	c, err = get[Club](r.Context(), tx, "clubs", c.ID, true)
 	if err != nil {
@@ -370,11 +513,18 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 		if c.Status != "active" || m.Status == "left" {
 			return nil, fail(409, "俱乐部需通过审核，成员退出后需重新申请")
 		}
-		if m.AppliedDepositCents != c.DepositCents || m.AppliedAssessment != c.Assessment || (c.DepositCents > 0 || c.Assessment != "") && !m.RequirementsAccepted {
+		if m.AppliedCommissionRateBPS != c.CommissionRateBPS || m.AppliedJoinNote != c.JoinNote || m.AppliedDepositCents != c.DepositCents || m.AppliedAssessment != c.Assessment || (c.DepositCents > 0 || c.Assessment != "" || c.CommissionRateBPS > 0 || c.JoinNote != "") && !m.RequirementsAccepted {
 			return nil, fail(409, "入会规则已经变化，请成员重新确认后申请")
 		}
 		if c.Assessment != "" && !in.AssessmentPassed {
 			return nil, fail(400, "请完成并确认考核后再通过认证")
+		}
+		wallet, e := accountBalance(r.Context(), tx, memberDepositAccount(c.ID, m.UserID))
+		if e != nil {
+			return nil, e
+		}
+		if wallet.DepositRefundingCents > 0 || wallet.DepositCents < c.DepositCents {
+			return nil, fail(409, "成员尚未实缴加入规则要求的俱乐部托管押金")
 		}
 		member, e := get[User](r.Context(), tx, "users", m.UserID, false)
 		if e != nil || member.Status != "active" {
