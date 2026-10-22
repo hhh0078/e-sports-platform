@@ -4,7 +4,7 @@
 
 **A multi-game service marketplace connecting players, service providers and gaming clubs.**
 
-[中文介绍与完整使用指南](README.md) · [Repository](https://github.com/hhh0078/e-sports-platform) · [Deployment](docs/DEPLOYMENT.md) · [License](LICENSE)
+[中文介绍与完整使用指南](README.md) · [Repository](https://github.com/hhh0078/e-sports-platform) · [Deployment](docs/DEPLOYMENT.md) · [License](LICENSE) · [Contact](#-contact)
 
 ## ✨ What is included?
 
@@ -49,6 +49,15 @@ The current product name is **开机电竞 / KaiJi Esports**. Internal `jijie` m
 ## 📄 License and assets
 
 See [Apache License 2.0](LICENSE) for the source code. Third-party game images and icons have separate ownership and usage boundaries documented in [ASSETS.md](docs/ASSETS.md).
+
+## 📬 Contact
+
+For project questions and collaboration:
+
+| Contact method | Number |
+| --- | --- |
+| 📱 Phone | [17607080935](tel:17607080935) |
+| 💬 WeChat | `17607080935` |
 
 ## 🔎 Keywords
 

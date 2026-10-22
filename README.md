@@ -16,7 +16,7 @@
 [![Redis](https://img.shields.io/badge/Redis-7-AD574B?style=flat-square&logo=redis&logoColor=white)](deploy/compose.yml)
 [![License](https://img.shields.io/badge/License-Apache--2.0-64705C?style=flat-square)](LICENSE)
 
-[项目介绍](#-这是什么项目) · [功能一览](#-功能一览) · [界面预览](#-界面预览) · [快速开始](#-快速开始) · [部署指南](docs/DEPLOYMENT.md) · [English](README.en.md)
+[项目介绍](#-这是什么项目) · [功能一览](#-功能一览) · [界面预览](#-界面预览) · [快速开始](#-快速开始) · [部署指南](docs/DEPLOYMENT.md) · [联系作者](#-联系作者) · [English](README.en.md)
 
 </div>
 
@@ -248,6 +248,15 @@ npm --prefix frontend run build:mp-weixin
 ## 📄 许可证与素材
 
 源码许可证见 [Apache License 2.0](LICENSE)。游戏图片、图标等第三方资源的来源和使用边界另见[素材说明](docs/ASSETS.md)，其权利归各自权利人。
+
+## 📬 联系作者
+
+项目交流与合作，可通过以下方式联系：
+
+| 联系方式 | 号码 |
+| --- | --- |
+| 📱 手机号 | [17607080935](tel:17607080935) |
+| 💬 微信 | `17607080935` |
 
 ## 🔎 相关关键词
 
