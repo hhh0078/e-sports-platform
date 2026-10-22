@@ -1,0 +1,25 @@
+{
+  "description": "应用验证完成后切回本地包时发生的开发工具交接问题；不能混同此前SDK验收结果。",
+  "recorded_at": "2026-10-22T11:40:53.558859+00:00",
+  "status": "external_tool_blocked",
+  "tool_version": "微信开发者工具 Stable 2.02.2608040 / 基础库3.17.3",
+  "initial_issue": "本地项目public/private urlCheck均false，但运行时仍拦截本机HTTP域名。",
+  "current_error": "Cannot read properties of undefined (reading 'MaxCodeSize')",
+  "stack_origin": "微信开发工具内置 reactiveProject.js / ReactiveProject.updateProject",
+  "attempted": [
+    "核对public/private正确配置及正式包未改变",
+    "官方CLI重新打开、信任项目与重载文件服务",
+    "工具退出请求超时后重启挂起主进程",
+    "官方界面重新导入指定本地项目；登录状态true"
+  ],
+  "not_changed": [
+    "应用源代码",
+    "生产后端与数据库",
+    "正式包HTTPS校验",
+    "已保存的双机型SDK报告"
+  ],
+  "local_api": "http://127.0.0.1:18091/api",
+  "h5_preview": "http://127.0.0.1:5173/",
+  "package_hashes_still_match": true,
+  "next_check": "排查或更新微信开发工具本机配置/版本后重开本地包；不得以当前启动失败声称真机验收完成。"
+}

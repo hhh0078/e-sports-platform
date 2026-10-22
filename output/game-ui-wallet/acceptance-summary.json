@@ -215,5 +215,10 @@
     "部分钱包专项在共享选择器抽取前运行，核心钱包代码随后未变更；双机型整页回归来自最终组件构建",
     "用户原有frontend/src/main.ts换行修改保留且不提交"
   ],
-  "packages_report": "release-package.json"
+  "packages_report": "release-package.json",
+  "devtools_handoff": {
+    "status": "external_tool_blocked",
+    "report": "devtools-handoff.json",
+    "h5_preview": "http://127.0.0.1:5173/"
+  }
 }
