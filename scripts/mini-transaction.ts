@@ -156,7 +156,7 @@ async function run(): Promise<void> {
   await action('拒绝退款', '演示答辩：已经完成约定教学，提交交付记录作为依据。')
   await login('云间旅人'); page = await order(id, '待验收')
   await action('申请平台介入', '演示仲裁：双方意见不同，请平台查看四方聊天与下单约定。')
-  await login('集结管理员'); page = await order(id, '待验收')
+  await login('开机电竞管理员'); page = await order(id, '待验收')
   await chat('平台：已核对双方要求与交付记录，现给出本地测试裁决。')
   await screenshot('mini-admin-dispute', '.admin-resolution')
   await (await button('支持买方 · 原路退款')).tap()

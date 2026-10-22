@@ -103,7 +103,7 @@ PY
 fi
 for attempt in {1..40}; do
   if curl --fail --silent --max-time 3 http://127.0.0.1:8090/health > "$RUN_DIR/health.json" && curl --fail --silent --max-time 3 http://127.0.0.1:5173/ > /dev/null; then
-    echo '集结已就绪：http://127.0.0.1:5173/'
+    echo '开机电竞已就绪：http://127.0.0.1:5173/'
     echo 'API：http://127.0.0.1:8090/health；日志位于 .run/api.log 与 .run/h5.log。'
     exit 0
   fi

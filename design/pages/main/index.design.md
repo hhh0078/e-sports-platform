@@ -7,3 +7,9 @@
 - 服务卡源图16:9、实际图内显示裁切约4:3；标签在上、标题在下独立悬浮在图片底部渐变区，价格和成交正常流位于图下。
 - 访客正常查看空数据；各视图状态、滚动、筛选保留。二级页面独立路由，无主底栏。
 - 图片开头的展示型二级页使用沉浸圆返回；无用户封面的个人主页及表单/配置页继续普通统一顶部返回。
+
+## 品牌名称更新（2026-10-23）
+
+主容器参考玩家首页：品牌为开机电竞，口号为开机即组队，一起赢，既有布局和主导航不变。 本次只局部替换品牌文字，不新增界面、控件、图片或视觉规则。历史图保留原名称。
+
+编辑提示词：Use case: text-localization. Edit only the product brand text in the attached existing 390x844 design. Use exact Chinese brand 开机电竞. 主容器参考玩家首页：品牌为开机电竞，口号为开机即组队，一起赢，既有布局和主导航不变。 Keep all unrelated layout, artwork, colors, type sizes, fields, amounts, safe areas and dimensions unchanged. No redesign, stretching, added height or new decorations.

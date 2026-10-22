@@ -446,7 +446,7 @@ async function run():Promise<void> {
   await restartRoute('/pages/main/index?tab=player')
   let main=await pageAt('pages/main/index')
   await new Promise<void>(resolve=>setTimeout(resolve,900))
-  if(process.env.UI_TEST_SCOPE==='admin'){main=await login('集结管理员');await adminControls(main);await visit('/pages/manage/settings','manage-settings-admin',main);report('admin');return}
+  if(process.env.UI_TEST_SCOPE==='admin'){main=await login('开机电竞管理员');await adminControls(main);await visit('/pages/manage/settings','manage-settings-admin',main);report('admin');return}
   if(process.env.UI_TEST_SCOPE==='long'){main=await login('云间旅人');await longProfile(main);main=await login('北辰');await workerLayout(main);const {items}=await bottomNavigation(main);await items[0].tap();await gameCatalog(main);report('long');return}
   await gameCatalog(main)
   if(process.env.UI_TEST_SCOPE==='selectors'){main=await login('云间旅人');await formGamePicker(main,'/pages/requests/publish','request');main=await login('北辰');await formGamePicker(main,'/pages/services/publish','service');main=await login('山海主理人');await formGamePicker(main,'/pages/community/clubs/index','club-create');await formGamePicker(main,'/pages/community/clubs/edit?id=shanhai','club-edit');report('selectors');return}
@@ -480,7 +480,7 @@ async function run():Promise<void> {
   await formGamePicker(main,'/pages/community/clubs/edit?id=shanhai','club-edit')
   await visit('/pages/community/clubs/detail?id=shanhai','clubs-detail-owner',main)
   await visit('/pages/community/clubs/edit?id=shanhai','clubs-edit-owner',main)
-  main=await login('集结管理员')
+  main=await login('开机电竞管理员')
   await adminControls(main)
   await visit('/pages/manage/index','manage-index-admin',main)
   await visit('/pages/manage/settings','manage-settings-admin',main)

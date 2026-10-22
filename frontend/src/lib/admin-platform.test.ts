@@ -25,7 +25,7 @@ function harness(role='admin',refreshIdentity=false){
 /** 推进真实异步脚本到下个可观测边界。 */
 async function flush(){await new Promise(resolve=>setImmediate(resolve))}
 /** 完成一次管理员平台设置读取。 */
-async function ready(){const subject=harness();subject.lifecycle.show();await flush();subject.take().resolve({site_name:'集结',announcement:'公告A'});await flush();return subject}
+async function ready(){const subject=harness();subject.lifecycle.show();await flush();subject.take().resolve({site_name:'开机电竞',announcement:'公告A'});await flush();return subject}
 
 test('普通玩家及俱乐部管理员不能读取或保存平台设置',async()=>{
   for(const role of ['user','club_admin']){const subject=harness(role);subject.lifecycle.show();await flush();subject.page.form.site_name='越权名称';await subject.page.save();assert.equal(subject.requests.length,0);assert.equal(subject.page.loaded.value,false)}
@@ -34,18 +34,18 @@ test('普通玩家及俱乐部管理员不能读取或保存平台设置',async(
 test('平台名称按真实后端2至24字及公告300字契约校验',async()=>{
   const subject=await ready()
   for(const name of ['','单','字'.repeat(25)]){subject.page.form.site_name=name;await subject.page.save()}
-  subject.page.form.site_name='集结';subject.page.form.announcement='文'.repeat(301);await subject.page.save();assert.equal(subject.requests.length,1)
+  subject.page.form.site_name='开机电竞';subject.page.form.announcement='文'.repeat(301);await subject.page.save();assert.equal(subject.requests.length,1)
   subject.page.form.site_name='字'.repeat(24);subject.page.form.announcement='文'.repeat(300);const saving=subject.page.save();const request=subject.take('PATCH');assert.equal(String(request.body.site_name).length,24);assert.equal(String(request.body.announcement).length,300);request.resolve(request.body);await saving
 })
 
 test('保存只提交平台公开文字、允许清空公告并强制刷新全局配置',async()=>{
-  const subject=await ready();subject.page.form.site_name='  新集结  ';subject.page.form.announcement='   '
-  const saving=subject.page.save();const request=subject.take('PATCH');assert.deepEqual(JSON.parse(JSON.stringify(request.body)),{site_name:'新集结',announcement:''});request.resolve({site_name:'新集结',announcement:''});await saving
+  const subject=await ready();subject.page.form.site_name='  新版开机电竞  ';subject.page.form.announcement='   '
+  const saving=subject.page.save();const request=subject.take('PATCH');assert.deepEqual(JSON.parse(JSON.stringify(request.body)),{site_name:'新版开机电竞',announcement:''});request.resolve({site_name:'新版开机电竞',announcement:''});await saving
   assert.deepEqual(subject.initializations,[false,true]);assert.equal(subject.page.form.announcement,'');assert.equal(subject.notices.at(-1),'平台设置已保存');assert.equal(subject.page.busy.value,false)
 })
 
 test('保存进行中防止连点，取消修改恢复已确认结果',async()=>{
-  const subject=await ready();subject.page.form.site_name='新集结';const saving=subject.page.save();await subject.page.save();assert.equal(subject.requests.filter(item=>item.method==='PATCH').length,1);subject.take('PATCH').resolve({site_name:'服务端名称',announcement:'最新公告'});await saving
+  const subject=await ready();subject.page.form.site_name='新版开机电竞';const saving=subject.page.save();await subject.page.save();assert.equal(subject.requests.filter(item=>item.method==='PATCH').length,1);subject.take('PATCH').resolve({site_name:'服务端名称',announcement:'最新公告'});await saving
   subject.page.form.site_name='未保存草稿';subject.page.restore();assert.equal(subject.page.form.site_name,'服务端名称');assert.equal(subject.page.form.announcement,'最新公告')
 })
 
@@ -64,6 +64,6 @@ test('离页后的加载失效，返回时重读且错误可重试',async()=>{
 })
 
 test('全局刷新仅替换同身份资料对象时，不误判换号或抹掉保存成功状态',async()=>{
-  const subject=harness('admin',true);subject.lifecycle.show();await flush();subject.take().resolve({site_name:'集结',announcement:''});await flush();subject.page.form.site_name='全新平台';const saving=subject.page.save();subject.take('PATCH').resolve({site_name:'全新平台',announcement:''});await saving;await flush()
+  const subject=harness('admin',true);subject.lifecycle.show();await flush();subject.take().resolve({site_name:'开机电竞',announcement:''});await flush();subject.page.form.site_name='全新平台';const saving=subject.page.save();subject.take('PATCH').resolve({site_name:'全新平台',announcement:''});await saving;await flush()
   assert.equal(subject.page.loaded.value,true);assert.equal(subject.page.form.site_name,'全新平台');assert.equal(subject.notices.at(-1),'平台设置已保存');assert.equal(subject.requests.length,2)
 })

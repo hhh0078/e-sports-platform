@@ -29,7 +29,7 @@ function harness(name:ManagementPage){
 async function flush(){await new Promise(resolve=>setImmediate(resolve))}
 /** 完成真实bootstrap及真实本人资料请求，不直接给页面注入已知身份。 */
 async function identify(subject:ReturnType<typeof harness>,role='admin'){
-  subject.take('/bootstrap').resolve({games:[],dev_mode:true,site_name:'集结',announcement:''});await flush()
+  subject.take('/bootstrap').resolve({games:[],dev_mode:true,site_name:'开机电竞',announcement:''});await flush()
   subject.take('/me').resolve({id:'admin-A',role,nickname:'测试用户',status:'active'});await flush()
 }
 /** 返回实际配置接口约定的最少合法内容，避免使用页面内部辅助方法造状态。 */

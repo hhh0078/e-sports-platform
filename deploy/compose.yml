@@ -1,4 +1,4 @@
-# 文件作用：为集结独立启动后端、PostgreSQL 和 Redis，仅后端绑定宿主机回环端口。
+# 文件作用：为开机电竞独立启动后端、PostgreSQL 和 Redis，仅后端绑定宿主机回环端口。
 name: jijie
 services:
   api:

@@ -5,7 +5,7 @@
     <view class="club-toolbar"><view class="club-tabs"><button :class="['club-tab',{active:!mine}]" @click="mine=false;load()">发现俱乐部</button><button :class="['club-tab',{active:mine}]" @click="mine=true;load()">我的俱乐部</button></view><button class="text-btn create-entry" @click="openCreate">创建</button></view>
     <view v-if="error" class="list-error" @click="load">{{ error }} · 重试</view>
     <view v-if="loading&&!clubs.length" class="loading-line">正在读取俱乐部…</view>
-    <view v-else-if="!clubs.length&&!error" class="club-empty"><text class="empty-title">{{ mine&&!state.user?'请登录后查看':mine?'暂未加入俱乐部':'暂未找到俱乐部' }}</text><text class="hint">{{ mine?'到发现页寻找合适的团队，或创建自己的俱乐部。':'试试其他名称，或成为第一位组织者。' }}</text><button v-if="mine&&!state.user" class="text-btn" @click="go('/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/index?mine=1'))">登录集结 <Icon name="arrow" :size="12"/></button></view>
+    <view v-else-if="!clubs.length&&!error" class="club-empty"><text class="empty-title">{{ mine&&!state.user?'请登录后查看':mine?'暂未加入俱乐部':'暂未找到俱乐部' }}</text><text class="hint">{{ mine?'到发现页寻找合适的团队，或创建自己的俱乐部。':'试试其他名称，或成为第一位组织者。' }}</text><button v-if="mine&&!state.user" class="text-btn" @click="go('/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/index?mine=1'))">登录开机电竞 <Icon name="arrow" :size="12"/></button></view>
     <ClubCard v-for="club in clubs" :key="club.id" :club="club"/>
     <view v-if="creating" class="modal-mask" @click="creating=false"><view class="modal" @click.stop>
       <scroll-view scroll-y class="modal-scroll"><view class="create-form form-section">

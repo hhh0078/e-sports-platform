@@ -3,7 +3,7 @@
   <AppShell title="俱乐部装修" :game-id="form.game_ids[0]" back>
     <view v-if="error" class="error-box mb">{{ error }}</view>
     <view v-if="loading" class="loading-line">正在读取俱乐部资料…</view>
-    <EmptyState v-else-if="!canManage" title="仅俱乐部负责人可装修" detail="请登录有管理权限的账号，普通成员可以查看公开主页。" icon="shield"><button class="text-btn" @click="go(state.user?'/pages/community/clubs/detail?id='+id:'/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/edit?id='+id))">{{ state.user?'返回俱乐部':'登录集结' }} <Icon name="arrow" :size="12"/></button></EmptyState>
+    <EmptyState v-else-if="!canManage" title="仅俱乐部负责人可装修" detail="请登录有管理权限的账号，普通成员可以查看公开主页。" icon="shield"><button class="text-btn" @click="go(state.user?'/pages/community/clubs/detail?id='+id:'/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/edit?id='+id))">{{ state.user?'返回俱乐部':'登录开机电竞' }} <Icon name="arrow" :size="12"/></button></EmptyState>
     <template v-else>
       <text class="subtle-note review-note">修改资料后重新审核，认证在通过后恢复。</text>
       <view class="form-section identity-section">

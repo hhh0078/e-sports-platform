@@ -1,4 +1,4 @@
-/** 文件作用：检查集结前端 TypeScript、接口分层、导航归属与设计图目录的强制开发约定。 */
+/** 文件作用：检查开机电竞前端 TypeScript、接口分层、导航归属与设计图目录的强制开发约定。 */
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, relative, dirname, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'

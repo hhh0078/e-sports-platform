@@ -1,8 +1,8 @@
 <!-- 文件作用：基于官方 uni-nav-bar 统一顶栏、微信安全区与所有二级页面返回。 -->
 <template>
   <view class="page-navigation" :class="{ 'main-navigation': main }">
-    <UniNavBar :title="title" :left-icon="back ? 'left' : ''" :left-width="main && title === '集结' ? 0 : sideWidth" :right-width="sideWidth" :height="44" :status-bar="native" :border="false" color="var(--text)" background-color="var(--bg)" @click-left="goBack">
-      <view v-if="main && title === '集结'" class="brand-title"><text class="brand-square">集</text><text>集结</text></view><view v-else class="navigation-title">{{ title }}</view>
+    <UniNavBar :title="title" :left-icon="back ? 'left' : ''" :left-width="main && title === '开机电竞' ? 0 : sideWidth" :right-width="sideWidth" :height="44" :status-bar="native" :border="false" color="var(--text)" background-color="var(--bg)" @click-left="goBack">
+      <view v-if="main && title === '开机电竞'" class="brand-title"><text class="brand-square">开</text><text>开机电竞</text></view><view v-else class="navigation-title">{{ title }}</view>
     </UniNavBar>
   </view>
 </template>

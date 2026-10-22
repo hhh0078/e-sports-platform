@@ -107,7 +107,7 @@ func (a *App) walletTopupPayment(r *http.Request, u User, payment WalletTopup) (
 	if payment.MerchantID != "" && (payment.MerchantID != c.MerchantID || payment.AppID != c.AppID) {
 		return nil, fail(409, "支付商户配置已变更，请联系平台核查原充值意图，勿重新付款")
 	}
-	result, err := a.prepay(r, u, Order{ID: payment.ID, OrderNo: payment.OrderNo, Title: map[string]string{"balance": "集结钱包充值", "deposit": "集结自愿平台押金"}[payment.Purpose], AmountCents: payment.AmountCents, PayOpenID: payment.PayOpenID})
+	result, err := a.prepay(r, u, Order{ID: payment.ID, OrderNo: payment.OrderNo, Title: map[string]string{"balance": "开机电竞钱包充值", "deposit": "开机电竞自愿平台押金"}[payment.Purpose], AmountCents: payment.AmountCents, PayOpenID: payment.PayOpenID})
 	if err != nil {
 		return nil, err
 	}

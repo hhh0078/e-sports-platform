@@ -15,3 +15,9 @@
 390×844，内置ImageGen编辑原图后机械等比缩放。图中文字误差以真实数据、业务与本说明为准；不把设计图作为运行背景。实际SDK验收由root执行，本交付不代表真机通过。
 
 Use case: ui-mockup. PRECISE LOCAL EDIT of attachedexistingChinese390x844design. Preserveallunrelatedapprovedlayout, naturaldarkgreen#0a1110,mint#8de8b6,thinsectiondividers,16pxinsets,officialcenteredicons,existingfieldsandnativeWeChatsafearea. DoNOTinventfeatures,newart,headlines,English,bluepurplegradients,orreplacegameartsource. Onlyedittheexplicitprovideridentitypoint. Exact390:844flatportrait,no deviceframe,nooutside margins. TextisindependentUI, notbakedintoimages. Thisisprimaryworkertab,noapptopnavbar. Keepidentity/stats/refinedworkbenchillustration/publishsmallentry/ordertlink/tabs/servicecards/clubbanner/bottomnavunchanged. Onlyclarifydefaultprovideridentity: nexttonickname北辰 showsSTATIC●接单中badgewithoutdropdownarroworclickcontrol; optionallytiny 默认开启 understateifneededbutavoidredundancy. Removeany休息中、去开启、在个人中心开启接单、去完善启用 notices/actions; thereisNOaccount-levelenabletoggleandNOrestingstate. New/existingusersallhaveprovidercapabilitybydefault; guestshows登录后查看andquiet登录后即可接单onlywhereappropriate,nobigloginwall. DoNOTaddnewbuttons. Existingindividualserviceliststatuses/editactionsareseparatefromaccountcapabilityandremainasactualbusiness, don'tinventpausedserviceexamplesforaccountstate. Retainnecessaryphoneverification/frozen/profileintrochecksintheactualflows. Allartunchanged,allotherlayoutunchanged. Bottomnav打手activeandmint,playerinactivegray.
+
+## 品牌名称更新（2026-10-23）
+
+品牌说明为在开机电竞，用游戏技能赚取真实回报；保留统计、插画、服务与接单入口布局。 本次只局部替换品牌文字，不新增界面、控件、图片或视觉规则。历史图保留原名称。
+
+编辑提示词：Use case: text-localization. Edit only the product brand text in the attached existing 390x844 design. Use exact Chinese brand 开机电竞. 品牌说明为在开机电竞，用游戏技能赚取真实回报；保留统计、插画、服务与接单入口布局。 Keep all unrelated layout, artwork, colors, type sizes, fields, amounts, safe areas and dimensions unchanged. No redesign, stretching, added height or new decorations.

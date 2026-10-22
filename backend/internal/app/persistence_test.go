@@ -13,7 +13,7 @@ func TestIntegrationRestartPreservesData(t *testing.T) {
 	o := api.newOrder()
 	imageURL := api.uploadTestImage("player", o.ID)
 	api.call("player", "POST", "/orders/"+o.ID+"/messages", map[string]string{"image_url": imageURL, "content": "重启前已记录的证据"}, 200, nil)
-	api.call("admin", "PATCH", "/admin/settings", map[string]string{"site_name": "持久化集结", "announcement": "重启不应覆盖这个公告"}, 200, nil)
+	api.call("admin", "PATCH", "/admin/settings", map[string]string{"site_name": "持久化开机电竞", "announcement": "重启不应覆盖这个公告"}, 200, nil)
 	api.action("worker", o.ID, "accept", "", 200)
 	a2, err := New(t.Context(), api.App.Config)
 	if err != nil {
@@ -30,7 +30,7 @@ func TestIntegrationRestartPreservesData(t *testing.T) {
 	}
 	var settings Settings
 	other.call("admin", "GET", "/admin/settings", nil, 200, &settings)
-	if settings.SiteName != "持久化集结" {
+	if settings.SiteName != "持久化开机电竞" {
 		t.Fatal("重启覆盖了管理员配置")
 	}
 	var messages []Message
