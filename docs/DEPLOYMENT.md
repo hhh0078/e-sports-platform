@@ -4,12 +4,12 @@
 
 ## 本轮源码与部署边界
 
-2026-10-22新增钱包/押金/提现、后台控制台、AI审核、消息中心和共享游戏选择器，源码位于 `codex/game-ui-refinements` 分支。本轮尚未部署生产，以下10月20日记录仅是历史快照；不能把旧服务器健康检查当作新版功能通过。
+2026-10-22新增钱包/押金/提现、后台控制台、AI审核、消息中心和共享游戏选择器，源码现统一发布到 GitHub `hhh0078/e-sports-platform` 仓库的 `main` 分支。本轮尚未部署生产，以下10月20日记录仅是历史快照；不能把旧服务器健康检查当作新版功能通过。
 
 新机器从本轮源码构建时先取得该分支，再执行下文配置与Docker构建：
 
 ```bash
-git clone --branch codex/game-ui-refinements https://gitee.com/xxooxx8/e-sports-platform.git jijie-source
+git clone --branch main https://github.com/hhh0078/e-sports-platform.git jijie-source
 cd jijie-source
 git rev-parse --short HEAD
 ```
