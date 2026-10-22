@@ -20,14 +20,15 @@ import (
 )
 
 type Evidence struct {
-	ID        string `json:"id"`
-	OrderID   string `json:"order_id"`
-	OwnerID   string `json:"owner_id"`
-	SHA256    string `json:"sha256"`
-	MIME      string `json:"mime"`
-	Data      []byte `json:"data"`
-	CreatedAt string `json:"created_at"`
-	Public    bool   `json:"public"`
+	ID         string `json:"id"`
+	OrderID    string `json:"order_id"`
+	OwnerID    string `json:"owner_id"`
+	SHA256     string `json:"sha256"`
+	MIME       string `json:"mime"`
+	Data       []byte `json:"data"`
+	CreatedAt  string `json:"created_at"`
+	Public     bool   `json:"public"`
+	Moderation string `json:"moderation,omitempty"`
 }
 
 // uploadEvidence 校验四方权限、大小、图片魔数与可解析尺寸后持久化原始证据。
@@ -50,8 +51,11 @@ func (a *App) uploadEvidence(w http.ResponseWriter, r *http.Request) (any, error
 	if err != nil {
 		return nil, err
 	}
+	if err = a.moderateContent(r, u, "上传订单图片", nil, []moderationImage{{MIME: mime, Data: raw}}); err != nil {
+		return nil, err
+	}
 	sum := sha256.Sum256(raw)
-	v := Evidence{ID: newID(), OrderID: o.ID, OwnerID: u.ID, SHA256: hex.EncodeToString(sum[:]), MIME: mime, Data: raw, CreatedAt: now()}
+	v := Evidence{ID: newID(), OrderID: o.ID, OwnerID: u.ID, SHA256: hex.EncodeToString(sum[:]), MIME: mime, Data: raw, CreatedAt: now(), Moderation: a.imageModerationStamp()}
 	if err = put(r.Context(), a.DB, "evidence", v.ID, v); err != nil {
 		return nil, err
 	}

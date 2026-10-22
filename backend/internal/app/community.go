@@ -29,6 +29,19 @@ func (a *App) saveProfile(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
+	if err = a.moderateProfileText(r, actor, in.Nickname, in.Bio); err != nil {
+		return nil, err
+	}
+	for _, imageField := range []struct {
+		value   *string
+		purpose string
+	}{{in.Avatar, "avatar"}, {in.ProfileCover, "profile_cover"}} {
+		if imageField.value != nil {
+			if err = a.moderateOwnedImage(r, actor, *imageField.value, imageField.purpose, actor.ID, ""); err != nil {
+				return nil, err
+			}
+		}
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
@@ -81,12 +94,9 @@ func (a *App) playerProfile(w http.ResponseWriter, r *http.Request) (any, error)
 		return nil, fail(404, "玩家不存在")
 	}
 	profile := map[string]any{"id": u.ID, "nickname": u.Nickname, "avatar": u.Avatar, "bio": u.Bio, "profile_cover": u.ProfileCover, "provider_enabled": u.ProviderEnabled}
-	services := []Service{}
-	if u.ProviderEnabled {
-		services, err = a.publicCommunityServices(r, "provider", u.ID)
-		if err != nil {
-			return nil, err
-		}
+	services, err := a.publicCommunityServices(r, "provider", u.ID)
+	if err != nil {
+		return nil, err
 	}
 	clubs, err := list[Club](r.Context(), a.DB, "clubs", "WHERE data->>'status'='active' AND (data->>'owner_id'=$1 OR EXISTS (SELECT 1 FROM members m WHERE m.data->>'club_id'=clubs.id AND m.data->>'user_id'=$1 AND m.data->>'status'='active')) ORDER BY data->>'created_at' DESC LIMIT 100", u.ID)
 	if err != nil {
@@ -100,7 +110,7 @@ func (a *App) playerProfile(w http.ResponseWriter, r *http.Request) (any, error)
 
 // publicCommunityServices 查询当前可售服务，俱乐部主页额外校验打手仍属于该组织。
 func (a *App) publicCommunityServices(r *http.Request, scope, id string) ([]Service, error) {
-	where := "WHERE data->>'status'='active' AND EXISTS(SELECT 1 FROM games g WHERE g.id=services.data->>'game_id' AND g.data->>'enabled'='true') AND EXISTS(SELECT 1 FROM users u WHERE u.id=services.data->>'provider_id' AND u.data->>'status'='active' AND u.data->>'provider_enabled'='true')"
+	where := "WHERE data->>'status'='active' AND EXISTS(SELECT 1 FROM games g WHERE g.id=services.data->>'game_id' AND g.data->>'enabled'='true') AND EXISTS(SELECT 1 FROM users u WHERE u.id=services.data->>'provider_id' AND u.data->>'status'='active')"
 	if scope == "club" {
 		where += " AND data->>'club_id'=$1 AND EXISTS(SELECT 1 FROM clubs c WHERE c.id=$1 AND c.data->>'status'='active' AND c.data->'game_ids' ? (services.data->>'game_id') AND (c.data->>'owner_id'=services.data->>'provider_id' OR EXISTS(SELECT 1 FROM members m WHERE m.data->>'club_id'=c.id AND m.data->>'user_id'=services.data->>'provider_id' AND m.data->>'status'='active')))"
 	} else {
@@ -156,7 +166,7 @@ func validateClubDecoration(ctx context.Context, q querier, c *Club, actor User)
 
 // communityMemberView 仅向本人和管理者展示申请资料，公开认证不代表押金托管。
 func communityMemberView(m ClubMember, u User, private bool) map[string]any {
-	out := map[string]any{"user_id": m.UserID, "nickname": u.Nickname, "avatar": u.Avatar, "club_id": m.ClubID, "status": m.Status, "certified": m.Status == "active" && u.Status == "active" && u.ProviderEnabled}
+	out := map[string]any{"user_id": m.UserID, "nickname": u.Nickname, "avatar": u.Avatar, "club_id": m.ClubID, "status": m.Status, "certified": m.Status == "active" && u.Status == "active"}
 	if private {
 		out["created_at"] = m.CreatedAt
 		out["application_note"] = m.ApplicationNote

@@ -22,9 +22,6 @@ func applyAction(o *Order, u User, action, note string) error {
 	pendingRefund := contains([]string{"requested", "escalated", "processing"}, o.RefundStatus)
 	switch action {
 	case "claim":
-		if !u.ProviderEnabled {
-			return fail(403, "请先开启打手身份")
-		}
 		if buyer {
 			return fail(400, "不能接自己的订单")
 		}
@@ -40,9 +37,6 @@ func applyAction(o *Order, u User, action, note string) error {
 		}
 		if o.Status != "open" || o.PaymentStatus != "paid" || pendingRefund {
 			return fail(409, "当前订单不可接单")
-		}
-		if !u.ProviderEnabled {
-			return fail(403, "打手身份已关闭")
 		}
 		o.Status = "accepted"
 	case "start":
@@ -93,6 +87,9 @@ func applyAction(o *Order, u User, action, note string) error {
 			o.Status = "cancelled"
 		}
 	case "request_refund", "dispute":
+		if o.RefundFinal {
+			return fail(409, "平台已作最终裁决，不可重复申请退款或介入")
+		}
 		if !buyer {
 			return fail(403, "只有买家可以申请退款")
 		}
@@ -139,6 +136,9 @@ func applyAction(o *Order, u User, action, note string) error {
 		o.RefundStatus = "rejected"
 		o.RefundReply = note
 	case "escalate":
+		if o.RefundFinal {
+			return fail(409, "平台已作最终裁决，不可再次申请介入")
+		}
 		if !buyer {
 			return fail(403, "只有买家可以申请平台介入")
 		}
@@ -180,12 +180,20 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
+	if in.Action == "claim" || in.Action == "accept" {
+		if err = a.requireVerifiedPhone(r, u); err != nil {
+			return nil, err
+		}
+	}
+	if err = a.moderateOrderNote(r, u, in.Action, in.Note); err != nil {
+		return nil, err
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
-	o, err := get[Order](r.Context(), tx, "orders", r.PathValue("id"), true)
+	o, err := lockWalletOrder(r.Context(), tx, r.PathValue("id"), u.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +201,12 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	before := o
-	if in.Action == "cancel" && !a.Config.DevMode && o.Status == "pending_payment" && o.PayOpenID != "" {
+	if in.Action == "claim" || in.Action == "accept" {
+		if err = guardDepositRefunding(r.Context(), tx, o.BuyerID, u.ID); err != nil {
+			return nil, err
+		}
+	}
+	if in.Action == "cancel" && !a.Config.DevMode && before.PaymentChannel != "balance" && o.Status == "pending_payment" && o.PayOpenID != "" {
 		if u.ID != o.BuyerID {
 			return nil, fail(403, "只有买家可以取消订单")
 		}
@@ -219,9 +232,19 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 	}
 
-	remoteRefund := before.PaymentStatus == "paid" && o.PaymentStatus == "refunded" && !a.Config.DevMode
+	remoteRefund := before.PaymentStatus == "paid" && o.PaymentStatus == "refunded" && !a.Config.DevMode && before.PaymentChannel != "balance"
 	if remoteRefund {
 		if err = a.prepareRemoteRefund(&o, before); err != nil {
+			return nil, err
+		}
+	}
+	if in.Action == "claim" {
+		if err = claimWalletEscrow(r.Context(), tx, o); err != nil {
+			return nil, err
+		}
+	}
+	if o.PaymentStatus == "refunded" && before.PaymentStatus == "paid" {
+		if err = refundWalletEscrow(r.Context(), tx, &o); err != nil {
 			return nil, err
 		}
 	}

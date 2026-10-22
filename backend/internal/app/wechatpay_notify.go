@@ -10,9 +10,12 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
 )
 
 type wxTransaction struct {
+	SuccessTime   string `json:"success_time"`
 	AppID         string `json:"appid"`
 	MerchantID    string `json:"mchid"`
 	OrderNo       string `json:"out_trade_no"`
@@ -27,6 +30,7 @@ type wxTransaction struct {
 	} `json:"amount"`
 }
 type wxRefund struct {
+	SuccessTime   string `json:"success_time"`
 	MerchantID    string `json:"mchid"`
 	OrderNo       string `json:"out_trade_no"`
 	OutRefundNo   string `json:"out_refund_no"`
@@ -160,16 +164,27 @@ func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction
 	if v.MerchantID != c.MerchantID || v.AppID != c.AppID || v.TradeState != "SUCCESS" || v.TransactionID == "" || v.Amount.Currency != "CNY" {
 		return fail(400, "支付商户或交易信息不匹配")
 	}
+	if strings.HasPrefix(v.OrderNo, "WT") {
+		var id string
+		if err := a.DB.QueryRow(ctx, "SELECT id FROM wallet_topups WHERE data->>'order_no'=$1", v.OrderNo).Scan(&id); err != nil {
+			return fail(404, "充值订单不存在")
+		}
+		p, err := get[WalletTopup](ctx, a.DB, "wallet_topups", id, false)
+		if err != nil {
+			return err
+		}
+		return a.applyWalletTopup(ctx, p, v, false)
+	}
 	tx, err := a.DB.Begin(ctx)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback(ctx)
 	var id string
-	if err = tx.QueryRow(ctx, "SELECT id FROM orders WHERE data->>'order_no'=$1 FOR UPDATE", v.OrderNo).Scan(&id); err != nil {
+	if err = tx.QueryRow(ctx, "SELECT id FROM orders WHERE data->>'order_no'=$1", v.OrderNo).Scan(&id); err != nil {
 		return fail(404, "支付订单不存在")
 	}
-	o, err := get[Order](ctx, tx, "orders", id, false)
+	o, err := lockWalletOrder(ctx, tx, id, "")
 	if err != nil {
 		return err
 	}
@@ -187,6 +202,16 @@ func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction
 	}
 	if o.Status != "pending_payment" || o.PaymentStatus != "unpaid" {
 		return fail(409, "订单支付状态不匹配，请人工核查")
+	}
+	if err = accountWalletPayment(ctx, tx, &o, "wechat", ""); err != nil {
+		return err
+	}
+	if v.SuccessTime != "" {
+		stamp, e := time.Parse(time.RFC3339Nano, v.SuccessTime)
+		if e != nil {
+			return fail(400, "微信付款成功时间无效")
+		}
+		o.PaidAt = stamp.UTC().Format(time.RFC3339Nano)
 	}
 	o.PaymentTransactionID = v.TransactionID
 	o.PaymentStatus = "paid"
@@ -213,16 +238,19 @@ func (a *App) applyWXRefund(ctx context.Context, c wxPayConfig, v wxRefund) erro
 	if !contains([]string{"SUCCESS", "ABNORMAL", "CLOSED"}, status) {
 		return fail(400, "退款尚未完成")
 	}
+	if strings.HasPrefix(v.OutRefundNo, "DR") {
+		return a.applyDepositRefund(ctx, c, v, false)
+	}
 	tx, err := a.DB.Begin(ctx)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback(ctx)
 	var id string
-	if err = tx.QueryRow(ctx, "SELECT id FROM orders WHERE data->>'refund_id'=$1 FOR UPDATE", v.OutRefundNo).Scan(&id); err != nil {
+	if err = tx.QueryRow(ctx, "SELECT id FROM orders WHERE data->>'refund_id'=$1", v.OutRefundNo).Scan(&id); err != nil {
 		return fail(404, "退款订单不存在")
 	}
-	o, err := get[Order](ctx, tx, "orders", id, false)
+	o, err := lockWalletOrder(ctx, tx, id, "")
 	if err != nil {
 		return err
 	}
@@ -240,6 +268,16 @@ func (a *App) applyWXRefund(ctx context.Context, c wxPayConfig, v wxRefund) erro
 	}
 	message := "微信已确认全额退款，交易关闭。"
 	if status == "SUCCESS" {
+		if err = refundWalletEscrow(ctx, tx, &o); err != nil {
+			return err
+		}
+		if v.SuccessTime != "" {
+			stamp, e := time.Parse(time.RFC3339Nano, v.SuccessTime)
+			if e != nil {
+				return fail(400, "微信退款成功时间无效")
+			}
+			o.RefundedAt = stamp.UTC().Format(time.RFC3339Nano)
+		}
 		o.Status = "refunded"
 		o.PaymentStatus = "refunded"
 		o.RefundStatus = "approved"
@@ -281,7 +319,7 @@ func (a *App) syncPayment(w http.ResponseWriter, r *http.Request) (any, error) {
 	if u.ID != o.BuyerID && u.Role != "admin" {
 		return nil, fail(403, "仅买家或平台可同步资金状态")
 	}
-	if a.Config.DevMode {
+	if a.Config.DevMode || o.PaymentChannel == "balance" {
 		return o, nil
 	}
 	c, err := a.loadWXPay()

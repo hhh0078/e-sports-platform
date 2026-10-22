@@ -1,19 +1,19 @@
-# 平台管理 · 轻量数据排版
+# 平台控制台 · 核心数据与模块入口
 
-文件作用：对应 `frontend/src/pages/manage/index.vue` 的先行新版设计与实施依据；2026-10-22按二级页面统一任务编辑。旧图/说明已归档 `design/history/20261022-before-secondary-unify/pages/`。
+文件作用：对应 `frontend/src/pages/manage/index.vue` 的新控制台先行设计；替代原七页签长页。旧图/说明归档 `design/history/20261022-before-admin-console/pages/manage/`。
 
-- 新图已去掉指标小卡、整段审核卡、虚构筛选和默认拒绝弹层；裸底四列真实指标+细分隔、紧凑待办提示、横向受控导航、底线搜索形成层级。
-- 真实指标为注册用户、全部订单、服务数量、完成交易额；使用服务端数据，不添加演示标签或图中示例数值。
-- 真实导航依次服务审核、俱乐部、订单与售后、用户、游戏配置、操作记录、平台设置；横向滚动受最大宽度约束，不能缩窄邻居或溢出。
-- 审核列表开放排版，缩略图/标题/状态/作者/价格与必要操作使用正常流，项间细分隔。紧凑操作36px，查看详情文字入口，禁止两枚大按钮占整卡。
-- 其余资源页沿用相同语言：用户/俱乐部/订单/游戏使用简洁分隔列表，审计保留日志层级，平台设置使用form-section。游戏主题编辑弹窗不堆外框，图片库与色值沿用真实字段。
-- 不按旧图新增不存在的筛选或拒绝理由表单；源代码现有审核、冻结、游戏与支付管理权限和确认流程保持。非管理员仅显示真实权限状态。
-- 普通统一返回，无主底栏；搜索/刷新/翻页/切换状态、会话保护与管理数据范围不改。
-
-## 统一实施约束
-
-内置ImageGen编辑旧图，机械等比缩为390×844。采用自然黑绿/游戏主题色、16px水平边距、24px段落间距、细分隔，输入控件44px、textarea灰底8px，主提交44px、取消文字。图标固定盒双轴居中。生成文字和局部比例误差以真实源码字段、本说明及系统API安全区为准。设计图不是页面背景，实际验收截图另存output。
+- 顶部仅三项真实核心数据：注册用户、全部订单、真实成交额；待办为服务审核/俱乐部申请/订单争议，全部来自后端口径，不硬编码图中0值。
+- 交易额曲线提供7天/30天/自定义日期，使用后端analytics真实聚合；无数据诚实空态/零基线，不随机造曲线。日期区间和金额坐标、加载/错误/空态都保留，图中示意文案以实际接口为准。
+- 控制台只负责摘要、待办、曲线与导航，不再渲染原七个管理tabs或整段业务列表。
+- 十二个入口为用户、服务、俱乐部、订单售后、游戏、钱包审核、微信支付、协议、平台设置、审计、AI设置、发送平台消息；两列低对比轻卡片，不堆大按钮。平台设置独立保留名称与公告编辑；协议/支付可进入同一settings页不同query tab。新第六行自然滚动，不压缩控件硬塞首屏。
+- 普通统一二级返回，无主底栏；16px边距、细分隔、主题色和官方居中图标。长内容正常滚动，320px不溢出。
+- 只有平台管理员可见入口与数据，普通玩家及俱乐部管理员不可见且路由拒绝；后端仍独立校验。图中零金额仅空数据示意，不是赠款。
 
 ## 完整编辑提示词
 
-Use case: ui-mockup. Edit the attached Chinese390x844 mini-program design to approved OPEN editorial system: #0a1110 darkbackground, #edf4efwhite, #9dafA3muted, #8de8b6mint. NO largeenclosingpanels, no nestedroundedcards, no repeatedboxes, no dashedframes, no decorativehero/headline/English, no illustrationunlessexistingmeaningful. Thinsectiondividers,24pxverticalgaps,16pxhorizontalinsets. Textinputs44px transparentwithONLYbottomhairline;textarea lowcontrastgrayfill8pxradius. Maintransactionsubmit44px,otheractions36pxorquiettext. Officialiconscentered. Ordinarysharedback/titleheader withnativeWeChatstatusbar/capsulesafearea;NO primarybottomnav. Exact390:844flatportraitUI,no deviceframe,nooutside margins. Preserveactualfieldsandflows, no newfeatures. Title平台管理. Thisisrealadminconsole,nogameheroandnoillustration. Removeoldthreetileoverviewandfakedemo/filter/modal. Actual4metrics directonbackground inrefined2x2or4columnstrip:60注册用户,52全部订单,130服务数量,¥2680完成交易额; hairlinedividers, mintfigures, noindividualroundedmetricboxesandNO演示badges. Smallquietpendingcountsline 8服务待审核·2俱乐部申请·1争议. Compacthorizontalunderlinetabs actualorder 服务审核 俱乐部 订单与售后 用户 游戏配置 操作记录 平台设置, allowboundedhorizontalscroll. Underlinedsearch搜索全部名称、用户或订单号 plus smallrefreshicon at right. Actualserviceauditlisttwo-threeentries, OPENseparatedrows notlargecards:thumbnail72x54,title大坝任务协作, pendingstatusright,provider北辰·任务协作, price¥68/小时,shortdescription. 36pxcompact通过审核 and不予通过 asnecessarybusinessactions, 查看详情quiettext. Thinseparatorbetweentheentries. Removeunimplementedthreefilterdropdownsandtheoldrejectionmodalfromshownscreen; existingconfirmationsremaininrealflowbutnotshownbydefault. Preserveallotherresourceadmin tabs/permissions/paginationnotillustrated. No giantactionpair, doNOT showactualpasswordsIDssecrets.
+最新消息能力局部编辑（优先于下方保留的原始指令）：
+
+Use case: ui-mockup. Preciseedit ofattached390x844Chineseplatformconsole. Preserveapproveddarkgreen/white/minttheme,sharedback,statussafearea,3REALmetrics,todos,realdatachartwith7/30/custom,thinlines,16pxinsets,officialcenterediconsandALLexistingTENentries. ChangeONLYmodulecatalog: addtwo independentnewentries asSIXTHrowin2colgrid,labelAI 设置withquietsettingsiconand发送平台消息withnotificationicon,thus12total. Pageisnaturallyscrollable; doNOTcompressfontorcardheighttoforceall12intofirstscreen. Itisokaylastnewrowispartlybelowfold; designshowsitsbeginningatbottom,fullrowandlabelsdocumentedbelowfold. Exactmoduleorderexisting10unchangedthennew2. Existingchartusesrealdataatruntime,examplezeros/datesarenotfakeproduction. No tabbar,nopaykeys,nofakeotherfeatures,no bluepurplegradient. Flat390:844,no frame.
+
+
+Use case: ui-mockup. Redesign the attached old Chinese390x844managementscreen into the NEW platformADMINCONSOLE. Preserveonlyapprovednaturaldarkeditorialdesign #0a1110white#edf4efmutedgraygreen#9dafA3mint#8de8b6,16pxinsets,thinlines,quiet8pxcards,officialcenteredicons. Ordinarysharedbacktitle 平台管理, nativeWeChatstatus/capsulesafearea, NO mainbottomtabs. REMOVEold7managementtabsandlonginlinelistsentirely. ThispageisONLYcoredata/todo/trend/moduleentryconsole. TopTHREEopentypographicmetrics:注册用户0,全部订单0,真实成交额¥0.00; allruntimefrombackend,zeroisvalidemptyillustration,nofabricatedcash/counts. Compact待办lineor3smallicons 服务待审核0 / 俱乐部申请0 / 订单争议0. Next交易额趋势heading, compact7天/30天/自定义rangecontrols,7天active. Aclean120-150pxtallmintchartusesREALserverdata; showhonestemptyzerobaselineandsmall暂无成交数据 inthisdesign,notarbitraryrisinggraph. Customrangeopensnativefrom/to datepickers,notshown. Below管理模块headingandEXACTLYTENsubtlecompactentryCARDSin2columns5rowswithofficialthinicon,label,quietchevron:用户管理/服务审核/俱乐部管理/订单与售后/游戏配置/钱包审核/微信支付/协议管理/平台设置/操作审计. Cardsabout64-72pxhigh,lightthinborder,mutedcharcoalsurface,nogiantbuttonsorbadgedfakecounts;maynaturalscrollbelowfirstscreen,squeezeNOtext. IncludeALL10,platform设置retainsname/announcementeditingatseparatepage. DoNOTshowmerchantkeys,per-useradminconfig,inlineauditlistsorchartfakefigures. Onlyplatformadminscanseeconsole/routes;normal/clubadminhavenoentryorconfig. Naturalprofessionalinformationhierarchy,nopurplebluegradient,noillustrations,nodeviceframe,exact390:844flatportrait.

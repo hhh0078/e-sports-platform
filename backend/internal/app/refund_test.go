@@ -36,6 +36,7 @@ func TestIntegrationRefundTimeoutRecovery(t *testing.T) {
 			if err = put(t.Context(), api.App.DB, "orders", o.ID, stored); err != nil {
 				t.Fatal(err)
 			}
+			mockAllowAI(t, api)
 			api.App.Config.DevMode = false
 			api.App.Config.WechatAppID = c.AppID
 			var submitted atomic.Int32

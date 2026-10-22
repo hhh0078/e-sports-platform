@@ -4,7 +4,8 @@
     <view v-if="error" class="error-box mb">{{ error }}</view>
     <template>
 
-      <view class="form-section game-selector"><view class="field"><text class="field-label">选择游戏</text><picker :range="state.games" range-key="name" :value="gameIndex" @change="changeGame"><view class="input picker-value"><image v-if="selectedGame?.icon_url" class="selected-game-icon" :src="assetUrl(selectedGame.icon_url)" mode="aspectFill"/><text class="selected-game-name">{{ selectedGame?.name || '选择游戏' }}</text><Icon name="arrow" :size="14"/></view></picker></view></view><view class="preview"><view class="preview-toolbar"><text>封面预览</text><button v-if="covers.length>1" class="text-btn" @click="changeCover">换一张底图</button></view><ServiceCard :service="previewService" :interactive="false" cover-only/></view>
+      <view class="form-section game-selector"><view class="field service-game-field"><text class="field-label">选择游戏</text><GameSelector :value="form.game_id" :disabled="busy" @change="changeGame"/></view></view><view class="preview"><view class="preview-toolbar"><text>封面预览</text><button v-if="covers.length>1" class="text-btn" @click="changeCover">换一张底图</button></view><ServiceCard :service="previewService" :interactive="false" cover-only/></view>
+      <view class="platform-deposit-note"><Icon name="wallet" :size="17"/><view class="platform-deposit-copy"><text class="platform-deposit-title">平台押金 · 自愿缴纳</text><text class="subtle-note platform-deposit-detail">缴纳后展示平台押金标识，不影响发布</text></view><button class="text-btn platform-wallet-entry" @click="go(state.user?'/pages/account/wallet':'/pages/account/login?next='+encodeURIComponent('/pages/account/wallet'))">我的钱包<Icon name="arrow" :size="11"/></button></view>
       <view class="form-section form-panel"><text class="section-title">封面文字</text><text class="hint block">默认左下依次排列，位置和样式可独立设置。</text>
 
         <text class="field-label">游戏底图 · 也可以自己选</text>
@@ -25,29 +26,30 @@ import { ref, reactive, computed, watch } from 'vue'
 import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import ServiceCard from '../../components/ServiceCard.vue'
+import GameSelector from '../../components/GameSelector.vue'
 import Icon from '../../components/Icon.vue'
-import { state, init, refreshMe, sessionRevision } from '../../lib/store'
+import { state, init, sessionRevision } from '../../lib/store'
 import { getService, createService, updateService } from '../../api/services.api'
 import { listClubs } from '../../api/clubs.api'
-import { setProviderEnabled } from '../../api/users.api'
 import type { Club, CoverLabel, Service } from '../../types/models'
 import { token, errorMessage } from '../../api/client'
 import { go, notify, assetUrl } from '../../lib/format'
 import { newLabel, POSITIONS, gameCovers, randomGameCover, normalizeLabelText } from '../../lib/cover'
 const positionEditor = ref('')
+/** 编辑预览只接受本账号服务端返回的有效押金，新建草稿不虚构已缴状态。 */
+const serverProviderDeposit=ref(0)
 const serviceId = ref(''), clubs = ref<Club[]>([]), error = ref(''), busy = ref(false)
 const form = reactive({ game_id:'delta', title:'', description:'', category:'', price:'', unit:'局', cover_url:'', labels:[] as CoverLabel[], tagsText:'', club_id:'' })
 const selectedGame = computed(() => state.games.find(item => item.id===form.game_id) || state.games[0])
 const covers = computed(() => gameCovers(selectedGame.value))
-const gameIndex = computed(() => Math.max(0,state.games.findIndex(item=>item.id===form.game_id)))
 const categoryIndex = computed(() => Math.max(0,(selectedGame.value?.categories || []).indexOf(form.category)))
 const clubOptions = computed(() => [{id:'',name:'自由打手 · 无需挂靠'},...clubs.value.filter(club=>club.status==='active'&&['owner','active'].includes(club.membership_status||'')&&(club.game_ids||[]).includes(form.game_id))])
 const clubIndex = computed(() => Math.max(0,clubOptions.value.findIndex(item=>item.id===form.club_id)))
 /** 使用正式服务卡片展示草稿，确保文字和价格区与列表共用同一布局。 */
-const previewService = computed<Service>(() => ({ id:serviceId.value, game_id:form.game_id, provider_id:state.user?.id||'', provider_name:state.user?.nickname||'', provider_avatar:state.user?.avatar||'', club_id:form.club_id, club_name:clubs.value.find(club=>club.id===form.club_id)?.name||'', club_verified:clubs.value.some(club=>club.id===form.club_id&&club.verified), title:form.title||'你的服务标题', description:form.description, category:form.category||'服务类型', price_cents:Number.isFinite(Number(form.price))?Math.max(0,Math.round(Number(form.price)*100)):0, unit:form.unit, cover_url:form.cover_url, labels:form.labels, tags:form.tagsText.split(/[,，]/).map(item=>item.trim()).filter(Boolean).slice(0,4), status:'draft', rating:0, completed_count:0, created_at:'' }))
+const previewService = computed<Service>(() => ({ provider_deposit_cents:serverProviderDeposit.value, id:serviceId.value, game_id:form.game_id, provider_id:state.user?.id||'', provider_name:state.user?.nickname||'', provider_avatar:state.user?.avatar||'', club_id:form.club_id, club_name:clubs.value.find(club=>club.id===form.club_id)?.name||'', club_verified:clubs.value.some(club=>club.id===form.club_id&&club.verified), title:form.title||'你的服务标题', description:form.description, category:form.category||'服务类型', price_cents:Number.isFinite(Number(form.price))?Math.max(0,Math.round(Number(form.price)*100)):0, unit:form.unit, cover_url:form.cover_url, labels:form.labels, tags:form.tagsText.split(/[,，]/).map(item=>item.trim()).filter(Boolean).slice(0,4), status:'draft', rating:0, completed_count:0, created_at:'' }))
 const units = ['局','小时','次','任务'], textColors = ['#ffffff','#00e18a','#f4c36c','#ff6b6b','#101714'], backgroundColors = ['transparent','#07130f','#00e18a','#b98132','#a43c3c']
 let disposed=false,visible=true,loadVersion=0,loading=false,loadedSession: ReturnType<typeof currentSession> | null=null
-/** 捕获服务发布所属账号，防止授权或启用接单身份后切换会话继续写入。 */
+/** 捕获服务发布所属账号，防止手机号授权后切换会话继续写入。 */
 function currentSession(){return{id:state.user?.id,token:token(),revision:sessionRevision()}}
 /** 仅接收本页存活期间、同一用户令牌和会话版本的结果。 */
 function sameSession(session: ReturnType<typeof currentSession>): boolean {return !disposed&&session.id===state.user?.id&&session.token===token()&&session.revision===sessionRevision()}
@@ -58,12 +60,12 @@ async function load() {
   if(!visible||disposed)return
   const current=++loadVersion,entryToken=token(),revision=sessionRevision()
   let session: ReturnType<typeof currentSession> | undefined
-  loading=true;error.value=''
+  loading=true;error.value='';serverProviderDeposit.value=0
   try {
     await init()
     if(!visible||disposed||current!==loadVersion||entryToken!==token()||revision!==sessionRevision())return
     session=currentSession()
-    if(serviceId.value){const service=await getService(serviceId.value);if(!currentLoad(current,session))return;Object.assign(form,service,{price:(service.price_cents/100).toFixed(2),tagsText:(service.tags||[]).join(','),labels:service.labels||[]})}
+    if(serviceId.value){const service=await getService(serviceId.value);if(!currentLoad(current,session))return;serverProviderDeposit.value=service.provider_id===session.id?service.provider_deposit_cents||0:0;Object.assign(form,service,{price:(service.price_cents/100).toFixed(2),tagsText:(service.tags||[]).join(','),labels:service.labels||[]})}
     else{Object.assign(form,{game_id:state.gameId,title:'',description:'',category:'',price:'',unit:'局',cover_url:'',labels:[],tagsText:'',club_id:''});chooseDefaults()}
     const affiliations=state.user?await listClubs({mine:1}):[]
     if(!currentLoad(current,session))return
@@ -74,7 +76,7 @@ async function load() {
   finally{if(current===loadVersion)loading=false}
 }
 /** 会话轮换立即移除原身份挂靠；下次显示时按新身份读取，不改其他草稿。 */
-function invalidateSession(){loadVersion++;loading=false;loadedSession=null;clubs.value=[];form.club_id=''}
+function invalidateSession(){loadVersion++;loading=false;loadedSession=null;clubs.value=[];form.club_id='';serverProviderDeposit.value=0}
 watch(sessionRevision,invalidateSession,{flush:'sync'})
 /** 同一身份已完成加载时保留草稿，取消的读取则在重显后重新开始。 */
 function showPage(){visible=true;if(!loading&&(!loadedSession||!sameSession(loadedSession)))load()}
@@ -85,14 +87,14 @@ function chooseDefaults() { form.cover_url=randomGameCover(selectedGame.value);f
 /** 仅更换底图，保留所有文字、颜色、位置和服务信息。 */
 function changeCover() { form.cover_url=randomGameCover(selectedGame.value,form.cover_url) }
 /** 切换游戏，避免带入不适用的分类或封面。 */
-function changeGame(event: {detail:{value:string | number}}) { const selected=state.games[Number(event.detail.value)];if(!selected||selected.id===form.game_id)return;form.game_id=selected.id;chooseDefaults();if(!clubOptions.value.some(club=>club.id===form.club_id))form.club_id='' }
+function changeGame(id:string) { const selected=state.games.find(item=>item.id===id&&item.enabled!==false);if(!selected||selected.id===form.game_id)return;form.game_id=selected.id;chooseDefaults();if(!clubOptions.value.some(club=>club.id===form.club_id))form.club_id='' }
 /** 加入一条默认左下角文案。 */
 function addLabel() { if(form.labels.length<6) form.labels.push(newLabel(selectedGame.value?.primary_color)) }
 /** 获取当前九宫格位置索引。 */
 function positionIndex(value: string | undefined) { return Math.max(0,POSITIONS.findIndex(item=>item[0]===value)) }
 /** 获取中文位置名称。 */
 function positionName(value: string | undefined) { return POSITIONS[positionIndex(value)][1] }
-/** 单次提交锁覆盖手机号授权、接单身份启用与发布，取消或失败保留所有草稿。 */
+/** 单次提交锁覆盖手机号授权与发布，默认接单身份无需另行启用，取消或失败保留草稿。 */
 async function save() {
   if(busy.value)return
   if(!state.user)return go('/pages/account/login?next='+encodeURIComponent('/pages/services/publish'+(serviceId.value?'?id='+serviceId.value:'')))
@@ -104,7 +106,6 @@ async function save() {
     if(!form.title.trim()||!form.description.trim()||!form.category||!form.cover_url)return notify('请完整填写标题、说明、类型和封面')
     if(!/^\d+(\.\d{1,2})?$/.test(form.price)||price<100||price>1000000)return notify('价格请填写1至10000元，最多两位小数')
     if(form.labels.some(label=>!label.text.trim()||!/^#[0-9a-f]{6}$/i.test(label.color||'')||!(label.background==='transparent'||/^#[0-9a-f]{6}$/i.test(label.background||''))))return notify('请填写文案，并使用正确的六位颜色值')
-    if(!state.user?.provider_enabled){await setProviderEnabled(true);if(!sameSession(session))return;await refreshMe();if(!sameSession(session))return}
     const body={game_id:form.game_id,title:form.title.trim(),description:form.description.trim(),category:form.category,price_cents:price,unit:form.unit,cover_url:form.cover_url,labels:form.labels,tags:form.tagsText.split(/[,，]/).map(item=>item.trim()).filter(Boolean).slice(0,4),club_id:form.club_id}
     await (serviceId.value?updateService(serviceId.value,body):createService(body))
     if(!sameSession(session))return
@@ -117,5 +118,6 @@ onHide(hidePage)
 onUnload(()=>{disposed=true;hidePage()})
 </script>
 <style scoped>
-.game-selector{margin-bottom:16px;padding:0 0 12px}.selected-game-icon{width:32px;height:32px;border-radius:6px}.selected-game-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.game-selector .field{margin:0}.picker-value{justify-content:space-between;gap:12px}.preview{min-width:0;margin-bottom:16px}.preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 12px;font-size:15px;font-weight:650}.form-panel{margin-bottom:0}.form-panel>.section-title{display:block;margin-bottom:16px}.block{display:block;margin:8px 0 16px}.cover-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.cover-option{position:relative;height:64px;border:2px solid transparent;border-radius:8px;overflow:hidden}.cover-option.chosen{border-color:var(--accent)}.cover-option image{width:100%;height:100%}.cover-check{position:absolute;right:2px;bottom:2px;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--bg)}.label-editor{border:0;border-bottom:1px solid var(--line-subtle);border-radius:0;padding:16px 0;margin-top:0}.label-index{font-size:12px;color:var(--muted)}.colors{display:flex;flex-direction:column;gap:12px;margin-top:12px}.color-field{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}.color-field>text{font-size:12px;min-width:48px;color:var(--muted)}.swatches{display:flex;gap:8px;min-width:0}.swatches button{display:flex;width:28px;height:28px;min-height:28px;padding:0;border:2px solid transparent;border-radius:5px}.swatches button.chosen{border-color:var(--accent);box-shadow:0 0 0 1px var(--bg)}.swatches button.transparent{background:repeating-linear-gradient(45deg,#ffffff10 0 4px,transparent 4px 8px);border-color:var(--line)}.color-code{height:28px;font-family:monospace;font-size:11px;color:var(--muted);width:76px;margin-left:auto;padding:3px 6px;border:1px solid var(--line);border-radius:5px}.label-bottom{display:flex;flex-direction:column;gap:12px;margin-top:16px}.position-picker{display:flex;align-items:center;justify-content:space-between;width:100%;height:36px;padding:0 12px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;color:var(--text);font-size:12px}.font-picker{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}.font-picker slider{flex:1;margin:0}.position-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.position-grid button{height:36px;padding:0;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--muted);font-size:12px;line-height:34px}.position-grid button.selected{border-color:var(--accent);color:var(--accent)}.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.description{height:140px}.submit{position:sticky;bottom:12px;width:100%;z-index:3;box-shadow:0 0 0 8px var(--bg);margin-top:24px}.label-editor .input{font-size:13px}
+.game-selector{margin-bottom:16px;padding:0 0 12px}.game-selector .field{margin:0}.picker-value{justify-content:space-between;gap:12px}.preview{min-width:0;margin-bottom:16px}.preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 12px;font-size:15px;font-weight:650}.form-panel{margin-bottom:0}.form-panel>.section-title{display:block;margin-bottom:16px}.block{display:block;margin:8px 0 16px}.cover-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.cover-option{position:relative;height:64px;border:2px solid transparent;border-radius:8px;overflow:hidden}.cover-option.chosen{border-color:var(--accent)}.cover-option image{width:100%;height:100%}.cover-check{position:absolute;right:2px;bottom:2px;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--bg)}.label-editor{border:0;border-bottom:1px solid var(--line-subtle);border-radius:0;padding:16px 0;margin-top:0}.label-index{font-size:12px;color:var(--muted)}.colors{display:flex;flex-direction:column;gap:12px;margin-top:12px}.color-field{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}.color-field>text{font-size:12px;min-width:48px;color:var(--muted)}.swatches{display:flex;gap:8px;min-width:0}.swatches button{display:flex;width:28px;height:28px;min-height:28px;padding:0;border:2px solid transparent;border-radius:5px}.swatches button.chosen{border-color:var(--accent);box-shadow:0 0 0 1px var(--bg)}.swatches button.transparent{background:repeating-linear-gradient(45deg,#ffffff10 0 4px,transparent 4px 8px);border-color:var(--line)}.color-code{height:28px;font-family:monospace;font-size:11px;color:var(--muted);width:76px;margin-left:auto;padding:3px 6px;border:1px solid var(--line);border-radius:5px}.label-bottom{display:flex;flex-direction:column;gap:12px;margin-top:16px}.position-picker{display:flex;align-items:center;justify-content:space-between;width:100%;height:36px;padding:0 12px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;color:var(--text);font-size:12px}.font-picker{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}.font-picker slider{flex:1;margin:0}.position-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.position-grid button{height:36px;padding:0;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--muted);font-size:12px;line-height:34px}.position-grid button.selected{border-color:var(--accent);color:var(--accent)}.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.description{height:140px}.submit{position:sticky;bottom:12px;width:100%;z-index:3;box-shadow:0 0 0 8px var(--bg);margin-top:24px}.label-editor .input{font-size:13px}
+.platform-deposit-note{display:flex;align-items:flex-start;gap:8px;min-width:0;padding:0 0 16px;border-bottom:1px solid var(--line-subtle);color:var(--accent)}.platform-deposit-copy{display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}.platform-deposit-title{font-size:12px;line-height:18px;color:var(--text)}.platform-deposit-detail{padding:0;font-size:10px;line-height:17px;overflow-wrap:anywhere}.platform-wallet-entry{flex-shrink:0;min-height:28px;padding:0;font-size:10px;gap:3px}
 </style>

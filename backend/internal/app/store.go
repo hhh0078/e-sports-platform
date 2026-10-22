@@ -20,7 +20,7 @@ type querier interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
 }
 
-var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities"}
+var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts"}
 
 // now 返回统一的 UTC 时间文本。
 func now() string { return time.Now().UTC().Format(time.RFC3339Nano) }
@@ -102,7 +102,10 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	if _, err = tx.Exec(ctx, "SELECT pg_advisory_xact_lock(8173001)"); err != nil {
 		return err
 	}
-	names := map[string]string{"users": "平台用户与权限", "games": "游戏主题与服务分类", "services": "服务发布与审核", "clubs": "俱乐部组织与认证", "members": "俱乐部挂靠申请与成员", "orders": "交易订单与状态", "messages": "订单沟通与文字证据", "reviews": "订单完成评价", "audit": "管理员操作审计", "settings": "平台运营配置", "evidence": "订单原始图片证据与完整性摘要", "identities": "微信私密身份映射"}
+	names := map[string]string{"users": "平台用户与权限", "games": "游戏主题与服务分类", "services": "服务发布与审核", "clubs": "俱乐部组织与认证", "members": "俱乐部挂靠申请与成员", "orders": "交易订单与状态", "messages": "订单沟通与文字证据", "reviews": "订单完成评价", "audit": "管理员操作审计", "settings": "平台运营配置", "evidence": "订单原始图片证据与完整性摘要", "identities": "微信私密身份映射", "inbox": "用户未读系统通知", "inbox_receipts": "同日审核拒绝通知防重复摘要"}
+	for table, label := range map[string]string{"wallets": "分区钱包余额与冻结资金", "wallet_entries": "不可变资金变动账单", "wallet_escrows": "逐订单实付托管及原路退款分账", "wallet_topups": "余额与押金充值付款记录", "wallet_withdrawals": "服务收入提现冻结与官方转账结果", "wallet_deposit_refunds": "平台押金多笔原路退还记录", "wallet_requests": "同账号幂等号资金用途与载荷绑定记录"} {
+		names[table] = label
+	}
 	for _, table := range tables {
 		sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (id TEXT PRIMARY KEY, data JSONB NOT NULL); COMMENT ON TABLE %s IS '%s'; COMMENT ON COLUMN %s.id IS '领域记录唯一标识'; COMMENT ON COLUMN %s.data IS '经过服务端类型和边界验证的完整领域数据';", table, table, names[table], table, table)
 		if _, err = tx.Exec(ctx, sql); err != nil {
@@ -111,6 +114,18 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	}
 	_, err = tx.Exec(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS orders_number_unique ON orders ((data->>'order_no')); CREATE UNIQUE INDEX IF NOT EXISTS orders_payment_unique ON orders ((data->>'payment_transaction_id')) WHERE COALESCE(data->>'payment_transaction_id','')<>''; CREATE UNIQUE INDEX IF NOT EXISTS orders_refund_unique ON orders ((data->>'refund_id')) WHERE COALESCE(data->>'refund_id','')<>''; CREATE UNIQUE INDEX IF NOT EXISTS reviews_order_unique ON reviews ((data->>'order_id')); CREATE INDEX IF NOT EXISTS orders_buyer_idx ON orders ((data->>'buyer_id')); CREATE INDEX IF NOT EXISTS orders_provider_idx ON orders ((data->>'provider_id')); CREATE INDEX IF NOT EXISTS orders_status_idx ON orders ((data->>'status')); CREATE INDEX IF NOT EXISTS orders_refund_status_idx ON orders ((data->>'refund_status')); CREATE INDEX IF NOT EXISTS services_game_idx ON services ((data->>'game_id'),(data->>'status')); CREATE INDEX IF NOT EXISTS members_club_idx ON members ((data->>'club_id')); CREATE INDEX IF NOT EXISTS messages_order_idx ON messages ((data->>'order_id'));`)
 	if err != nil {
+		return err
+	}
+	// 历史接单字段统一为默认开启，不改变冻结状态、手机号验证、角色或其它用户资料。
+	if _, err = tx.Exec(ctx, `-- 迁移旧用户接单标记；仅更新兼容字段，账号冻结与手机号门槛保持不变。
+		UPDATE users SET data=jsonb_set(data,'{provider_enabled}','true'::jsonb,true)
+		WHERE data->'provider_enabled' IS DISTINCT FROM 'true'::jsonb`); err != nil {
+		return err
+	}
+	if _, err = tx.Exec(ctx, `CREATE INDEX IF NOT EXISTS inbox_user_time_idx ON inbox ((data->>'user_id'),(data->>'created_at'),id);`); err != nil {
+		return err
+	}
+	if err = migrateWallet(ctx, tx); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)

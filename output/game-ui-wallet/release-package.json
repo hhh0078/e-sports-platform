@@ -1,0 +1,30 @@
+{
+  "description": "小程序产物目录与有序文件树SHA-256；不包含开发者工具随后生成的private配置。",
+  "created_at": "2026-10-22T11:14:41.278215+00:00",
+  "packages": [
+    {
+      "kind": "local",
+      "directory": "frontend/dist/local/mp-weixin",
+      "api": "http://127.0.0.1:18091/api",
+      "url_check": false,
+      "appid": "wxd33b969516933076",
+      "file_count": 244,
+      "size_bytes": 875265,
+      "sha256_file_tree": "998fde7894e6a4bff0c815fa9abaf5db047ac25a6c7995f0a4155abffd2cbfc0",
+      "private_config_excluded": true
+    },
+    {
+      "kind": "release",
+      "directory": "frontend/dist/build/mp-weixin",
+      "api": "https://game.ai.58it.cn/api",
+      "url_check": true,
+      "appid": "wxd33b969516933076",
+      "file_count": 244,
+      "size_bytes": 875266,
+      "sha256_file_tree": "afea07eb7adfd811b8a84d2b7a74052a48a12306ad4755c461f0070e0d77899d",
+      "private_config_excluded": true
+    }
+  ],
+  "production_deployed": false,
+  "upload_or_real_device_acceptance": "pending"
+}

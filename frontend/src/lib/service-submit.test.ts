@@ -34,12 +34,12 @@ function harness(kind:PageKind,providerEnabled=true){
   context.store.state.ready=true;context.store.state.user={...accountA,provider_enabled:providerEnabled}
   vm.runInContext('(function(){'+executable(phoneSource)+';globalThis.requirePhone=requirePhone;globalThis.phone={phoneGate,finishPhone}})()',context)
   if(kind==='purchase')vm.runInContext('const submitServiceOrder=createOrder',context)
-  const exposed=kind==='purchase'?'submit:createOrder,busy:submitting,requirements,quantity,error,service,coverReserveTop,coverMinLabelArea':'submit:save,load,clubs,clubOptions,busy,form,serviceId,error'
+  const exposed=kind==='purchase'?'submit:createOrder,busy:submitting,requirements,quantity,error,service,coverReserveTop,coverMinLabelArea,providerDepositCents':'submit:save,load,clubs,clubOptions,busy,form,serviceId,error,previewService,changeGame'
   vm.runInContext(executable(sources[kind])+'\nglobalThis.page={'+exposed+'}',context)
   if(kind==='purchase'){vm.runInContext("id='service-A'",context);context.page.requirements.value=' 晚上八点陪练一小时 ';context.page.quantity.value=2}
   else Object.assign(context.page.form,{game_id:'delta',title:' 三角洲陪练 ',description:'按约定时段双排教学，耐心沟通。',category:'陪练教学',price:'39.90',unit:'小时',cover_url:'/static/covers/official/delta-3.jpg',labels:[],tagsText:'耐心,教学',club_id:''})
   return{
-    store:context.store,page:context.page,phone:context.phone,requests,notices,navigations,lifecycle,creationPath:kind==='purchase'?'/orders':'/services',
+    store:context.store,page:context.page,phone:context.phone,requests,notices,navigations,lifecycle,storage,creationPath:kind==='purchase'?'/orders':'/services',
     /** 比较取消、失败和旧会话后仍保留的原始表单内容。 */
     draft(){return JSON.stringify(kind==='purchase'?{requirements:context.page.requirements.value,quantity:context.page.quantity.value}:context.page.form)},
     /** 取得真实发出的请求，缺失调用直接失败。 */
@@ -108,18 +108,31 @@ test('服务创建的迟到结果不能触发新账号或已销毁页面的导�
   })
 })
 
-test('启用接单身份的迟到响应不能继续刷新新账号或发布服务',async t=>{
-  for(const boundary of ['enable','refresh'])await t.test(boundary,async()=>{
-    const subject=harness('publish',false),submitting=subject.page.submit()
-    subject.take('/me').resolve({...accountA,provider_enabled:false,phone_verified:true});await flush()
-    const enabling=subject.take('/me','PATCH')
-    if(boundary==='enable'){await switchAccount(subject);enabling.resolve({...accountA,provider_enabled:true,phone_verified:true})}
-    else{enabling.resolve({...accountA,provider_enabled:true,phone_verified:true});await flush();const refreshing=subject.take('/me');await switchAccount(subject);refreshing.resolve({...accountA,provider_enabled:true,phone_verified:true})}
-    await submitting
-    assert.equal(subject.requests.filter(item=>item.path==='/services').length,0)
-    assert.equal(subject.store.state.user.id,'B')
-    assert.deepEqual(subject.navigations,[])
+test('旧本地接单标记不触发启停接口，手机号验证通过后直接发布',async()=>{
+  const subject=harness('publish',false),submitting=subject.page.submit()
+  subject.take('/me').resolve({...accountA,provider_enabled:false,phone_verified:true});await flush()
+  assert.equal(subject.requests.filter(item=>item.path==='/me'&&item.method==='PATCH').length,0)
+  const creating=subject.take('/services','POST')
+  assert.equal(creating.body.title,'三角洲陪练')
+  creating.resolve({id:'default-provider-service'});await submitting
+  assert.deepEqual(subject.navigations,['/pages/main/index?tab=worker'])
+  assert.equal(subject.page.busy.value,false)
+})
+
+test('AI拒绝或故障不会丢失服务发布和下单草稿，可修改后重新提交',async t=>{
+  for(const kind of ['purchase','publish'] as const)for(const code of ['moderation_rejected','moderation_unavailable'])await t.test(kind+'-'+code,async()=>{
+    const subject=harness(kind),draft=subject.draft(),submitting=subject.page.submit()
+    subject.take('/me').resolve({...accountA,phone_verified:true});await flush()
+    const failure={code,message:'内容审核未通过：请修改后再提交',status:code==='moderation_rejected'?422:503}
+    subject.take(subject.creationPath,'POST').reject(failure);await submitting
+    assert.equal(subject.draft(),draft)
     assert.equal(subject.page.busy.value,false)
+    if(kind==='publish')assert.equal(subject.page.error.value,failure.message)
+    assert.equal(subject.notices[0],failure)
+    assert.deepEqual(subject.navigations,[])
+    const retry=subject.page.submit();subject.take('/me').resolve({...accountA,phone_verified:true});await flush()
+    subject.take(subject.creationPath,'POST').resolve({id:'approved-after-edit'});await retry
+    assert.equal(subject.navigations.length,1)
   })
 })
 
@@ -140,6 +153,20 @@ test('服务详情按非空自定义标签数量保留24、48、72像素文字�
 
 /** 为真实发布加载配置当前游戏素材，不模拟页面的默认封面或分类实现。 */
 function publishLoadSubject(){const subject=harness('publish');subject.store.state.games=[{id:'delta',categories:['任务协作'],covers:['/static/covers/official/delta-3.jpg']}];return subject}
+
+test('服务切换局部游戏只更新对应分类底图与失效挂靠，保留其余草稿和首页偏好',()=>{
+  const subject=harness('publish');subject.storage.set('jijie_game','delta')
+  subject.store.state.games=[{id:'delta',categories:['任务协作'],covers:['/delta.jpg']},{id:'honor',categories:['排位陪练'],covers:['/honor.jpg']},{id:'off',enabled:false,categories:['停用类型'],covers:['/off.jpg']}]
+  subject.page.clubs.value=[{id:'delta-club',name:'三角洲俱乐部',status:'active',membership_status:'owner',game_ids:['delta']},{id:'all-club',name:'综合俱乐部',status:'active',membership_status:'active',game_ids:['delta','honor']}]
+  Object.assign(subject.page.form,{club_id:'delta-club',labels:[{id:'custom',text:'保留文字',position:'bottom-left',color:'#ffffff',background:'transparent',font_size:16}]})
+  const before=JSON.stringify({title:subject.page.form.title,description:subject.page.form.description,price:subject.page.form.price,unit:subject.page.form.unit,labels:subject.page.form.labels,tagsText:subject.page.form.tagsText})
+  subject.page.changeGame('honor')
+  assert.equal(subject.page.form.game_id,'honor');assert.equal(subject.page.form.category,'排位陪练');assert.equal(subject.page.form.cover_url,'/honor.jpg');assert.equal(subject.page.form.club_id,'')
+  assert.equal(JSON.stringify({title:subject.page.form.title,description:subject.page.form.description,price:subject.page.form.price,unit:subject.page.form.unit,labels:subject.page.form.labels,tagsText:subject.page.form.tagsText}),before)
+  const switched=JSON.stringify(subject.page.form);subject.page.changeGame('off');subject.page.changeGame('missing');subject.page.changeGame('honor');assert.equal(JSON.stringify(subject.page.form),switched)
+  subject.page.form.club_id='all-club';subject.page.changeGame('delta');assert.equal(subject.page.form.club_id,'all-club')
+  assert.equal(subject.store.state.gameId,'delta');assert.equal(subject.storage.get('jijie_game'),'delta')
+})
 
 /** 提供读取阶段需要回填的真实服务字段，区分旧响应与新草稿。 */
 function serviceData(title: string){return{id:'service-A',game_id:'delta',title,description:'按照订单约定完成任务并提交记录。',category:'任务协作',price_cents:3900,unit:'小时',cover_url:'/static/covers/official/delta-3.jpg',labels:[],tags:[],club_id:''}}
@@ -217,4 +244,42 @@ test('发布页首次加载紧接显示生命周期不会重复读取',async()=>
   subject.take('/services/service-A').resolve(serviceData('首屏服务'));await flush()
   subject.take('/clubs?mine=1').resolve([]);await flush()
   assert.equal(subject.page.form.title,'首屏服务')
+})
+
+
+test('服务详情只展示后端有效平台押金，未知或退款后零金额隐藏',()=>{
+  const subject=harness('purchase')
+  for(const amount of [undefined,0,-1,NaN,Infinity,1.5]){
+    subject.page.service.value={provider_deposit_cents:amount}
+    assert.equal(subject.page.providerDepositCents.value,0)
+  }
+  subject.page.service.value={provider_deposit_cents:20000}
+  assert.equal(subject.page.providerDepositCents.value,20000)
+  subject.page.service.value={provider_deposit_cents:0}
+  assert.equal(subject.page.providerDepositCents.value,0)
+})
+
+test('编辑预览只使用本人服务端押金，草稿不能伪造或提交押金标记',async()=>{
+  const subject=publishLoadSubject();subject.page.serviceId.value='service-A'
+  const loading=subject.page.load();await flush()
+  subject.take('/services/service-A').resolve({...serviceData('本人服务'),provider_id:'A',provider_deposit_cents:20000});await flush()
+  subject.take('/clubs?mine=1').resolve([]);await loading
+  assert.equal(subject.page.previewService.value.provider_deposit_cents,20000)
+  subject.page.form.provider_deposit_cents=99999999
+  assert.equal(subject.page.previewService.value.provider_deposit_cents,20000)
+  const saving=subject.page.submit()
+  subject.take('/me').resolve({...accountA,phone_verified:true});await flush()
+  const writing=subject.take('/services/service-A','PATCH')
+  assert.equal('provider_deposit_cents' in writing.body,false)
+  writing.resolve({id:'service-A'});await saving
+})
+
+test('发布预览换身份立即清除已读押金，旧身份迟到响应不能恢复标识',async()=>{
+  const subject=publishLoadSubject();subject.page.serviceId.value='service-A'
+  const loading=subject.page.load();await flush()
+  const old=subject.take('/services/service-A')
+  await switchAccount(subject)
+  old.resolve({...serviceData('旧身份服务'),provider_id:'A',provider_deposit_cents:20000});await loading
+  assert.equal(subject.page.previewService.value.provider_deposit_cents,0)
+  assert.equal(subject.store.state.user.id,'B')
 })

@@ -85,6 +85,7 @@ func TestIntegrationPhoneGateAndPrivateIdentity(t *testing.T) {
 			}
 		}
 	}
+	mockAllowAI(t, api)
 	api.App.Config.DevMode = false
 	api.call("worker", "POST", "/me/phone/dev", map[string]string{"phone_number": "13800138000"}, 404, nil)
 	// 开发模式绑定的号码不被当作正式微信号码，官方验证过的用户仍能提交需求。

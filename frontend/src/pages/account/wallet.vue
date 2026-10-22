@@ -1,0 +1,52 @@
+<!-- 文件作用：按先行设计展示真实钱包分区、资金原单与自愿平台押金，所有资金变化由服务端记账。 -->
+<template>
+  <AppShell title="我的钱包" back :style="{'--accent-soft':softAccent}">
+    <view v-if="error" class="error-box" @click="load()">{{ error }} · 点击重试</view>
+    <view class="balance-section">
+      <text class="balance-caption">可提现余额</text>
+      <view class="balance-main"><text class="balance-value">{{ state.user ? (wallet ? '¥'+fixed(wallet.available_cents) : '—') : '¥0.00' }}</text><view class="wallet-actions"><button class="btn btn-secondary btn-small" :disabled="busy" @click="open('balance')">充值</button><button class="btn btn-small" :disabled="busy" @click="open('withdrawal')">提现</button></view></view>
+      <text v-if="!state.user" class="wallet-note">登录后查看</text>
+      <view class="balance-breakdown"><text>待结算 ¥{{ fixed(wallet?.pending_cents) }}</text><text>充值余额 ¥{{ fixed(wallet?.recharge_cents) }}</text></view>
+      <text v-if="wallet?.withdrawal_frozen_cents" class="wallet-note">提现冻结 ¥{{ fixed(wallet.withdrawal_frozen_cents) }}</text>
+      <text class="wallet-note">服务验收后保留 {{ wallet?.settlement_hold_days || 7 }} 天售后期，无退款争议后转为可提现。充值余额仅可消费。</text>
+    </view>
+    <view class="deposit-section"><view class="wallet-heading"><text class="section-title">平台押金</text><text class="voluntary">自愿</text></view><view class="deposit-main"><text class="deposit-value">¥{{ fixed(wallet?.deposit_cents) }}</text><button class="text-btn" :disabled="busy" @click="open('deposit')">自愿缴纳 <Icon name="arrow" :size="16"/></button></view><text class="wallet-note">接单无需缴纳平台押金。缴纳后，服务展示专属标识。</text><text class="wallet-note">无待付款、进行中或售后订单时，可申请原路退还。</text><view v-if="wallet?.deposit_cents" class="refund-entry"><button class="text-btn" :disabled="busy" @click="open('refund')">申请退还押金</button></view><text v-if="wallet?.deposit_refunding_cents" class="wallet-note">退还处理中 ¥{{ fixed(wallet.deposit_refunding_cents) }}，该部分不再展示押金标识。</text></view>
+    <view v-if="activeTopups.length||activeWithdrawals.length||activeRefunds.length" class="progress-section"><text class="section-title">资金进度</text>
+      <view v-for="record in activeTopups" :key="record.id" class="progress-row"><view class="record-copy"><text>{{ record.purpose==='deposit'?'平台押金':'余额充值' }} ¥{{ fixed(record.amount_cents) }}</text><text class="wallet-note">{{ walletStatus(record.status) }} · {{ time(record.created_at) }}</text></view><view class="record-actions"><button class="text-btn" :disabled="busy" @click="resumeTopup(record)">继续支付</button><button class="text-btn" :disabled="busy" @click="syncRecord('topup',record.id)">同步</button></view></view>
+      <view v-for="record in activeWithdrawals" :key="record.id" class="progress-row"><view class="record-copy"><text>提现 ¥{{ fixed(record.amount_cents) }}</text><text class="wallet-note">{{ walletStatus(record.status) }}</text><text v-if="record.failure_reason" class="wallet-note">{{ record.failure_reason }}</text></view><button class="text-btn" :disabled="busy" @click="syncRecord('withdrawal',record.id,record.status==='wait_user_confirm')">{{ record.status==='wait_user_confirm'?'确认收款':'同步' }}</button></view>
+      <view v-for="record in activeRefunds" :key="record.id" class="progress-row"><view class="record-copy"><text>退还押金 ¥{{ fixed(record.amount_cents) }}</text><text class="wallet-note">{{ walletStatus(record.status) }}</text></view><button class="text-btn" :disabled="busy" @click="syncRecord('refund',record.id)">同步</button></view>
+    </view>
+    <view class="ledger-section"><view class="wallet-heading ledger-heading"><text class="section-title">交易明细</text><button v-if="state.user" class="text-btn" :disabled="loading" @click="load()">刷新</button></view><view class="ledger-tabs"><button v-for="tab in tabs" :key="tab.id" :class="['ledger-tab',{selected:filter===tab.id}]" @click="filter=tab.id">{{ tab.label }}</button></view>
+      <view v-if="loading&&!entries.length" class="ledger-empty">正在读取资金记录…</view><view v-else-if="!filteredEntries.length" class="ledger-empty"><Icon name="receipt" :size="28"/><text>{{ state.user?'暂无资金记录':'请登录后查看资金记录' }}</text><button v-if="!state.user" class="text-btn" @click="open('balance')">去登录</button></view>
+      <view v-for="entry in filteredEntries" :key="entry.id" class="ledger-row"><view class="record-copy"><text class="entry-title">{{ entry.note || entryName(entry) }}</text><text class="wallet-note">{{ time(entry.created_at) }} · {{ entryName(entry) }}</text></view><text class="entry-amount">¥{{ fixed(entry.amount_cents) }}</text></view><button v-if="hasMore" class="text-btn load-more" :disabled="loading" @click="load(true)">加载更多明细</button>
+    </view>
+    <text v-if="wallet?.dev_mode" class="wallet-note dev-note">本地测试钱包，充值、支付和提现均为模拟资金。</text>
+    <view v-if="operation" class="modal-mask" @click="close"><view class="wallet-modal" @click.stop><text class="section-title">{{ titles[operation] }}</text><text class="wallet-note">{{ descriptions[operation] }}</text><view class="amount-field"><text>¥</text><input v-model="amount" class="amount-input" type="digit" maxlength="12" placeholder="0.00" :disabled="busy"/></view><view v-if="operation==='withdrawal'&&Number(amount)>=2000" class="field"><text class="field-label">微信实名认证姓名</text><input v-model="userName" class="input" maxlength="40" placeholder="仅用于本次官方转账实名核验" :disabled="busy"/></view><text v-if="formError" class="form-error">{{ formError }}</text><view class="action-footer"><button class="text-btn" :disabled="busy" @click="close">取消</button><button class="btn" :disabled="busy" @click="submit">{{ busy?'处理中…':'确认'+titles[operation] }}</button></view></view></view>
+  </AppShell>
+</template>
+<script setup lang="ts">
+import { computed } from 'vue'
+import AppShell from '../../components/AppShell.vue'
+import Icon from '../../components/Icon.vue'
+import { state,game } from '../../lib/store'
+import { time } from '../../lib/format'
+import { useWallet } from '../../lib/use-wallet'
+import type { WalletEntry } from '../../types/wallet'
+import { walletStatus,walletKind } from '../../lib/wallet'
+const {wallet,entries,topups,withdrawals,refunds,filteredEntries,loading,busy,error,operation,amount,userName,formError,filter,hasMore,load,open,close,submit,syncRecord,resumeTopup}=useWallet()
+/** 低对比主题底色沿用当前游戏主色，兼容微信端不支持color-mix的渲染器。 */
+const softAccent=computed(()=>/^#[0-9a-f]{6}$/i.test(game.value.primary_color)?game.value.primary_color+'24':'#8de8b624')
+const tabs=[{id:'all',label:'全部'},{id:'recharge',label:'充值'},{id:'withdrawal',label:'提现'},{id:'deposit',label:'押金'}]
+const titles={balance:'充值',withdrawal:'提现',deposit:'缴纳押金',refund:'退还押金'}
+const descriptions={balance:'充值余额仅用于平台消费，不可提现。',withdrawal:'仅可提现服务收入。申请后冻结金额，平台审核后由微信转账。',deposit:'平台押金完全自愿，不影响自由接单。',refund:'退至押金原支付渠道；双方均无待付款、进行中或售后订单才能退还。'}
+const activeTopups=computed(()=>topups.value.filter(record=>record.status==='pending_payment'))
+const activeWithdrawals=computed(()=>withdrawals.value.filter(record=>record.status!=='success').sort((a,b)=>Number(['failed','rejected'].includes(a.status))-Number(['failed','rejected'].includes(b.status))))
+const activeRefunds=computed(()=>refunds.value.filter(record=>record.status==='processing'))
+/** 同类充值分录根据真实分区显示押金名称，避免把押金误标为消费充值。 */
+function entryName(entry:WalletEntry):string{return entry.kind==='topup'&&entry.deposit_delta>0?'缴纳平台押金':walletKind(entry.kind)}
+/** 钱包金额保留两位小数，未取得余额时由页面单独显示占位。 */
+function fixed(cents?:number):string{return ((cents||0)/100).toFixed(2)}
+</script>
+<style scoped>
+.balance-section,.deposit-section,.progress-section{padding:24px 0;border-bottom:1px solid var(--line-subtle)}.balance-caption{display:block;color:var(--muted);font-size:14px}.balance-main{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:12px 0}.balance-value{font-size:42px;line-height:52px;font-weight:700;letter-spacing:-1px;min-width:0;overflow-wrap:anywhere}.wallet-actions{display:flex;gap:8px;flex-shrink:0}.balance-breakdown{display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--muted);font-size:14px}.wallet-note{display:block;font-size:14px;line-height:22px;color:var(--muted);overflow-wrap:anywhere}.balance-section>.wallet-note{margin-top:12px}.wallet-heading{display:flex;align-items:center;gap:8px;min-width:0}.voluntary{font-size:12px;line-height:20px;padding:0 6px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}.deposit-main{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0}.deposit-value{font-size:30px;line-height:38px;font-weight:650}.refund-entry{margin-top:12px}.ledger-section{padding:24px 0}.ledger-heading{justify-content:space-between;margin-bottom:16px}.ledger-tabs{display:flex;align-items:center;padding:3px;gap:4px;border:1px solid var(--line-subtle);border-radius:24px;background:var(--surface)}.ledger-tab{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;height:32px;padding:0;background:transparent;border-radius:20px;color:var(--muted);font-size:14px}.ledger-tab.selected{color:var(--text);background:var(--accent-soft)}.ledger-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:200px;color:var(--muted);font-size:14px}.progress-row,.ledger-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;padding:16px 0;border-bottom:1px solid var(--line-subtle)}.record-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;font-size:14px;overflow-wrap:anywhere}.record-actions{display:flex;flex-direction:column;gap:8px}.entry-title{line-height:22px}.entry-amount{flex-shrink:0;font-size:16px;font-weight:600}.load-more{display:flex;margin:16px auto}.dev-note{padding-bottom:24px}.wallet-modal{width:100%;max-width:440px;padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--bg);box-sizing:border-box;max-height:85vh;overflow:auto}.wallet-modal>.wallet-note{margin:12px 0}.amount-field{display:flex;align-items:center;gap:8px;height:60px;border-bottom:1px solid var(--line);margin:12px 0 20px;font-size:28px}.amount-input{flex:1;min-width:0;height:44px;font-size:30px;color:var(--text)}.form-error{display:block;margin:12px 0;color:#ffad9b;font-size:14px;line-height:22px}.wallet-modal .action-footer{display:flex;align-items:center;justify-content:flex-end;gap:24px;margin-top:24px}.wallet-modal .action-footer .btn{min-width:120px}
+</style>

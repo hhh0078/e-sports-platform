@@ -2,6 +2,7 @@
 package app
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -39,6 +40,22 @@ func adminQuery(r *http.Request, resource string) (string, []any, error) {
 			where += " OR " + extra
 		}
 		where += ") "
+	}
+	statuses := map[string][]string{"services": {"pending", "active", "paused", "rejected"}, "clubs": {"pending", "active", "rejected"}, "users": {"active", "frozen"}}
+	if allowed, filtered := statuses[resource]; filtered {
+		status := strings.TrimSpace(r.URL.Query().Get("status"))
+		if status != "" && status != "all" {
+			if !contains(allowed, status) {
+				return "", nil, fail(400, "管理列表状态筛选无效")
+			}
+			if where == "" {
+				where = "WHERE "
+			} else {
+				where += "AND "
+			}
+			args = append(args, status)
+			where += fmt.Sprintf("data->>'status'=$%d ", len(args))
+		}
 	}
 	if resource == "orders" && r.URL.Query().Get("refund") == "1" {
 		if where == "" {

@@ -2,7 +2,21 @@
 
 本文对应当前项目：Go API + PostgreSQL + Redis；域名 `game.ai.58it.cn`。前端由微信发布，服务器不需要运行 Node、Vite 或 H5。游戏封面嵌入 Go 后端，随 `/static/covers/` 提供；用户上传的图片保存在 PostgreSQL 中。
 
-## 本次已部署状态
+## 本轮源码与部署边界
+
+2026-10-22新增钱包/押金/提现、后台控制台、AI审核、消息中心和共享游戏选择器，源码位于 `codex/game-ui-refinements` 分支。本轮尚未部署生产，以下10月20日记录仅是历史快照；不能把旧服务器健康检查当作新版功能通过。
+
+新机器从本轮源码构建时先取得该分支，再执行下文配置与Docker构建：
+
+```bash
+git clone --branch codex/game-ui-refinements https://gitee.com/xxooxx8/e-sports-platform.git jijie-source
+cd jijie-source
+git rev-parse --short HEAD
+```
+
+已有生产目录升级时先备份私密配置、数据库和当前镜像，再拉取已核对的提交；保留 `deploy/.env`，不要覆盖为模板，也不要带入本地模拟资金库。执行前应核对实际分支和最终交付提交。
+
+## 历史部署记录（2026-10-20）
 
 2026-10-20 已从 Gitee `master` 的提交 `6ea28d5` 完成源码部署，当前 API 镜像为 `jijie-api:20261020-gitee-6ea28d5`，三个容器均为 healthy。源码位于 `/www/wwwroot/game.ai.58it.cn`，生产配置为该目录下的 `deploy/.env`，权限 `600`；部署前数据库备份为 `.deploy-backups/pre-gitee-20261020.sql.gz`，并已通过 gzip 完整性检查。原 `/opt/jijie` 发布目录及历史备份仍保留，可用于故障回退。
 
@@ -130,7 +144,7 @@ docker compose up -d --force-recreate api
 
 ## 7. 微信支付与退款
 
-先完成微信支付商户开通、商户与小程序 AppID 关联及实际服务类目审核。在小程序“管理后台 → 设置 → 协议与支付配置”填写：
+先完成微信支付商户开通、商户与小程序 AppID 关联及实际服务类目审核。在小程序“我的 → 平台管理中心 → 微信支付”填写：
 
 1. 商户号（MchID）。
 2. 商户 API 证书序列号和 RSA 私钥 PEM。
@@ -145,6 +159,16 @@ docker compose up -d --force-recreate api
 
 真实测试必须使用普通真实用户发布并审核通过的服务。以允许的最低金额完成一次支付、同步查询、交付确认、退款协商、平台介入和退款到账核验；`demo_` 演示订单禁止真实付款。当前未配置商户的部署不能声称真实资金链路已验收。
 
+钱包提现审核、商家转账公开场景配置在控制台“钱包审核”，用户个人钱包不提供商户配置。充值余额只可消费，服务收入在验收后七天无售后才可提现；平台押金独立记账、无在途订单才可原路退还。完整配置、未知结果原单恢复及验收方法见[钱包配置与测试](WALLET_SETUP_AND_TEST.md)。开发资金数据不能直接作为生产资金库，正式部署使用独立生产数据库。
+
+### 内容审核与系统通知
+
+部署新后端、完成首次管理员授权后，进入“平台管理中心 → AI 设置”，核对默认兼容接口 `https://maas.qianwenaiapi.com/compatible-mode/v1` 和模型 `qwen3.8-flash`，填入自己的密钥并保存。提示词已包含电竞平台文字与图片审核规则，可由管理员调整。点击“测试连接”只验证已保存配置的固定文字请求；必须再用正常图、违规测试图独立核对模型是否支持图像，不能把文字连通等同图像审核完成。
+
+审核密钥同样依赖长期保留的 `CONFIG_ENCRYPTION_KEY` 加密。正式环境未配密钥、模型不支持图片、请求故障或返回格式错误时，暂停该次用户内容提交，不回退成本地模拟。上线前同步自定义隐私政策中的AI处理范围；已保存的自定义条款不会被新版默认文本覆盖。
+
+控制台“发送平台消息”可定向发送或广播；用户“我的 → 消息中心”只显示标题。未读消息保留在服务器，点击详情后先持久保存本机全文与已读，再删除本人服务器副本；已读历史只在读过的设备保留。规则与测试见[AI审查与消息中心](AI_MODERATION_MESSAGES.md)。
+
 ## 8. 编译、上传和发布小程序
 
 ```bash
@@ -158,10 +182,10 @@ cd 项目源码目录
 
 H5 只用于本地开发预览，不部署到本次服务器。发布包通过后端托管游戏图，首屏需能访问 downloadFile 域名。
 
-另有独立的本地模拟包 `frontend/dist/local/mp-weixin`，连接本机 `127.0.0.1:8090` 并允许本地调试，用于五种体验身份与测试交易，不能作为正式上传包。重新生成本地包：
+另有独立的本地模拟包 `frontend/dist/local/mp-weixin`，本轮验收连接本机 `127.0.0.1:18091` 并允许本地调试，用于五种体验身份与测试交易，不能作为正式上传包。常规开发脚本默认API端口为8090，重建时应按实际运行服务显式指定，不能连接错误环境。重新生成本轮本地包：
 
 ```bash
-UNI_OUTPUT_DIR="$(pwd)/frontend/dist/local/mp-weixin" npm --prefix frontend run build:mp-weixin
+VITE_API_BASE=http://127.0.0.1:18091/api UNI_OUTPUT_DIR="$(pwd)/frontend/dist/local/mp-weixin" npm --prefix frontend run build:mp-weixin
 ```
 
 本地 H5 仍为 `http://127.0.0.1:5173/`。两个包各自独立，重新运行 `release-mini.sh` 不会把本地目录当作正式发布产物。

@@ -32,7 +32,7 @@
         <text class="updated">订单更新于 {{ time(order.updated_at) }} · {{ state.devMode ? '本地测试交易，不产生真实扣费' : '所有金额以订单约定为准' }}</text>
       </template>
     </view>
-    <view v-if="pendingAction" class="modal-mask" @click="pendingAction = null"><view class="modal" @click.stop><text class="modal-title">{{ pendingAction.label }}</text><text class="muted">{{ pendingAction.tip || '确认后，系统会在聊天室记录这次操作。' }}</text><textarea v-if="pendingAction.note" v-model="actionNote" class="input modal-input" maxlength="1000" placeholder="请详细说明，作为双方协商与平台判断的依据"/><view v-if="pendingAction.id === 'pay'" class="payment-summary"><text>应付金额</text><text>¥{{ money(order?.amount_cents) }}</text></view><text v-if="pendingAction.id === 'pay' && state.devMode" class="dev-warning">当前为本地测试支付，不会真实扣款。</text><view class="action-footer modal-actions"><button class="text-btn" :disabled="busy" @click="pendingAction = null">再想想</button><button class="btn" :disabled="busy || (pendingAction.note && !actionNote.trim())" @click="execute">{{ busy ? '处理中…' : '确认' + pendingAction.label }}</button></view></view></view>
+    <view v-if="pendingAction" class="modal-mask" @click="pendingAction = null"><view class="modal" @click.stop><text class="modal-title">{{ pendingAction.label }}</text><text class="muted">{{ pendingAction.tip || '确认后，系统会在聊天室记录这次操作。' }}</text><textarea v-if="pendingAction.note" v-model="actionNote" class="input modal-input" maxlength="1000" placeholder="请详细说明，作为双方协商与平台判断的依据"/><view v-if="pendingAction.id === 'pay'" class="payment-summary"><text>应付金额</text><text>¥{{ money(order?.amount_cents) }}</text></view><view v-if="pendingAction.id === 'pay'" class="payment-options"><button :class="['payment-option',{chosen:paymentChannel==='wechat'}]" :disabled="busy" @click="paymentChannel='wechat'"><Icon name="weixin" :size="21"/><text class="payment-option-copy">微信支付</text><Icon :name="paymentChannel==='wechat'?'checkbox-filled':'circle'" :size="20"/></button><button :class="['payment-option',{chosen:paymentChannel==='balance'}]" :disabled="busy||!paymentWallet||paymentWallet.spendable_cents<(order?.amount_cents||0)" @click="paymentChannel='balance'"><Icon name="wallet" :size="21"/><view class="payment-option-copy"><text>钱包余额</text><text class="payment-hint">{{ paymentWallet?'可用余额 ¥'+money(paymentWallet.spendable_cents):'正在读取余额…' }}{{ paymentWallet&&paymentWallet.spendable_cents<(order?.amount_cents||0)?' · 余额不足':'' }}</text></view><Icon :name="paymentChannel==='balance'?'checkbox-filled':'circle'" :size="20"/></button><text class="payment-hint">充值余额仅可消费，不能提现。</text><text v-if="walletError" class="payment-hint danger">{{ walletError }}</text></view><text v-if="pendingAction.id === 'pay' && state.devMode" class="dev-warning">当前为本地测试支付，不会真实扣款。</text><view class="action-footer modal-actions"><button class="text-btn" :disabled="busy" @click="pendingAction = null">再想想</button><button class="btn" :disabled="busy || (pendingAction.note && !actionNote.trim())" @click="execute">{{ busy ? '处理中…' : '确认' + pendingAction.label }}</button></view></view></view>
   </AppShell>
 </template>
 <script setup lang="ts">
@@ -46,21 +46,28 @@ import { getOrder, listMessages, listOrderReviews, payOrder, syncOrderPayment, p
 import { retryOrderRefund, resolveOrder } from '../../api/admin.api'
 import type { Order, Message, Review } from '../../types/models'
 import { token, errorMessage, errorStatus, isCancelled } from '../../api/client'
+import { getWallet } from '../../api/wallet.api'
+import type { Wallet } from '../../types/wallet'
+import { requestWechatPayment } from '../../lib/payment'
+import { newWalletRequestID } from '../../lib/wallet'
+import { requirePhone } from '../../lib/phone'
 import { state, init, sessionRevision } from '../../lib/store'
 import { money, time, statusLabel, notify, assetUrl } from '../../lib/format'
 /** 订单状态操作及确认表单配置。 */
 interface OrderAction { id: string; label: string; primary?: boolean; note?: boolean; tip?: string }
 const id = ref(''), order = ref<Order | null>(null), messages = ref<Message[]>([]), reviews = ref<Review[]>([]), error = ref(''), busy = ref(false), sending = ref(false), draft = ref(''), scrollTarget = ref(''), pendingAction = ref<OrderAction | null>(null), actionNote = ref(''), rating = ref(5), reviewText = ref('')
 const hasEarlier = ref(false), loadingEarlier = ref(false)
+const paymentChannel=ref<'wechat'|'balance'>('wechat'),paymentWallet=ref<Wallet|null>(null),walletError=ref('')
+let disposed=false,paymentPreparation=0
 let timer: ReturnType<typeof setInterval> | undefined, polling = false, visible = false, chatInitialized = false, viewerID = '', pageVersion = 0
 /** 捕获一次订单操作的账号和会话，防止迟到响应进入其他账号。 */
 function currentSession() { return { id:state.user?.id, token:token(), revision:sessionRevision() } }
 /** 微信支付和原生选图可以临时隐藏页面，但只能由原账号继续请求。 */
-function sameSession(session: ReturnType<typeof currentSession>): boolean { return session.id===state.user?.id&&session.token===token()&&session.revision===sessionRevision() }
+function sameSession(session: ReturnType<typeof currentSession>): boolean { return !disposed&&session.id===state.user?.id&&session.token===token()&&session.revision===sessionRevision() }
 /** 页面显示且版本、会话都一致时才回填私有订单和证据。 */
 function currentRequest(version: number, session: ReturnType<typeof currentSession>): boolean { return visible&&version===pageVersion&&sameSession(session) }
 /** 切换身份立即移除上一位参与者的私有内容和未发送草稿。 */
-function clearPrivateOrder(): void { order.value=null;messages.value=[];reviews.value=[];draft.value='';pendingAction.value=null;actionNote.value='';reviewText.value='';chatInitialized=false;hasEarlier.value=false;loadingEarlier.value=false;pageVersion++;polling=false }
+function clearPrivateOrder(): void { order.value=null;messages.value=[];reviews.value=[];draft.value='';pendingAction.value=null;actionNote.value='';reviewText.value='';chatInitialized=false;paymentWallet.value=null;walletError.value='';hasEarlier.value=false;loadingEarlier.value=false;pageVersion++;polling=false }
 watch(()=>state.user?.id,()=>{clearPrivateOrder();if(visible)load()})
 const isBuyer = computed(() => order.value?.buyer_id === state.user?.id)
 const isProvider = computed(() => order.value?.provider_id === state.user?.id)
@@ -78,10 +85,10 @@ const actions = computed(() => {
   if (isProvider.value && status === 'open' && !suspended) result.push({ id:'accept', label:'接受订单', primary:true })
   if (isProvider.value && status === 'accepted' && !suspended) result.push({ id:'start', label:'开始服务', primary:true })
   if (isProvider.value && status === 'in_progress' && !suspended) result.push({ id:'deliver', label:'提交交付', primary:true, note:true, tip:'说明已经完成的内容，必要时在聊天室上传战绩或任务截图。' })
-  if (isBuyer.value && status === 'delivered' && !suspended) result.push({ id:'confirm', label:'验收并完成', primary:true, tip:'确认服务已按约定完成。确认后该订单计入打手收入。' })
-  if (isBuyer.value && ['open','accepted','in_progress','delivered','completed'].includes(status) && !suspended && refund !== 'approved') result.push({ id:'request_refund', label:refund === 'rejected' ? '补充退款申请' : '申请退款', note:true, tip:'请写清退款原因。打手可同意或拒绝；有争议可申请平台介入。' })
-  if (isBuyer.value && ['requested','rejected'].includes(refund)) result.push({ id:'escalate', label:'申请平台介入', note:true, tip:'请说明争议要点，平台将结合订单要求、聊天和图片证据处理。' })
-  if (isBuyer.value && ['requested','rejected'].includes(refund)) result.push({ id:'withdraw_refund', label:'撤销退款申请' })
+  if (isBuyer.value && status === 'delivered' && !suspended) result.push({ id:'confirm', label:'验收并完成', primary:true, tip:'确认服务已按约定完成。确认后进入7天售后待结算期，无退款争议后转为可提现收入。' })
+  if (isBuyer.value && ['open','accepted','in_progress','delivered','completed'].includes(status) && !suspended && refund !== 'approved' && !current.refund_final) result.push({ id:'request_refund', label:refund === 'rejected' ? '补充退款申请' : '申请退款', note:true, tip:'请写清退款原因。打手可同意或拒绝；有争议可申请平台介入。' })
+  if (isBuyer.value && !current.refund_final && ['requested','rejected'].includes(refund)) result.push({ id:'escalate', label:'申请平台介入', note:true, tip:'请说明争议要点，平台将结合订单要求、聊天和图片证据处理。' })
+  if (isBuyer.value && !current.refund_final && ['requested','rejected'].includes(refund)) result.push({ id:'withdraw_refund', label:'撤销退款申请' })
   if (isProvider.value && refund === 'requested') result.push({ id:'approve_refund', label:'同意退款', primary:true }, { id:'reject_refund', label:'拒绝退款', note:true, tip:'请详细说明拒绝理由，并在聊天室补充履约证据。' })
   return result
 })
@@ -124,7 +131,36 @@ async function loadEarlier() {
 /** 让新消息滚动到末尾，避免重复设置同一锚点无效。 */
 async function scrollChat() { scrollTarget.value = ''; await nextTick(); scrollTarget.value = 'chat-bottom' }
 /** 准备可审阅的确认表单，不立即触发金额或状态变更。 */
-function prepare(action: OrderAction) { pendingAction.value = action; actionNote.value = '' }
+async function prepare(action: OrderAction) {
+  if(busy.value)return
+  const prepared=++paymentPreparation
+  pendingAction.value=action;actionNote.value=''
+  if(action.id!=='pay')return
+  paymentChannel.value='wechat';paymentWallet.value=null;walletError.value=''
+  const session=currentSession(),version=pageVersion
+  try{const result=await getWallet();if(currentRequest(version,session)&&prepared===paymentPreparation&&pendingAction.value?.id==='pay')paymentWallet.value=result}
+  catch(err){if(currentRequest(version,session)&&prepared===paymentPreparation&&pendingAction.value?.id==='pay')walletError.value=errorMessage(err)}
+}
+/** 余额付款原请求号跨未知响应重试保持一致，不保存资金或微信凭据。 */
+function balanceRequestID():string {const key='jijie_order_balance_request:'+state.user?.id+':'+id.value;const value=String(uni.getStorageSync(key)||newWalletRequestID());uni.setStorageSync(key,value);return value}
+/** 调用统一付款工具后查询服务端实付状态；本地回调不代表付款成功。 */
+async function payCurrentOrder(session: ReturnType<typeof currentSession>):Promise<boolean>{
+  if(!(await requirePhone())||!sameSession(session)||!visible)return false
+  if(paymentChannel.value==='balance'&&(!paymentWallet.value||paymentWallet.value.spendable_cents<(order.value?.amount_cents||0)))throw new Error('钱包余额不足，请充值或选择微信支付')
+  const result=await payOrder(id.value,{channel:paymentChannel.value,...(paymentChannel.value==='balance'?{request_id:balanceRequestID()}:{})})
+  if(!sameSession(session))return false
+  let paid=result.order
+  if(result.mode==='wechat'&&paid.payment_status!=='paid'){
+    if(!visible)return false
+    if(!result.pay_params)throw new Error('支付参数不完整，请同步原订单资金状态')
+    try{await requestWechatPayment(result.pay_params)}catch{/* 用户取消或微信未知响应均需查询原单，不假设已扣款。 */}
+    if(!sameSession(session))return false
+    paid=await syncOrderPayment(id.value)
+  }
+  if(!sameSession(session))return false
+  if(paid.payment_status!=='paid'){if(visible)notify('支付尚未确认，请同步原订单资金状态');return false}
+  return true
+}
 /** 付款、履约与退款操作使用服务端状态机，提交中禁用重复点击。 */
 async function execute() {
   if (busy.value || !pendingAction.value) return
@@ -132,7 +168,7 @@ async function execute() {
   busy.value = true
   try {
     const action = pendingAction.value.id
-    if (action === 'pay') { const result = await payOrder(id.value);if(!sameSession(session))return;if (result.mode !== 'dev' && result.pay_params) { const params=result.pay_params; await new Promise<void>((resolve, reject) => uni.requestPayment({ provider:'wxpay', ...params, success:()=>resolve(), fail:reject }));if(!sameSession(session))return;await syncOrderPayment(id.value) } }
+    if (action === 'pay') { if(!(await payCurrentOrder(session)))return }
     else if (action === 'retry_refund') await retryOrderRefund(id.value)
     else if (action === 'sync_payment') await syncOrderPayment(id.value)
     else if (action.startsWith('resolve_')) await resolveOrder(id.value,action.slice(8),actionNote.value.trim())
@@ -165,7 +201,7 @@ function stop() { visible = false;pageVersion++;polling=false;loadingEarlier.val
 onLoad(options => { id.value = options?.id || '';if(!id.value)error.value='订单不存在或缺少编号' })
 onShow(() => { visible = true; load(); clearInterval(timer); timer = setInterval(() => { if (visible) load(true) }, 4000) })
 onHide(stop)
-onUnload(stop)
+onUnload(()=>{disposed=true;stop()})
 </script>
 <style scoped>
 .detail-content{min-width:0;padding-bottom:24px}.loading{text-align:center;padding:40px 0}.order-heading{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;min-width:0}.status-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:30px;height:32px;color:var(--accent)}.status-copy{flex:1;min-width:0}.status-title{display:block;font-size:21px;line-height:30px;font-weight:750;color:var(--accent)}.order-number{display:block;margin-top:2px;color:var(--muted);font-size:10px;line-height:18px;overflow-wrap:anywhere}.stage-description{display:block;margin-top:4px;font-size:11px;line-height:18px;color:var(--muted)}
@@ -173,4 +209,5 @@ onUnload(stop)
 .actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:12px 0 16px;border-bottom:1px solid var(--line-subtle);min-width:0}.order-primary{flex:1;min-width:160px}.order-secondary{flex-shrink:0;max-width:100%}.refund-panel{display:flex;flex-direction:column;gap:8px;padding:12px;border-left:2px solid #d7b27666;border-radius:8px;background:#a5782010;color:#d9c4a4;font-size:12px;line-height:1.7;margin-top:16px;overflow-wrap:anywhere}.refund-heading{display:flex;align-items:center;gap:8px;font-weight:650;color:#e5bd7e}.admin-resolution{display:flex;flex-direction:column;gap:12px;margin:24px 0;padding:16px;background:var(--surface);border-radius:8px;min-width:0}.review-panel{padding-top:24px}.stars{display:flex;gap:8px;margin:12px 0}.rating-button{display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:transparent;padding:0;color:var(--muted)}.stars .lit{color:#e5bd7e}.review-input{height:96px;margin-bottom:12px}.review-button{width:112px}.review-result{display:flex;flex-direction:column;gap:8px;padding:20px 0;border-bottom:1px solid var(--line-subtle);font-size:13px;overflow-wrap:anywhere}
 .chat-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 12px;min-width:0}.chat-sub{display:block;color:var(--muted);font-size:10px;margin-top:4px}.evidence-badge{display:flex;align-items:center;gap:4px;flex-shrink:0;font-size:10px;color:var(--accent);border-radius:12px;padding:3px 7px;background:#83e7b712}.chat-panel{border-radius:8px;overflow:hidden;background:var(--surface);min-width:0}.chat-notice{display:block;padding:12px;font-size:10px;line-height:1.7;color:var(--muted);border-bottom:1px solid var(--line-subtle)}.chat-scroll{height:340px;padding:0 12px;box-sizing:border-box;max-width:100%}.history-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:36px;font-size:11px;background:transparent;color:var(--accent)}.chat-empty{padding:64px 0;font-size:12px;text-align:center;color:var(--muted)}.message{display:flex;flex-direction:column;align-items:flex-start;margin:16px 0;min-width:0}.message.mine{align-items:flex-end}.message.system{align-items:center}.system-message{max-width:100%;font-size:10px;line-height:1.7;color:var(--muted);text-align:center;overflow-wrap:anywhere}.message-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;max-width:100%;font-size:10px;color:var(--muted);margin-bottom:6px;overflow-wrap:anywhere}.role-badge{margin-left:6px;font-size:9px;padding:1px 4px;border-radius:4px;background:#83e7b71a;color:var(--accent)}.bubble{max-width:88%;padding:10px 12px;border-radius:2px 8px 8px;background:#ffffff09;color:var(--text);font-size:13px;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}.mine .bubble{background:var(--accent);color:#0a2116;border-radius:8px 2px 8px 8px}.evidence-image{display:block;width:180px;max-width:100%;border-radius:6px}.composer{display:flex;align-items:center;gap:8px;min-width:0;padding:12px;border-top:1px solid var(--line-subtle)}.composer-input{flex:1;min-width:0;height:36px;padding:0 12px;border:1px solid var(--line-subtle);border-radius:18px;background:#ffffff04;font-size:11px}.image-button{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:36px;padding:0;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--text)}.send-button{display:flex;align-items:center;justify-content:center;flex-shrink:0;height:36px;padding:0 14px;border-radius:18px;background:var(--accent);color:#0a2116;font-size:12px}.updated{display:block;margin-top:16px;text-align:center;font-size:10px;line-height:18px;color:var(--muted)}.chat-bottom{height:4px}
 .modal-mask{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;padding:20px;background:#000b}.modal{display:flex;flex-direction:column;gap:16px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;padding:20px;background:var(--surface);border-radius:12px;min-width:0}.modal-title{font-size:20px;font-weight:700}.modal-input{height:120px;background:#ffffff04;border:1px solid var(--line-subtle);border-radius:8px}.modal-actions{padding:0;gap:12px}.payment-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;font-size:18px}.dev-warning{color:#d7b276;font-size:12px}.error-panel{padding:16px 0;border-bottom:1px solid #d7b27644;color:#efb299;font-size:12px;overflow-wrap:anywhere}
+.payment-options{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}.payment-option{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:12px;background:transparent;color:var(--muted);border-radius:0;text-align:left}.payment-option.chosen{color:var(--accent)}.payment-option-copy{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;font-size:14px;color:var(--text)}.payment-hint{display:block;font-size:12px;line-height:20px;color:var(--muted);overflow-wrap:anywhere}.payment-options>.payment-hint{padding:8px 12px;border-top:1px solid var(--line-subtle)}
 </style>

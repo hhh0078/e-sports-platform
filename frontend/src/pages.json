@@ -43,6 +43,12 @@
       }
     },
     {
+      "path": "pages/account/wallet",
+      "style": {
+        "navigationBarTitleText": "我的钱包"
+      }
+    },
+    {
       "path": "pages/account/agreements",
       "style": {
         "navigationBarTitleText": "平台协议"
@@ -82,6 +88,78 @@
       "path": "pages/manage/settings",
       "style": {
         "navigationBarTitleText": "平台配置"
+      }
+    },
+    {
+      "path": "pages/manage/wallet",
+      "style": {
+        "navigationBarTitleText": "钱包管理"
+      }
+    },
+    {
+      "path": "pages/manage/users",
+      "style": {
+        "navigationBarTitleText": "用户管理"
+      }
+    },
+    {
+      "path": "pages/manage/services",
+      "style": {
+        "navigationBarTitleText": "服务审核"
+      }
+    },
+    {
+      "path": "pages/manage/clubs",
+      "style": {
+        "navigationBarTitleText": "俱乐部管理"
+      }
+    },
+    {
+      "path": "pages/manage/orders",
+      "style": {
+        "navigationBarTitleText": "订单与售后"
+      }
+    },
+    {
+      "path": "pages/manage/games",
+      "style": {
+        "navigationBarTitleText": "游戏配置"
+      }
+    },
+    {
+      "path": "pages/manage/audit",
+      "style": {
+        "navigationBarTitleText": "操作审计"
+      }
+    },
+    {
+      "path": "pages/manage/platform",
+      "style": {
+        "navigationBarTitleText": "平台设置"
+      }
+    },
+    {
+      "path": "pages/account/messages/index",
+      "style": {
+        "navigationBarTitleText": "消息中心"
+      }
+    },
+    {
+      "path": "pages/account/messages/detail",
+      "style": {
+        "navigationBarTitleText": "消息详情"
+      }
+    },
+    {
+      "path": "pages/manage/ai",
+      "style": {
+        "navigationBarTitleText": "AI配置"
+      }
+    },
+    {
+      "path": "pages/manage/messages",
+      "style": {
+        "navigationBarTitleText": "发送消息"
       }
     }
   ],

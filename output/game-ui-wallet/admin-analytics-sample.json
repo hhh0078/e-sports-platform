@@ -1,0 +1,68 @@
+{
+  "period": {
+    "start": "2026-10-16",
+    "end": "2026-10-22",
+    "timezone": "Asia/Shanghai"
+  },
+  "summary": {
+    "gmv_cents": 1900,
+    "refund_cents": 1900,
+    "paid_order_count": 1,
+    "refunded_order_count": 1
+  },
+  "series": [
+    {
+      "date": "2026-10-16",
+      "paid_cents": 0,
+      "refund_cents": 0,
+      "paid_orders": 0,
+      "refunded_orders": 0
+    },
+    {
+      "date": "2026-10-17",
+      "paid_cents": 0,
+      "refund_cents": 0,
+      "paid_orders": 0,
+      "refunded_orders": 0
+    },
+    {
+      "date": "2026-10-18",
+      "paid_cents": 0,
+      "refund_cents": 0,
+      "paid_orders": 0,
+      "refunded_orders": 0
+    },
+    {
+      "date": "2026-10-19",
+      "paid_cents": 0,
+      "refund_cents": 0,
+      "paid_orders": 0,
+      "refunded_orders": 0
+    },
+    {
+      "date": "2026-10-20",
+      "paid_cents": 0,
+      "refund_cents": 0,
+      "paid_orders": 0,
+      "refunded_orders": 0
+    },
+    {
+      "date": "2026-10-21",
+      "paid_cents": 0,
+      "refund_cents": 0,
+      "paid_orders": 0,
+      "refunded_orders": 0
+    },
+    {
+      "date": "2026-10-22",
+      "paid_cents": 1900,
+      "refund_cents": 1900,
+      "paid_orders": 1,
+      "refunded_orders": 1
+    }
+  ],
+  "legacy_untracked_orders": 12,
+  "dev_mode": true,
+  "data_mode": "local",
+  "statistics_note": "当前为本地模拟交易统计，不代表真实资金。服务成交额按首次实付记录统计，成功退款按退款日另计；微信提供成功时间时采用官方时间，否则采用平台首次核验入账时间。充值、押金和提现不计服务成交额。历史缺少可靠支付/退款时间或托管资金凭据的订单不计对应曲线，数量为全历史待核账订单数。"
+}

@@ -154,6 +154,12 @@ func (a *App) updateMe(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
+	if in.Provider != nil && !*in.Provider {
+		return nil, fail(400, "接单身份默认开启，不支持关闭")
+	}
+	if err = a.moderateProfileText(r, u, in.Nickname, in.Bio); err != nil {
+		return nil, err
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
@@ -175,9 +181,8 @@ func (a *App) updateMe(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 		u.Bio = strings.TrimSpace(*in.Bio)
 	}
-	if in.Provider != nil {
-		u.ProviderEnabled = *in.Provider
-	}
+	// 兼容旧客户端提交的接单字段，任何值都不能关闭默认接单身份。
+	u.ProviderEnabled = true
 	if err = put(r.Context(), tx, "users", u.ID, u); err != nil {
 		return nil, err
 	}

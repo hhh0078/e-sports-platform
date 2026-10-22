@@ -75,8 +75,9 @@ func TestIntegrationWechatTicketAndAgreementVersions(t *testing.T) {
 	refused := loginConsent(prepared.Ticket, prepared.Agreements)
 	refused["agreed"] = false
 	api.call("", "POST", "/auth/wechat", refused, 400, nil)
+	originalVersion := prepared.Agreements.UserAgreement.Version
 	updated := prepared.Agreements
-	updated.UserAgreement.Version = "2026-10-19.1"
+	updated.UserAgreement.Version = "2026-10-23.1"
 	updated.UserAgreement.Content += "\n更新交易规则。"
 	api.call("worker", "PATCH", "/admin/agreements", updated, 403, nil)
 	api.call("", "GET", "/admin/agreements", nil, 401, nil)
@@ -87,6 +88,10 @@ func TestIntegrationWechatTicketAndAgreementVersions(t *testing.T) {
 		User  User   `json:"user"`
 	}
 	api.call("", "POST", "/auth/wechat", loginConsent(prepared.Ticket, updated), 200, &login)
+	var providerEnabled bool
+	if err := api.App.DB.QueryRow(t.Context(), "SELECT (data->>'provider_enabled')::boolean FROM users WHERE id=$1", login.User.ID).Scan(&providerEnabled); err != nil || !providerEnabled {
+		t.Fatal("新微信用户必须持久化默认开启的接单身份")
+	}
 	api.Tokens["wechat"] = login.Token
 	api.call("", "POST", "/auth/wechat", loginConsent(prepared.Ticket, updated), 401, nil)
 	identity, err := get[map[string]string](t.Context(), api.App.DB, "identities", login.User.ID, false)
@@ -112,7 +117,7 @@ func TestIntegrationWechatTicketAndAgreementVersions(t *testing.T) {
 	changedSame.UserAgreement.Content += "不可覆盖的修改"
 	api.call("admin", "PATCH", "/admin/agreements", changedSame, 409, nil)
 	historyReuse := updated
-	historyReuse.UserAgreement.Version = "2026-10-18.1"
+	historyReuse.UserAgreement.Version = originalVersion
 	api.call("admin", "PATCH", "/admin/agreements", historyReuse, 409, nil)
 	var actual agreementSet
 	api.call("", "GET", "/agreements", nil, 200, &actual)

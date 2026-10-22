@@ -1,0 +1,120 @@
+/** 文件作用：执行钱包管理页真实脚本，验证资金审核防连点、旧会话隔离和公开转账配置边界。 */
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import vm from 'node:vm'
+import { reactive, ref, watch } from 'vue'
+import { executable, pageScript, injectBusinessAPIs } from './sfc-test'
+import type { DeferredRequest } from './sfc-test'
+import type { WalletSettingsResult, WalletWithdrawal } from '../types/wallet'
+
+/** 建立真实脚本和业务API的受控边界，不复制页面资金逻辑。 */
+function harness(devMode = false) {
+  const requests: DeferredRequest[] = [], notices: unknown[] = []
+  const state = reactive({ ready: true, devMode, user: { id: 'admin-A', role: 'admin' } })
+  let authToken = 'token-A', revision = 1
+  const lifecycle = { show: () => {}, hide: () => {}, unload: () => {} }
+  const context = vm.createContext({ reactive, ref, watch, state, game: { primary_color: '#83e7b7' }, token: () => authToken, sessionRevision: () => revision, init: async () => {}, notify: (value: unknown) => notices.push(value), go: () => {}, onShow: (callback: () => void) => { lifecycle.show = callback }, onHide: (callback: () => void) => { lifecycle.hide = callback }, onUnload: (callback: () => void) => { lifecycle.unload = callback }, api(path: string, method = 'GET', body: Record<string, unknown> = {}) { return new Promise<unknown>((resolve, reject) => requests.push({ path, method, body, resolve, reject, taken: false })) } })
+  injectBusinessAPIs(context)
+  vm.runInContext(executable(pageScript('manage/wallet.vue')) + '\nglobalThis.page = { showPage, loadList, loadSettings, chooseStatus, prepare, confirmAction, settingsBody, saveSettings, form, withdrawals, pendingAction, rejectReason, devOutcome, loaded, transferReady }', context)
+  return { page: context.page, requests, notices, lifecycle,
+    /** 取得确实发出的请求，缺失与重复读取立即失败。 */
+    take(path: string, method = 'GET') { const request = requests.find(item => !item.taken && item.path === path && item.method === method); assert.ok(request, `缺少请求 ${method} ${path}`); request.taken = true; return request },
+    /** 在隐藏页面后更换管理员，认证版本与令牌同时变化。 */
+    switchAdmin() { lifecycle.hide(); authToken = 'token-B'; revision++; state.user = { id: 'admin-B', role: 'admin' } },
+  }
+}
+
+/** 推进到明确发出的下一次异步请求。 */
+async function flush() { await new Promise(resolve => setImmediate(resolve)) }
+/** 创建不含任何秘密的真实配置返回结构。 */
+function configuration(label = 'A'): WalletSettingsResult { return { settings: { withdrawal_enabled: true, transfer_scene_id: label, transfer_scene_report_infos: [{ info_type: '业务类型', info_content: '游戏服务收入' }], transfer_notify_url: 'https://example.com/transfer', transfer_remark: '服务收入提现', user_recv_perception: '服务报酬' }, transfer_ready: true, configuration_notice: '保存不代表场景获批' } }
+/** 创建小额申请，不编造昵称、OpenID或收款确认凭据。 */
+function withdrawal(id = 'request-A', status: WalletWithdrawal['status'] = 'pending_review'): WalletWithdrawal { return { id, user_id: 'user-' + id, amount_cents: 100, status, created_at: '2026-10-22T00:00:00Z', updated_at: '2026-10-22T00:00:00Z' } }
+/** 完成一次已发出的列表和配置请求。 */
+async function resolveLoad(subject: ReturnType<typeof harness>, label = 'A') { await flush(); subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve([withdrawal('request-' + label)]); subject.take('/admin/wallet-settings').resolve(configuration(label)); await flush() }
+/** 进入已经读取真实公开配置的管理页面。 */
+async function ready(devMode = false) { const subject = harness(devMode), loading = subject.page.showPage(); await resolveLoad(subject); await loading; return subject }
+
+test('提现筛选迟到的响应不能覆盖新状态列表', async () => {
+  const subject = await ready(), old = subject.page.loadList()
+  const first = subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0')
+  subject.page.chooseStatus('processing')
+  const latest = subject.take('/admin/wallet/withdrawals?status=processing&limit=20&offset=0')
+  latest.resolve([withdrawal('processing-B', 'processing')]); await flush()
+  first.resolve([withdrawal('old-A')]); await old
+  assert.equal(subject.page.withdrawals.value[0].id, 'processing-B')
+})
+
+test('列表去重后仍按服务端已读取条数分页，不重复读取旧偏移', async () => {
+  const subject = harness(), loading = subject.page.showPage(); await flush()
+  subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve(Array.from({ length: 20 }, (_, index) => withdrawal('r' + index)))
+  subject.take('/admin/wallet-settings').resolve(configuration()); await loading
+  const appending = subject.page.loadList(true)
+  subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=20').resolve(Array.from({ length: 20 }, (_, index) => withdrawal('r' + (index + 10))))
+  await appending; assert.equal(subject.page.withdrawals.value.length, 30)
+  const next = subject.page.loadList(true)
+  subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=40').resolve([]); await next
+})
+
+test('更换管理员后旧列表与配置不能覆盖新会话', async () => {
+  const subject = harness(), oldLoading = subject.page.showPage(); await flush()
+  const oldList = subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0'), oldConfig = subject.take('/admin/wallet-settings')
+  subject.switchAdmin(); const newLoading = subject.page.showPage(); await resolveLoad(subject, 'B'); await newLoading
+  oldList.resolve([withdrawal('old-A')]); oldConfig.resolve(configuration('old-A')); await oldLoading
+  assert.equal(subject.page.withdrawals.value[0].id, 'request-B')
+  assert.equal(subject.page.form.transfer_scene_id, 'B')
+})
+
+test('仅未发起申请可拒绝，拒绝原因校验后使用真实具名接口', async () => {
+  const subject = await ready()
+  for (const status of ['processing', 'wait_user_confirm', 'success', 'failed', 'rejected'] as const) { subject.page.prepare(withdrawal('other', status), 'reject'); assert.equal(subject.page.pendingAction.value, null) }
+  subject.page.prepare(withdrawal(), 'reject'); subject.page.rejectReason.value = '短'; await subject.page.confirmAction()
+  assert.equal(subject.requests.filter(item => item.method === 'POST').length, 0)
+  subject.page.rejectReason.value = '核对后不符合规则'
+  const confirming = subject.page.confirmAction(), request = subject.take('/admin/wallet/withdrawals/request-A/reject', 'POST')
+  assert.equal(request.body.reason, '核对后不符合规则'); request.resolve(withdrawal('request-A', 'rejected')); await flush()
+  subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve([]); await confirming
+  assert.equal(subject.page.pendingAction.value, null)
+})
+
+test('真实转账确认防连点且不发送开发参数，迟到结果不更新新管理员', async () => {
+  const subject = await ready(); subject.page.prepare(withdrawal(), 'execute')
+  const first = subject.page.confirmAction(); await subject.page.confirmAction()
+  const request = subject.take('/admin/wallet/withdrawals/request-A/execute', 'POST')
+  assert.equal(subject.requests.filter(item => item.method === 'POST').length, 1)
+  assert.deepEqual(Object.keys(request.body), [])
+  subject.switchAdmin(); const newLoading = subject.page.showPage(); await resolveLoad(subject, 'B'); await newLoading
+  request.resolve(withdrawal('request-A', 'success')); await first
+  assert.equal(subject.page.withdrawals.value[0].id, 'request-B')
+  assert.equal(subject.notices.length, 0)
+})
+
+test('开发模拟结果仅在开发环境显式发送', async () => {
+  const subject = await ready(true); subject.page.prepare(withdrawal(), 'execute'); subject.page.devOutcome.value = 'failed'
+  const pending = subject.page.confirmAction(), request = subject.take('/admin/wallet/withdrawals/request-A/execute', 'POST')
+  assert.equal(request.body.dev_outcome, 'failed'); request.resolve(withdrawal('request-A', 'failed')); await flush()
+  subject.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve([]); await pending
+})
+
+test('公开配置严格限制字段、金额外参数和报备数量，不把秘密带入保存', async () => {
+  const subject = await ready()
+  assert.equal(Object.keys(subject.page.form).length, 6)
+  subject.page.form.transfer_notify_url = 'https://example.com/notify?token=123'; assert.throws(() => subject.page.settingsBody(), /HTTPS/)
+  subject.page.form.transfer_notify_url = 'https://example.com/notify'; subject.page.form.user_recv_perception = '字'.repeat(11); assert.throws(() => subject.page.settingsBody(), /最多10字/)
+  subject.page.form.user_recv_perception = '服务报酬'; subject.page.form.transfer_scene_report_infos = Array.from({ length: 11 }, () => ({ info_type: '类型', info_content: '内容' })); assert.throws(() => subject.page.settingsBody(), /最多10项/)
+  subject.page.form.transfer_scene_report_infos = [{ info_type: '', info_content: '内容' }]; assert.throws(() => subject.page.settingsBody(), /1—32字/)
+  subject.page.form.transfer_scene_report_infos = [{ info_type: ' 类型 ', info_content: ' 内容 ' }]
+  const saving = subject.page.saveSettings(), request = subject.take('/admin/wallet-settings', 'PATCH')
+  assert.deepEqual(Object.keys(request.body).sort(), Object.keys(configuration().settings).sort())
+  assert.equal((request.body.transfer_scene_report_infos as Array<{info_type:string}>)[0].info_type, '类型')
+  request.resolve(configuration()); await saving
+})
+
+test('旧管理员迟到的配置保存不会污染新管理员草稿', async () => {
+  const subject = await ready(); subject.page.form.transfer_scene_id = 'unsaved-A'
+  const saving = subject.page.saveSettings(), request = subject.take('/admin/wallet-settings', 'PATCH')
+  subject.switchAdmin(); const newLoading = subject.page.showPage(); await resolveLoad(subject, 'B'); await newLoading
+  request.resolve(configuration('old-A')); await saving
+  assert.equal(subject.page.form.transfer_scene_id, 'B')
+  assert.equal(subject.notices.length, 0)
+})

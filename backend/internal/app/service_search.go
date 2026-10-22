@@ -33,7 +33,7 @@ func serviceQuery(r *http.Request, ownerID string) (string, []any, error) {
 		args = append(args, ownerID)
 		conditions = append(conditions, "data->>'provider_id'=$3")
 	} else {
-		conditions = append(conditions, "data->>'status'='active'", "EXISTS(SELECT 1 FROM games g WHERE g.id=services.data->>'game_id' AND g.data->>'enabled'='true')", "EXISTS(SELECT 1 FROM users u WHERE u.id=services.data->>'provider_id' AND u.data->>'status'='active' AND u.data->>'provider_enabled'='true')")
+		conditions = append(conditions, "data->>'status'='active'", "EXISTS(SELECT 1 FROM games g WHERE g.id=services.data->>'game_id' AND g.data->>'enabled'='true')", "EXISTS(SELECT 1 FROM users u WHERE u.id=services.data->>'provider_id' AND u.data->>'status'='active')")
 	}
 	for _, key := range []string{"game_id", "category"} {
 		if value := r.URL.Query().Get(key); value != "" {

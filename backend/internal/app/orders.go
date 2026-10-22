@@ -45,12 +45,25 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 	if in.Quantity < 1 || in.Quantity > 100 || !length(in.Requirements, 0, 1000) {
 		return nil, fail(400, "数量范围 1 至 100，需求最多 1000 字")
 	}
+	preflightService, checkErr := get[Service](r.Context(), a.DB, "services", in.ServiceID, false)
+	if checkErr != nil {
+		return nil, checkErr
+	}
+	if preflightService.ProviderID == u.ID {
+		return nil, fail(400, "不能给自己的服务下单")
+	}
+	if preflightService.Status != "active" {
+		return nil, fail(409, "服务当前不可下单")
+	}
+	if err = a.moderateText(r, u, "下单需求", in.Requirements); err != nil {
+		return nil, err
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
-	s, err := get[Service](r.Context(), tx, "services", in.ServiceID, true)
+	s, err := get[Service](r.Context(), tx, "services", in.ServiceID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +76,25 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 	if s.ProviderID == u.ID {
 		return nil, fail(400, "不能给自己的服务下单")
 	}
+	if err = lockWalletUsers(r.Context(), tx, u.ID, s.ProviderID); err != nil {
+		return nil, err
+	}
+	if err = guardDepositRefunding(r.Context(), tx, u.ID, s.ProviderID); err != nil {
+		return nil, err
+	}
+	lockedService, readErr := get[Service](r.Context(), tx, "services", in.ServiceID, true)
+	if readErr != nil {
+		return nil, readErr
+	}
+	if lockedService.ProviderID != s.ProviderID {
+		return nil, fail(409, "服务归属已更新，请重试")
+	}
+	s = lockedService
+	if s.Status != "active" {
+		return nil, fail(409, "服务当前不可下单")
+	}
 	provider, e := get[User](r.Context(), tx, "users", s.ProviderID, false)
-	if e != nil || provider.Status != "active" || !provider.ProviderEnabled {
+	if e != nil || provider.Status != "active" {
 		return nil, fail(409, "打手当前暂不接单")
 	}
 	g, e := get[Game](r.Context(), tx, "games", s.GameID, false)
@@ -128,6 +158,9 @@ func (a *App) createRequest(w http.ResponseWriter, r *http.Request) (any, error)
 	if err != nil || !g.Enabled {
 		return nil, fail(400, "游戏当前不可用")
 	}
+	if err = a.moderateText(r, u, "发布需求", in.Title, in.Requirements); err != nil {
+		return nil, err
+	}
 	o := baseOrder(u)
 	o.GameID = g.ID
 	o.GameName = g.Name
@@ -142,6 +175,12 @@ func (a *App) createRequest(w http.ResponseWriter, r *http.Request) (any, error)
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
+	if err = lockWalletUsers(r.Context(), tx, u.ID); err != nil {
+		return nil, err
+	}
+	if err = guardDepositRefunding(r.Context(), tx, u.ID); err != nil {
+		return nil, err
+	}
 	if err = put(r.Context(), tx, "orders", o.ID, o); err != nil {
 		return nil, err
 	}
@@ -234,12 +273,29 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	var in struct {
+		Channel   string `json:"channel"`
+		RequestID string `json:"request_id"`
+	}
+	if r.ContentLength != 0 {
+		if err = decode(r, &in); err != nil {
+			return nil, err
+		}
+	}
+	if in.Channel != "" && in.Channel != "wechat" && in.Channel != "balance" {
+		return nil, fail(400, "支付渠道无效")
+	}
+	if in.Channel == "balance" {
+		if err = walletRequestID(in.RequestID); err != nil {
+			return nil, err
+		}
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
-	o, err := get[Order](r.Context(), tx, "orders", r.PathValue("id"), true)
+	o, err := lockWalletOrder(r.Context(), tx, r.PathValue("id"), "")
 	if err != nil {
 		return nil, err
 	}
@@ -250,18 +306,49 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, fail(403, "只有买家可以付款")
 	}
 	if o.PaymentStatus == "paid" {
-		return map[string]any{"order": o, "mode": paymentMode(a.Config.DevMode)}, nil
+		if in.Channel == "balance" && (o.PaymentChannel != "balance" || o.WalletRequestID != in.RequestID) {
+			return nil, fail(409, "订单已通过其他付款请求完成")
+		}
+		mode := paymentMode(a.Config.DevMode)
+		if o.PaymentChannel == "balance" {
+			mode = "balance"
+		}
+		return map[string]any{"order": o, "mode": mode}, nil
 	}
 	if o.Status != "pending_payment" || o.PaymentStatus != "unpaid" {
 		return nil, fail(409, "当前订单无法付款")
 	}
 
+	if err = guardDepositRefunding(r.Context(), tx, o.BuyerID, o.ProviderID); err != nil {
+		return nil, err
+	}
 	if o.ServiceID != "" {
 		s, e := get[Service](r.Context(), tx, "services", o.ServiceID, false)
 		p, pe := get[User](r.Context(), tx, "users", o.ProviderID, false)
-		if e != nil || s.Status != "active" || pe != nil || p.Status != "active" || !p.ProviderEnabled {
+		if e != nil || s.Status != "active" || pe != nil || p.Status != "active" {
 			return nil, fail(409, "服务已暂停，请取消订单")
 		}
+	}
+	if in.Channel == "balance" {
+		if !a.Config.DevMode && o.PayOpenID != "" {
+			return nil, fail(409, "该订单已发起微信支付，请先同步原付款；需更换余额支付时请取消原订单后重新下单")
+		}
+		if err = claimWalletRequest(r.Context(), tx, u.ID, in.RequestID, "order_payment", map[string]any{"order_id": o.ID, "amount_cents": o.AmountCents}); err != nil {
+			return nil, err
+		}
+		if err = accountWalletPayment(r.Context(), tx, &o, "balance", in.RequestID); err != nil {
+			return nil, err
+		}
+		o.Status = "open"
+		o.PaymentStatus = "paid"
+		o.UpdatedAt = now()
+		if err = put(r.Context(), tx, "orders", o.ID, o); err != nil {
+			return nil, err
+		}
+		if err = systemMessage(r.Context(), tx, o, "余额付款成功，款项已托管，等待打手接单。"); err != nil {
+			return nil, err
+		}
+		return map[string]any{"order": o, "mode": "balance"}, tx.Commit(r.Context())
 	}
 	if !a.Config.DevMode {
 		if _, e := a.loadWXPay(); e != nil {
@@ -286,6 +373,9 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 			return nil, payErr
 		}
 		return result, nil
+	}
+	if err = accountWalletPayment(r.Context(), tx, &o, "dev", ""); err != nil {
+		return nil, err
 	}
 	o.Status = "open"
 	o.PaymentStatus = "paid"

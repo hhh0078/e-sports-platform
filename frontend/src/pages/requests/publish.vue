@@ -2,7 +2,7 @@
 <template>
   <AppShell title="发布需求" back>
     <view v-if="error" class="error-box mb">{{ error }}</view>
-    <view class="form-section request-fields"><view class="field"><text class="field-label">选择游戏</text><picker :range="state.games" range-key="name" :value="gameIndex" @change="gameId=state.games[Number($event.detail.value)].id"><view class="input game-picker-value"><image v-if="selectedGame?.icon_url" class="request-game-icon" :src="assetUrl(selectedGame.icon_url)" mode="aspectFill"/><Icon v-else name="game" :size="25"/><text class="request-game-name">{{selectedGame?.name||'请选择'}}</text><Icon name="arrow" :size="14"/></view></picker></view><view class="field"><view class="field-heading"><text class="field-label">需求标题</text><text class="field-count">{{title.length}} / 40</text></view><input v-model="title" class="input" maxlength="40" placeholder="例如：今晚找位耐心的三角洲陪练"/></view><view class="field"><view class="field-heading"><text class="field-label">目标与验收标准</text><text class="field-count">{{requirements.length}} / 1000</text></view><textarea v-model="requirements" class="input request-requirements" maxlength="1000" placeholder="说明区服、时段、任务目标、时长，以及怎样算完成，请不要填写密码。"/></view><view class="field"><text class="field-label">总预算（元）</text><input v-model="price" class="input" type="digit" placeholder="1～10000，最多两位小数"/></view></view>
+    <view class="form-section request-fields"><view class="field request-game-field"><text class="field-label">选择游戏</text><GameSelector :value="gameId" :disabled="busy" @change="gameId=$event"/></view><view class="field"><view class="field-heading"><text class="field-label">需求标题</text><text class="field-count">{{title.length}} / 40</text></view><input v-model="title" class="input" maxlength="40" placeholder="例如：今晚找位耐心的三角洲陪练"/></view><view class="field"><view class="field-heading"><text class="field-label">目标与验收标准</text><text class="field-count">{{requirements.length}} / 1000</text></view><textarea v-model="requirements" class="input request-requirements" maxlength="1000" placeholder="说明区服、时段、任务目标、时长，以及怎样算完成，请不要填写密码。"/></view><view class="field"><text class="field-label">总预算（元）</text><input v-model="price" class="input" type="digit" placeholder="1～10000，最多两位小数"/></view></view>
     <view class="request-note"><Icon class="note-icon" name="info" :size="15"/><text class="subtle-note request-note-copy">支付后进入接单大厅，未接单可取消；协作约定与沟通随订单保存。</text></view><view class="request-note rules-note"><Icon class="note-icon" name="shield" :size="15"/><text class="subtle-note request-note-copy">遵守游戏官方规则，请勿填写账号密码或提出外挂要求。</text></view>
     <view class="action-footer"><button class="btn request-submit" :disabled="busy" @click="submit">{{busy?'正在创建…':'确认需求，去支付'}}</button></view>
   </AppShell>
@@ -10,16 +10,16 @@
 <script setup lang="ts">
 import { requirePhone } from '../../lib/phone'
 /** 文件作用：校验自定义需求与整数分预算并创建待支付订单。 */
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { onLoad, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
+import GameSelector from '../../components/GameSelector.vue'
 import Icon from '../../components/Icon.vue'
 import { state,init,sessionRevision } from '../../lib/store'
 import { createRequest } from '../../api/orders.api'
 import { token,errorMessage } from '../../api/client'
-import { go,notify,assetUrl } from '../../lib/format'
+import { go,notify } from '../../lib/format'
 const gameId=ref('delta'),title=ref(''),requirements=ref(''),price=ref(''),busy=ref(false),error=ref('')
-const selectedGame=computed(()=>state.games.find(item=>item.id===gameId.value)),gameIndex=computed(()=>Math.max(0,state.games.findIndex(item=>item.id===gameId.value)))
 let disposed=false
 /** 捕获发布操作的用户和会话，授权中切换账号不能继续提交原草稿。 */
 function currentSession(){return{id:state.user?.id,token:token(),revision:sessionRevision()}}
@@ -44,5 +44,5 @@ onLoad(async()=>{try{await init();gameId.value=state.gameId}catch(e){error.value
 onUnload(()=>{disposed=true})
 </script>
 <style scoped>
-.request-fields{padding-top:8px;padding-bottom:16px}.field-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.field-count{font-size:10px;color:var(--muted);white-space:nowrap}.game-picker-value{display:flex;align-items:center;gap:12px;min-height:52px}.request-game-icon{display:block;flex-shrink:0;width:32px;height:32px;border-radius:6px}.request-game-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:var(--text)}.request-requirements{height:140px}.request-note{display:flex;align-items:flex-start;gap:10px;padding:12px 0;color:var(--muted)}.request-note-copy{flex:1;min-width:0;padding:0;font-size:11px;line-height:20px}.note-icon{margin-top:2px}.rules-note{border-top:1px solid var(--line-subtle)}.request-submit{width:100%}
+.request-fields{padding-top:8px;padding-bottom:16px}.field-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.field-count{font-size:10px;color:var(--muted);white-space:nowrap}.request-requirements{height:140px}.request-note{display:flex;align-items:flex-start;gap:10px;padding:12px 0;color:var(--muted)}.request-note-copy{flex:1;min-width:0;padding:0;font-size:11px;line-height:20px}.note-icon{margin-top:2px}.rules-note{border-top:1px solid var(--line-subtle)}.request-submit{width:100%}
 </style>

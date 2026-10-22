@@ -24,7 +24,7 @@ export function performOrderAction(id: string, action: string, note = '', clubId
 /** 选择俱乐部后认领公开需求，认证范围由服务端复核。 */
 export function claimJob(id: string, clubId = ''): Promise<Order> { return performOrderAction(id, 'claim', '', clubId) }
 /** 取得真实微信支付参数或本地演示结果。 */
-export function payOrder(id: string): Promise<PaymentResult> { return request('/orders/' + encodeURIComponent(id) + '/pay', 'POST', {}) }
+export function payOrder(id: string, body: {channel?:'balance'|'wechat';request_id?:string} = {}): Promise<PaymentResult> { return request('/orders/' + encodeURIComponent(id) + '/pay', 'POST', body) }
 /** 向微信同步当前订单支付状态。 */
 export function syncOrderPayment(id: string): Promise<Order> { return request('/orders/' + encodeURIComponent(id) + '/sync-payment', 'POST', {}) }
 /** 获取聊天消息，权限由服务端校验。 */

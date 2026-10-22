@@ -13,7 +13,7 @@ func (a *App) decorateClub(ctx context.Context, c Club) Club {
 		c.OwnerName = u.Nickname
 	}
 	var n int
-	if a.DB.QueryRow(ctx, "SELECT count(*) FROM members WHERE data->>'club_id'=$1 AND data->>'status'='active' AND EXISTS(SELECT 1 FROM users u WHERE u.id=members.data->>'user_id' AND u.data->>'status'='active' AND u.data->>'provider_enabled'='true')", c.ID).Scan(&n) == nil {
+	if a.DB.QueryRow(ctx, "SELECT count(*) FROM members WHERE data->>'club_id'=$1 AND data->>'status'='active' AND EXISTS(SELECT 1 FROM users u WHERE u.id=members.data->>'user_id' AND u.data->>'status'='active')", c.ID).Scan(&n) == nil {
 		c.MemberCount = n
 	}
 	return c
@@ -90,7 +90,7 @@ func (a *App) club(w http.ResponseWriter, r *http.Request) (any, error) {
 		if m.UserID == u.ID {
 			my = communityMemberView(m, member, true)
 		}
-		if manager || m.Status == "active" && member.Status == "active" && member.ProviderEnabled {
+		if manager || m.Status == "active" && member.Status == "active" {
 			out = append(out, communityMemberView(m, member, manager))
 		}
 	}
@@ -134,6 +134,31 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	if err = decode(r, &in); err != nil {
 		return nil, err
+	}
+	if err = a.moderateClubDraft(r, u, in.Name, in.Description, in.Assessment, in.DetailBlocks); err != nil {
+		return nil, err
+	}
+	ownerID, clubID := u.ID, r.PathValue("id")
+	if clubID != "" {
+		old, e := a.clubManager(r, u, clubID)
+		if e != nil {
+			return nil, e
+		}
+		ownerID = old.OwnerID
+	}
+	if in.CoverURL != nil {
+		if err = a.moderateOwnedImage(r, u, *in.CoverURL, "club_cover", ownerID, clubID); err != nil {
+			return nil, err
+		}
+	}
+	if in.DetailBlocks != nil {
+		for _, block := range *in.DetailBlocks {
+			if block.Type == "image" {
+				if err = a.moderateOwnedImage(r, u, block.ImageURL, "club_detail", ownerID, clubID); err != nil {
+					return nil, err
+				}
+			}
+		}
 	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
@@ -206,9 +231,6 @@ func (a *App) joinClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !u.ProviderEnabled {
-		return nil, fail(400, "请先开启打手身份")
-	}
 	var in struct {
 		ApplicationNote      string `json:"application_note"`
 		RequirementsAccepted bool   `json:"requirements_accepted"`
@@ -220,6 +242,16 @@ func (a *App) joinClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	if !length(in.ApplicationNote, 0, 500) {
 		return nil, fail(400, "申请说明最多 500 字")
+	}
+	preflightClub, checkErr := get[Club](r.Context(), a.DB, "clubs", r.PathValue("id"), false)
+	if checkErr != nil {
+		return nil, checkErr
+	}
+	if preflightClub.Status != "active" {
+		return nil, fail(400, "俱乐部未开放挂靠")
+	}
+	if err = a.moderateText(r, u, "俱乐部挂靠申请", in.ApplicationNote); err != nil {
+		return nil, err
 	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
@@ -314,6 +346,9 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 	if !contains([]string{"active", "rejected"}, in.Status) || !length(in.ReviewNote, 0, 500) {
 		return nil, fail(400, "成员状态无效")
 	}
+	if err = a.moderateText(r, u, "俱乐部成员审核说明", in.ReviewNote); err != nil {
+		return nil, err
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
@@ -342,8 +377,8 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 			return nil, fail(400, "请完成并确认考核后再通过认证")
 		}
 		member, e := get[User](r.Context(), tx, "users", m.UserID, false)
-		if e != nil || member.Status != "active" || !member.ProviderEnabled {
-			return nil, fail(400, "该成员当前无法开启接单认证")
+		if e != nil || member.Status != "active" {
+			return nil, fail(400, "该成员账号当前不可认证")
 		}
 	}
 	m.Status = in.Status

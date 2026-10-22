@@ -86,6 +86,20 @@ test('手机号状态读取失败被页面处理且提交锁恢复',async()=>{
   assert.equal(subject.notices.length,1)
 })
 
+test('需求审核拒绝或故障保留标题、验收标准与预算且不跳转支付',async t=>{
+  for(const code of ['moderation_rejected','moderation_unavailable'])await t.test(code,async()=>{
+    const subject=harness(),draft=[subject.page.title.value,subject.page.requirements.value,subject.page.price.value]
+    const submitting=subject.page.submit();subject.take('/me').resolve({...accountA,phone_verified:true});await flush()
+    const failure={code,message:'内容审核未通过：请修改后再提交'}
+    subject.take('/requests','POST').reject(failure);await submitting
+    assert.deepEqual([subject.page.title.value,subject.page.requirements.value,subject.page.price.value],draft)
+    assert.equal(subject.page.busy.value,false)
+    assert.equal(subject.page.error.value,failure.message)
+    assert.equal(subject.notices[0],failure)
+    assert.deepEqual(subject.navigations,[])
+  })
+})
+
 test('授权等待期间切换账号不能替新账号创建旧草稿',async()=>{
   const subject=harness(),submitting=subject.page.submit()
   subject.take('/me').resolve({...accountA});await flush();await switchAccount(subject)

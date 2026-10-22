@@ -1,0 +1,22 @@
+{
+  "player": {
+    "/admin/analytics": 403,
+    "/admin/payment-settings": 403,
+    "/admin/wallet-settings": 403
+  },
+  "worker": {
+    "/admin/analytics": 403,
+    "/admin/payment-settings": 403,
+    "/admin/wallet-settings": 403
+  },
+  "clubowner": {
+    "/admin/analytics": 403,
+    "/admin/payment-settings": 403,
+    "/admin/wallet-settings": 403
+  },
+  "outsider": {
+    "/admin/analytics": 403,
+    "/admin/payment-settings": 403,
+    "/admin/wallet-settings": 403
+  }
+}

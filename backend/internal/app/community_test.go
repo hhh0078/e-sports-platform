@@ -205,7 +205,7 @@ func TestIntegrationCommunityPublicProfile(t *testing.T) {
 	}()
 	go func() {
 		defer wg.Done()
-		code, _, _ := api.request("worker", "PATCH", "/me", map[string]any{"provider_enabled": false})
+		code, _, _ := api.request("worker", "PATCH", "/me", map[string]any{"provider_enabled": true})
 		results <- code
 	}()
 	wg.Wait()
@@ -217,12 +217,12 @@ func TestIntegrationCommunityPublicProfile(t *testing.T) {
 	}
 	var current User
 	api.call("worker", "GET", "/me", nil, 200, &current)
-	if current.Nickname != "并发保存昵称" || current.ProviderEnabled || current.Avatar != avatar || current.ProfileCover != cover {
+	if current.Nickname != "并发保存昵称" || !current.ProviderEnabled || current.Avatar != avatar || current.ProfileCover != cover {
 		t.Fatalf("并发更新覆盖了其他资料：%+v", current)
 	}
 	api.call("", "GET", "/players/worker", nil, 200, &public)
-	if len(public.Services) != 0 {
-		t.Fatal("关闭接单后不得在公开主页展示可售服务")
+	if len(public.Services) == 0 {
+		t.Fatal("默认接单身份应继续展示仍可售的服务")
 	}
 	api.call("admin", "PATCH", "/admin/users/worker", map[string]any{"status": "frozen"}, 200, nil)
 	api.call("", "GET", "/players/worker", nil, 404, nil)

@@ -22,7 +22,7 @@ func (a *App) uploadCover(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	sum := sha256.Sum256(raw)
-	v := Evidence{ID: newID(), OwnerID: u.ID, SHA256: hex.EncodeToString(sum[:]), MIME: mime, Data: raw, CreatedAt: now(), Public: true}
+	v := Evidence{ID: newID(), OwnerID: u.ID, SHA256: hex.EncodeToString(sum[:]), MIME: mime, Data: raw, CreatedAt: now(), Public: true, Moderation: "trusted_platform"}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err

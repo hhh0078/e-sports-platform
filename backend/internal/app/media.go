@@ -107,8 +107,11 @@ func (a *App) uploadImage(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err = a.moderateContent(r, u, "上传公开图片："+purpose, nil, []moderationImage{{MIME: mime, Data: raw}}); err != nil {
+		return nil, err
+	}
 	sum := sha256.Sum256(raw)
-	v := PublicImage{Evidence: Evidence{ID: newID(), OwnerID: u.ID, SHA256: hex.EncodeToString(sum[:]), MIME: mime, Data: raw, CreatedAt: now(), Public: true}, Purpose: purpose, ClubID: clubID, Width: cfg.Width, Height: cfg.Height}
+	v := PublicImage{Evidence: Evidence{ID: newID(), OwnerID: u.ID, SHA256: hex.EncodeToString(sum[:]), MIME: mime, Data: raw, CreatedAt: now(), Public: true, Moderation: a.imageModerationStamp()}, Purpose: purpose, ClubID: clubID, Width: cfg.Width, Height: cfg.Height}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err

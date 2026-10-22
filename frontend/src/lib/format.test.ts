@@ -1,7 +1,7 @@
 /** 文件作用：验证金额显示与异常时间不会破坏交易界面。 */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { money, time, statusLabel, assetUrl, go } from './format.ts'
+import { money, time, statusLabel, assetUrl, go, notify } from './format.ts'
 import { back } from './navigation'
 
 test('金额按分准确展示，保留有效小数', () => {
@@ -67,4 +67,22 @@ test('共享返回优先沿历史返回，无历史或返回失败时进入唯�
     assert.equal(calls[2].type, 'reLaunch')
     assert.equal(calls[2].options.url, '/pages/main/index?tab=player')
   } finally { delete platform.uni; delete platform.getCurrentPages }
+})
+
+test('审核拒绝和故障展示可停留的完整原因，普通提示保持短消息', () => {
+  const modals: UniApp.ShowModalOptions[] = [], toasts: UniApp.ShowToastOptions[] = []
+  const platform = globalThis as unknown as { uni?: object }, previous = platform.uni
+  platform.uni = { showModal: (options: UniApp.ShowModalOptions) => modals.push(options), showToast: (options: UniApp.ShowToastOptions) => toasts.push(options) }
+  try {
+    const reason = '内容审核未通过：' + '需要修改的具体原因。'.repeat(20)
+    notify({ code: 'moderation_rejected', message: reason })
+    assert.equal(modals[0].title, '内容需修改')
+    assert.equal(modals[0].content, reason)
+    assert.equal(modals[0].showCancel, false)
+    notify({ code: 'moderation_unavailable', message: '审核超时，请稍后重新提交，填写内容仍保留。' })
+    assert.equal(modals[1].title, '审核暂不可用')
+    assert.equal(toasts.length, 0)
+    notify('保存成功')
+    assert.equal(toasts[0].title, '保存成功')
+  } finally { platform.uni = previous }
 })

@@ -76,14 +76,14 @@ async function screenshot(name:string):Promise<void> {
 }
 
 /** 点击实际顶部返回按钮，并验证页面回到保留的主实例。 */
-async function returnToMain(page:Page,mainPage:Page):Promise<void> {
+async function returnToMain(page:Page,mainPage:Page,expectedPath='pages/main/index'):Promise<void> {
   assert.equal(await child(page,['bottom-nav','components\\/BottomNav']),null,'二级页面不应有主底栏')
   const shell=await child(page,['app-shell','components\\/AppShell'])
   assert.ok(shell,'二级页面缺少统一 AppShell')
   const floating=await child(shell,['floating-back','components\\/FloatingBack'])
   if(floating){
     const back=await floating.$('.floating-back');assert.ok(back,'展示页缺少圆形返回按钮');await back.tap()
-    assert.strictEqual(await pageAt('pages/main/index'),mainPage,'展示页返回时主页面被重建');return
+    assert.strictEqual(await pageAt(expectedPath),mainPage,'展示页返回时主页面被重建');return
   }
   const header=await child(shell,['page-header','components\\/PageHeader'])
   assert.ok(header,'二级页面缺少统一顶部导航')
@@ -92,7 +92,7 @@ async function returnToMain(page:Page,mainPage:Page):Promise<void> {
   const back=await child(navbar,['.uni-navbar__header-btns-left','.uni-navbar__header-btns'])
   assert.ok(back,'二级页面缺少左上返回点击区')
   await back.tap()
-  const current=await pageAt('pages/main/index')
+  const current=await pageAt(expectedPath)
   assert.strictEqual(current,mainPage,'二级页面返回时主页面被重建')
 }
 
@@ -134,28 +134,29 @@ async function visit(route:string,name:string,main:Page):Promise<void> {
   checks.push('页面与返回：'+route.split('?')[0]); console.log('PASS 页面与返回 '+route.split('?')[0])
 }
 
-/** 实际滚动后台横向导航并打开游戏弹层，检查窄屏工具行，不保存任何配置。 */
+/** 检查控制台十二个独立入口与下级游戏编辑器，验证层级返回且不保存配置。 */
 async function adminControls(main:Page):Promise<void> {
   await openRoute('/pages/manage/index')
-  const page=await pageAt('pages/manage/index')
-  const tabs=await until(()=>page.$('.admin-tabs'),'管理员横向导航') as ScrollViewElement
-  const total=Number(await tabs.scrollWidth());await tabs.scrollTo(Math.max(0,total-viewport.width+32),0)
-  await new Promise<void>(resolve=>setTimeout(resolve,300))
-  const final=await button('平台设置'),box=await rectangle(final)
-  assert.ok(box.left>=-1&&box.left+box.width<=viewport.width+1,'后台最后页签无法滚动到视口内')
-  await final.tap();await until(()=>page.$('input[maxlength="20"]'),'平台设置字段')
-  await(await button('游戏配置')).tap()
-  await until(()=>page.$('.game-admin-heading'),'管理员游戏列表')
-  await(await button('编辑主题与封面')).tap()
-  const modal=await until(()=>page.$('.game-modal'),'游戏配置弹层') as ScrollViewElement
-  const area=await rectangle(modal)
-  assert.ok(Number(await modal.scrollWidth())<=area.width+1,'游戏配置弹层横向溢出')
-  const tools=await modal.$('.upload-actions');assert.ok(tools)
-  const toolsBox=await rectangle(tools);assert.ok(toolsBox.left+toolsBox.width<=viewport.width+1,'游戏图标上传工具超出窄屏')
-  await screenshot('manage-game-modal')
-  await(await button('关闭')).tap();await until(async()=>!(await page.$('.game-modal')),'关闭游戏编辑器')
-  await returnToMain(page,main)
-  checks.push('后台末尾页签真实滚动可达；游戏编辑弹层与图片工具不横溢，未保存配置')
+  const consolePage=await pageAt('pages/manage/index')
+  const cards:Element[]=await until(async()=>{const result=await consolePage.$$('.module-card');return result.length===12?result:null},'控制台十二个入口')
+  await until(async()=>!(await consolePage.$('.chart-loading')),'真实交易曲线读取')
+  assert.equal(await consolePage.$('.admin-tabs'),null,'控制台仍残留旧大全页签')
+  for(const card of cards){const box=await rectangle(card);assert.ok(box.left>=15&&box.left+box.width<=viewport.width-15,'控制台入口卡片横向溢出')}
+  await screenshot('manage-console')
+  const platform=await button('平台设置');await instance().pageScrollTo(Math.max(0,(await rectangle(platform)).top-120));await platform.tap()
+  const platformPage=await pageAt('pages/manage/platform');await until(()=>platformPage.$('input[maxlength="24"]'),'平台设置字段')
+  await returnToMain(platformPage,consolePage,'pages/manage/index')
+  await until(async()=>!(await consolePage.$('.chart-loading')),'控制台返回数据读取')
+  const games=await button('游戏配置');await instance().pageScrollTo(Math.max(0,(await rectangle(games)).top-120));await games.tap()
+  const page=await pageAt('pages/manage/games');await until(()=>page.$('.game-summary'),'独立游戏管理列表')
+  await(await button('编辑')).tap()
+  const modal=await until(async()=>{const direct=await page.$('.game-sheet');if(direct)return direct;const popup=await child(page,['uni-popup','node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-popup\\/uni-popup']);return popup?popupNode(popup,'.game-sheet'):null},'游戏配置弹层') as ScrollViewElement
+  const area=await rectangle(modal);assert.ok(Number(await modal.scrollWidth())<=area.width+1,'游戏配置弹层横向溢出')
+  const tools=await modal.$('.upload-actions');assert.ok(tools);const toolsBox=await rectangle(tools)
+  assert.ok(toolsBox.left+toolsBox.width<=viewport.width+1,'游戏图标上传工具超出窄屏')
+  await screenshot('manage-game-modal');await(await button('关闭')).tap();await until(async()=>!(await page.$('.game-sheet')),'关闭游戏编辑器')
+  await returnToMain(page,consolePage,'pages/manage/index');await returnToMain(consolePage,main)
+  checks.push('控制台十二个卡片与真实曲线可见，独立平台/游戏页及两级返回可用，编辑器窄屏无溢出')
 }
 
 /** 在专用本地账号暂存长昵称/简介，核验真实主页后立即恢复原资料。 */
@@ -256,8 +257,7 @@ async function chooseGameViaCatalog(picker:Element,name:string,id:string):Promis
   const trigger=await picker.$('.catalog-trigger');assert.ok(trigger);await trigger.tap()
   await until(()=>popupNode(picker,'.catalog-game'),'游戏选择弹框')
   await new Promise<void>(resolve=>setTimeout(resolve,400))
-  const sheet=await popupNode(picker,'.catalog-sheet');assert.ok(sheet);const area=await rectangle(sheet)
-  assert.ok(area.width<=viewport.width+1&&area.left>=-1,'全部游戏弹框横向溢出')
+  await until(()=>visibleGameSheet(picker),'首页游戏弹框真实可见')
   const search=await popupNode(picker,'.catalog-input') as InputElement|null;assert.ok(search);await search.input(name)
   const option=await until(async()=>{const value=await popupNode(picker,'.catalog-game');return value&&(await value.text()).includes(name)?value:null},'游戏选项 '+name)
   await option.tap()
@@ -265,9 +265,18 @@ async function chooseGameViaCatalog(picker:Element,name:string,id:string):Promis
   await new Promise<void>(resolve=>setTimeout(resolve,450))
 }
 
+/** 节点存在不等于可见：游戏弹框必须具有真实尺寸且完整位于当前手机窗口内。 */
+async function visibleGameSheet(scope:Element):Promise<Element|null>{
+  const sheet=await popupNode(scope,'.catalog-sheet');if(!sheet)return null
+  const box=await rectangle(sheet)
+  return box.width>200&&box.height>100&&box.left>=-1&&box.left+box.width<=viewport.width+1&&box.top>=-1&&box.top+box.height<=viewport.height+1?sheet:null
+}
+
 /** 读取官方弹层槽位中的真实节点，兼容微信自定义组件边界。 */
 async function popupNode(scope:Element,selector:string):Promise<Element|null> {
   const direct=await scope.$(selector);if(direct)return direct
+  const gameSelector=await child(scope,['game-selector','components\\/GameSelector'])
+  if(gameSelector){const value=await popupNode(gameSelector,selector);if(value)return value}
   const popup=await child(scope,['uni-popup','node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-popup\\/uni-popup'])
   if(!popup)return null
   const content=await popup.$(selector);if(content)return content
@@ -308,6 +317,40 @@ async function rectangle(element: Element): Promise<{left:number;top:number;widt
   const result={left:Number(offset.left),top:Number(offset.top),width:parseFloat(String(size.width)),height:parseFloat(String(size.height))}
   assert.ok(Object.values(result).every(Number.isFinite),'节点矩形不是有效尺寸')
   return result
+}
+
+/** 从实际共享网格收集选中游戏ID，避免用组件内部数据替代用户可见状态。 */
+async function selectedCatalogGames(selector:Element):Promise<string[]>{
+  const grid=await popupNode(selector,'.catalog-grid');assert.ok(grid);const result:string[]=[]
+  for(const option of await grid.$$('.catalog-game') as Element[])if(String(await option.attribute('class')).split(/\s+/).includes('selected'))result.push(String(await option.attribute('data-id')))
+  return result.sort()
+}
+
+/** 表单复用首页弹框，单选不改主偏好，多选取消不回填、确认才修改草稿，不提交业务数据。 */
+async function formGamePicker(main:Page,route:string,kind:'service'|'request'|'club-create'|'club-edit'):Promise<void>{
+  await openRoute(route);const page=await pageAt(route.split('?')[0].slice(1)),multiple=kind.startsWith('club'),cache=String(await instance().callWxMethod('getStorageSync','jijie_game'))
+  let clubName:InputElement|null=null
+  if(kind==='club-create'){await(await button('创建')).tap();clubName=await until(()=>page.$('.create-form input'),'俱乐部创建草稿') as InputElement;await clubName.input('本地未提交的俱乐部草稿')}
+  const selector=await until(()=>child(page,['game-selector','components\\/GameSelector']),'共享游戏选择器 '+kind)
+  const trigger=kind==='club-create'?await page.$('.club-games-trigger'):await selector.$('.selector-trigger');assert.ok(trigger)
+  const original=await trigger.text();await trigger.tap();await until(()=>visibleGameSheet(selector),'表单游戏网格真实可见 '+kind)
+  if(kind==='club-create'){const overlay=await selector.$('.selector-overlay'),mask=await page.$('.modal-mask');assert.ok(overlay&&mask);assert.ok(Number(await overlay.style('z-index'))>Number(await mask.style('z-index')),'游戏选择被创建俱乐部遮罩覆盖')}
+  if(multiple){
+    const before=await selectedCatalogGames(selector),grid=await popupNode(selector,'.catalog-grid');assert.ok(grid);let target:Element|undefined,targetID=''
+    for(const option of await grid.$$('.catalog-game') as Element[])if(!String(await option.attribute('class')).split(/\s+/).includes('selected')){target=option;targetID=String(await option.attribute('data-id'));break}
+    assert.ok(target&&targetID);await target.tap();assert.equal(await trigger.text(),original,'多选未确认就回填表单');await screenshot('game-picker-'+kind+'-popup')
+    const cancel=await popupNode(selector,'.selector-cancel');assert.ok(cancel);await cancel.tap();await until(async()=>!await visibleGameSheet(selector),'取消共享游戏选择')
+    assert.equal(await trigger.text(),original,'取消游戏选择改变了草稿');await trigger.tap();await until(()=>visibleGameSheet(selector),'重新打开多选真实可见');assert.deepEqual(await selectedCatalogGames(selector),before,'取消后仍残留临时游戏')
+    const reopened=await popupNode(selector,'.catalog-grid');assert.ok(reopened);let next:Element|undefined
+    for(const option of await reopened.$$('.catalog-game') as Element[])if(String(await option.attribute('data-id'))===targetID)next=option
+    assert.ok(next);await next.tap();const confirm=await popupNode(selector,'.selector-confirm');assert.ok(confirm);await confirm.tap();await until(async()=>!await visibleGameSheet(selector),'确认共享游戏选择');assert.notEqual(await trigger.text(),original,'确认多选未回填草稿')
+  }else{
+    const name=original.includes('王者')?'三角洲行动':'王者荣耀',search=await popupNode(selector,'.catalog-input') as InputElement|null;assert.ok(search);await search.input(name)
+    const option=await until(async()=>{const value=await popupNode(selector,'.catalog-game');return value&&(await value.text()).includes(name)?value:null},'表单搜索游戏 '+name);await until(()=>visibleGameSheet(selector),'搜索后弹框保持可见');await screenshot('game-picker-'+kind+'-popup');await option.tap();await until(async()=>(await trigger.text()).includes(name),'单选回填游戏名称')
+  }
+  assert.equal(String(await instance().callWxMethod('getStorageSync','jijie_game')),cache,'表单游戏选择改写了首页偏好')
+  if(clubName){assert.equal(await clubName.value(),'本地未提交的俱乐部草稿','游戏弹层丢失俱乐部名称草稿');await(await button('取消')).tap();await until(async()=>!await page.$('.modal-mask'),'取消创建俱乐部草稿')}
+  await instance().pageScrollTo(0);await returnToMain(page,main);checks.push('共享游戏选择：'+kind+' '+(multiple?'取消保留、确认回填且嵌套层级正确':'搜索单选正确')+'，主游戏偏好未改变')
 }
 
 /** 使用实际编辑控件添加六条最大字号文字，核对独立图层及卡片下方信息。 */
@@ -377,7 +420,7 @@ async function phoneOverlay(main: Page, clubId: string): Promise<void> {
 }
 
 /** 保存当前执行范围的实际断言，不把布局专项报告写成全业务通过。 */
-function report(scope: 'layout' | 'full' | 'admin' | 'long'): void {
+function report(scope: 'layout' | 'full' | 'admin' | 'long' | 'selectors'): void {
   assert.deepEqual(exceptions,[],'小程序存在运行异常')
   const result={passed:true,scope,time:new Date().toISOString(),api:apiBase,viewport,checks,runtime_exceptions:exceptions,remaining:['真实微信授权与商户资金不由本地模拟回归替代','订单聊天与售后由独立交易回归脚本覆盖']}
   fs.writeFileSync(path.join(outputDir,'report.json'),JSON.stringify(result,null,2)+'\n')
@@ -406,6 +449,7 @@ async function run():Promise<void> {
   if(process.env.UI_TEST_SCOPE==='admin'){main=await login('集结管理员');await adminControls(main);await visit('/pages/manage/settings','manage-settings-admin',main);report('admin');return}
   if(process.env.UI_TEST_SCOPE==='long'){main=await login('云间旅人');await longProfile(main);main=await login('北辰');await workerLayout(main);const {items}=await bottomNavigation(main);await items[0].tap();await gameCatalog(main);report('long');return}
   await gameCatalog(main)
+  if(process.env.UI_TEST_SCOPE==='selectors'){main=await login('云间旅人');await formGamePicker(main,'/pages/requests/publish','request');main=await login('北辰');await formGamePicker(main,'/pages/services/publish','service');main=await login('山海主理人');await formGamePicker(main,'/pages/community/clubs/index','club-create');await formGamePicker(main,'/pages/community/clubs/edit?id=shanhai','club-edit');report('selectors');return}
   await mainTabs(main)
   if(process.env.UI_TEST_SCOPE==='layout'){main=await login('北辰');await coverDraft(main);report('layout');return}
   const services=await getData<Service[]>('/services?limit=1'),deltaServices=await getData<Service[]>('/services?game_id=delta&limit=1'),clubs=await getData<Club[]>('/clubs?limit=1'),accounts=await getData<User[]>('/dev/accounts')
@@ -419,17 +463,21 @@ async function run():Promise<void> {
   main=await login('云间旅人')
   await longProfile(main)
   await visit('/pages/account/profile','account-profile-player',main)
+  await formGamePicker(main,'/pages/requests/publish','request')
   await visit('/pages/requests/publish','requests-publish',main)
   await visit('/pages/manage/index','manage-denied-player',main)
   await visit('/pages/manage/settings','settings-denied-player',main)
   main=await login('北辰')
   await workerLayout(main)
+  await formGamePicker(main,'/pages/services/publish','service')
   await coverDraft(main)
   await visit('/pages/services/publish','services-publish',main)
   await visit('/pages/community/clubs/edit?id='+club.id,'clubs-edit-denied-worker',main)
   main=await login('自由玩家')
   await phoneOverlay(main,'shanhai')
   main=await login('山海主理人')
+  await formGamePicker(main,'/pages/community/clubs/index','club-create')
+  await formGamePicker(main,'/pages/community/clubs/edit?id=shanhai','club-edit')
   await visit('/pages/community/clubs/detail?id=shanhai','clubs-detail-owner',main)
   await visit('/pages/community/clubs/edit?id=shanhai','clubs-edit-owner',main)
   main=await login('集结管理员')
@@ -440,4 +488,4 @@ async function run():Promise<void> {
   report('full')
 }
 
-run().catch(error=>{console.error(error instanceof Error?error.stack:String(error));process.exitCode=1}).finally(async()=>{if(mini)await mini.disconnect()})
+run().catch(error=>{fs.mkdirSync(outputDir,{recursive:true});fs.writeFileSync(path.join(outputDir,'report.json'),JSON.stringify({passed:false,api:apiBase,viewport,checks,runtime_exceptions:exceptions,error:error instanceof Error?error.message:String(error)},null,2)+'\n');console.error(error instanceof Error?error.stack:String(error));process.exitCode=1}).finally(async()=>{if(mini)await mini.disconnect()})

@@ -1,0 +1,219 @@
+{
+  "description": "本轮最终验收索引，模拟验证与外部能力分别记录。",
+  "generated_at": "2026-10-22T11:14:14.847785+00:00",
+  "branch": "codex/game-ui-refinements",
+  "production_deployed": false,
+  "frontend": {
+    "strict_typecheck": "passed",
+    "standards_page_count": 31,
+    "test_pass": 329,
+    "test_fail": 0,
+    "test_skip": 0,
+    "h5_build": "passed",
+    "mp_release_build": "passed"
+  },
+  "backend": {
+    "report": "backend-final-tests.json",
+    "test_pass": 182,
+    "test_fail": 0,
+    "test_skip": 0,
+    "race": "passed",
+    "go_vet": "passed"
+  },
+  "sdk_reports": [
+    {
+      "report": "full-320/report.json",
+      "passed": true,
+      "check_count": 40,
+      "viewport": {
+        "width": 320,
+        "height": 568,
+        "statusBarHeight": 20,
+        "capsuleBottom": 56
+      },
+      "canvas_color_warnings": []
+    },
+    {
+      "report": "full-390/report.json",
+      "passed": true,
+      "check_count": 40,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "statusBarHeight": 47,
+        "capsuleBottom": 83
+      },
+      "canvas_color_warnings": []
+    },
+    {
+      "report": "selectors-320/report.json",
+      "passed": true,
+      "check_count": 9,
+      "viewport": {
+        "width": 320,
+        "height": 568,
+        "statusBarHeight": 20,
+        "capsuleBottom": 56
+      },
+      "canvas_color_warnings": []
+    },
+    {
+      "report": "admin-320/report.json",
+      "passed": true,
+      "check_count": 29,
+      "viewport": {
+        "pixelRatio": 2,
+        "safeArea": {
+          "top": 20,
+          "left": 0,
+          "right": 320,
+          "bottom": 568,
+          "width": 320,
+          "height": 548
+        },
+        "screenWidth": 320,
+        "screenHeight": 568,
+        "screenTop": 0,
+        "windowWidth": 320,
+        "windowHeight": 568,
+        "statusBarHeight": 20
+      },
+      "canvas_color_warnings": []
+    },
+    {
+      "report": "admin-390/report.json",
+      "passed": true,
+      "check_count": 29,
+      "viewport": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "canvas_color_warnings": []
+    },
+    {
+      "report": "ai-messages-320/report.json",
+      "passed": true,
+      "check_count": 14,
+      "viewport": {
+        "pixelRatio": 2,
+        "safeArea": {
+          "top": 20,
+          "left": 0,
+          "right": 320,
+          "bottom": 568,
+          "width": 320,
+          "height": 548
+        },
+        "screenWidth": 320,
+        "screenHeight": 568,
+        "screenTop": 0,
+        "windowWidth": 320,
+        "windowHeight": 568,
+        "statusBarHeight": 20
+      },
+      "canvas_color_warnings": []
+    },
+    {
+      "report": "ai-messages-390/report.json",
+      "passed": true,
+      "check_count": 14,
+      "viewport": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "canvas_color_warnings": []
+    },
+    {
+      "report": "mini-320/report.json",
+      "passed": true,
+      "check_count": 12,
+      "viewport": {
+        "pixelRatio": 2,
+        "safeArea": {
+          "top": 20,
+          "left": 0,
+          "right": 320,
+          "bottom": 568,
+          "width": 320,
+          "height": 548
+        },
+        "screenWidth": 320,
+        "screenHeight": 568,
+        "screenTop": 0,
+        "windowWidth": 320,
+        "windowHeight": 568,
+        "statusBarHeight": 20
+      },
+      "canvas_color_warnings": []
+    },
+    {
+      "report": "mini-390/report.json",
+      "passed": true,
+      "check_count": 12,
+      "viewport": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "canvas_color_warnings": []
+    }
+  ],
+  "transaction": {
+    "report": "transaction/mini-transaction.json",
+    "passed": true,
+    "order_id": "068b86ff9f47f6c55d368fa7330a4209",
+    "event_count": 25
+  },
+  "external_acceptance_pending": [
+    "真实AI密钥、指定模型的图片支持与审核准确率",
+    "真实微信最终同意登录与手机号",
+    "真实微信商户支付、退款及提现到账",
+    "手机真机与微信提审",
+    "通过宝塔MCP部署本轮版本"
+  ],
+  "limitations": [
+    "AI与钱包专项为明确本地模拟",
+    "AI/消息重复发送确认采用官方SDK的Modal确认模拟，首次390发送曾以原生工具实际确认",
+    "部分钱包专项在共享选择器抽取前运行，核心钱包代码随后未变更；双机型整页回归来自最终组件构建",
+    "用户原有frontend/src/main.ts换行修改保留且不提交"
+  ],
+  "packages_report": "release-package.json"
+}

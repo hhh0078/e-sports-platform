@@ -14,7 +14,7 @@ const meSource = pageScript('main/me/me.vue')
 const profileSource = pageScript('account/profile.vue')
 const ordersSource = pageScript('main/orders/orders.vue')
 const accountA = { id: 'A', nickname: '原始昵称', bio: '可以一起玩游戏', provider_enabled: true }
-const accountB = { id: 'B', nickname: '另一玩家', bio: '另一个账号', provider_enabled: false }
+const accountB = { id: 'B', nickname: '另一玩家', bio: '另一个账号', provider_enabled: true }
 
 /** 创建真实 Vue 状态和真实页面函数，并记录尚未完成的网络请求。 */
 function harness(pageName: 'me' | 'profile' | 'orders' = 'me') {
@@ -33,7 +33,7 @@ function harness(pageName: 'me' | 'profile' | 'orders' = 'me') {
   context.store.state.ready = true
   if(pageName==='me')vm.runInContext('(function(){'+executable(phoneSource)+';globalThis.requirePhone=requirePhone;globalThis.phone={phoneGate,finishPhone}})()',context)
   const source = { me: meSource, profile: profileSource, orders: ordersSource }[pageName]
-  const exposed = { me: 'load, toggleProvider, verifyPhone, hidePage, stats, saving', profile: 'load, saveProfile, signOut, hidePage, form, saving', orders: 'load, orders, loading, error, hasMore' }[pageName]
+  const exposed = { me: 'load, verifyPhone, hidePage, stats', profile: 'load, saveProfile, signOut, hidePage, form, saving', orders: 'load, orders, loading, error, hasMore' }[pageName]
   vm.runInContext(executable(source) + '\nglobalThis.page = { ' + exposed + ' }', context)
   if (pageName === 'me' || pageName === 'orders') vm.runInContext('visible = true', context)
   return {
@@ -56,16 +56,6 @@ async function loginB(subject: ReturnType<typeof harness>) {
   const pending = subject.store.login('B')
   subject.take('/auth/dev', 'POST').resolve({ token: 'token-B', user: { ...accountB } })
   await pending
-}
-
-/** 完成修改后的重新读取，验证最终统计也属于修改完成后的页面。 */
-async function finishRefresh(subject: ReturnType<typeof harness>, user: typeof accountA) {
-  await flush()
-  subject.take('/me').resolve(user)
-  await flush()
-  subject.take('/me/stats').resolve({ buyer_order_count: 7 })
-  await flush()
-  assert.equal(subject.page.stats.value.buyer_order_count, 7)
 }
 
 test('个人中心手机号读取失败正常提示且不会产生未处理拒绝', async () => {
@@ -132,26 +122,19 @@ test('当前401仍清理身份，旧退出请求不能退出新账号', async t 
   })
 })
 
-test('资料页和个人中心的旧读取不能覆盖刚保存的资料或接单开关', async t => {
-  for (const action of ['profile', 'provider']) {
-    await t.test(action, async () => {
-      const subject = harness(action === 'profile' ? 'profile' : 'me'), reading = subject.page.load()
-      await flush()
-      const old = subject.take('/me')
-      if (action === 'profile') Object.assign(subject.page.form, { nickname: '保存后昵称', bio: accountA.bio })
-      const saving = action === 'profile' ? subject.page.saveProfile() : subject.page.toggleProvider({ detail: { value: false } })
-      const updated = { ...accountA, ...(action === 'profile' ? { nickname: '保存后昵称' } : { provider_enabled: false }) }
-      subject.take(action === 'profile' ? '/me/profile' : '/me', 'PATCH').resolve(updated)
-      await saving
-      old.resolve({ ...accountA })
-      await reading
-      assert.equal(subject.store.state.user.nickname, updated.nickname)
-      assert.equal(subject.store.state.user.provider_enabled, updated.provider_enabled)
-      assert.equal(subject.page.saving.value, false)
-      if (action === 'profile') assert.equal(subject.page.form.nickname, updated.nickname)
-      else await finishRefresh(subject, updated)
-    })
-  }
+test('资料页的旧读取不能覆盖刚保存的资料', async () => {
+  const subject=harness('profile'),reading=subject.page.load()
+  await flush()
+  const old=subject.take('/me')
+  Object.assign(subject.page.form,{nickname:'保存后昵称',bio:accountA.bio})
+  const saving=subject.page.saveProfile(),updated={...accountA,nickname:'保存后昵称'}
+  subject.take('/me/profile','PATCH').resolve(updated)
+  await saving
+  old.resolve({...accountA});await reading
+  assert.equal(subject.store.state.user.nickname,updated.nickname)
+  assert.equal(subject.store.state.user.provider_enabled,true)
+  assert.equal(subject.page.saving.value,false)
+  assert.equal(subject.page.form.nickname,updated.nickname)
 })
 
 test('个人中心和资料页的跨会话回调及隐藏后的统计不再提交', async t => {

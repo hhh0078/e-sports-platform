@@ -1,6 +1,8 @@
 // Package app 提供集结平台的身份、游戏、服务、俱乐部和交易领域模型。
 package app
 
+import "encoding/json"
+
 type User struct {
 	ProfileCover    string `json:"profile_cover"`
 	PhoneVerified   bool   `json:"phone_verified"`
@@ -14,6 +16,19 @@ type User struct {
 	ProviderEnabled bool   `json:"provider_enabled"`
 	CreatedAt       string `json:"created_at"`
 }
+
+// UnmarshalJSON 兼容历史关闭或缺失的接单字段，读取时始终默认开启；冻结与手机号状态保持原值。
+func (u *User) UnmarshalJSON(data []byte) error {
+	type storedUser User
+	var value storedUser
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = User(value)
+	u.ProviderEnabled = true
+	return nil
+}
+
 type Game struct {
 	ID           string   `json:"id"`
 	Name         string   `json:"name"`
@@ -39,27 +54,28 @@ type CoverLabel struct {
 	FontSize   int    `json:"font_size"`
 }
 type Service struct {
-	ID             string       `json:"id"`
-	GameID         string       `json:"game_id"`
-	ProviderID     string       `json:"provider_id"`
-	ProviderName   string       `json:"provider_name"`
-	ProviderAvatar string       `json:"provider_avatar"`
-	ClubID         string       `json:"club_id"`
-	ClubName       string       `json:"club_name"`
-	ClubVerified   bool         `json:"club_verified"`
-	Title          string       `json:"title"`
-	Description    string       `json:"description"`
-	Category       string       `json:"category"`
-	PriceCents     int64        `json:"price_cents"`
-	Unit           string       `json:"unit"`
-	CoverURL       string       `json:"cover_url"`
-	Labels         []CoverLabel `json:"labels"`
-	Tags           []string     `json:"tags"`
-	Status         string       `json:"status"`
-	Rating         float64      `json:"rating"`
-	CompletedCount int          `json:"completed_count"`
-	CreatedAt      string       `json:"created_at"`
-	Reviews        []Review     `json:"reviews,omitempty"`
+	ProviderDepositCents int64        `json:"provider_deposit_cents"`
+	ID                   string       `json:"id"`
+	GameID               string       `json:"game_id"`
+	ProviderID           string       `json:"provider_id"`
+	ProviderName         string       `json:"provider_name"`
+	ProviderAvatar       string       `json:"provider_avatar"`
+	ClubID               string       `json:"club_id"`
+	ClubName             string       `json:"club_name"`
+	ClubVerified         bool         `json:"club_verified"`
+	Title                string       `json:"title"`
+	Description          string       `json:"description"`
+	Category             string       `json:"category"`
+	PriceCents           int64        `json:"price_cents"`
+	Unit                 string       `json:"unit"`
+	CoverURL             string       `json:"cover_url"`
+	Labels               []CoverLabel `json:"labels"`
+	Tags                 []string     `json:"tags"`
+	Status               string       `json:"status"`
+	Rating               float64      `json:"rating"`
+	CompletedCount       int          `json:"completed_count"`
+	CreatedAt            string       `json:"created_at"`
+	Reviews              []Review     `json:"reviews,omitempty"`
 }
 type Club struct {
 	CoverURL         string           `json:"cover_url"`
@@ -92,6 +108,14 @@ type ClubMember struct {
 	CreatedAt            string `json:"created_at"`
 }
 type Order struct {
+	PaidAt               string `json:"paid_at,omitempty"`
+	RefundedAt           string `json:"refunded_at,omitempty"`
+	PaymentChannel       string `json:"payment_channel"`
+	BalanceRechargeCents int64  `json:"balance_recharge_cents"`
+	BalanceIncomeCents   int64  `json:"balance_income_cents"`
+	WalletAccounted      bool   `json:"wallet_accounted"`
+	WalletRequestID      string `json:"wallet_request_id,omitempty"`
+	RefundFinal          bool   `json:"refund_final"`
 	ID                   string `json:"id"`
 	OrderNo              string `json:"order_no"`
 	GameID               string `json:"game_id"`

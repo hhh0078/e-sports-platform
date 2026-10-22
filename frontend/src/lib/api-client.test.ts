@@ -1,7 +1,7 @@
 /** 文件作用：验证真实统一请求工具的认证头、HTTP错误、上传解析及业务查询编码。 */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { request, upload, queryString, errorMessage, errorStatus } from '../api/client'
+import { request, upload, queryString, errorMessage, errorStatus, errorCode } from '../api/client'
 import { performOrderAction, listMessages } from '../api/orders.api'
 import { verifyDevPhone } from '../api/auth.api'
 
@@ -85,5 +85,19 @@ test('开发手机号API发送与Go一致的phone_number字段', async () => {
     assert.deepEqual(subject.requests[0].data, { phone_number: '13800000000' })
     subject.requests[0].success?.({ statusCode: 200, data: { data: { phone_verified: true } }, header: {}, cookies: [] })
     assert.equal((await verifying).phone_verified, true)
+  } finally { subject.restore() }
+})
+
+test('文字及图片审核拒绝保留稳定错误码和完整理由', async () => {
+  const subject = setup()
+  try {
+    const reason = '内容审核未通过：包含现实违法交易信息，请修改后重新提交。'
+    const text = request('/services', 'POST', { title: '示例' })
+    subject.requests[0].success?.({ statusCode: 422, data: { error: reason, code: 'moderation_rejected' }, header: {}, cookies: [] })
+    await assert.rejects(text, (error: unknown) => errorCode(error) === 'moderation_rejected' && errorMessage(error) === reason && errorStatus(error) === 422)
+    const image = upload('/media/images', '/local/avatar.jpg')
+    subject.uploads[0].success?.({ statusCode: 503, data: JSON.stringify({ error: '内容审核暂不可用，请保留草稿后重试', code: 'moderation_unavailable' }) })
+    await assert.rejects(image, (error: unknown) => errorCode(error) === 'moderation_unavailable' && errorStatus(error) === 503)
+    assert.equal(errorCode({ code: 42 }), undefined)
   } finally { subject.restore() }
 })

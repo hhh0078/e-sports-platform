@@ -28,18 +28,20 @@ type App struct {
 	Redis           *redis.Client
 	Config          Config
 	HTTPClient      *http.Client
+	AIHTTPClient    *http.Client
 	EvidenceKey     []byte
 }
 type apiError struct {
 	Status  int
 	Message string
+	Code    string
 }
 
 // Error 返回可以安全展示的中文错误。
 func (e *apiError) Error() string { return e.Message }
 
 // fail 构造业务错误。
-func fail(status int, message string) error { return &apiError{status, message} }
+func fail(status int, message string) error { return &apiError{Status: status, Message: message} }
 
 // env 读取环境变量并应用本地默认值。
 func env(key, fallback string) string {
@@ -83,6 +85,12 @@ func New(ctx context.Context, cfg Config) (*App, error) {
 	if err = a.seed(ctx); err != nil {
 		a.Close()
 		return nil, err
+	}
+	if !cfg.DevMode {
+		if err = guardProductionWalletData(ctx, db); err != nil {
+			a.Close()
+			return nil, err
+		}
 	}
 	if err = a.loadPaymentSettings(ctx); err != nil {
 		a.Close()
@@ -128,7 +136,7 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
-			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PATCH,OPTIONS")
+			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS")
 		}
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(204)
@@ -150,13 +158,17 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 			var ae *apiError
 			if !errors.As(err, &ae) {
 				if missing(err) {
-					ae = &apiError{404, "内容不存在"}
+					ae = &apiError{Status: 404, Message: "内容不存在"}
 				} else {
 					log.Printf("%s %s: %v", r.Method, r.URL.Path, err)
-					ae = &apiError{500, "服务器暂时不可用，请稍后重试"}
+					ae = &apiError{Status: 500, Message: "服务器暂时不可用，请稍后重试"}
 				}
 			}
-			respond(w, ae.Status, map[string]any{"error": ae.Message})
+			payload := map[string]any{"error": ae.Message}
+			if ae.Code != "" {
+				payload["code"] = ae.Code
+			}
+			respond(w, ae.Status, payload)
 			return
 		}
 		respond(w, 200, map[string]any{"data": publicValue(out)})
@@ -169,13 +181,16 @@ func (a *App) Handler() http.Handler {
 	mux.Handle("GET /static/covers/", assets.Handler())
 	a.registerIdentityRoutes(mux)
 	a.registerPaymentSettingsRoutes(mux)
+	a.registerWalletRoutes(mux)
+	a.registerAIRoutes(mux)
+	a.registerInboxRoutes(mux)
 	routes := map[string]func(http.ResponseWriter, *http.Request) (any, error){
 		"GET /api/players/{id}": a.playerProfile, "PATCH /api/me/profile": a.saveProfile, "POST /api/media/images": a.uploadImage,
 		"GET /health": a.health, "GET /api/health": a.health, "GET /api/bootstrap": a.bootstrap, "GET /api/dev/accounts": a.accounts, "POST /api/auth/dev": a.devLogin, "POST /api/auth/wechat": a.wechatLogin, "POST /api/auth/logout": a.logout, "GET /api/me": a.me, "PATCH /api/me": a.updateMe, "GET /api/me/stats": a.stats,
 		"GET /api/games": a.games, "GET /api/services": a.services, "GET /api/services/{id}": a.service, "POST /api/services": a.saveService, "PATCH /api/services/{id}": a.saveService, "POST /api/services/{id}/pause": a.pauseService,
 		"POST /api/orders": a.createOrder, "POST /api/requests": a.createRequest, "GET /api/orders": a.orders, "GET /api/jobs": a.jobs, "GET /api/orders/{id}": a.order, "POST /api/orders/{id}/pay": a.pay, "POST /api/orders/{id}/sync-payment": a.syncPayment, "POST /api/orders/{id}/actions": a.action, "POST /api/orders/{id}/evidence": a.uploadEvidence, "GET /api/orders/{id}/evidence-link": a.evidenceLink, "GET /api/orders/{id}/messages": a.messages, "POST /api/orders/{id}/messages": a.message, "POST /api/orders/{id}/review": a.review, "GET /api/orders/{id}/reviews": a.reviews,
 		"GET /api/clubs": a.clubs, "POST /api/clubs": a.saveClub, "GET /api/clubs/{id}": a.club, "PATCH /api/clubs/{id}": a.saveClub, "POST /api/clubs/{id}/join": a.joinClub, "POST /api/clubs/{id}/leave": a.leaveClub, "POST /api/clubs/{id}/members/{user_id}": a.moderateMember, "GET /api/clubs/{id}/orders": a.clubOrders,
-		"POST /api/admin/covers": a.uploadCover, "GET /api/admin/overview": a.overview, "GET /api/admin/{resource}": a.adminList, "PATCH /api/admin/users/{id}": a.moderateUser, "PATCH /api/admin/services/{id}": a.moderateService, "PATCH /api/admin/clubs/{id}": a.moderateClub, "POST /api/admin/games": a.saveGame, "PATCH /api/admin/games/{id}": a.saveGame, "POST /api/admin/orders/{id}/resolve": a.resolve, "POST /api/admin/orders/{id}/retry-refund": a.retryRefund, "PATCH /api/admin/settings": a.saveSettings,
+		"POST /api/admin/covers": a.uploadCover, "GET /api/admin/overview": a.overview, "GET /api/admin/analytics": a.analytics, "GET /api/admin/{resource}": a.adminList, "PATCH /api/admin/users/{id}": a.moderateUser, "PATCH /api/admin/services/{id}": a.moderateService, "PATCH /api/admin/clubs/{id}": a.moderateClub, "POST /api/admin/games": a.saveGame, "PATCH /api/admin/games/{id}": a.saveGame, "POST /api/admin/orders/{id}/resolve": a.resolve, "POST /api/admin/orders/{id}/retry-refund": a.retryRefund, "PATCH /api/admin/settings": a.saveSettings,
 	}
 	for path, fn := range routes {
 		mux.HandleFunc(path, a.wrap(fn))
@@ -203,7 +218,35 @@ func (a *App) health(w http.ResponseWriter, r *http.Request) (any, error) {
 // publicValue 移除业务响应中的支付私密标识，数据库仍保留回调校验资料。
 func publicValue(value any) any {
 	switch v := value.(type) {
+	case WalletTopup:
+		v.MerchantID = ""
+		v.AppID = ""
+		v.PayOpenID = ""
+		v.TransactionID = ""
+		return v
+	case []WalletTopup:
+		out := make([]WalletTopup, len(v))
+		for i, item := range v {
+			out[i] = publicValue(item).(WalletTopup)
+		}
+		return out
+	case WalletWithdrawal:
+		v.MerchantID = ""
+		v.AppID = ""
+		v.PayOpenID = ""
+		v.EncryptedName = ""
+		v.NameHash = ""
+		v.PackageInfo = ""
+		v.TransferConfig = WalletSettings{}
+		return v
+	case []WalletWithdrawal:
+		out := make([]WalletWithdrawal, len(v))
+		for i, item := range v {
+			out[i] = publicValue(item).(WalletWithdrawal)
+		}
+		return out
 	case Order:
+		v.WalletRequestID = ""
 		v.PayOpenID = ""
 		v.PaymentTransactionID = ""
 		v.RefundID = ""

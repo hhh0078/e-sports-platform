@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "viewport": {
+    "pixelRatio": 2,
+    "safeArea": {
+      "top": 20,
+      "left": 0,
+      "right": 320,
+      "bottom": 568,
+      "width": 320,
+      "height": 548
+    },
+    "screenWidth": 320,
+    "screenHeight": 568,
+    "screenTop": 0,
+    "windowWidth": 320,
+    "windowHeight": 568,
+    "statusBarHeight": 20
+  },
+  "checks": [
+    "AI独立配置默认地址模型正确，密钥不回显，窄屏输入不溢出",
+    "管理员可真实保存提示词，密钥字段保持空白",
+    "管理员发送指定账号系统通知成功",
+    "列表仅标题，新消息未读且服务器副本仍在",
+    "打开详情后全文可读，服务器副本已删除",
+    "原生重启页面后已读和全文仍保存在本机，不依赖服务器",
+    "切换账号不显示前一账号消息",
+    "worker无AI配置或后台发送权限：ai",
+    "worker无AI配置或后台发送权限：messages",
+    "clubowner无AI配置或后台发送权限：ai",
+    "clubowner无AI配置或后台发送权限：messages",
+    "player无AI配置或后台发送权限：ai",
+    "player无AI配置或后台发送权限：messages",
+    "真实请求审核拒绝后留在发布页，完整原因与预算草稿仍在"
+  ],
+  "runtime_exceptions": [],
+  "canvas_color_warnings": [],
+  "native_confirmation": "重复回归使用官方SDK模拟确认；390首次另经原生窗口手动确认",
+  "remaining": [
+    "真实AI密钥和图像模型能力未配置；本脚本使用明确本地模拟。",
+    "真实微信手机号、支付和商家转账另行验收。"
+  ]
+}

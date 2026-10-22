@@ -1,0 +1,1288 @@
+{
+  "description": "最终后端集成与竞态测试结果；仅保留测试名称及结果，不包含原始日志或秘密。",
+  "command": "TEST_INTEGRATION=true go test -race -timeout=2m -count=1 -json ./...",
+  "counts": {
+    "pass": 182,
+    "fail": 0,
+    "skip": 0
+  },
+  "top_level_tests": 95,
+  "go_vet": "passed",
+  "results": [
+    {
+      "Time": "2026-10-22T16:18:09.805655+08:00",
+      "Action": "pass",
+      "Package": "jijie/cmd/demo",
+      "Test": "TestDemoConfigErrorHidesCredentials",
+      "Elapsed": 0.01
+    },
+    {
+      "Time": "2026-10-22T16:18:10.245558+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/assets",
+      "Test": "TestEmbeddedCover",
+      "Elapsed": 0.01
+    },
+    {
+      "Time": "2026-10-22T16:18:10.883464+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/users/active",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.883506+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/users/frozen",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.883994+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/services/pending",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.884013+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/services/active",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.884028+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/services/paused",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.884055+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/services/rejected",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.884306+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/clubs/pending",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.884443+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/clubs/active",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.884563+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding/clubs/rejected",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:10.88467+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAdminQueryStatusBinding",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.687577+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAdminStatusBeforePagination",
+      "Elapsed": 0.8
+    },
+    {
+      "Time": "2026-10-22T16:18:11.689008+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange/start=2026-10-21",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.689024+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange/end=2026-10-21",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.689193+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange/start=&end=",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.689271+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange/start=2026-2-01&end=2026-02-02",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.689431+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange/start=2026-02-30&end=2026-03-01",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.689988+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange/start=2026-10-22&end=2026-10-21",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.69113+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange/start=2024-01-01&end=2025-01-01",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.691193+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange/start=abc&end=2026-10-21",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.6912+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAnalyticsDateRange",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:11.962865+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAnalyticsAdminAndEmpty",
+      "Elapsed": 0.27
+    },
+    {
+      "Time": "2026-10-22T16:18:12.189072+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAnalyticsShanghaiAndCrossPeriod",
+      "Elapsed": 0.23
+    },
+    {
+      "Time": "2026-10-22T16:18:12.591406+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAnalyticsPaymentHooksAndWalletExclusion",
+      "Elapsed": 0.4
+    },
+    {
+      "Time": "2026-10-22T16:18:13.526938+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAnalyticsWXOfficialTimeAndReplay",
+      "Elapsed": 0.94
+    },
+    {
+      "Time": "2026-10-22T16:18:13.883726+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationBootstrapWechatAdmin",
+      "Elapsed": 0.36
+    },
+    {
+      "Time": "2026-10-22T16:18:14.166172+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/名称忽略大小写并去除空白",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:14.168422+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/简介关键词",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:14.169425+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/不匹配为空",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:14.170728+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/SQL文本不是指令",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:14.172172+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/百分号不是通配符",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:14.183346+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/筛选后第一页",
+      "Elapsed": 0.01
+    },
+    {
+      "Time": "2026-10-22T16:18:14.191848+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/筛选后第二页",
+      "Elapsed": 0.01
+    },
+    {
+      "Time": "2026-10-22T16:18:14.197417+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/翻页结束",
+      "Elapsed": 0.01
+    },
+    {
+      "Time": "2026-10-22T16:18:14.207985+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/本人负责含待审核",
+      "Elapsed": 0.01
+    },
+    {
+      "Time": "2026-10-22T16:18:14.225502+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/本人范围筛选后分页",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-10-22T16:18:14.242215+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination/成员挂靠范围",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-10-22T16:18:14.278816+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubSearchBeforePagination",
+      "Elapsed": 0.39
+    },
+    {
+      "Time": "2026-10-22T16:18:17.574338+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationCommunityClubLifecycle",
+      "Elapsed": 3.3
+    },
+    {
+      "Time": "2026-10-22T16:18:19.472919+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationCommunityPublicProfile",
+      "Elapsed": 1.9
+    },
+    {
+      "Time": "2026-10-22T16:18:19.473005+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestCommunityMemberProjection",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:19.99679+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationCustomCovers",
+      "Elapsed": 0.52
+    },
+    {
+      "Time": "2026-10-22T16:18:20.381998+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPaymentConfigDoesNotLockCancellation",
+      "Elapsed": 0.39
+    },
+    {
+      "Time": "2026-10-22T16:18:20.865563+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubClaimAndPublicPrivacy",
+      "Elapsed": 0.48
+    },
+    {
+      "Time": "2026-10-22T16:18:21.65602+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationMessageCursors",
+      "Elapsed": 0.79
+    },
+    {
+      "Time": "2026-10-22T16:18:22.31314+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAdminSearchBeforePagination",
+      "Elapsed": 0.66
+    },
+    {
+      "Time": "2026-10-22T16:18:22.688484+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/honor",
+      "Elapsed": 0.07
+    },
+    {
+      "Time": "2026-10-22T16:18:22.74081+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/peace",
+      "Elapsed": 0.05
+    },
+    {
+      "Time": "2026-10-22T16:18:22.813521+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/delta",
+      "Elapsed": 0.07
+    },
+    {
+      "Time": "2026-10-22T16:18:22.888641+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/tft",
+      "Elapsed": 0.07
+    },
+    {
+      "Time": "2026-10-22T16:18:23.050521+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/valorant",
+      "Elapsed": 0.16
+    },
+    {
+      "Time": "2026-10-22T16:18:23.103491+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/lol",
+      "Elapsed": 0.05
+    },
+    {
+      "Time": "2026-10-22T16:18:23.143695+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/valorantm",
+      "Elapsed": 0.04
+    },
+    {
+      "Time": "2026-10-22T16:18:23.321946+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/cfm",
+      "Elapsed": 0.18
+    },
+    {
+      "Time": "2026-10-22T16:18:23.373704+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/arena",
+      "Elapsed": 0.05
+    },
+    {
+      "Time": "2026-10-22T16:18:23.42447+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/codm",
+      "Elapsed": 0.05
+    },
+    {
+      "Time": "2026-10-22T16:18:23.574956+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/identityv",
+      "Elapsed": 0.15
+    },
+    {
+      "Time": "2026-10-22T16:18:23.634154+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/narakam",
+      "Elapsed": 0.06
+    },
+    {
+      "Time": "2026-10-22T16:18:23.805588+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog/eggy",
+      "Elapsed": 0.17
+    },
+    {
+      "Time": "2026-10-22T16:18:23.827601+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationExpandedGameCatalog",
+      "Elapsed": 1.51
+    },
+    {
+      "Time": "2026-10-22T16:18:24.218363+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationOfficialCoverMigration",
+      "Elapsed": 0.39
+    },
+    {
+      "Time": "2026-10-22T16:18:24.532124+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationDemoSeedPreservesClubScope",
+      "Elapsed": 0.31
+    },
+    {
+      "Time": "2026-10-22T16:18:24.725528+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationClubScopeAndSingleConnection",
+      "Elapsed": 0.19
+    },
+    {
+      "Time": "2026-10-22T16:18:24.726852+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestGameIconValidation",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:24.895605+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationProductionCatalogHasNoDemo",
+      "Elapsed": 0.17
+    },
+    {
+      "Time": "2026-10-22T16:18:25.112916+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationDefaultPresentationMigration/不同旧色不可猜测",
+      "Elapsed": 0.05
+    },
+    {
+      "Time": "2026-10-22T16:18:25.166453+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationDefaultPresentationMigration/存在管理员审计即保留",
+      "Elapsed": 0.05
+    },
+    {
+      "Time": "2026-10-22T16:18:25.179+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationDefaultPresentationMigration",
+      "Elapsed": 0.28
+    },
+    {
+      "Time": "2026-10-22T16:18:25.3635+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationInboxLifecycleAndPermissions",
+      "Elapsed": 0.18
+    },
+    {
+      "Time": "2026-10-22T16:18:25.557781+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationInboxPaginationAndModerationDedup",
+      "Elapsed": 0.19
+    },
+    {
+      "Time": "2026-10-22T16:18:25.773739+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationOrderRoles",
+      "Elapsed": 0.22
+    },
+    {
+      "Time": "2026-10-22T16:18:26.007015+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationConcurrentClaims",
+      "Elapsed": 0.23
+    },
+    {
+      "Time": "2026-10-22T16:18:26.253397+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationRefundAndIsolation",
+      "Elapsed": 0.25
+    },
+    {
+      "Time": "2026-10-22T16:18:26.491061+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationEvidenceAndFreeze",
+      "Elapsed": 0.24
+    },
+    {
+      "Time": "2026-10-22T16:18:26.687356+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPublicationAndProduction",
+      "Elapsed": 0.2
+    },
+    {
+      "Time": "2026-10-22T16:18:26.687451+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestPublicImageDimensions",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:26.765959+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestPublicImageNormalization",
+      "Elapsed": 0.08
+    },
+    {
+      "Time": "2026-10-22T16:18:27.665514+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationCommunityImageSecurity",
+      "Elapsed": 0.9
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165046+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationImagesRejectedAndLegacyRechecked",
+      "Elapsed": 0.5
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165124+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/http://api.example.com/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165154+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://localhost/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165168+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://127.0.0.1/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165186+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://[::1]/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165238+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://10.2.0.1/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165299+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://100.100.100.200/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165338+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://192.0.2.1/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165595+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://u:pass@api.example.com/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165654+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://api.example.com:8443/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165783+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://api.example.com/v1?key=secret",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165838+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://api.example.com/v1#x",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.165866+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://foo.internal/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.16588+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://[64:ff9b::a00:1]/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.16647+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary/https://[::ffff:0:a00:1]/v1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.166871+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIAddressAndDecisionBoundary",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.418371+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAIConfigPrivacyAndFailClosed",
+      "Elapsed": 0.25
+    },
+    {
+      "Time": "2026-10-22T16:18:28.588167+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAIHTTPProtocolAndImageFailure/network",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.590291+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAIHTTPProtocolAndImageFailure/malformed",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.592885+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAIHTTPProtocolAndImageFailure/length",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.596025+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAIHTTPProtocolAndImageFailure/upstream",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.60873+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAIHTTPProtocolAndImageFailure",
+      "Elapsed": 0.19
+    },
+    {
+      "Time": "2026-10-22T16:18:28.828286+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/PATCH/me",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.830571+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/PATCH/me/profile",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.834198+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/services",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.837724+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/PATCH/services/delta-service-1",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.84107+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/clubs",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.84444+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/PATCH/clubs/shanhai",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.848022+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/clubs/shanhai/join",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.851224+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/clubs/shanhai/members/worker",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.854376+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/orders",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.857347+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/requests",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.860383+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/orders/355f9940d569e49ad07185e40c11eaff/actions",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.863581+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/orders/355f9940d569e49ad07185e40c11eaff/actions#01",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.867286+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/orders/355f9940d569e49ad07185e40c11eaff/messages",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.870276+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints/POST/orders/8699bdf2fb4dac416d7e9f23057b3430/review",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:28.882637+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationAllUGCEntrypoints",
+      "Elapsed": 0.27
+    },
+    {
+      "Time": "2026-10-22T16:18:28.883196+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAIEncryptionPurposeBoundary",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:29.296322+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationOrderFiltersBeforePagination",
+      "Elapsed": 0.41
+    },
+    {
+      "Time": "2026-10-22T16:18:29.514946+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationOrderFiltersValidateAndKeepScope",
+      "Elapsed": 0.22
+    },
+    {
+      "Time": "2026-10-22T16:18:29.907212+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationOrderStatsSeparateRoles",
+      "Elapsed": 0.39
+    },
+    {
+      "Time": "2026-10-22T16:18:29.907547+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestPaymentEncryptionIntegrity",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:30.359723+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPaymentSettingsSecretsAndReload",
+      "Elapsed": 0.45
+    },
+    {
+      "Time": "2026-10-22T16:18:30.729223+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPaymentConfigSnapshotConcurrent",
+      "Elapsed": 0.37
+    },
+    {
+      "Time": "2026-10-22T16:18:30.961652+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationRestartPreservesData",
+      "Elapsed": 0.23
+    },
+    {
+      "Time": "2026-10-22T16:18:31.154872+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationServiceReauditAndSensitiveFields",
+      "Elapsed": 0.19
+    },
+    {
+      "Time": "2026-10-22T16:18:31.437687+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPhoneGateAndPrivateIdentity",
+      "Elapsed": 0.28
+    },
+    {
+      "Time": "2026-10-22T16:18:31.582662+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPhoneRefreshAndPrivacyBoundary",
+      "Elapsed": 0.14
+    },
+    {
+      "Time": "2026-10-22T16:18:32.019876+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPrepayCancelSerialization",
+      "Elapsed": 0.44
+    },
+    {
+      "Time": "2026-10-22T16:18:32.326646+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPrepayTimeoutKeepsIntent",
+      "Elapsed": 0.31
+    },
+    {
+      "Time": "2026-10-22T16:18:32.514502+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationEvidenceLinkRenewal",
+      "Elapsed": 0.19
+    },
+    {
+      "Time": "2026-10-22T16:18:32.870096+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationPrepayWithSingleDBConnection",
+      "Elapsed": 0.36
+    },
+    {
+      "Time": "2026-10-22T16:18:32.870281+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestUserProviderReadCompatibility",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:32.870308+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestProviderActionsIgnoreLegacySwitch",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:33.03114+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationProviderMigration",
+      "Elapsed": 0.16
+    },
+    {
+      "Time": "2026-10-22T16:18:33.413234+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationProviderDefaultAcrossRoutes",
+      "Elapsed": 0.38
+    },
+    {
+      "Time": "2026-10-22T16:18:33.707468+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationRefundTimeoutRecovery/cancel",
+      "Elapsed": 0.29
+    },
+    {
+      "Time": "2026-10-22T16:18:33.999651+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationRefundTimeoutRecovery/approve",
+      "Elapsed": 0.29
+    },
+    {
+      "Time": "2026-10-22T16:18:34.320484+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationRefundTimeoutRecovery/resolve",
+      "Elapsed": 0.32
+    },
+    {
+      "Time": "2026-10-22T16:18:34.320523+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationRefundTimeoutRecovery",
+      "Elapsed": 0.91
+    },
+    {
+      "Time": "2026-10-22T16:18:34.672887+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationServiceSortBeforePagination/recommended",
+      "Elapsed": 0.12
+    },
+    {
+      "Time": "2026-10-22T16:18:34.794709+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationServiceSortBeforePagination/price",
+      "Elapsed": 0.12
+    },
+    {
+      "Time": "2026-10-22T16:18:34.913211+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationServiceSortBeforePagination/completed",
+      "Elapsed": 0.12
+    },
+    {
+      "Time": "2026-10-22T16:18:35.026127+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationServiceSortBeforePagination",
+      "Elapsed": 0.71
+    },
+    {
+      "Time": "2026-10-22T16:18:39.603237+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseSeedAndClear",
+      "Elapsed": 4.58
+    },
+    {
+      "Time": "2026-10-22T16:18:41.99152+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseProtectsRealReferences",
+      "Elapsed": 2.39
+    },
+    {
+      "Time": "2026-10-22T16:18:43.913+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseNamespaceCollision",
+      "Elapsed": 1.92
+    },
+    {
+      "Time": "2026-10-22T16:18:46.251654+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseProtectsEvidenceAssociations/messages_order_id",
+      "Elapsed": 0.03
+    },
+    {
+      "Time": "2026-10-22T16:18:46.270637+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseProtectsEvidenceAssociations/messages_sender_id",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-10-22T16:18:46.290999+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseProtectsEvidenceAssociations/reviews_order_id",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-10-22T16:18:46.312605+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_order_id",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-10-22T16:18:46.336309+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_owner_id",
+      "Elapsed": 0.02
+    },
+    {
+      "Time": "2026-10-22T16:18:46.398294+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseProtectsEvidenceAssociations/evidence_club_id",
+      "Elapsed": 0.06
+    },
+    {
+      "Time": "2026-10-22T16:18:46.473051+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationShowcaseProtectsEvidenceAssociations",
+      "Elapsed": 2.56
+    },
+    {
+      "Time": "2026-10-22T16:18:48.819718+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationOverviewExcludesShowcase",
+      "Elapsed": 2.35
+    },
+    {
+      "Time": "2026-10-22T16:18:48.819976+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestDatabaseConfigErrorHidesCredentials",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:48.82+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestRequireLiveOrderRejectsEveryDemoReference",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:49.148299+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationDemoTradeBlocked",
+      "Elapsed": 0.33
+    },
+    {
+      "Time": "2026-10-22T16:18:51.508601+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationDemoResourceReferenceBlocked",
+      "Elapsed": 2.36
+    },
+    {
+      "Time": "2026-10-22T16:18:51.508641+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestOrderTransitions",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:51.508706+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestAfterSaleWindow",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:51.508795+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestServiceValidation",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:51.508872+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestProductionGuard",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:51.957239+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletWXTopupNotifications",
+      "Elapsed": 0.45
+    },
+    {
+      "Time": "2026-10-22T16:18:52.619882+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletWXDepositRefundTimeout",
+      "Elapsed": 0.66
+    },
+    {
+      "Time": "2026-10-22T16:18:53.174703+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletWXWithdrawalUnknown",
+      "Elapsed": 0.55
+    },
+    {
+      "Time": "2026-10-22T16:18:53.709353+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletProductionBalanceRefund",
+      "Elapsed": 0.53
+    },
+    {
+      "Time": "2026-10-22T16:18:53.995121+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletPaymentChannelIntent",
+      "Elapsed": 0.29
+    },
+    {
+      "Time": "2026-10-22T16:18:54.16777+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletSettingsAdminOnly",
+      "Elapsed": 0.17
+    },
+    {
+      "Time": "2026-10-22T16:18:54.167803+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestWalletValidation",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:54.380944+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletBalanceRefund",
+      "Elapsed": 0.21
+    },
+    {
+      "Time": "2026-10-22T16:18:54.591923+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletSettlement",
+      "Elapsed": 0.21
+    },
+    {
+      "Time": "2026-10-22T16:18:54.848902+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletConcurrentWithdrawals",
+      "Elapsed": 0.26
+    },
+    {
+      "Time": "2026-10-22T16:18:55.089427+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletDepositRefund",
+      "Elapsed": 0.24
+    },
+    {
+      "Time": "2026-10-22T16:18:55.282712+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWalletProductionRejectsDevFunds",
+      "Elapsed": 0.19
+    },
+    {
+      "Time": "2026-10-22T16:18:55.487075+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWechatTicketAndAgreementVersions",
+      "Elapsed": 0.2
+    },
+    {
+      "Time": "2026-10-22T16:18:55.653001+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestIntegrationWechatTicketAtomicConsumption",
+      "Elapsed": 0.17
+    },
+    {
+      "Time": "2026-10-22T16:18:55.823472+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestWXVerifyRejectsTampering",
+      "Elapsed": 0.17
+    },
+    {
+      "Time": "2026-10-22T16:18:56.167764+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestWXDecryptRejectsWrongKeyAndEvent",
+      "Elapsed": 0.34
+    },
+    {
+      "Time": "2026-10-22T16:18:56.361591+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestWXRequestSignsAndVerifies",
+      "Elapsed": 0.19
+    },
+    {
+      "Time": "2026-10-22T16:18:56.844153+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestWXPaymentAndRefundCallbacks",
+      "Elapsed": 0.48
+    },
+    {
+      "Time": "2026-10-22T16:18:56.844216+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestWXConfigFailsClosed",
+      "Elapsed": 0
+    },
+    {
+      "Time": "2026-10-22T16:18:57.180726+08:00",
+      "Action": "pass",
+      "Package": "jijie/internal/app",
+      "Test": "TestWXCloseAbsentOrderRequiresSignature",
+      "Elapsed": 0.34
+    }
+  ],
+  "scope": "本地隔离测试schema和Redis前缀；不涉及真实AI或商户资金"
+}

@@ -140,7 +140,7 @@ func (a *App) moderateService(w http.ResponseWriter, r *http.Request) (any, erro
 	if in.Status == "active" {
 		g, e := get[Game](r.Context(), tx, "games", s.GameID, false)
 		p, pe := get[User](r.Context(), tx, "users", s.ProviderID, false)
-		if e != nil || !g.Enabled || pe != nil || p.Status != "active" || !p.ProviderEnabled {
+		if e != nil || !g.Enabled || pe != nil || p.Status != "active" {
 			return nil, fail(409, "游戏或服务提供者当前不可用")
 		}
 		if err = validateService(&s, g); err != nil {
@@ -294,7 +294,7 @@ func (a *App) resolve(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
-	o, err := get[Order](r.Context(), tx, "orders", r.PathValue("id"), true)
+	o, err := lockWalletOrder(r.Context(), tx, r.PathValue("id"), "")
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +307,7 @@ func (a *App) resolve(w http.ResponseWriter, r *http.Request) (any, error) {
 	if o.RefundStatus != "escalated" && o.Status != "disputed" {
 		return nil, fail(409, "该订单没有待平台处理的争议")
 	}
-	remoteRefund := in.Resolution == "refund" && !a.Config.DevMode
+	remoteRefund := in.Resolution == "refund" && !a.Config.DevMode && o.PaymentChannel != "balance"
 	switch in.Resolution {
 	case "refund":
 		if remoteRefund {
@@ -331,6 +331,12 @@ func (a *App) resolve(w http.ResponseWriter, r *http.Request) (any, error) {
 			o.CompletedAt = now()
 		}
 		o.RefundStatus = "rejected"
+	}
+	o.RefundFinal = in.Resolution != "resume"
+	if o.PaymentStatus == "refunded" {
+		if err = refundWalletEscrow(r.Context(), tx, &o); err != nil {
+			return nil, err
+		}
 	}
 	o.RefundReply = in.Note
 	o.UpdatedAt = now()

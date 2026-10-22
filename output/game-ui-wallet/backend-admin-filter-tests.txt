@@ -1,0 +1,12 @@
+后台状态过滤新增2个顶层及9个子测试，全量-race一并通过。
+TestAdminQueryStatusBinding/services/pending：通过
+TestAdminQueryStatusBinding/services/active：通过
+TestAdminQueryStatusBinding/services/paused：通过
+TestAdminQueryStatusBinding/services/rejected：通过
+TestAdminQueryStatusBinding/clubs/pending：通过
+TestAdminQueryStatusBinding/clubs/active：通过
+TestAdminQueryStatusBinding/clubs/rejected：通过
+TestAdminQueryStatusBinding/users/active：通过
+TestAdminQueryStatusBinding/users/frozen：通过
+TestAdminQueryStatusBinding：通过
+TestIntegrationAdminStatusBeforePagination：通过

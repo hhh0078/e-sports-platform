@@ -19,7 +19,7 @@ const accountB = { id: 'B', nickname: '乙队友', bio: '另一位游戏爱好�
 function harness(t: TestContext, view: ViewName, total = 125) {
   const storage = new Map([['jijie_token', 'token-A']]), props = reactive({ active: true })
   const shows: Array<() => void> = [], hides: Array<() => void> = [], held = new Set<string>()
-  const requests: Array<{ path: string; method: string }> = [], pending: DeferredRequest[] = []
+  const requests: Array<{ path: string; method: string }> = [], pending: DeferredRequest[] = [], navigations: string[] = []
   const rows: Row[] = Array.from({ length: total }, (_, index) => ({ id: 'row-' + index, provider_id: 'A', requirements: '完成约定任务', status: 'pending' }))
   const game = { id: 'delta', categories: ['任务协作'], covers: [], primary_color: '#00e18a' }
   const context = vm.createContext({
@@ -27,7 +27,7 @@ function harness(t: TestContext, view: ViewName, total = 125) {
     defineProps: () => props,
     onShow: (callback: () => void) => shows.push(callback), onHide: (callback: () => void) => hides.push(callback), onBeforeUnmount: () => {},
     uni: { getStorageSync: (key: string) => storage.get(key), setStorageSync: (key: string, value: string) => storage.set(key, value), removeStorageSync: (key: string) => storage.delete(key) },
-    token: () => storage.get('jijie_token') || '', notify: () => {}, go: () => {},
+    token: () => storage.get('jijie_token') || '', notify: () => {}, go: (url: string) => navigations.push(url),
     /** 记录实际业务 API 的查询参数，只有明确挂起的路径需要测试手动完成。 */
     api(path: string, method = 'GET', body: Record<string, unknown> = {}): Promise<unknown> {
       requests.push({ path, method })
@@ -50,7 +50,7 @@ function harness(t: TestContext, view: ViewName, total = 125) {
   vm.runInContext(executable(readFileSync(new URL('./order-list.ts', import.meta.url), 'utf8')), context)
   const exposed: Record<ViewName, string> = {
     player: 'services,hasMore,error,moreError,query,category,loadServices,reload,showPage,hidePage',
-    worker: 'mine,jobs,stats,claimClubs,hasMore,error,moreError,tab,load,showPage,stopLoading',
+    worker: 'mine,jobs,stats,claimClubs,hasMore,error,moreError,tab,load,showPage,stopLoading,claim',
     orders: 'orders,hasMore,error,moreError,role,filter,load,showPage,hidePage,chooseFilter,chooseRole',
     me: 'stats,load,showPage,hidePage',
   }
@@ -58,7 +58,7 @@ function harness(t: TestContext, view: ViewName, total = 125) {
   scope.run(() => vm.runInContext(executable(pageScript('main/' + view + '/' + view + '.vue')) + '\nglobalThis.page={' + exposed[view] + '}', context))
   t.after(() => scope.stop())
   return {
-    page: context.page, store: context.store, navigation: context.navigation, storage, props, held, pending, requests, rows, game,
+    page: context.page, store: context.store, navigation: context.navigation, storage, props, held, pending, requests, rows, game, navigations,
     /** 触发主页面本身的真实显示生命周期。 */
     show() { shows.forEach(callback => callback()) },
     /** 触发主页面本身的真实隐藏生命周期。 */
@@ -178,4 +178,20 @@ test('工作台新账号请求等待期间保持空态，旧账号迟到服务�
   subject.take('/services').resolve([]); await flush()
   assert.equal(subject.page.mine.value.length, 0)
   assert.equal(subject.store.state.user.id, 'B')
+})
+
+
+test('工作台旧本地接单标记为false时仍可申请领取，不再要求手动启用身份', async t => {
+  const subject=harness(t,'worker')
+  subject.show();await flush()
+  subject.store.state.user.provider_enabled=false
+  subject.held.add('/orders/job-A/actions')
+  const claiming=subject.page.claim({id:'job-A',game_id:'delta'})
+  await flush()
+  const request=subject.take('/orders/job-A/actions')
+  assert.equal(request.method,'POST')
+  assert.equal(request.body.action,'claim')
+  assert.equal(subject.requests.filter(item=>item.path==='/me'&&item.method==='PATCH').length,0)
+  request.resolve({id:'accepted-order'});await claiming
+  assert.deepEqual(subject.navigations,['/pages/orders/detail?id=accepted-order'])
 })

@@ -7,20 +7,24 @@
         <text class="service-title">{{ service.title }}</text>
       </view>
     </CoverArt>
-    <view v-if="!coverOnly" class="service-body">
-      <view class="service-price"><view class="price-value"><text class="currency">¥</text><text class="amount">{{ money(service.price_cents) }}</text><text class="unit">/{{ service.unit || '单' }}</text></view><text class="count">成交 {{ service.completed_count || 0 }}</text></view>
-      <view v-if="$slots.actions" class="service-actions" @click.stop><slot name="actions" /></view>
+    <view v-if="!coverOnly||hasDeposit" class="service-body">
+      <view v-if="!coverOnly" class="service-price"><view class="price-value"><text class="currency">¥</text><text class="amount">{{ money(service.price_cents) }}</text><text class="unit">/{{ service.unit || '单' }}</text></view><text class="count">成交 {{ service.completed_count || 0 }}</text></view>
+      <DepositBadge v-if="hasDeposit" :amount-cents="service.provider_deposit_cents"/>
+      <view v-if="!coverOnly&&$slots.actions" class="service-actions" @click.stop><slot name="actions" /></view>
     </view>
   </view>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
 import CoverArt from './CoverArt.vue'
+import DepositBadge from './DepositBadge.vue'
 import Icon from './Icon.vue'
 import { money, go } from '../lib/format'
 import { state, pageTheme } from '../lib/store'
 import type { Service } from '../types/models'
 const props = withDefaults(defineProps<{ service: Service; interactive?: boolean; coverOnly?: boolean }>(), { interactive: true, coverOnly: false })
+/** 仅对后端当前有效的正整数平台押金显示独立标识，封面文字区不增加新层。 */
+const hasDeposit = computed(() => Number.isSafeInteger(props.service.provider_deposit_cents) && (props.service.provider_deposit_cents || 0) > 0)
 const gameLabel = computed(() => { const game = state.games.find(item => item.id === props.service.game_id); return game?.short_name || game?.name || '' })
 /** 通过当前业务路由打开服务，发布预览可关闭跳转。 */
 function openDetail(): void { if (props.interactive) go('/pages/services/detail?id=' + encodeURIComponent(props.service.id)) }

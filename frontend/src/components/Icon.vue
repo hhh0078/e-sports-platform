@@ -1,5 +1,5 @@
 <!-- 文件作用：统一官方 uni-icons 的语义名称、固定占位和双轴居中。 -->
-<template><view class="app-icon" :style="{ width: edge, height: edge, color }"><image v-if="name === 'game'" class="gamepad-image" src="/static/illustrations/gamepad-icon.png" mode="aspectFit"/><UniIcons v-else :type="types[name] || name" :size="size" :color="color" /></view></template>
+<template><view class="app-icon" :style="{ width: edge, height: edge, color }"><view v-if="name === 'game'" class="gamepad-image"/><UniIcons v-else :type="types[name] || name" :size="size" :color="color" /></view></template>
 <script setup lang="ts">
 import { computed } from 'vue'
 import UniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue'
@@ -9,6 +9,6 @@ const types: Record<string, string> = { receipt: 'list', 'chevron-right': 'right
 </script>
 <style scoped>
 .app-icon{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;line-height:1;flex-shrink:0}.app-icon :deep(.uni-icons){display:flex;align-items:center;justify-content:center;line-height:1}
-/* 官方图标库没有手柄，使用独立透明素材，继续复用固定居中外盒。 */
-.gamepad-image{display:block;width:100%;height:100%}
+/* 官方图标没有游戏手柄；使用相同24px画布、1.8px圆角线宽，颜色继承当前主题。 */
+.gamepad-image{display:block;width:100%;height:100%;background-color:currentColor;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%206.8h8c2.1%200%203.2%201.5%203.7%203.5l1.2%205.1c.6%202.6-1.8%203.8-3.5%201.9L15.7%2015H8.3l-1.7%202.3c-1.7%201.9-4.1.7-3.5-1.9l1.2-5.1C4.8%208.3%205.9%206.8%208%206.8Z%22%2F%3E%3Cpath%20d%3D%22M7.5%209.6v4.2m-2.1-2.1h4.2%22%2F%3E%3Ccircle%20cx%3D%2215.4%22%20cy%3D%2210.4%22%20r%3D%221%22%20fill%3D%22black%22%20stroke%3D%22none%22%2F%3E%3Ccircle%20cx%3D%2218%22%20cy%3D%2213%22%20r%3D%221%22%20fill%3D%22black%22%20stroke%3D%22none%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%206.8h8c2.1%200%203.2%201.5%203.7%203.5l1.2%205.1c.6%202.6-1.8%203.8-3.5%201.9L15.7%2015H8.3l-1.7%202.3c-1.7%201.9-4.1.7-3.5-1.9l1.2-5.1C4.8%208.3%205.9%206.8%208%206.8Z%22%2F%3E%3Cpath%20d%3D%22M7.5%209.6v4.2m-2.1-2.1h4.2%22%2F%3E%3Ccircle%20cx%3D%2215.4%22%20cy%3D%2210.4%22%20r%3D%221%22%20fill%3D%22black%22%20stroke%3D%22none%22%2F%3E%3Ccircle%20cx%3D%2218%22%20cy%3D%2213%22%20r%3D%221%22%20fill%3D%22black%22%20stroke%3D%22none%22%2F%3E%3C%2Fsvg%3E")}
 </style>

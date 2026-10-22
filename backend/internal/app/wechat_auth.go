@@ -139,7 +139,7 @@ func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	hash := sha256.Sum256([]byte(identity.AppID + ":" + identity.OpenID))
 	id := "wx_" + hex.EncodeToString(hash[:16])
-	u := User{ID: id, Nickname: "新队友", Role: "user", Status: "active", CreatedAt: now()}
+	u := User{ID: id, Nickname: "新队友", Role: "user", Status: "active", ProviderEnabled: true, CreatedAt: now()}
 	userRaw, _ := json.Marshal(u)
 	if _, err = tx.Exec(r.Context(), "INSERT INTO users(id,data) VALUES($1,$2) ON CONFLICT(id) DO NOTHING", id, userRaw); err != nil {
 		return nil, err

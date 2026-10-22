@@ -1,18 +1,27 @@
-# 玩家首页沉浸式设计
+# 玩家首页 · 左文右操作
 
-文件作用：对应 `frontend/src/pages/main/player/player.vue` 的先行设计图和新版实施约束；2026-10-22 根据用户最新视觉要求编辑。旧图和旧说明归档于 `design/history/20261022-before-immersive/pages/`。
+文件作用：对应 `frontend/src/pages/main/player/player.vue` 的先行局部设计和实施依据；2026-10-22按用户最新局部修改编辑。上一版图及说明已归档 `design/history/20261022-before-game-refinements/pages/`。本图先保存后通知实现。
 
-- 主视图没有应用顶栏、页面标题和返回按钮；只预留原生状态栏及微信胶囊安全空间。游戏主视觉可铺在安全区下方，品牌、口号和按钮不得被胶囊遮挡。
-- 游戏目录固定单行横向滚动，右端固定“全部”轻入口；点击后打开游戏选择弹框，禁止排成两行，也不得挤窄相邻内容。
-- 服务卡为一个业务组件。标签在上、标题在下，都是封面内独立元素；封面底部使用由上透明、下方完全不透明的主题背景渐变。文字层不得合成进图片。
-- 价格、成交数在封面下方正常流；不重复展示标题，不叠到图片文字区。保留用户自定义文字的独立性及防重叠规则。
-- 页面水平16px，间距8/12/16/24，控件44/36/28px；底部仅主容器挂载一次导航。
-- 图中素材只示意版式，运行时使用项目官方游戏图；状态栏、胶囊的实际尺寸以系统API为准。
+- 本轮仅调整顶部hero：文字组在左、发布需求按钮在右，同一横向业务行；不把按钮放回文案下方。右按钮紧凑36px、约96～104px宽、不可收缩，左文案min-width:0、两者至少12px间隔。
+- 这行须位于原生胶囊底部安全距离之后，不按旧status+8直接排到胶囊下方；320px时标题可在左区自然换行、hero适度增高，禁止按钮遮字或进入胶囊区域。
+- 游戏背景来自当前game.cover_url，示例使用项目已有官方delta素材；不硬编码当前游戏或替换为无来源角色。四主视图无应用顶栏。
+- 游戏目录仍固定一行横滑，右端全部打开选择弹框。服务分类、搜索排序、服务卡、发现俱乐部和状态/滚动保留。
+- 游戏弹框抽为共享GameSelector，三列图标/搜索/选中样式保持已批准首页风格；对应打开状态见[player-game-picker.design.md](player-game-picker.design.md)和同名PNG。横排GamePicker仅保留触发器及显式全局偏好绑定，其他页面复用弹框不能误写首页游戏缓存。
+- 服务卡仍是图底透明至主题深色渐变，标签在上、标题在下独立图层，价格成交图下正常流，自定义文字防碰撞。
+- 唯一底栏的玩家手柄在选中时必须跟随当前主题accent着色，不是固定白色；未选中为次要灰色。Root负责Icon实现，本图只表达正确选中视觉。
 
-- 服务封面源图保持16:9；本次新版图内展示区按设计约4:3裁切，为标签、标题及自定义文案留足空间。所有独立文字按实际显示宽高适配，不能按源图尺寸写死坐标。
+## 共同边界
 
-## 生成方式与指令
+390×844，内置ImageGen精确局部编辑后机械等比缩放；保留既有自然黑绿设计、字段和安全区。图中文字误差/示例数值以真实业务与本说明为准。图片只作设计参照，实际页面使用现有官方素材和独立组件。验收截图另存output。
 
-使用内置 ImageGen 编辑现有同路径图片，完成后机械等比缩至390×844；先设计后实施。生成图中的文字误差和系统胶囊缺省，以本说明和真实系统安全区为准。
+## 完整编辑提示词
 
-Use case: ui-mockup. Edit the attached existing 390x844 Chinese mini-program design. Deliver exactly one flat portrait UI screenshot, same 390:844 aspect, no device frame, no surrounding space. Preserve the restrained dark charcoal-green theme #0a1110, panels #121d18, mint #8de8b6, 16px insets, 12px radii, clean Chinese type, 44px primary buttons and fine centered icons. Preserve correct Chinese words and existing screen purpose. Native WeChat status bar and native top-right capsule are present; reserve capsule-safe space. This is a design reference only: game artwork remains illustrative and app runtime uses official assets. Do not invent blue/purple gradients. Primary request: revise the player home. There is NO app navigation bar, NO centered page title, NO back button on this primary tab. Keep the attractive full-width tactical game hero behind the native status/capsule area; place 集结 brand and meaningful headline below the capsule safe zone, hero height about190px total. Keep one compact 发布需求 button. Replace the existing two-row game grid with exactly ONE horizontally scrolling row inside a restrained panel at y205: five compact game icons visible with labels 三角洲 王者荣耀 和平精英 暗区 无畏契约, next partial icon clipped naturally at right, and pinned narrow 全部 with down chevron at far right. No second game row. This 全部 opens a game-selection modal (not shown); distinguish it from content filter. Under game row keep a compact category chip row and 精选服务 heading. Rework every service card as ONE component: 16:9 image region; at its bottom an elegant vertical gradient from transparent upper image to fully opaque #121d18 at bottom; small independent overlay labels on a row ABOVE the bold service title on the image; title remains inside image at its lowest line. Labels example 俱乐部认证 三角洲 任务协作; title 大坝协作 · 稳定撤离. NO separate title or labels beneath the image, NO author row across image. Immediately below image, in normal flow dark body, only mint price ¥68/小时 left and 成交236 right, compact 34px height. Four cards in two columns with12px gaps, all image/title boundaries align. Bottom one persistent nav 玩家 打手 订单 我的; 玩家 active. Card title wraps at most2 lines within image and must not collide with tags or price. Keep high visual quality and density, not crowded.
+Use case: ui-mockup. PRECISE LOCAL EDIT of the attached existing Chinese390x844 design. Preserve the approved naturaldarkgreen UI (#0a1110,white#edf4ef,mintaccent#8de8b6), existingbusinessfields, spacing, hierarchy, thinseparators, typography, officialiconstyle andnativeWeChatstatus/capsulesafearea. DO NOT redesign unrelatedparts, addfeatures/headlines/English, inventnewgamesorcharacters, or introduceblue/purpleneongradients. Exact390:844flatportraitUI,no deviceframe,nooutside margins. Existingartreferencesareprojectofficialassets. TextremainsindependentUI, neverbakedintobackground. Ordinarysecondarypagesretainsharedbackheader;primarytabsNOtopnavbar. Thisisprimaryplayerhome. ChangeONLYtopheroarrangement: textgrouponLEFTand发布需求compact36pxbuttononRIGHTintheSAMEhorizontalrow, alignedvertically, withmin12pxgap. Hero's meaningfulrowmustbeginBELOWnativecapsulebottom(abouty88-96), so rightbuttondoesNOTsitunderWeChatcapsule. Lefttextgroupmaycontainexisting集结brand, 好队友，即刻集结headline andcurrentgame/categorysmallline, compactreadable, canwrapwithinboundedwidth; rightbuttonwidthabout100pxdoesnotshrinkoroverlaptextat320px. DoNOTput发布需求belowtextasoldimage. Keepgamebackground/graydarkshade, singlehorizontalgamecatalogwithfixed全部entry,categoryfilters,servicecardsandbottomnavunchanged. Bottomnav玩家activegamepadiconmustbeMINTTHEMECOLOR, notplainwhite; othericonsmuted. Preservegameartfromexistingtarget;supportingofficialassetclarifiessource,don'tinventalternategameart. No primaryappnavbar. Allotherpartsremainasexistingdesign.
+
+## 2026-10-22自愿平台押金局部增补
+
+仅当真实provider_deposit_cents>0时，在服务图下价格区域的独立小行显示“平台押金”标识（可带实际金额）；0/未知不显示。此信息不进入图内自定义六条文字、标签/标题或俱乐部认证区，不代表担保/赔付；正文随标识自然增高。
+
+完整局部编辑提示词：
+
+Use case: ui-mockup. PreciseLOCALeditofattachedChinese390x844design. Preserveallunrelatedstyle/fields/layout/gameart/safeareas,approved#0a1110darknaturalgreenand#8de8b6mint, thinseparatorsandcentredofficialicons. No newfeatures, no giantcards, no Englishdecoration/no bluepurplegradient. AllnewtextindependentUI,nobakedgameart. Exact390:844portraitflatUI,noframe/nooutside margins. ChangeONLYservicecards: addsmallsubtle平台押金badgeinitsOWNnormal-flowrow BELOWtheimage andbeside/underpricebody, onlyoneortwosamplecardswithpositivedepositshowit;cardswithzerodepositdonotshowanything. Badgeplainmutedmint/graytextandtinywalleticon,noguaranteeshield,no赔付/担保promises. NEVERputbadgeinsidethecovergradient/customtext/clubcertificationarea. Keepall sixcustomtextsafezonesandimagecontentsunchanged. Allowcardbodygrowabout18-22pxandlowercardsfallbelowviewport,noshrinkingtypography. PreserveheroLEFTcopy/RIGHT发布需求, officialbackground,singlegamecatalog/allentry,andmintACTIVEplayergamepadiconunchanged.

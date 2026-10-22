@@ -59,7 +59,8 @@ function sharePage(){
   // #endif
 }
 /** 校验路由含俱乐部编号后再加载。 */
-function applyRoute(options: Record<string,string | undefined> = {}){id.value=options.id||'';if(id.value)load();else{loading.value=false;error.value='俱乐部不存在'}}
+/** 管理控制台可定位公开成员或团队订单，管理内容仍须等待getClub确认权限。 */
+function applyRoute(options: Record<string,string | undefined> = {}){id.value=options.id||'';tab.value=options.tab==='members'?'members':options.tab==='orders'?'orders':'info';orders.value=[];ordersMore.value=false;if(id.value)load();else{loading.value=false;error.value='俱乐部不存在'}}
 onLoad(applyRoute)
 onShow(()=>{if(id.value)load()})
 onHide(()=>{version++;ordersVersion++;ordersLoading.value=false;orders.value=[];ordersMore.value=false;canManage.value=false;reviewing.value=null;joining.value=false;membership.value=null})

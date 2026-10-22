@@ -174,7 +174,7 @@ func (a *App) prepay(r *http.Request, u User, o Order) (any, error) {
 	return map[string]any{"order": o, "mode": "wechat", "pay_params": map[string]string{"timeStamp": stamp, "nonceStr": nonce, "package": pack, "signType": "RSA", "paySign": signature}}, nil
 }
 
-// refund 用稳定退款单号申请全额退款，处理中返回 false，只有微信确认成功才返回 true。
+// refund 用稳定退款单号申请全额退款，成功资源经幂等入账并保留官方时间后才返回 true。
 func (a *App) refund(ctx context.Context, o Order, reason string) (bool, error) {
 	if err := requireLiveOrder(o); err != nil {
 		return false, err
@@ -202,6 +202,16 @@ func (a *App) refund(ctx context.Context, o Order, reason string) (bool, error) 
 		return false, fail(502, "微信退款金额或流水校验失败")
 	}
 	if result.Status == "SUCCESS" {
+		// 原申请已经事务提交；直接使用已验签资源入账，保留官方成功时间，后续重复调用仍幂等。
+		if result.OrderNo == "" {
+			result.OrderNo = o.OrderNo
+		}
+		if result.MerchantID == "" {
+			result.MerchantID = c.MerchantID
+		}
+		if err = a.applyWXRefund(ctx, c, result); err != nil {
+			return false, err
+		}
 		return true, nil
 	}
 	if result.Status == "PROCESSING" {

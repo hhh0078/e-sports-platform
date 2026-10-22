@@ -18,7 +18,15 @@ func (a *App) bootstrap(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"games": games, "dev_mode": a.Config.DevMode, "site_name": s.SiteName, "announcement": s.Announcement}, nil
+	mode := "unconfigured"
+	if cfg, e := a.readAISettings(r.Context(), a.DB); e == nil {
+		if cfg.APIKey != "" {
+			mode = "ai"
+		} else if a.Config.DevMode {
+			mode = "local_simulation"
+		}
+	}
+	return map[string]any{"games": games, "moderation_mode": mode, "dev_mode": a.Config.DevMode, "site_name": s.SiteName, "announcement": s.Announcement}, nil
 }
 
 // games 返回已启用的游戏主题。
@@ -38,6 +46,10 @@ func (a *App) decorateService(ctx context.Context, s Service) Service {
 	if u, err := get[User](ctx, a.DB, "users", s.ProviderID, false); err == nil {
 		s.ProviderName = u.Nickname
 		s.ProviderAvatar = u.Avatar
+	}
+	s.ProviderDepositCents = 0
+	if wallet, err := get[Wallet](ctx, a.DB, "wallets", s.ProviderID, false); err == nil {
+		s.ProviderDepositCents = wallet.DepositCents
 	}
 	s.ClubVerified = false
 	s.ClubName = ""
@@ -84,7 +96,7 @@ func (a *App) service(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	g, ge := get[Game](r.Context(), a.DB, "games", s.GameID, false)
 	provider, pe := get[User](r.Context(), a.DB, "users", s.ProviderID, false)
-	if s.Status != "active" || ge != nil || !g.Enabled || pe != nil || provider.Status != "active" || !provider.ProviderEnabled {
+	if s.Status != "active" || ge != nil || !g.Enabled || pe != nil || provider.Status != "active" {
 		u, e := a.actor(r)
 		if e != nil || (u.ID != s.ProviderID && u.Role != "admin") {
 			return nil, fail(404, "服务不存在或尚未上架")
@@ -124,6 +136,9 @@ func (a *App) saveService(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
+	if err = a.moderateServiceDraft(r, u, Service{GameID: in.GameID, Title: in.Title, Description: in.Description, Category: in.Category, PriceCents: in.PriceCents, Unit: in.Unit, CoverURL: in.CoverURL, Labels: in.Labels, Tags: in.Tags}); err != nil {
+		return nil, err
+	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
@@ -143,8 +158,8 @@ func (a *App) saveService(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !provider.ProviderEnabled || !length(provider.Bio, 2, 300) {
-		return nil, fail(400, "请先开启打手身份并完善个人简介")
+	if !length(provider.Bio, 2, 300) {
+		return nil, fail(400, "请先完善个人简介")
 	}
 	g, err := get[Game](r.Context(), tx, "games", in.GameID, false)
 	if err != nil || !g.Enabled {

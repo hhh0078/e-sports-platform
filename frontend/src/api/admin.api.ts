@@ -33,3 +33,6 @@ export function updateAgreements(body: Agreements): Promise<Agreements> { return
 export function getPaymentSettings(): Promise<PaymentSettings> { return request('/admin/payment-settings') }
 /** 保存商户配置；秘密为空表示保留已有配置。 */
 export function updatePaymentSettings(body: PaymentSettingsInput): Promise<PaymentSettings> { return request('/admin/payment-settings', 'PATCH', body) }
+
+/** 读取按上海自然日核实的服务成交与成功退款曲线，不包含充值和押金。 */
+export function getAdminAnalytics(query:{start?:string;end?:string}={}):Promise<import('../types/admin-analytics').AdminAnalytics>{return request('/admin/analytics'+queryString(query))}

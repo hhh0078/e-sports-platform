@@ -100,6 +100,23 @@ Message 增加 `sender_role` (buyer/provider/club_admin/admin/system), `image_ur
 - POST `/payments/wechat/refund-notify`：退款回调，核验事件/状态、商户、原支付流水、退款号及全额金额。ABNORMAL/CLOSED 保持 processing 冻结等待核查；成功回调原子更新订单、统计及系统消息。
 - 通知成功返回 HTTP 204；错误按微信格式 `{code:"FAIL",message}` 返回相应状态。开发模式拒绝真实资金通知。
 
+## AI 审查与系统消息
+
+- GET `/admin/ai-settings` → `{base_url,model,prompt,has_api_key,ready,mode,configuration_notice}`，仅平台管理员；`ready`只代表配置完整，不代表已经连通或支持图片。
+- PATCH `/admin/ai-settings` 可选 `{base_url,model,prompt,api_key,clear_api_key}`；空密钥保留，显式清除与写入不能同时使用。秘密加密存储，读取从不返回密钥。
+- POST `/admin/ai-settings/test` `{}` → `{decision,reason,mode:"ai"}`，使用已保存配置和固定电竞文字真实请求，不存在模拟测试成功。
+- 正式环境所有用户图文写入都须审核。拒绝返回422 `{error,code:"moderation_rejected"}`；缺少配置/超时/协议错误返回503 `{error,code:"moderation_unavailable"}`；失败不提交业务数据。审核不占用订单/资金行锁，图片发送实际验证字节。
+- GET `/messages?limit=&offset=` → `{items:[{id,user_id,title,body,created_at}],total}`，仅当前用户未读服务器副本，GET不会标记已读或删除。
+- DELETE `/messages/{id}` → `{ok:true}`，仅删除当前用户自己的服务器副本，重复请求幂等。客户端必须先持久化全文和已读，存储失败不可调用；此接口不操作订单聊天室。
+- POST `/admin/messages` `{recipient_id?,title,body}` → `{recipient_count}`，仅平台管理员，未传接收人则向全部活跃真实账号广播；标题1—60字、正文1—5000字，操作保留审计。
+- 本机消息缓存按用户隔离；已读历史不再依赖服务器正文，换设备无法恢复已删除副本。见[审核与消息规则](AI_MODERATION_MESSAGES.md)。
+
+## 钱包与经营统计
+
+钱包、充值、余额支付、收入提现、押金原路退还与管理员审核接口以 `wallet_routes.go` 及[钱包配置与验收](WALLET_SETUP_AND_TEST.md)为准。金额均为整数分，充值不可提现，验收七天无售后才释放服务收入，未知远端结果保持原单查询。
+
+GET `/admin/analytics?start=YYYY-MM-DD&end=YYYY-MM-DD` 返回上海自然日周期、真实服务实付/成功退款汇总及逐日序列；默认七天、自定义最多366天。充值、押金、提现及演示资金不计GMV，缺少可靠资金时间的历史订单单独待核账。字段及口径见[后台控制台](ADMIN_CONSOLE.md)。
+
 ## 安全与测试
 
-服务端校验所有字符串长度、整数金额范围、封面合法来源及标签配置；用户不能伪造价格、身份、认证状态。所有审计落库。订单结算收入只统计 completed，退款不能重复计入。开发账号和开发支付在生产必须被关闭，配置不全不允许静默模拟成功。
+服务端校验所有字符串长度、整数金额范围、封面合法来源及标签配置；用户不能伪造价格、身份、认证状态。所有审计落库。订单收入依据真实托管账本及售后期释放，不能仅凭completed状态虚增可提现余额；退款不能重复计入。开发账号、开发支付和模拟审核在生产必须关闭，配置不全不允许静默模拟成功。

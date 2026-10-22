@@ -98,10 +98,16 @@ func (a *App) message(w http.ResponseWriter, r *http.Request) (any, error) {
 	if !length(in.Content, 0, 2000) || (in.Content == "" && in.ImageURL == "") {
 		return nil, fail(400, "请填写消息或选择图片，文字最多 2000 字")
 	}
+	if err = a.moderateText(r, u, "订单聊天", in.Content); err != nil {
+		return nil, err
+	}
 	m := Message{ID: newID(), OrderID: o.ID, SenderID: u.ID, SenderName: u.Nickname, SenderRole: a.senderRole(r, u, o), Content: in.Content, Kind: "text", CreatedAt: now()}
 	if in.ImageURL != "" {
 		raw, err := a.validateEvidence(r, o.ID, in.ImageURL)
 		if err != nil {
+			return nil, err
+		}
+		if err = a.moderateStoredImage(r, u, strings.TrimPrefix(raw, "/api/evidence/"), "引用历史订单图片"); err != nil {
 			return nil, err
 		}
 		m.ImageURL = raw
@@ -131,6 +137,19 @@ func (a *App) review(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	if in.Rating < 1 || in.Rating > 5 || !length(in.Content, 2, 500) {
 		return nil, fail(400, "评分范围 1 至 5，评价 2 至 500 字")
+	}
+	preflight, checkErr := a.authorizedOrder(r, u, r.PathValue("id"), false)
+	if checkErr != nil {
+		return nil, checkErr
+	}
+	if preflight.BuyerID != u.ID {
+		return nil, fail(403, "只有买家可以评价")
+	}
+	if preflight.Status != "completed" || contains([]string{"requested", "escalated", "processing"}, preflight.RefundStatus) {
+		return nil, fail(409, "订单尚未完成或处于售后处理中")
+	}
+	if err = a.moderateText(r, u, "订单评价", in.Content); err != nil {
+		return nil, err
 	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {

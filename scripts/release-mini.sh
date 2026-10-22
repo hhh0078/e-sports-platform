@@ -27,6 +27,8 @@ const configPath = path.join(process.argv[2], 'frontend/dist/build/mp-weixin/pro
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
 config.setting = { ...config.setting, urlCheck: true }
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n')
+// 发布包不得携带本地开发者配置，避免其 urlCheck:false 覆盖正式设置。
+fs.rmSync(path.join(path.dirname(configPath), 'project.private.config.json'), { force: true })
 if (!config.appid || config.setting.urlCheck !== true) throw new Error('正式小程序配置校验失败')
 console.log('正式产物已启用合法域名校验。')
 JS

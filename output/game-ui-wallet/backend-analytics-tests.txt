@@ -1,0 +1,16 @@
+交易统计新增5个顶层及8个子测试，全量-race一并通过。
+TestAnalyticsDateRange/start=2026-10-21：通过
+TestAnalyticsDateRange/end=2026-10-21：通过
+TestAnalyticsDateRange/start=&end=：通过
+TestAnalyticsDateRange/start=2026-2-01&end=2026-02-02：通过
+TestAnalyticsDateRange/start=2026-02-30&end=2026-03-01：通过
+TestAnalyticsDateRange/start=2026-10-22&end=2026-10-21：通过
+TestAnalyticsDateRange/start=2024-01-01&end=2025-01-01：通过
+TestAnalyticsDateRange/start=abc&end=2026-10-21：通过
+TestAnalyticsDateRange：通过
+TestIntegrationAnalyticsAdminAndEmpty：通过
+TestIntegrationAnalyticsShanghaiAndCrossPeriod：通过
+TestIntegrationAnalyticsPaymentHooksAndWalletExclusion：通过
+TestIntegrationAnalyticsWXOfficialTimeAndReplay：通过
+契约：GET /api/admin/analytics?start=YYYY-MM-DD&end=YYYY-MM-DD
+统计限制：全历史缺可靠时间或实付托管来源订单单独报告，不用updated_at或created_at冒充资金发生时间；未产生真实微信商户资金。

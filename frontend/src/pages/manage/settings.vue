@@ -1,7 +1,7 @@
 <!-- 文件作用：小程序内的管理员协议版本及微信支付配置入口，秘密仅在本次填写时保留，保存或离开后清空。 -->
 <template>
   <AppShell title="平台配置" back>
-    <view v-if="error" class="error-box mb">{{ error }}</view>
+    <view v-if="error" class="error-box mb"><text>{{ error }}</text><button class="text-btn" :disabled="loading" @click="load">重新加载</button></view>
     <EmptyState v-if="state.ready&&state.user?.role!=='admin'" title="仅平台管理员可访问" detail="协议发布和支付配置均由服务端再次验证管理权限。" icon="shield"><button class="text-btn" @click="go('/pages/account/login')">切换账号</button></EmptyState>
     <template v-else-if="state.user?.role==='admin'">
       <view class="settings-tabs"><button :class="{active:tab==='agreements'}" @click="tab='agreements'">协议配置</button><button :class="{active:tab==='payment'}" @click="tab='payment'">微信支付</button></view>
@@ -35,11 +35,12 @@
         <view class="settings-actions"><button class="text-btn" :disabled="busy" @click="restorePayment">取消修改</button><button class="btn" :disabled="busy||!loaded||!paymentStatus.storage_available" @click="savePayment">{{ busy?'正在保存…':'保存支付配置' }}</button></view>
       </template>
     </template>
+    <view v-else-if="!error" class="loading-line">正在读取管理员身份…</view>
   </AppShell>
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { onShow, onHide, onUnload } from '@dcloudio/uni-app'
+import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import Icon from '../../components/Icon.vue'
@@ -88,6 +89,8 @@ async function savePayment(){if(busy.value||!loaded.value||!paymentStatus.storag
 function showPage(){visible=true;if(loaded.value&&sameSession(loadedSession))return;load()}
 /** 离开即清空秘密并作废未完成回调，避免账号切换泄露管理状态。 */
 function hidePage(){visible=false;version++;if(busy.value||loading.value)loaded.value=false;clearSecrets()}
+/** 控制台入口只决定初始分区，不扩大配置访问权限。 */
+onLoad(options=>{if(options?.tab==='payment'||options?.tab==='agreements')tab.value=options.tab})
 onShow(showPage)
 onHide(hidePage)
 onUnload(hidePage)

@@ -76,7 +76,7 @@ func showcaseRecords(ctx context.Context, q querier) ([]showcaseRecord, error) {
 	second := []string{"同学", "队友", "小鹿", "阿鱼", "北北", "队长"}
 	for i := range users {
 		game := games[i%len(games)]
-		u := User{ID: showcaseID("user", i), Nickname: first[i%len(first)] + second[i/len(first)] + "·演示", Avatar: "/api/media/" + showcaseID("avatar", i), ProfileCover: game.CoverURL, Bio: "演示账号，非真实用户。喜欢" + game.Name + "，偏好耐心沟通、团队配合与轻松组队。", Role: "user", Status: "active", ProviderEnabled: i < 42, CreatedAt: stamp(i)}
+		u := User{ID: showcaseID("user", i), Nickname: first[i%len(first)] + second[i/len(first)] + "·演示", Avatar: "/api/media/" + showcaseID("avatar", i), ProfileCover: game.CoverURL, Bio: "演示账号，非真实用户。喜欢" + game.Name + "，偏好耐心沟通、团队配合与轻松组队。", Role: "user", Status: "active", ProviderEnabled: true, CreatedAt: stamp(i)}
 		users[i] = u
 		records = append(records, showcaseRecord{"users", u.ID, u})
 		raw, err := showcaseAvatar(i)

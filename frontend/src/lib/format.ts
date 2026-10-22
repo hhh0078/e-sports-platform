@@ -1,5 +1,5 @@
 /** 文件作用：统一金额、时间、状态显示和共享导航入口。 */
-import { API_BASE, errorMessage } from '../api/client'
+import { API_BASE, errorMessage, errorCode } from '../api/client'
 import { navigate } from './navigation'
 const statusNames: Record<string, string> = { pending: '审核中', active: '已上架', rejected: '未通过', paused: '已暂停', pending_payment: '待支付', open: '等待接单', accepted: '已接单', in_progress: '服务中', delivered: '待验收', completed: '已完成', cancelled: '已取消', disputed: '平台处理中', refunded: '已退款', processing: '退款处理中', requested: '退款协商中', escalated: '平台介入中', approved: '退款通过', none: '无售后', unpaid: '未支付', paid: '已支付', frozen: '已冻结' }
 /** 将整数分展示为最多两位小数金额。 */
@@ -10,7 +10,14 @@ export function time(value: string | number | null | undefined): string { if (!v
 export function statusLabel(status: string | null | undefined): string { return status ? statusNames[status] || status : '未知状态' }
 /** 委托统一导航解析入口和二级返回路径。 */
 export function go(url: string): void { navigate(url) }
-/** 用统一短提示显示未知异常或业务文案。 */
-export function notify(error: unknown): void { uni.showToast({ title: errorMessage(error), icon: 'none', duration: 2500 }) }
+/** 审核结果保留完整原因供修改，普通操作沿用短提示。 */
+export function notify(error: unknown): void {
+  const code = errorCode(error)
+  if (code === 'moderation_rejected' || code === 'moderation_unavailable') {
+    uni.showModal({ title: code === 'moderation_rejected' ? '内容需修改' : '审核暂不可用', content: errorMessage(error), showCancel: false, confirmText: '我知道了' })
+    return
+  }
+  uni.showToast({ title: errorMessage(error), icon: 'none', duration: 2500 })
+}
 /** 将受后端托管的相对资源解析到当前服务端。 */
 export function assetUrl(url: string | null | undefined): string { const value = String(url || ''); return value.startsWith('/api/') || value.startsWith('/static/covers/') ? API_BASE.replace(/\/api\/?$/, '') + value : value }

@@ -7,6 +7,9 @@
     "src/env.d.ts",
     "../scripts/mini-transaction.ts",
     "../scripts/mini-ui-regression.ts",
+    "../scripts/mini-wallet-regression.ts",
+    "../scripts/mini-admin-console.ts",
+    "../scripts/mini-ai-messages.ts",
     "../scripts/check-frontend-standards.ts"
   ],
   "exclude": [
