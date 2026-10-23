@@ -21,7 +21,7 @@ func baseOrder(u User) Order {
 
 // systemMessage 将交易关键事件追加为不可由用户伪造的系统证据。
 func systemMessage(ctx context.Context, q querier, o Order, content string) error {
-	m := Message{ID: newID(), OrderID: o.ID, SenderID: "system", SenderName: "集结平台", SenderRole: "system", Kind: "system", Content: content, CreatedAt: now()}
+	m := Message{ID: newID(), OrderID: o.ID, SenderID: "system", SenderName: "开机电竞平台", SenderRole: "system", Kind: "system", Content: content, CreatedAt: now()}
 	return put(ctx, q, "messages", m.ID, m)
 }
 

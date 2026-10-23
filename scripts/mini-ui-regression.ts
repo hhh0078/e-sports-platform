@@ -484,7 +484,7 @@ async function run():Promise<void> {
   await restartRoute('/pages/main/index?tab=player')
   let main=await pageAt('pages/main/index')
   await new Promise<void>(resolve=>setTimeout(resolve,900))
-  if(process.env.UI_TEST_SCOPE==='admin'){main=await login('集结管理员');await adminControls(main);await visit('/pages/manage/settings','manage-settings-admin',main);report('admin');return}
+  if(process.env.UI_TEST_SCOPE==='admin'){main=await login('开机电竞管理员');await adminControls(main);await visit('/pages/manage/settings','manage-settings-admin',main);report('admin');return}
   if(process.env.UI_TEST_SCOPE==='club-phone'){main=await login('自由玩家');await phoneOverlay(main,'shanhai');report('club-phone');return}
   if(process.env.UI_TEST_SCOPE==='club-owner'){main=await login('山海主理人');await formGamePicker(main,'/pages/community/clubs/index','club-create');await formGamePicker(main,'/pages/community/clubs/edit?id=shanhai','club-edit');for(const[route,name]of [['/pages/community/clubs/detail?id=shanhai','clubs-detail-owner'],['/pages/community/clubs/edit?id=shanhai','clubs-edit-owner'],['/pages/community/clubs/console?id=shanhai','clubs-console-owner'],['/pages/community/clubs/funds?id=shanhai','clubs-funds-owner']])await visit(route,name,main);report('club-owner');return}
   if(process.env.UI_TEST_SCOPE==='long'){main=await login('云间旅人');await longProfile(main);main=await login('北辰');await workerLayout(main);const {items}=await bottomNavigation(main);await items[0].tap();await gameCatalog(main);report('long');return}
@@ -526,7 +526,7 @@ async function run():Promise<void> {
   await visit('/pages/community/clubs/edit?id=shanhai','clubs-edit-owner',main)
   await visit('/pages/community/clubs/console?id=shanhai','clubs-console-owner',main)
   await visit('/pages/community/clubs/funds?id=shanhai','clubs-funds-owner',main)
-  main=await login('集结管理员')
+  main=await login('开机电竞管理员')
   await adminControls(main)
   await visit('/pages/manage/index','manage-index-admin',main)
   await visit('/pages/manage/settings','manage-settings-admin',main)

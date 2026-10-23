@@ -65,7 +65,7 @@ function applyRoute(options: Record<string,string | undefined> = {}){id.value=op
 onLoad(applyRoute)
 onShow(()=>{enablePublicShareMenu();if(id.value)load()})
 onHide(()=>{version++;ordersVersion++;ordersLoading.value=false;orders.value=[];ordersMore.value=false;canManage.value=false;reviewing.value=null;joining.value=false;membership.value=null})
-const publicShareHandlers=createPublicShareHandlers(()=>({title:(club.value?.name||'俱乐部')+' · 集结',path:'/pages/community/clubs/detail?id='+encodeURIComponent(id.value),image:cover.value}))
+const publicShareHandlers=createPublicShareHandlers(()=>({title:(club.value?.name||'俱乐部')+' · 开机电竞',path:'/pages/community/clubs/detail?id='+encodeURIComponent(id.value),image:cover.value}))
 onShareAppMessage(publicShareHandlers.friend)
 onShareTimeline(publicShareHandlers.timeline)
 </script>

@@ -1,4 +1,4 @@
-# 集结项目工作入口
+# 开机电竞项目工作入口
 
 每次在本仓库开发、修改样式、整理组件、升级依赖或操作 Git 前，必须完整读取并遵循根目录 [PROJECT_DEVELOPMENT.md](PROJECT_DEVELOPMENT.md)。不得仅依赖聊天历史或记忆。
 

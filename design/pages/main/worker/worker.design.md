@@ -12,6 +12,16 @@
 
 ## 生成提示词与实施边界
 
-Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
+Use case: ui-mockup. Precise local edit of approved Chinese 开机电竞 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
 
 验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。
+
+## 品牌名称更新与当前布局优先级（2026-10-23）
+
+品牌说明统一为“在开机电竞，用游戏技能赚取真实回报”。只替换公共名称，不恢复用户已删除的顶部身份、经营统计、大插画或底部俱乐部banner；继续使用“我的服务 / 接单大厅 / 加入俱乐部”三个同级页签与本轮轻量俱乐部条目。当前PNG按最新功能结构优先；若小字仍有旧品牌，以本说明文案为准，不能选用旧布局图片覆盖。
+
+所有用户默认具备接单身份且不可关闭，无休息中、去开启或账户启停开关；单个服务的审核、上架与暂停仍是独立业务。访客能浏览公开服务及俱乐部，不做整页登录墙；手机号、冻结、资料和实际交易权限继续由服务端核验。
+
+接单大厅游戏选择复用共享GameSelector与已批准首页弹框风格，限宽滚动，不由组件擅自改写全局偏好。底栏只有打手为当前主题accent，图标双轴居中。
+
+品牌局部编辑提示词：Use case: text-localization. Replace only 在集结，用游戏技能赚取真实回报 with 在开机电竞，用游戏技能赚取真实回报. Preserve the latest three tabs, club rows, compact publish entry and geometry. Do not restore profile statistics, giant illustration or club banner.

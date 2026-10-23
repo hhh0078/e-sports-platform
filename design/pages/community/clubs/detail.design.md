@@ -12,6 +12,14 @@
 
 ## 生成提示词与实施边界
 
-Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
+Use case: ui-mockup. Precise local edit of approved Chinese 开机电竞 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
 
 验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。
+
+## 合并后的沉浸布局、品牌与分享（2026-10-23）
+
+公共品牌统一为开机电竞。展示型二级页无整条应用顶栏、无重复“俱乐部主页”标题，也没有主底栏；封面16:9从顶部开始，左上36px圆形细边返回，分享入口避让微信胶囊。封面下至少16px正向间距后展示Logo、名称、主理人与真实统计，不使用负margin让身份侵入图片。
+
+仅使用俱乐部实际上传的封面和图文。覆盖游戏、三列成员宫格、加入备注换行、独立控制台和三类押金按本轮规则实现；旧设计中的“平台不代收押金”已被平台独立托管规则替代，不能恢复。成员押金不计入俱乐部佣金，也不与俱乐部缴给平台的押金混同。
+
+好友、朋友圈和实时海报使用共享分享入口；海报含真实小程序码及分享人头像昵称，不烘焙用户可编辑文案，不用示意二维码冒充可用码。配置缺失或正式页面未发布时明确说明失败。

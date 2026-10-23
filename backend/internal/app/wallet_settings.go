@@ -28,7 +28,7 @@ type WalletSettings struct {
 func (a *App) walletSettings(ctx context.Context) (WalletSettings, error) {
 	v, err := get[WalletSettings](ctx, a.DB, "settings", "wallet", false)
 	if missing(err) {
-		return WalletSettings{TransferSceneReportInfos: []WalletSceneReport{}, TransferRemark: "集结服务收入提现"}, nil
+		return WalletSettings{TransferSceneReportInfos: []WalletSceneReport{}, TransferRemark: "开机电竞服务收入提现"}, nil
 	}
 	return v, err
 }

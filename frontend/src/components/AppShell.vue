@@ -2,7 +2,7 @@
 <template>
   <view class="app-frame secondary-shell" :class="{ immersive }" :style="themeStyle">
     <FloatingBack v-if="immersive" />
-    <PageHeader v-else :title="title || '集结'" back />
+    <PageHeader v-else :title="title || '开机电竞'" back />
     <view class="app-body"><slot name="header" /><slot /></view>
     <PhoneVerification />
   </view>

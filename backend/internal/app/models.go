@@ -1,4 +1,4 @@
-// Package app 提供集结平台的身份、游戏、服务、俱乐部和交易领域模型。
+// Package app 提供开机电竞平台的身份、游戏、服务、俱乐部和交易领域模型。
 package app
 
 import "encoding/json"

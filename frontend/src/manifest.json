@@ -1,5 +1,5 @@
 {
-  "name": "集结",
+  "name": "开机电竞",
   "appid": "__UNI__JIJIE_LOCAL",
   "description": "多游戏陪练、任务协作与俱乐部服务平台",
   "versionName": "1.0.0",
@@ -7,7 +7,7 @@
   "transformPx": false,
   "vueVersion": "3",
   "h5": {
-    "title": "集结 · 找队友，也成为队友",
+    "title": "开机电竞 · 找队友，也成为队友",
     "router": {
       "mode": "hash"
     }

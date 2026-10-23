@@ -169,7 +169,7 @@ func showcaseRecords(ctx context.Context, q querier) ([]showcaseRecord, error) {
 		}
 		records = append(records, showcaseRecord{"orders", order.ID, order})
 		roles := []struct{ id, name, role, content, kind string }{
-			{"demo_system", "集结平台·演示", "system", "本订单为虚构演示，无真实资金流；聊天内容用于展示证据链。", "system"},
+			{"demo_system", "开机电竞平台·演示", "system", "本订单为虚构演示，无真实资金流；聊天内容用于展示证据链。", "system"},
 			{buyer.ID, buyer.Nickname, "buyer", "演示沟通：我希望先确认模式和时段，服务内容以订单说明为准。", "text"},
 			{provider.ID, provider.Nickname, "provider", "演示沟通：收到，我会按约定协作，交付后把完成情况写在这里。", "text"},
 			{club.OwnerID, club.OwnerName, "club_admin", "演示沟通：俱乐部已看到约定，如有分歧请保留完整记录。", "text"},

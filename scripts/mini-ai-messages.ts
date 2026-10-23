@@ -47,7 +47,7 @@ async function run(){
   const original=await call<AISettings>('/admin/ai-settings',admin.token);assert.equal(original.has_api_key,false,'本地验收要求无真实AI密钥');assert.equal(original.mode,'local_simulation')
   fs.mkdirSync(output,{recursive:true});mini=await automator.connect({wsEndpoint:process.env.WX_AUTOMATOR_ENDPOINT||'ws://127.0.0.1:9420'});mini.on('exception',(entry:unknown)=>exceptions.push(String(entry)));mini.on('console',(entry:unknown)=>{if(/不支持颜色|unsupported color/i.test(JSON.stringify(entry)))canvasWarnings.push('颜色兼容警告')})
   viewport=await mini.evaluate(()=>wx.getWindowInfo()) as {windowWidth:number;windowHeight:number};if(process.env.UI_EXPECT_WIDTH)assert.equal(viewport.windowWidth,Number(process.env.UI_EXPECT_WIDTH))
-  await login('集结管理员');let page=await open('/pages/manage/index');await until(async()=>(await page.$$('.module-card')).length===12,'十二个模块')
+  await login('开机电竞管理员');let page=await open('/pages/manage/index');await until(async()=>(await page.$$('.module-card')).length===12,'十二个模块')
   await(await button(page,'AI 设置')).tap();page=await until(async()=>{const current=await sdk().currentPage();return current?.path==='pages/manage/ai'?current:null},'AI独立配置')
   const base=await field(page,'.ai-base-url'),model=await field(page,'.ai-model'),key=await field(page,'.ai-key'),prompt=await field(page,'.ai-prompt')
   await until(async()=>(await base.property('value'))===original.base_url,'配置默认地址');assert.equal(await model.property('value'),original.model);assert.equal(await key.property('value'),'');await within(page,'input');await within(page,'textarea');await record('AI独立配置默认地址模型正确，密钥不回显，窄屏输入不溢出','ai-settings')

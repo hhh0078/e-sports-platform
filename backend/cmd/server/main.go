@@ -1,4 +1,4 @@
-// Package main 启动集结 API 服务并在退出时优雅释放资源。
+// Package main 启动开机电竞 API 服务并在退出时优雅释放资源。
 package main
 
 import (
@@ -27,7 +27,7 @@ func main() {
 		defer cancel()
 		srv.Shutdown(shutdown)
 	}()
-	log.Printf("集结 API 启动于 %s，开发模式=%v", a.Config.Addr, a.Config.DevMode)
+	log.Printf("开机电竞 API 启动于 %s，开发模式=%v", a.Config.Addr, a.Config.DevMode)
 	if err = srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal(err)
 	}

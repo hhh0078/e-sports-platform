@@ -76,7 +76,7 @@ const isBuyer = computed(() => order.value?.buyer_id === state.user?.id)
 const isProvider = computed(() => order.value?.provider_id === state.user?.id)
 const refundActive = computed(() => order.value?.refund_status && order.value.refund_status !== 'none')
 const refundTitle = computed(() => (({ requested:'等待打手处理退款', rejected:'退款申请被拒绝，可补充证据并申请平台介入', escalated:'平台正在处理争议', approved:'退款已处理', processing:'微信正在处理退款，请稍后同步资金状态' } as Record<string,string>)[order.value?.refund_status || ''] || '售后记录'))
-const stageDescription = computed(() => (({ pending_payment:'支付后会通知队友，请确认服务要求和金额。', open:'需求已发布，等待合适的队友接单。', accepted:'队友已接单，可以在聊天室确认集合时间。', in_progress:'服务正在进行，请及时同步进度与约定。', delivered:'队友已提交交付说明，请核对后确认完成。', completed:'本次服务已完成，感谢选择集结。', cancelled:'订单已取消，双方沟通记录仍然保留。', refunded:'退款已完成，本次交易关闭。', disputed:'平台正在核对双方证据，请在聊天室补充说明。' } as Record<string,string>)[order.value?.status || ''] || ''))
+const stageDescription = computed(() => (({ pending_payment:'支付后会通知队友，请确认服务要求和金额。', open:'需求已发布，等待合适的队友接单。', accepted:'队友已接单，可以在聊天室确认集合时间。', in_progress:'服务正在进行，请及时同步进度与约定。', delivered:'队友已提交交付说明，请核对后确认完成。', completed:'本次服务已完成，感谢选择开机电竞。', cancelled:'订单已取消，双方沟通记录仍然保留。', refunded:'退款已完成，本次交易关闭。', disputed:'平台正在核对双方证据，请在聊天室补充说明。' } as Record<string,string>)[order.value?.status || ''] || ''))
 const actions = computed(() => {
   const result: OrderAction[] = [], current = order.value
   if (!current) return result

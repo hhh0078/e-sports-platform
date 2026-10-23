@@ -17,7 +17,7 @@ func seedInsert(ctx context.Context, q querier, table, id string, value any) err
 	return err
 }
 
-// seed 填充游戏默认目录和本地多角色验收场景，已存在记录只执行明确的一次性图片迁移。
+// seed 填充游戏默认目录和本地多角色验收场景，已存在记录只执行明确的一次性默认展示迁移。
 func (a *App) seed(ctx context.Context) error {
 	tx, err := a.DB.Begin(ctx)
 	if err != nil {
@@ -39,11 +39,11 @@ func (a *App) seed(ctx context.Context) error {
 	if err = migrateDefaultPresentation(ctx, tx, defaults); err != nil {
 		return err
 	}
-	if err = seedInsert(ctx, tx, "settings", "platform", Settings{SiteName: "集结", Announcement: "找队友，也成为队友 · 下单前请与打手确认服务范围"}); err != nil {
+	if err = seedInsert(ctx, tx, "settings", "platform", Settings{SiteName: "开机电竞", Announcement: "找队友，也成为队友 · 下单前请与打手确认服务范围"}); err != nil {
 		return err
 	}
 	if a.Config.DevMode {
-		users := []User{{ID: "player", Nickname: "云间旅人", Bio: "喜欢和靠谱的队友一起玩游戏", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "worker", Nickname: "北辰", Bio: "认真陪练，耐心沟通。本地示例打手，擅长战术配合与任务协作。", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "clubowner", Nickname: "山海主理人", Bio: "山海电竞俱乐部负责人，帮助每位队友找到适合自己的舞台。", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "admin", Nickname: "集结管理员", Bio: "平台运营与纠纷处理", Role: "admin", Status: "active", ProviderEnabled: true}, {ID: "outsider", Nickname: "自由玩家", Bio: "无挂靠也能接单，自由组队一起玩。", Role: "user", Status: "active", ProviderEnabled: true}}
+		users := []User{{ID: "player", Nickname: "云间旅人", Bio: "喜欢和靠谱的队友一起玩游戏", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "worker", Nickname: "北辰", Bio: "认真陪练，耐心沟通。本地示例打手，擅长战术配合与任务协作。", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "clubowner", Nickname: "山海主理人", Bio: "山海电竞俱乐部负责人，帮助每位队友找到适合自己的舞台。", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "admin", Nickname: "开机电竞管理员", Bio: "平台运营与纠纷处理", Role: "admin", Status: "active", ProviderEnabled: true}, {ID: "outsider", Nickname: "自由玩家", Bio: "无挂靠也能接单，自由组队一起玩。", Role: "user", Status: "active", ProviderEnabled: true}}
 		for _, u := range users {
 			u.CreatedAt = now()
 			if err = seedInsert(ctx, tx, "users", u.ID, u); err != nil {
@@ -106,6 +106,9 @@ func (a *App) seed(ctx context.Context) error {
 		}
 	}
 	if err = migrateDefaultAvatars(ctx, tx); err != nil {
+		return err
+	}
+	if err = migrateDefaultBrand(ctx, tx, a.Config.DevMode); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)

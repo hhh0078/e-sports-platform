@@ -1,6 +1,6 @@
 <!-- 文件作用：以游戏爱好者自由接单为入口，明确取得协议同意后登录，并提供可跳过的头像昵称完善。 -->
 <template>
-	<AppShell title="登录集结" back>
+	<AppShell title="登录开机电竞" back>
 		<view class="login-page">
 
 			<view class="login-copy">

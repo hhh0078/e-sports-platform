@@ -3,7 +3,7 @@
     {
       "path": "pages/main/index",
       "style": {
-        "navigationBarTitleText": "集结"
+        "navigationBarTitleText": "开机电竞"
       }
     },
     {
@@ -33,7 +33,7 @@
     {
       "path": "pages/account/login",
       "style": {
-        "navigationBarTitleText": "登录集结"
+        "navigationBarTitleText": "登录开机电竞"
       }
     },
     {

@@ -82,7 +82,7 @@ async function run(){
   await(await until(()=>page.$('.actions .order-secondary'),'取消订单')).tap();await(await until(()=>page.$('.modal-actions .btn'),'确认取消订单')).tap();await until(async()=>{const current=await call<Order>('/orders/'+order.id,'GET',undefined,buyer.token);return current.payment_status==='refunded'},'原分账退款');assert.equal((await call<Wallet>('/wallet','GET',undefined,buyer.token)).recharge_cents,recharged.recharge_cents);await record('余额订单取消精确恢复原充值余额','balance-refunded')
   await open('/pages/manage/wallet');await until(async()=>{const p=await sdk().currentPage();const e=p&&await p.$('.access-note');return e&&(await e.text()).includes('管理员')},'非管理员拒绝');await record('普通玩家无法访问钱包管理')
   }
-  await login('集结管理员');const adminWallet=await open('/pages/manage/wallet');await until(async()=>{const filters=await adminWallet.$$('.status-filter'),links=await adminWallet.$$('.finance-link');return filters.length===6&&links.length===2&&await adminWallet.$('.payment-link')},'管理员钱包来源入口和转账配置已渲染')
+  await login('开机电竞管理员');const adminWallet=await open('/pages/manage/wallet');await until(async()=>{const filters=await adminWallet.$$('.status-filter'),links=await adminWallet.$$('.finance-link');return filters.length===6&&links.length===2&&await adminWallet.$('.payment-link')},'管理员钱包来源入口和转账配置已渲染')
   assert.equal(await adminWallet.$('.withdrawal-actions .btn'),null,'钱包列表不应绕过来源审核直接转账')
   await record('管理员钱包保留转账配置，提现处理必须进入来源审核','wallet-admin')
   console.log('CHECK 查找资金来源审核入口')

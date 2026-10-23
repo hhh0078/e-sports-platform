@@ -12,6 +12,12 @@
 
 ## 生成提示词与实施边界
 
-Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
+Use case: ui-mockup. Precise local edit of approved Chinese 开机电竞 WeChat mini-program screenshot. Preserve natural charcoal green #0a1110, panel #121d18, mint #8de8b6, white #edf4ef, 16px insets, centered icons, native safe areas. Flat390:844portrait, no frame, no outside margin, no blue/purple gradient. Change only the page requirements described above; keep game imagery and unrelated content. Runtime text and badges stay separate UI layers. Exact Chinese text and amounts follow the page requirements; sample values are illustrative only.
 
 验收：320/390宽度分别核对短/长名称、0/正数/双押金、六条最长中英表情文字和九宫格位置；无碰撞、无水平溢出。真实微信头像、支付/转账到账仍须单独真机与商户验收。
+
+## 合并后的主视图与品牌边界（2026-10-23）
+
+公共品牌为开机电竞。订单主视图不显示应用顶栏、返回箭头或重复居中页名；在状态栏及胶囊安全区下放“我下的单 / 我接的单”身份切换，状态筛选限宽滚动，唯一底栏由主容器承载。访客可浏览，以小字“请登录后查看”提示。
+
+空态继续使用本轮轻量180×120插画及轻入口，不恢复主分支较大、较重的工作台场景。真实订单列表、售后状态、调价记录和资金明细仍只用服务端数据；不得将设计示例当成真实交易。

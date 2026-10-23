@@ -95,7 +95,7 @@ test('俱乐部空图文段落阻止保存，合法图文去除本地编号并�
   subject.lifecycle.load({ id: 'club-A' })
   const loading = subject.page.load()
   await flush()
-  subject.take('/clubs/club-A').resolve({ can_manage: true, club: { name: '集结俱乐部', description: '这是完整的俱乐部介绍文字', game_ids: ['delta'], deposit_cents: 820, detail_blocks: [] } })
+  subject.take('/clubs/club-A').resolve({ can_manage: true, club: { name: '开机电竞俱乐部', description: '这是完整的俱乐部介绍文字', game_ids: ['delta'], deposit_cents: 820, detail_blocks: [] } })
   await loading
   subject.page.form.detail_blocks = [{ key: 1, type: 'text', text: '  \n ' }]
   await subject.page.save()

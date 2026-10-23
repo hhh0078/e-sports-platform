@@ -1,96 +1,271 @@
-# 集结 · 多游戏服务平台
+<!-- 文件作用：介绍开机电竞的定位、角色功能、技术架构、启动部署、验证边界与相关关键词。 -->
 
-文件作用：说明本地启动、体验入口、验收方式和正式微信接入位置。
+<div align="center">
 
-项目统一仓库：[hhh0078/e-sports-platform](https://github.com/hhh0078/e-sports-platform)，默认分支为 `main`。后续拉取、推送与源码交付均使用此 GitHub 地址。
+# 🎮 开机电竞
 
-一个账号同时可以是老板和打手，挂靠俱乐部是可选项。客户端使用 uni-app / Vue 3 / TypeScript，后端使用 Go，PostgreSQL 保存交易与证据，Redis 保存会话和限流状态。导航为「玩家、打手、订单、我的」，平台后台与俱乐部后台均在小程序内。
+### 多游戏陪玩 · 陪练接单 · 电竞俱乐部 · 服务交易平台
 
-2026-10-20：后端已部署到 `https://game.ai.58it.cn`，Gitee 源码位于服务器域名根目录 `/www/wwwroot/game.ai.58it.cn`，API、专用 PostgreSQL 与 Redis 均运行在 Docker。服务器私密配置为 `deploy/.env`（权限 `600`，已被 Git 忽略）；公开模板为 `deploy/.env.example`。从源码创建 Docker、配置域名、微信、首次管理员与商户、备份回滚的完整步骤见 [发布指南](docs/DEPLOYMENT.md)。服务器已导入60个演示用户、6个俱乐部、130条服务、52个订单及260条消息，均有演示标记并隔离真实交易。
+**从找队友、发布服务到订单交付，把玩家、接单者和俱乐部连接起来。**
 
-## 开发入口
+[![uni-app](https://img.shields.io/badge/uni--app-微信小程序%20%7C%20H5-2B7A59?style=flat-square)](frontend)
+[![Vue](https://img.shields.io/badge/Vue-3-42B883?style=flat-square&logo=vuedotjs&logoColor=white)](frontend/package.json)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-476F87?style=flat-square&logo=typescript&logoColor=white)](frontend/package.json)
+[![Go](https://img.shields.io/badge/Go-1.24+-496D7A?style=flat-square&logo=go&logoColor=white)](backend/go.mod)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-526B78?style=flat-square&logo=postgresql&logoColor=white)](deploy/compose.yml)
+[![Redis](https://img.shields.io/badge/Redis-7-AD574B?style=flat-square&logo=redis&logoColor=white)](deploy/compose.yml)
+[![License](https://img.shields.io/badge/License-Apache--2.0-64705C?style=flat-square)](LICENSE)
 
-每次开发必须先读取根目录 [PROJECT_DEVELOPMENT.md](PROJECT_DEVELOPMENT.md)，由 [AGENTS.md](AGENTS.md) 强制引用。页面与设计图按业务目录一一对应，设计总览见 [design/README.md](design/README.md)。统一 API、严格类型、唯一主导航和设计覆盖通过 `npm --prefix frontend run check:standards` 与 `npm --prefix frontend run typecheck` 检查。
+[项目介绍](#-这是什么项目) · [功能一览](#-功能一览) · [界面预览](#-界面预览) · [快速开始](#-快速开始) · [部署指南](docs/DEPLOYMENT.md) · [联系作者](#-联系作者) · [English](README.en.md)
 
-本轮改造及实际验收见 [前端规范重构记录](docs/FRONTEND_REFACTOR_ACCEPTANCE.md)。四个主视图没有应用顶栏，由唯一主容器保留内容与底栏状态并避让原生胶囊；展示型二级页采用共享圆形返回，表单/履约/管理页使用统一功能顶栏。打手工作台与订单空态按新图使用原创场景插画与轻入口，来源见 [插画说明](design/ILLUSTRATIONS.md)；个人中心使用当前游戏封面、灰黑蒙版与正常排列的身份和统计。二级表单与管理页使用共享开放分节、细分隔和单一44px主操作，取消等辅助操作为文字入口；先行设计与旧版归档见 [设计总览](design/README.md)。
+</div>
 
-## 直接体验
+---
 
-在项目根目录运行：
+## 👋 这是什么项目？
 
-```sh
+**开机电竞**是一套包含 **微信小程序客户端、H5 开发预览和 Go 后端**的多游戏服务交易平台源码。它面向想找队友的玩家、提供陪玩陪练与任务协作的接单者，以及组织成员开展服务的电竞俱乐部。
+
+项目覆盖服务发布、需求撮合、下单付款、订单沟通、交付验收、评价、退款和平台介入，并提供钱包、俱乐部管理及平台运营后台。**业务页面、接口和数据存储都在这个仓库中**，可以用来学习完整交易业务，也可以在配置自己的微信、支付、域名及运营资料后继续开发。
+
+> 🚧 **当前状态：** 核心业务与自动化测试已具备，H5 用于开发预览。真实微信账号、手机号授权、商户付款退款、转账到账、真实 AI 审核和微信发布仍需独立配置与验收，详见[验证与上线](#-验证与上线)。
+
+### 谁可以使用？
+
+| 角色 | 可以做什么 |
+| --- | --- |
+| 🕹️ 玩家 / 买家 | 浏览服务、发布需求、找队友、下单、沟通、验收评价、申请售后 |
+| 🎧 接单者 / 打手 | 发布陪玩陪练服务、接需求、确认约定、交付服务、查看收入与订单 |
+| 🏠 俱乐部负责人 | 创建和装修俱乐部、审核成员、管理团队服务及关联订单 |
+| 🛠️ 平台管理员 | 审核内容、管理用户与游戏、处理纠纷、查看交易趋势、配置支付与 AI |
+
+**一个账号可以同时发单和接单，加入俱乐部是可选项。** 平台管理与俱乐部管理入口均在客户端内。
+
+## ✨ 功能一览
+
+| 模块 | 已有能力 |
+| --- | --- |
+| 🎮 多游戏服务市场 | 游戏切换、主题配色、分类、搜索与排序、分页列表、服务详情和玩家主页 |
+| 🖼️ 服务发布 | 封面选择、独立文字图层、标签与价格、发布审核、修改后重新审核 |
+| 📣 需求与接单 | 玩家发布需求、自由接单、约定与价格快照、状态流转和权限校验 |
+| 📦 订单履约 | 下单、付款、开始服务、交付、买家验收、完成评价 |
+| 💬 四方订单沟通 | 买家、接单者、关联俱乐部负责人、平台管理员按权限参与文字与图片沟通 |
+| 🛟 退款与纠纷 | 申请退款、同意或拒绝、补充证据、平台介入和裁决，保留订单与沟通记录 |
+| 🏠 俱乐部 | 创建审核、成员申请、认证、游戏范围、图文主页、成员和关联订单管理 |
+| 👛 钱包与押金 | 充值余额、服务收入、待结算、提现冻结分账；余额付款、自愿平台押金与原路退还；两类最低额及差额补缴 |
+| 🤝 调价与分享 | 履约中双方协商加减价、分笔支付与退款；首页、服务、需求、个人及俱乐部分享与海报 |
+| 📊 运营后台 | 用户、服务、订单、俱乐部、游戏和审计管理；服务交易额与退款趋势 |
+| 🤖 AI 内容审核 | 后端审核文字和图片、管理员配置兼容接口与模型、拒绝原因反馈、故障时保留填写内容 |
+| 🔔 消息中心 | 系统通知、未读状态、按账号保存已读全文，与订单聊天证据分别管理 |
+| 🔐 微信与安全 | 主动勾选协议、微信身份准备、手机号交易门槛、服务端权限、金额整数分、事务与幂等 |
+
+### 一笔服务如何完成？
+
+```text
+浏览服务 / 发布需求 → 确认约定 → 下单付款 → 接单并开始服务
+                                         ↓
+完成评价 ← 买家验收 ← 提交交付 ← 订单内持续沟通
+    └─ 遇到问题：申请退款 → 双方协商 → 必要时平台介入
+```
+
+### 支持哪些游戏？
+
+内置 **13 款游戏目录与主题**，管理员可以调整分类、配色、封面、排序和上下架：
+
+`三角洲行动` · `王者荣耀` · `和平精英` · `暗区突围` · `无畏契约` · `穿越火线手游` · `金铲铲之战` · `英雄联盟` · `无畏契约：源能行动` · `使命召唤手游` · `永劫无间手游` · `第五人格` · `蛋仔派对`
+
+## 📱 界面预览
+
+以下为**历史本地功能实屏，使用模拟数据**，展示服务、俱乐部、钱包和后台；它们不代表本轮实测或真实资金验收，当前界面以运行版本为准。
+
+<table>
+  <tr><th>服务详情与下单</th><th>俱乐部发现</th></tr>
+  <tr>
+    <td><img src="output/game-ui-wallet/mini-390/service-deposit.png" alt="服务详情功能实屏" width="300"></td>
+    <td><img src="output/game-ui-wallet/mini-390/club-cards.png" alt="俱乐部发现功能实屏" width="300"></td>
+  </tr>
+  <tr><th>钱包与资金记录</th><th>平台运营后台</th></tr>
+  <tr>
+    <td><img src="output/game-ui-wallet/mini-390/wallet-recharged.png" alt="本地模拟钱包功能实屏" width="300"></td>
+    <td><img src="output/game-ui-wallet/admin-390/console-initial.png" alt="本地模拟平台运营后台实屏" width="300"></td>
+  </tr>
+</table>
+
+页面设计与说明位于 [design/pages](design/pages)，历史验收实屏保存在 [output](output)。
+
+## 🧩 技术架构
+
+| 层级 | 技术与职责 |
+| --- | --- |
+| 客户端 | uni-app、Vue 3、TypeScript、Vite、官方 uni-ui；微信小程序与 H5 构建 |
+| API 服务 | Go 1.24、标准库 `net/http`；身份、交易、俱乐部、资金与管理接口 |
+| 数据存储 | PostgreSQL 16 + pgx/v5；保存业务记录、交易证据和用户上传图片 |
+| 缓存与会话 | Redis 7 + go-redis/v9；会话与限流 |
+| 微信接入 | 微信登录、手机号、微信支付 APIv3、退款与回调、商家转账接口 |
+| 内容审核 | 服务端调用兼容 Chat Completions 的图文模型接口，配置由管理员维护 |
+| 部署 | Docker Compose、Nginx HTTPS 反向代理；游戏封面嵌入后端提供 |
+
+```text
+微信小程序 / H5 开发预览
+          │ HTTPS API
+          ▼
+       Go 后端 ───── 微信身份 / 微信支付 / AI 审核
+          │
+          ├── PostgreSQL：业务、订单、资金账本、证据与图片
+          └── Redis：会话与限流
+```
+
+### 仓库结构
+
+```text
+e-sports-platform/
+├── frontend/       # uni-app / Vue 3 / TypeScript 客户端
+├── backend/        # Go API、业务逻辑、测试与内嵌游戏素材
+├── deploy/         # Docker Compose 与公开配置模板
+├── scripts/        # 本地启停、构建与回归验收脚本
+├── design/         # 页面设计、设计说明与历史版本
+├── docs/           # API、部署、微信配置及功能验收资料
+└── output/         # 按任务归档的验收报告与实屏记录
+```
+
+## 🚀 快速开始
+
+### 1. 准备本地环境
+
+本地启停脚本面向 **macOS**。准备 Go **1.24+**、Node.js 与 npm、Python 3、curl、lsof，以及可连接的 PostgreSQL 和 Redis。
+
+| 依赖 | 开发模板默认值 |
+| --- | --- |
+| PostgreSQL | `127.0.0.1:5432`，专用开发数据库 `jijie_dev` |
+| Redis | `127.0.0.1:56379` |
+| API | `http://127.0.0.1:8090/api` |
+| H5 预览 | `http://127.0.0.1:5173/` |
+
+**请先创建开发数据库并启动 PostgreSQL / Redis。** 启动脚本只检查和复用依赖，不会替你创建数据库、启动容器或修改其他项目。连接账户等信息在本地配置中填写。
+
+### 2. 获取源码并安装依赖
+
+```bash
+git clone --branch main https://github.com/hhh0078/e-sports-platform.git
+cd e-sports-platform
+
+# 安装前先检查镜像配置
+npm config get registry
+go env GOPROXY
+
+# 需要时使用国内镜像
+npm config set registry https://registry.npmmirror.com
+export GOPROXY=https://goproxy.cn,direct
+
+npm --prefix frontend ci
+(cd backend && go mod download)
+```
+
+### 3. 配置并启动
+
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
+
+# 按自己的开发数据库、Redis 和 API 地址修改上述配置后运行
 ./scripts/dev-start.sh
 ```
 
-打开 <http://127.0.0.1:5173/>，在登录页选择体验身份。已启动的本项目服务会复用；脚本不会停止其它应用，也不会重置演示数据。
+浏览器访问 **[http://127.0.0.1:5173/](http://127.0.0.1:5173/)**，健康检查为 [http://127.0.0.1:8090/health](http://127.0.0.1:8090/health)。日志位于 `.run/api.log` 和 `.run/h5.log`。
 
-| 体验账号 | 身份与入口 |
+<details>
+<summary>🧪 本地多角色体验与停止服务</summary>
+
+| 身份 ID | 场景 |
 | --- | --- |
-| 云间旅人 `player` | 买家，下单、沟通、验收、申请退款 |
-| 北辰 `worker` | 打手，发布、接单、交付、处理退款 |
-| 山海主理人 `clubowner` | 山海电竞负责人，「我的 → 我的俱乐部」管理成员和团队订单 |
-| 集结管理员 `admin` | 「我的 → 平台管理中心」审核、主题配置、订单裁决、用户管理 |
-| 自由玩家 `outsider` | 无关订单的权限隔离账号，也是另一俱乐部的负责人 |
+| `player` | 买家下单、验收、退款 |
+| `worker` | 打手发布、接单、交付 |
+| `clubowner` | 俱乐部负责人管理成员和关联订单 |
+| `admin` | 平台管理、审核、配置与裁决 |
+| `outsider` | 验证无关用户与另一俱乐部的权限隔离 |
 
-测试支付会明确显示「本地测试，不产生真实扣费」。这里的收入是完成订单的统计值，不是已经转账到银行卡的余额。
+测试支付会标明“本地测试，不产生真实扣费”。开发身份与模拟支付在生产模式关闭。
 
-## 本地环境与操作
-
-目前复用 Docker 中的 PostgreSQL `127.0.0.1:5432`，专用数据库为 `jijie_dev`；专用 Redis 为 `127.0.0.1:56379`。启动脚本会先检查这两个连接，缺少服务时给出明确提示，不自动改动其它容器或数据库。需要 Go 1.24 及以上、Node.js、npm、Python 3、curl、lsof；当前电脑已配置。
-
-```sh
-# 停止本项目的 API 和 H5，保留数据库、Redis 与全部记录
-./scripts/dev-stop.sh
-
-# 仅核验将被停止的进程，不真正停止
+```bash
+# 先查看将停止的本项目进程
 ./scripts/dev-stop.sh --dry-run
 
-# 全套自动测试与 H5 / 微信构建
-./scripts/verify.sh
+# 停止本项目 API 与 H5，保留数据库和 Redis
+./scripts/dev-stop.sh
 ```
 
-新机器首次安装前先检查镜像：`npm config get registry`、`go env GOPROXY`。本次使用 `https://registry.npmmirror.com` 与 `https://goproxy.cn,direct`。前端在 `frontend` 目录执行 `npm ci`；后端在 `backend` 目录执行 `go mod download`。本地环境变量示例是 `backend/.env.example` 和 `frontend/.env.example`，分别复制为 `.env` 和 `.env.local` 后修改。真实密钥不要提交 Git。
+</details>
 
-后端可执行文件位于 `backend/bin/jijie-api`；新启动的日志位于 `.run/api.log` 和 `.run/h5.log`。健康接口 <http://127.0.0.1:8090/health> 会实际检查 PostgreSQL 与 Redis。
+## 🧪 验证与上线
 
-## 微信开发者工具 / HBuilderX
+### 自动化检查与构建
 
-在 HBuilderX 中打开 `frontend` 项目。正式产物运行 `./scripts/release-mini.sh`，微信开发者工具导入 `frontend/dist/build/mp-weixin`，连接正式 HTTPS API 并开启域名校验。已配置用户提供的测试 AppID，AppSecret 只保存在私密后端配置中。
+```bash
+# 前端检查、测试和双端构建
+npm --prefix frontend run typecheck
+npm --prefix frontend run check:standards
+npm --prefix frontend test
+npm --prefix frontend run build:h5
+npm --prefix frontend run build:mp-weixin
 
-本地体验包独立位于 `frontend/dist/local/mp-weixin`，本轮已测包连接 `http://127.0.0.1:18091/api` 并提供五种开发身份；常规开发脚本默认8090，重新构建应与实际API端口一致。手机中的 `127.0.0.1` 指向手机自己，真机需使用正式包。完整的两个构建命令见 [发布指南](docs/DEPLOYMENT.md)。
+# 全套验收：需要可用的本地 PostgreSQL / Redis
+# 包含 Go 真实数据库集成测试、竞态检查、静态检查及前端检查构建
+./scripts/verify.sh
 
-## 已实现的主要流程
+# 生成连接正式 API 的微信小程序发布包
+./scripts/release-mini.sh
+```
 
-- 十三款游戏主题、30 张官方来源封面和 13 张独立图标；三角洲与王者各四张底图，其余各两张。游戏目录单行滚动、右侧“全部”固定，显式选择缓存在本地，再次进入恢复；浏览另一游戏详情不会改写主游戏偏好。管理员可改主题、分类、图标、封面、展示顺序及上下架。
-- 自由发布服务、后台审核、编辑重审；选游戏随机匹配底图，文字为独立图层，最多六条，可设颜色、背景、字号和九宫格位置。默认从左下排列并避让图内标签/标题预留区，换图不丢文字；统一服务卡片约4:3展示、标签在上标题在下、底部渐变不透明，价格/成交/操作在图下正常排列。
-- 服务下单与公开需求、测试付款、抢单、开始服务、交付、买家验收、评价；价格和原始服务约定保存在订单快照。
-- 订单老板、打手、关联俱乐部负责人、平台管理员四方聊天；文字、图片、系统事件留存，历史消息可加载，无关人不能访问。
-- 买家退款、卖家同意或拒绝、买家补充证据和申请介入、平台退款或恢复履约或裁决完成；退款期间冻结交付与结算。
-- 多俱乐部创建、审核、挂靠审核、成员管理、订单隔离、认证标识；后台提供用户停用、服务审核、运营公告、审计与分页搜索。
-- 四个导航访客完整显示、主动协议勾选、可跳过头像昵称弹层、独立资料、手机号交易门槛、公开玩家主页与俱乐部图文装修；图片按用途使用官方裁剪压缩，服务端复核。
-- 微信官方身份准备、支付 APIv3 签名、回调验签解密、支付查单、真实退款状态和同单号重试；小程序内管理员可编辑两协议及加密保存商户配置。
-- 钱包隔离充值、可提现服务收入、待结算、提现冻结及自愿平台押金；订单可余额支付，验收七天无售后后释放收入，押金无在途订单才可原路退还。未知支付、退款及转账结果保持原单查询。
-- 平台管理控制台提供真实服务交易额/退款曲线和十二个独立入口；支付、钱包审核、AI配置和消息发送均仅平台管理员可用。
-- 用户文字和图片由后端写入前审查，拒绝返回原因，故障保留草稿并暂停提交。系统消息列表只显示标题，点开后本机保留全文和已读状态，再确认删除本人服务器副本。
+微信开发者工具导入 `frontend/dist/build/mp-weixin`。使用自己的 AppID，按发布指南配置 HTTPS 域名、隐私指引、运营主体及微信支付商户资料。
 
-## 验收资料
+### 正式部署与验证边界
 
-- [订单加减价、五类分享与新版商家转账验收清单](docs/ORDER_ADJUSTMENT_SHARING_ACCEPTANCE.md)：2026-10-23本轮代码与本地验收；尚未部署生产或验证商户实款。
+- 📦 **部署方式：** 后端、PostgreSQL、Redis 使用 Docker Compose，Nginx 提供 HTTPS；具体步骤见[部署指南](docs/DEPLOYMENT.md)。生产 Compose 与本地体验环境分别配置。
+- 🧾 **版本状态：** 生产验收记录带有日期；2026-10-20 的生产记录属于历史快照，不能代表此后新增钱包、AI 审核、消息中心等功能已在生产通过。
+- 📱 **真实能力：** 真人微信建号与协议同意、手机号授权、商户付款退款、转账到账、真实模型图文审核、手机真机及微信审核需分别验收。构建成功和本地模拟不替代这些结果。
+- 🔑 **配置管理：** 只使用仓库中的 `.env.example` 作为模板，真实 `.env`、商户密钥、会话和数据库备份保留在私密环境。
 
-- [你可以逐项体验的测试清单](docs/USER_TEST_CHECKLIST.md)
-- [实际验收结果与证据](docs/ACCEPTANCE.md)
-- [独立代码与接口审计记录](docs/REVIEW.md)
-- [后端自动测试说明](backend/README.md)
-- [行业调研及交易规则依据](docs/RESEARCH.md)
-- [官方素材来源与使用边界](docs/ASSETS.md)
-- [热门游戏推荐顺序及数据口径](docs/GAME_POPULARITY.md)
-- [先设计再实现的目标图](docs/REDESIGN.md)
-- [参考图与真实页面逐项视觉验收](design-qa.md)
-- [Docker、域名、微信和支付发布指南](docs/DEPLOYMENT.md)
-- [微信身份与支付后台配置](docs/WECHAT_BACKEND_SETUP.md)
-- [演示数据生成、隔离与清理](docs/DEMO_DATA.md)
-- [钱包、押金与提现配置及测试](docs/WALLET_SETUP_AND_TEST.md)
-- [后台控制台和交易统计验收](docs/ADMIN_CONSOLE.md)
-- [AI审查与消息中心配置及测试](docs/AI_MODERATION_MESSAGES.md)
+品牌现统一为 **开机电竞**。`jijie` 等数据库、Go 模块、缓存键及部署资源名称属于兼容性技术标识；保留它们可沿用已有数据和配置，历史验收记录也保留当时名称。
 
-2026-10-20的生产验收曾验证正式域名访客页面、微信原生登录 code 和后端身份准备；本轮钱包、控制台、AI审查与消息中心尚未部署生产。五种本地身份与四方交易退款已有实际界面回归。真实AI密钥与模型图文能力、用户微信同意协议建号、真实手机号、商户扣款退款/转账到账、手机真机与微信审核仍需按测试清单分别验收，不能用本地模拟或构建成功代替。
+## 📚 文档导航
+
+| 想了解的内容 | 入口 |
+| --- | --- |
+| 源码部署、Docker、域名与回滚 | [部署指南](docs/DEPLOYMENT.md) |
+| 微信身份、后台配置与支付接入 | [微信配置](docs/WECHAT_BACKEND_SETUP.md) |
+| 钱包、押金、提现与测试 | [资金模块说明](docs/WALLET_SETUP_AND_TEST.md) · [本轮补缴与弹层计划](docs/WALLET_DEPOSIT_POLISH_PLAN.md) |
+| 订单调价与微信分享 | [功能与验收记录](docs/ORDER_ADJUSTMENT_SHARING_ACCEPTANCE.md) |
+| 平台控制台与交易统计 | [管理后台说明](docs/ADMIN_CONSOLE.md) |
+| AI 审核与消息中心 | [审核和通知说明](docs/AI_MODERATION_MESSAGES.md) |
+| 接口与后端测试 | [API 文档](docs/API.md) · [后端说明](backend/README.md) |
+| 手动体验与角色验收 | [用户测试清单](docs/USER_TEST_CHECKLIST.md) |
+| 演示数据生成与清理 | [演示数据说明](docs/DEMO_DATA.md) |
+| 品牌更名与已有配置兼容 | [品牌更新记录](docs/BRAND_RENAME.md) |
+| 页面设计、组件与开发要求 | [设计目录](design/README.md) · [开发规范](PROJECT_DEVELOPMENT.md) |
+
+## 🤝 参与开发
+
+欢迎通过 [Issues](https://github.com/hhh0078/e-sports-platform/issues) 反馈问题或讨论改进。参与前先阅读 [AGENTS.md](AGENTS.md) 和 [PROJECT_DEVELOPMENT.md](PROJECT_DEVELOPMENT.md)，说明复现步骤与影响范围，并为业务改动补齐相应验证。
+
+## 📄 许可证与素材
+
+源码许可证见 [Apache License 2.0](LICENSE)。游戏图片、图标等第三方资源的来源和使用边界另见[素材说明](docs/ASSETS.md)，其权利归各自权利人。
+
+## 📬 联系作者
+
+项目交流与合作，可通过以下方式联系：
+
+| 联系方式 | 号码 |
+| --- | --- |
+| 📱 手机号 | [17607080935](tel:17607080935) |
+| 💬 微信 | `17607080935` |
+
+## 🔎 相关关键词
+
+**电竞与游戏服务：** 开机电竞、电竞平台源码、电竞平台开源、电竞接单平台源码、电竞服务平台、游戏服务平台源码、游戏陪玩平台源码、游戏陪玩系统、游戏陪练系统、陪玩接单系统、陪练接单平台、游戏组队平台、游戏任务接单平台、电竞俱乐部系统、游戏俱乐部管理系统、陪玩俱乐部源码。
+
+**小程序与交易系统：** 电竞小程序源码、陪玩小程序源码、陪练小程序源码、微信陪玩小程序、游戏接单小程序、多游戏服务小程序、服务交易平台源码、服务商城源码、需求发布系统、订单管理系统、订单聊天系统、退款售后系统、钱包充值提现、平台押金、平台运营后台、AI 内容审核。
+
+**技术与二次开发：** uni-app 小程序源码、Vue3 小程序、TypeScript 项目、Go 后端源码、Golang 交易系统、PostgreSQL 项目、Redis 会话、Docker Compose 部署、微信登录、微信支付 APIv3、全栈开源项目、三角洲陪练平台、王者荣耀陪玩系统、和平精英陪练平台。
+
+**English:** esports platform, esports marketplace, gaming services platform, game companion platform, game coaching marketplace, gaming club management, WeChat Mini Program, uni-app, Vue 3, TypeScript, Golang, PostgreSQL, Redis, order management, payment integration, open source.
