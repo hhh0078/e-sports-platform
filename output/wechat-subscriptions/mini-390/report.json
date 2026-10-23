@@ -1,0 +1,342 @@
+{
+  "passed": true,
+  "stage": "页面 /pages/account/subscriptions",
+  "viewport": {
+    "pixelRatio": 3,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "screenTop": 0,
+    "windowWidth": 390,
+    "windowHeight": 844,
+    "statusBarHeight": 47
+  },
+  "checks": [
+    "访客可正常展示微信提醒空态，无后台配置",
+    "player仅展示本人身份可用的 3 类场景",
+    "player不能访问模板配置或发送记录",
+    "worker仅展示本人身份可用的 3 类场景",
+    "worker不能访问模板配置或发送记录",
+    "clubowner仅展示本人身份可用的 5 类场景",
+    "clubowner不能访问模板配置或发送记录",
+    "admin仅展示本人身份可用的 4 类场景",
+    "平台管理员独立页面显示六类模板配置",
+    "管理员可查看独立发送记录，空记录正常显示",
+    "管理员冷加载失败提供可见错误与重试入口",
+    "解除受控网络失败后，真实按钮重试可恢复配置",
+    "个人页真实点击处理原生 accept，模板去重且不超过三个",
+    "个人页真实点击处理原生 reject，模板去重且不超过三个",
+    "个人页真实点击处理原生 fail，模板去重且不超过三个",
+    "共享订阅说明为真实浮层，窄屏和关闭入口正常",
+    "服务详情订阅浮层可关闭，取消不影响正常浏览",
+    "共享订阅说明为真实浮层，窄屏和关闭入口正常",
+    "共享组件真实按钮处理拒绝，详情仍可使用",
+    "测试结束通过真实退出入口恢复访客，不残留管理员会话"
+  ],
+  "native_mock_calls": [
+    {
+      "outcome": "accept",
+      "templates": [
+        "local_sdk_only_mvlcxkjx_provider_order",
+        "local_sdk_only_mvlcxkjx_provider_refund",
+        "local_sdk_only_mvlcxkjx_buyer_accepted"
+      ]
+    },
+    {
+      "outcome": "reject",
+      "templates": [
+        "local_sdk_only_mvlcxkjx_provider_order",
+        "local_sdk_only_mvlcxkjx_provider_refund",
+        "local_sdk_only_mvlcxkjx_buyer_accepted"
+      ]
+    },
+    {
+      "outcome": "fail",
+      "templates": [
+        "local_sdk_only_mvlcxkjx_provider_order",
+        "local_sdk_only_mvlcxkjx_provider_refund",
+        "local_sdk_only_mvlcxkjx_buyer_accepted"
+      ]
+    },
+    {
+      "outcome": "reject",
+      "templates": [
+        "local_sdk_only_mvlcxkjx_buyer_accepted"
+      ]
+    }
+  ],
+  "screenshots": [
+    "guest.png",
+    "player-settings.png",
+    "worker-settings.png",
+    "clubowner-settings.png",
+    "admin-settings.png",
+    "admin-settings.png",
+    "admin-deliveries.png",
+    "admin-cold-error.png",
+    "service-reminder.png",
+    "service-reminder-reject.png",
+    "final-guest.png"
+  ],
+  "measurements": [
+    {
+      "label": "player场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 219,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "player场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 320,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "player场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 421,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "worker场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 219,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "worker场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 320,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "worker场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 421,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "clubowner场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 219,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "clubowner场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 320,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "clubowner场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 421,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "clubowner场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 522,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "clubowner场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 623,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "admin场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 219,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "admin场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 320,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "admin场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 421,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "admin场景行",
+      "selector": ".subscription-row",
+      "rectangle": {
+        "left": 15,
+        "top": 522,
+        "width": 360,
+        "height": 101
+      }
+    },
+    {
+      "label": "管理员主开关",
+      "selector": ".subscriptions-master",
+      "rectangle": {
+        "left": 15,
+        "top": 171,
+        "width": 360,
+        "height": 93.6953125
+      }
+    },
+    {
+      "label": "管理员六类配置",
+      "selector": ".subscriptions-scene-heading",
+      "rectangle": {
+        "left": 15,
+        "top": 275.6953125,
+        "width": 360,
+        "height": 55
+      }
+    },
+    {
+      "label": "管理员六类配置",
+      "selector": ".subscriptions-scene-heading",
+      "rectangle": {
+        "left": 15,
+        "top": 745.5859375,
+        "width": 360,
+        "height": 55
+      }
+    },
+    {
+      "label": "管理员六类配置",
+      "selector": ".subscriptions-scene-heading",
+      "rectangle": {
+        "left": 15,
+        "top": 801.5859375,
+        "width": 360,
+        "height": 55
+      }
+    },
+    {
+      "label": "管理员六类配置",
+      "selector": ".subscriptions-scene-heading",
+      "rectangle": {
+        "left": 15,
+        "top": 857.5859375,
+        "width": 360,
+        "height": 55
+      }
+    },
+    {
+      "label": "管理员六类配置",
+      "selector": ".subscriptions-scene-heading",
+      "rectangle": {
+        "left": 15,
+        "top": 913.5859375,
+        "width": 360,
+        "height": 55
+      }
+    },
+    {
+      "label": "管理员六类配置",
+      "selector": ".subscriptions-scene-heading",
+      "rectangle": {
+        "left": 15,
+        "top": 969.5859375,
+        "width": 360,
+        "height": 55
+      }
+    },
+    {
+      "label": "真实订阅浮层",
+      "selector": ".finance-popup-sheet",
+      "rectangle": {
+        "left": 16,
+        "top": 277.5,
+        "width": 358,
+        "height": 289
+      }
+    },
+    {
+      "label": "真实订阅浮层",
+      "selector": ".finance-popup-sheet",
+      "rectangle": {
+        "left": 16,
+        "top": 277.5,
+        "width": 358,
+        "height": 289
+      }
+    }
+  ],
+  "version_checks": [],
+  "runtime_exceptions": [],
+  "canvas_color_warnings": [],
+  "delivery_delta": [],
+  "configuration_restored": true,
+  "boundaries": [
+    "原生订阅accept/reject/fail由官方SDK受控替身返回，不构成真实微信授权或用户收件证明。",
+    "只操作127.0.0.1:18091开发服务与dist/dev工程；本地API须使用假AppID和假secret且没有对应官方身份。",
+    "未创建订单、支付、俱乐部或触发发送/重试；原有业务交易与资金数据不修改。",
+    "320和390由主流程分别设置机型运行，本脚本不改设备或自动化端口。",
+    "真实模板授权、微信终端展示、签名回调和真机生命周期需另行验收。"
+  ]
+}

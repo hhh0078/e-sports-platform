@@ -58,7 +58,7 @@ async function run(){
   viewport=await mini.evaluate(()=>wx.getWindowInfo()) as {windowWidth:number;windowHeight:number};if(process.env.UI_EXPECT_WIDTH)assert.equal(viewport.windowWidth,Number(process.env.UI_EXPECT_WIDTH))
   let page:Page
   if(!moderationOnly){
-  await login('开机电竞管理员');page=await open('/pages/manage/index');await until(async()=>(await page.$$('.module-card')).length===14,'十四个模块')
+  await login('开机电竞管理员');page=await open('/pages/manage/index');await until(async()=>(await page.$$('.module-card')).length===15,'包含微信订阅的十五个模块')
   await(await button(page,'AI 设置')).tap();page=await until(async()=>{const current=await sdk().currentPage();return current?.path==='pages/manage/ai'?current:null},'AI独立配置')
   const base=await field(page,'.ai-base-url'),model=await field(page,'.ai-model'),key=await field(page,'.ai-key'),prompt=await field(page,'.ai-prompt')
   await until(async()=>(await base.property('value'))===original.base_url,'配置默认地址');assert.equal(await model.property('value'),original.model);assert.equal(await key.property('value'),'');await within(page,'input');await within(page,'textarea');await record('AI独立配置默认地址模型正确，密钥不回显，窄屏输入不溢出','ai-settings')

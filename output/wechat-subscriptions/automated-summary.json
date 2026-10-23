@@ -1,0 +1,48 @@
+{
+  "file_purpose": "六类订阅提醒脱敏自动化摘要，区分受控授权与真人微信收件",
+  "backend_commit": "7d30f3561d78896c1a82ec27daa015baad0c8425",
+  "frontend": {
+    "passed": 550,
+    "failed": 0,
+    "typecheck": true,
+    "standards_pages": 44,
+    "h5_build": true,
+    "mini_production_build": true,
+    "share_pages": 7
+  },
+  "backend": {
+    "passed_tests_and_subtests": 329,
+    "failed": 0,
+    "isolated_postgresql_redis": true,
+    "race": true,
+    "vet": true
+  },
+  "production": {
+    "passed_readonly_checks": 91,
+    "failed": 0,
+    "real_templates_configured": true,
+    "mini_uploaded_or_published": false,
+    "official_callback_configured": false
+  },
+  "sdk": [
+    {
+      "width": 320,
+      "passed": true,
+      "checks": 20,
+      "exceptions": 0,
+      "color_warnings": 0,
+      "configuration_restored": true,
+      "native_authorization": "controlled_official_sdk_mock"
+    },
+    {
+      "width": 390,
+      "passed": true,
+      "checks": 20,
+      "exceptions": 0,
+      "color_warnings": 0,
+      "configuration_restored": true,
+      "native_authorization": "controlled_official_sdk_mock"
+    }
+  ],
+  "real_wechat_receipt_verified": false
+}

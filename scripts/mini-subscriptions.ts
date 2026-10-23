@@ -128,10 +128,11 @@ async function record(label: string, name?: string): Promise<void> {
 /** 通过协议勾选与真实开发体验身份按钮登录，不注入会话。 */
 async function login(identity: TestIdentity): Promise<void> {
   const page = await open('/pages/account/login', true)
+  await enabled(page, '.login-primary')
   await (await until(() => page.$('.consent-line label'), '协议主动勾选')).tap()
   await (await button(page, '开发体验')).tap()
   await (await until(async () => { for (const account of await page.$$('.account-card') as Element[]) if ((await account.text()).includes(identity.nickname)) return account; return null }, identity.nickname + '身份按钮')).tap()
-  await until(async () => { if ((await sdk().currentPage())?.path === 'pages/main/index') return true; const later = await page.$('.finish-later'); if (later) await later.tap(); return false }, '登录回跳')
+  await until(async () => { if ((await sdk().currentPage())?.path === 'pages/main/index') return true; const error=await page.$('.login-error');if(error)throw new Error('真实登录失败：'+await error.text());const later = await page.$('.finish-later'); if (later) await later.tap(); return false }, '登录回跳')
 }
 /** 最终从可见资料页真正退出，恢复访客并撤销本轮客户端体验会话。 */
 async function logout(): Promise<void> {
@@ -145,12 +146,12 @@ async function logout(): Promise<void> {
 }
 /** 仅替代官方订阅接口的本次返回；记录真实按钮调用，既不触发实际授权也不发送微信通知。 */
 async function nativeOutcome(outcome: SubscriptionAuthorizationStatus): Promise<void> {
-  await sdk().mockWxMethod('requestSubscribeMessage', (options: { tmplIds: string[]; success?: (result: Record<string, string>) => void; fail?: (error: { errMsg: string }) => void; complete?: (result: unknown) => void }, status: string) => {
+  await sdk().mockWxMethod('requestSubscribeMessage', (options: { tmplIds: string[] }, status: string) => {
     subscriptionSmokeNative({ outcome: status, templates: options.tmplIds })
-    if (status === 'fail') { const result = { errMsg: 'requestSubscribeMessage:fail 本地SDK受控失败' }; options.fail?.(result); options.complete?.(result); return }
+    if (status === 'fail') return { errMsg: 'requestSubscribeMessage:fail 本地SDK受控失败' }
     const result: Record<string, string> = { errMsg: 'requestSubscribeMessage:ok' }
     for (const id of options.tmplIds) result[id] = status
-    options.success?.(result); options.complete?.(result)
+    return result
   }, outcome)
   mocks.add('requestSubscribeMessage')
 }
@@ -218,7 +219,7 @@ async function run(): Promise<void> {
   await (await button(page, '发送记录')).tap()
   await until(() => page.$('.subscriptions-delivery-tools'), '独立发送日志页签')
   await record('管理员可查看独立发送记录，空记录正常显示', 'admin-deliveries')
-  await sdk().mockWxMethod('request', (options: { fail?: (error: { errMsg: string }) => void; complete?: (error: { errMsg: string }) => void }) => { const result = { errMsg: 'request:fail 本地冷启动错误验收' }; options.fail?.(result); options.complete?.(result) })
+  await sdk().mockWxMethod('request', () => ({ statusCode:503,data:{error:'本地SDK受控冷启动错误'},header:{} }))
   mocks.add('request')
   page = await open('/pages/manage/subscriptions', true)
   await until(() => page.$('.subscriptions-admin-error'), '管理员冷加载错误提示')
@@ -275,4 +276,4 @@ function report(): void {
   fs.mkdirSync(output, { recursive: true })
   fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && !cleanupFailure, stage, viewport, checks, native_mock_calls: nativeCalls, screenshots, measurements, version_checks: versionChecks, runtime_exceptions: exceptions, canvas_color_warnings: warnings, delivery_delta: deliveryDelta, configuration_restored: !!originalSettings && !cleanupFailure, ...(failure ? { error: redact(failure) } : {}), ...(cleanupFailure ? { cleanup_error: cleanupFailure } : {}), boundaries: ['原生订阅accept/reject/fail由官方SDK受控替身返回，不构成真实微信授权或用户收件证明。', '只操作127.0.0.1:18091开发服务与dist/dev工程；本地API须使用假AppID和假secret且没有对应官方身份。', '未创建订单、支付、俱乐部或触发发送/重试；原有业务交易与资金数据不修改。', '320和390由主流程分别设置机型运行，本脚本不改设备或自动化端口。', '真实模板授权、微信终端展示、签名回调和真机生命周期需另行验收。'] }, null, 2) + '\n')
 }
-run().catch(error => { failure = error; console.error(redact(error)); process.exitCode = 1 }).finally(async () => { await cleanup(); if (cleanupFailure) { console.error(cleanupFailure); process.exitCode = 1 } report() })
+run().catch(async error => { failure = error; console.error(redact(error)); if(mini)try{await record('失败时保留真实页面','failure')}catch{/* 保留原始错误，不伪造截图。 */}process.exitCode = 1 }).finally(async () => { await cleanup(); if (cleanupFailure) { console.error(cleanupFailure); process.exitCode = 1 } report() })

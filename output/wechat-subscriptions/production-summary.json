@@ -1,0 +1,175 @@
+{
+  "file_purpose": "微信订阅消息后端正式发布的脱敏只读验收摘要，不代表真实微信消息已送达或小程序已发布",
+  "checked_at": "2026-10-24T03:20:56.813874+08:00",
+  "production_url": "https://game.ai.58it.cn",
+  "source_commit": "7d30f3561d78896c1a82ec27daa015baad0c8425",
+  "image_tag": "20261024-subscriptions-7d30f35",
+  "image_id": "sha256:aa1f1d6b50cde4b22305afde36cb62ba4ef77c3f3a799fa1aae8c0138c1a027c",
+  "deployment_channel": "宝塔MCP（固定证书），未使用浏览器或SSH",
+  "source_fetch": "GitHub精确提交成功，无需上传bundle",
+  "api_only_recreated": true,
+  "postgres_redis_container_and_volumes_unchanged": true,
+  "api_loopback": "127.0.0.1:18090",
+  "nginx_https_config_unchanged": true,
+  "only_image_tag_changed_in_env": true,
+  "master_key_and_wechat_payment_secrets_unchanged": true,
+  "backups": {
+    "database_gzip_valid": true,
+    "roles_gzip_valid": true,
+    "directory_mode": "700",
+    "file_mode": "600",
+    "database_bytes": 131916,
+    "roles_bytes": 457,
+    "private_backup_location": "服务器站点.deploy-backups下，完整路径仅私密发布记录保存"
+  },
+  "checks": {
+    "passed": 91,
+    "failed": 0
+  },
+  "enabled_scenes": [
+    {
+      "scene": "provider_order",
+      "label": "打手新订单",
+      "template_title": "交易提醒"
+    },
+    {
+      "scene": "provider_refund",
+      "label": "打手退款申请",
+      "template_title": "退款申请通知"
+    },
+    {
+      "scene": "buyer_accepted",
+      "label": "老板订单被接单",
+      "template_title": "接单成功提醒"
+    },
+    {
+      "scene": "club_member",
+      "label": "负责人收到入会申请",
+      "template_title": "新成员邀请通知（无电话字段版）"
+    },
+    {
+      "scene": "club_dispute",
+      "label": "负责人收到旗下订单争议",
+      "template_title": "订单异常通知"
+    },
+    {
+      "scene": "admin_club",
+      "label": "平台收到新俱乐部待认证",
+      "template_title": "商家入驻申请通知"
+    }
+  ],
+  "official_template_library": {
+    "before": 4,
+    "after": 7,
+    "new_templates": 3,
+    "existing_templates_deleted": 0,
+    "six_scenes_fields_matched": true,
+    "full_template_ids_exposed": false
+  },
+  "counts_before": {
+    "audit": 13,
+    "clubs": 6,
+    "evidence": 62,
+    "fund_audits": 0,
+    "fund_lots": 0,
+    "fund_movements": 0,
+    "fund_receipts": 0,
+    "games": 13,
+    "identities": 2,
+    "inbox": 0,
+    "inbox_receipts": 0,
+    "members": 42,
+    "messages": 260,
+    "moderation_targets": 0,
+    "moderation_tasks": 0,
+    "order_adjustments": 0,
+    "order_payments": 0,
+    "order_refunds": 0,
+    "orders": 52,
+    "reviews": 8,
+    "services": 130,
+    "settings": 14,
+    "shares": 4,
+    "users": 62,
+    "wallet_deposit_refunds": 0,
+    "wallet_entries": 0,
+    "wallet_escrows": 0,
+    "wallet_requests": 0,
+    "wallet_topups": 0,
+    "wallet_withdrawals": 0,
+    "wallets": 0
+  },
+  "counts_after": {
+    "audit": 14,
+    "clubs": 6,
+    "evidence": 62,
+    "fund_audits": 0,
+    "fund_lots": 0,
+    "fund_movements": 0,
+    "fund_receipts": 0,
+    "games": 13,
+    "identities": 2,
+    "inbox": 0,
+    "inbox_receipts": 0,
+    "members": 42,
+    "messages": 260,
+    "moderation_targets": 0,
+    "moderation_tasks": 0,
+    "order_adjustments": 0,
+    "order_payments": 0,
+    "order_refunds": 0,
+    "orders": 52,
+    "reviews": 8,
+    "services": 130,
+    "settings": 15,
+    "shares": 4,
+    "subscription_authorizations": 0,
+    "subscription_callbacks": 0,
+    "subscription_deliveries": 0,
+    "subscription_preferences": 0,
+    "subscription_receipts": 0,
+    "users": 62,
+    "wallet_deposit_refunds": 0,
+    "wallet_entries": 0,
+    "wallet_escrows": 0,
+    "wallet_requests": 0,
+    "wallet_topups": 0,
+    "wallet_withdrawals": 0,
+    "wallets": 0
+  },
+  "business_and_financial_records_preserved": true,
+  "new_subscription_tables": {
+    "subscription_deliveries": 0,
+    "subscription_authorizations": 0,
+    "subscription_preferences": 0,
+    "subscription_receipts": 0,
+    "subscription_callbacks": 0
+  },
+  "new_subscription_tables_commented": true,
+  "new_subscription_indexes_verified": 3,
+  "requested_admin_active": true,
+  "game_images_available": 43,
+  "callback": {
+    "token_configured": false,
+    "aes_key_configured": false,
+    "wechat_console_callback_changed": false,
+    "unauthenticated_endpoint_status": 503,
+    "note": "独立回调参数尚未配置；未覆盖微信后台原消息推送设置。客户端一次授权候选及官方发送接口保留，实际送达需真人授权验收。"
+  },
+  "production_session_created": false,
+  "production_business_created_for_testing": false,
+  "real_payment_executed": false,
+  "real_subscription_message_sent_for_testing": false,
+  "mini_program_uploaded_or_published": false,
+  "verification_adjustments": [
+    {
+      "initial_failure": "未注册/static/通用路径预期404，实际为无通用GET路由的405、Allow:OPTIONS；没有返回假审核图",
+      "resolution": "改用已注册/static/covers/official和/static/avatars处理器，真实缺图均404且非图片；未修改线上路由或配置"
+    }
+  ],
+  "verification_boundary": [
+    "本次未调用真实订阅发送，不能将91项只读检查认作真实微信送达",
+    "需要上传新版小程序后由真人显式授权，再通过真实业务事件验证送达及跳转",
+    "回调Token/AES与微信消息推送地址须后续单独安全配置，现状保留"
+  ]
+}
