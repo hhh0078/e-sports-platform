@@ -1,0 +1,31 @@
+{
+  "updated_at": "2026-10-23T10:11:18.048033+00:00",
+  "frontend_tests_passed": 451,
+  "typecheck": true,
+  "standards_pages": 41,
+  "h5_build": true,
+  "wechat_release_build": true,
+  "wechat_runtime": {
+    "320": {
+      "checks": 18,
+      "screenshots": 32,
+      "pixel_samples": 24,
+      "max_pixel_difference": 1,
+      "runtime_exceptions": 0,
+      "game_preference_restored": true,
+      "project": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/dev/mp-weixin"
+    },
+    "390": {
+      "checks": 18,
+      "screenshots": 32,
+      "pixel_samples": 24,
+      "max_pixel_difference": 1,
+      "runtime_exceptions": 0,
+      "game_preference_restored": true,
+      "project": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/dev/mp-weixin"
+    }
+  },
+  "native_real_device_tested": false,
+  "new_wechat_upload": false,
+  "note": "本轮原生界面在现有dev工程验证；固定build工程的旧窗口缺运行时映射，尝试未计入通过。正式包另核验域名与配置。"
+}
