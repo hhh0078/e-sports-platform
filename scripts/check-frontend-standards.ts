@@ -144,7 +144,9 @@ if (existsSync(mainPage)) {
   const text = readFileSync(mainPage, 'utf8')
   if (/<(?:PageHeader|UniNavBar|uni-nav-bar)\b/.test(text)) issue(mainPage, '四个主页面不显示顶部导航栏，仅处理状态栏与胶囊安全距离')
   if (/\breLaunch\s*\(/.test(text)) issue(mainPage, '主导航切换不能重新启动页面')
-  if ((text.match(/v-show=/g) ?? []).length !== 4) issue(mainPage, '四个主视图应保留挂载与独立状态')
+  const mainScrolls = text.match(/<scroll-view\b[^>]*class="main-scroll(?:\s[^\"]*)?"[^>]*>/g) ?? []
+  if (mainScrolls.length !== 4 || mainScrolls.some(tag => /(?:\bv-if=|\bv-show=|\bhidden=|:key=)/.test(tag))) issue(mainPage, '四个主滚动容器必须常驻且保留原生尺寸，不能v-show/display:none隐藏或销毁')
+  if (mainScrolls.some(tag => !tag.includes('main-scroll-inactive')) || !/\.main-scroll-inactive\s*\{[^}]*visibility:\s*hidden[^}]*pointer-events:\s*none/.test(text)) issue(mainPage, '隐藏主容器须用visibility和pointer-events隔离，不能改变滚动几何')
 }
 
 if (issues.length) {

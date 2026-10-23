@@ -33,15 +33,41 @@ test('一百张卡片共享一个窗口监听，同轮挂载和显示只读一�
 
 test('四个主导航保留原scroll-view实例且手势滚动不回写scroll-top', () => {
   const main = readFileSync(new URL('../pages/main/index.vue', import.meta.url), 'utf8')
-  assert.equal((main.match(/<scroll-view v-show=/g) || []).length, 4)
+  assert.equal((main.match(/<scroll-view\b/g) || []).length, 4)
   assert.doesNotMatch(main, /:scroll-top=|@scroll=|rememberScroll|positions\[/)
-  assert.doesNotMatch(main, /<scroll-view[^>]*\b(?:v-if|:key)=/)
+  assert.doesNotMatch(main, /<scroll-view[^>]*(?:\bv-if=|\bv-show=|\bhidden=|:key=)/)
+  const baseRule = main.match(/\.main-scroll\s*\{([^}]+)\}/)?.[1], inactiveRule = main.match(/\.main-scroll-inactive\s*\{([^}]+)\}/)?.[1]
+  assert.ok(baseRule); assert.ok(inactiveRule)
+  assert.match(baseRule, /position:\s*absolute/)
+  assert.match(baseRule, /visibility:\s*visible/)
+  assert.match(inactiveRule, /visibility:\s*hidden/)
+  assert.match(inactiveRule, /pointer-events:\s*none/)
+  assert.doesNotMatch(inactiveRule, /display:|height:|width:/)
+  const selectors = [...main.matchAll(/:class="\{ 'main-scroll-inactive': mainNavigation\.tab !== '([^']+)' \}"/g)].map(match => match[1])
+  assert.deepEqual(selectors, ['player', 'worker', 'orders', 'me'])
+  for (const active of selectors) assert.equal(selectors.filter(tab => tab === active).length, 1, '每个标签只允许一个可见且可交互容器')
   for (const relative of ['player/player', 'worker/worker']) {
     const view = readFileSync(new URL('../pages/main/' + relative + '.vue', import.meta.url), 'utf8')
     assert.match(view, /<ServiceCard[^>]*:active="props.active"/)
   }
   const card = readFileSync(new URL('../components/ServiceCard.vue', import.meta.url), 'utf8')
   assert.match(card, /<CoverArt[^>]*:active="active"[^>]*lazy-load/)
+})
+
+test('安全区静态归属打手和订单容器，切导航不改变父视口高度截断隐藏列表位置', () => {
+  const main = readFileSync(new URL('../pages/main/index.vue', import.meta.url), 'utf8')
+  assert.doesNotMatch(main, /main-status-space/)
+  const scrolls = main.match(/<scroll-view\b[^>]+>/g) || []
+  for (const tab of ['player', 'worker', 'orders', 'me']) {
+    const tag = scrolls.find(value => value.includes("mainNavigation.tab !== '" + tab + "'"))
+    assert.ok(tag, tab + '常驻滚动容器缺失')
+    assert.doesNotMatch(tag, /:style=/, '安全区几何不能随当前激活标签动态修改')
+    assert.equal(/class="main-scroll main-scroll-safe"/.test(tag), tab === 'worker' || tab === 'orders')
+  }
+  const safeRule = main.match(/\.main-scroll-safe\s*\{([^}]+)\}/)?.[1]
+  assert.ok(safeRule)
+  assert.match(safeRule, /top:\s*var\(--status-bar-height,\s*0px\)/)
+  assert.match(safeRule, /height:\s*calc\(100%\s*-\s*var\(--status-bar-height,\s*0px\)\)/)
 })
 
 test('图文图片使用可信宽高预占位，未知或异常旧尺寸不会因加载改变高度', () => {

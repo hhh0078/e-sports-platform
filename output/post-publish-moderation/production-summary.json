@@ -1,0 +1,385 @@
+{
+  "checked_at": "2026-10-23T14:45:17.551550+00:00",
+  "commit": "3f4b60828368877ef0505c758932bdb0eb791d6e",
+  "tag": "20261023-moderation-3f4b608",
+  "image_id": "sha256:0490f5a929c596ae2616168780650105d24d25ba145dc1e669c74a2e7b50cc74",
+  "passed": 82,
+  "failed": 0,
+  "counts_after": {
+    "audit": 13,
+    "clubs": 6,
+    "evidence": 62,
+    "fund_audits": 0,
+    "fund_lots": 0,
+    "fund_movements": 0,
+    "fund_receipts": 0,
+    "games": 13,
+    "identities": 2,
+    "inbox": 0,
+    "inbox_receipts": 0,
+    "members": 42,
+    "messages": 260,
+    "moderation_targets": 0,
+    "moderation_tasks": 0,
+    "order_adjustments": 0,
+    "order_payments": 0,
+    "order_refunds": 0,
+    "orders": 52,
+    "reviews": 8,
+    "services": 130,
+    "settings": 14,
+    "shares": 3,
+    "users": 62,
+    "wallet_deposit_refunds": 0,
+    "wallet_entries": 0,
+    "wallet_escrows": 0,
+    "wallet_requests": 0,
+    "wallet_topups": 0,
+    "wallet_withdrawals": 0,
+    "wallets": 0
+  },
+  "real_payment_executed": false,
+  "production_user_content_mutated_for_testing": false,
+  "production_session_created": false,
+  "startup_added_setting_ids": [
+    "agreement:privacy:d5df5bcf59ae76a5c49f0fdc117411c6644d844b2072e1915f75b7a0e05264c2",
+    "agreement:user:d5df5bcf59ae76a5c49f0fdc117411c6644d844b2072e1915f75b7a0e05264c2",
+    "default-post-review-agreements-v1"
+  ],
+  "requested_admin": {
+    "role": "admin",
+    "status": "active",
+    "verified_by": "Baota MCP"
+  },
+  "checks": [
+    {
+      "name": "public_https_health",
+      "passed": true
+    },
+    {
+      "name": "postgres_redis_ok",
+      "passed": true
+    },
+    {
+      "name": "production_dev_mode_false",
+      "passed": true
+    },
+    {
+      "name": "exact_source",
+      "passed": true
+    },
+    {
+      "name": "jijie-api-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "api_exact_built_image",
+      "passed": true
+    },
+    {
+      "name": "api_loopback_only",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_container_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_volume_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_not_public",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_container_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_volume_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_not_public",
+      "passed": true
+    },
+    {
+      "name": "only_image_tag_changed",
+      "passed": true
+    },
+    {
+      "name": "env_mode_600",
+      "passed": true
+    },
+    {
+      "name": "master_key_present_and_matches_runtime",
+      "passed": true
+    },
+    {
+      "name": "backup_dir_mode_700",
+      "passed": true
+    },
+    {
+      "name": "backup_files_mode_600",
+      "passed": true
+    },
+    {
+      "name": "complete_pg_backup_valid",
+      "passed": true
+    },
+    {
+      "name": "moderation_tables_created",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_audit",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_clubs",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_evidence",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_fund_audits",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_fund_lots",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_fund_movements",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_fund_receipts",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_games",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_identities",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_inbox",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_inbox_receipts",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_members",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_messages",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_order_adjustments",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_order_payments",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_order_refunds",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_orders",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_reviews",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_services",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_settings",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_shares",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_users",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_wallet_deposit_refunds",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_wallet_entries",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_wallet_escrows",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_wallet_requests",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_wallet_topups",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_wallet_withdrawals",
+      "passed": true
+    },
+    {
+      "name": "records_preserved_wallets",
+      "passed": true
+    },
+    {
+      "name": "finance_counts_unchanged",
+      "passed": true
+    },
+    {
+      "name": "table_comments_chinese",
+      "passed": true
+    },
+    {
+      "name": "columns_documented",
+      "passed": true
+    },
+    {
+      "name": "moderation_indexes_created",
+      "passed": true
+    },
+    {
+      "name": "requested_admin_active",
+      "passed": true
+    },
+    {
+      "name": "public_/api/bootstrap",
+      "passed": true
+    },
+    {
+      "name": "public_/api/services",
+      "passed": true
+    },
+    {
+      "name": "public_/api/clubs",
+      "passed": true
+    },
+    {
+      "name": "public_/api/financial-rules",
+      "passed": true
+    },
+    {
+      "name": "public_service_detail",
+      "passed": true
+    },
+    {
+      "name": "public_player_detail",
+      "passed": true
+    },
+    {
+      "name": "public_club_detail",
+      "passed": true
+    },
+    {
+      "name": "protected_/api/admin/moderation",
+      "passed": true
+    },
+    {
+      "name": "protected_/api/admin/ai-settings",
+      "passed": true
+    },
+    {
+      "name": "protected_/api/admin/payment-settings",
+      "passed": true
+    },
+    {
+      "name": "protected_/api/me",
+      "passed": true
+    },
+    {
+      "name": "protected_/api/orders",
+      "passed": true
+    },
+    {
+      "name": "dev_accounts_disabled",
+      "passed": true
+    },
+    {
+      "name": "private_/.env",
+      "passed": true
+    },
+    {
+      "name": "private_/deploy/.env",
+      "passed": true
+    },
+    {
+      "name": "private_backup_env_not_public",
+      "passed": true
+    },
+    {
+      "name": "private_backup_database_not_public",
+      "passed": true
+    },
+    {
+      "name": "private_backup_roles_not_public",
+      "passed": true
+    },
+    {
+      "name": "moderation_rejected_image_available",
+      "passed": true
+    },
+    {
+      "name": "moderation_rejected_image_no_store",
+      "passed": true
+    },
+    {
+      "name": "ordinary_missing_image_stays_404",
+      "passed": true
+    },
+    {
+      "name": "game_images_available",
+      "passed": true
+    },
+    {
+      "name": "financial_immutable_triggers_preserved",
+      "passed": true
+    },
+    {
+      "name": "production_tracked_worktree_clean",
+      "passed": true
+    },
+    {
+      "name": "startup_no_panic",
+      "passed": true
+    },
+    {
+      "name": "old_setting_records_preserved",
+      "passed": true
+    }
+  ],
+  "followup_scope": "后续仅客户端滚动稳定性、测试脚本和验收记录；后端与已部署提交一致"
+}

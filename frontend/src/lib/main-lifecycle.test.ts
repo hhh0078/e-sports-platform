@@ -4,7 +4,7 @@ import type { TestContext } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
-import { reactive, ref, computed, watch, effectScope } from 'vue'
+import { reactive, ref, computed, watch, effectScope, proxyRefs } from 'vue'
 import { executable, pageScript, injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest } from './sfc-test'
 
@@ -49,13 +49,15 @@ function harness(t: TestContext, view: ViewName, total = 125) {
   vm.runInContext(executable(readFileSync(new URL('./navigation.ts', import.meta.url), 'utf8')) + '\nglobalThis.navigation={mainNavigation,applyMainQuery}', context)
   vm.runInContext(executable(readFileSync(new URL('./order-list.ts', import.meta.url), 'utf8')), context)
   const exposed: Record<ViewName, string> = {
-    player: 'services,hasMore,error,moreError,query,category,loadServices,reload,showPage,hidePage',
-    worker: 'mine,jobs,stats,claimClubs,hasMore,error,moreError,tab,load,showPage,stopLoading,claim',
-    orders: 'orders,hasMore,error,moreError,role,filter,load,showPage,hidePage,chooseFilter,chooseRole',
+    player: 'services,hasMore,error,moreError,query,category,loading,hasLoaded,loadServices,reload,showPage,hidePage',
+    worker: 'mine,jobs,stats,claimClubs,hasMore,error,moreError,tab,currentListCount,loading,loadedTabs,load,showPage,stopLoading,changeTab,claim',
+    orders: 'orders,hasMore,error,moreError,role,filter,loading,hasLoaded,load,showPage,hidePage,chooseFilter,chooseRole',
     me: 'stats,load,showPage,hidePage',
   }
   const scope = effectScope()
   scope.run(() => vm.runInContext(executable(pageScript('main/' + view + '/' + view + '.vue')) + '\nglobalThis.page={' + exposed[view] + '}', context))
+  const source = readFileSync(new URL('../pages/main/' + view + '/' + view + '.vue', import.meta.url), 'utf8')
+  const loaderCondition = source.match(/v-else-if="([^"]+)"\s+class="loading-line"/)?.[1]
   t.after(() => scope.stop())
   return {
     page: context.page, store: context.store, navigation: context.navigation, storage, props, held, pending, requests, rows, game, navigations,
@@ -63,6 +65,8 @@ function harness(t: TestContext, view: ViewName, total = 125) {
     show() { shows.forEach(callback => callback()) },
     /** 触发主页面本身的真实隐藏生命周期。 */
     hide() { hides.forEach(callback => callback()) },
+    /** 用真实SFC加载分支和Vue自动解引用检查当前是否会把原空态替换成短加载行。 */
+    showsInitialLoader() { assert.ok(loaderCondition, view + '缺少实际加载分支'); return Boolean(new Function('page', 'with (page) { return ' + loaderCondition + ' }')(proxyRefs(context.page))) },
     /** 只统计该视图的列表请求，配置和资料刷新另行记录。 */
     listRequests() { return requests.filter(request => /^\/(services|orders|jobs)\?/.test(request.path)) },
     /** 取得测试明确挂起的一次请求。 */
@@ -72,6 +76,67 @@ function harness(t: TestContext, view: ViewName, total = 125) {
 
 /** 排空 Vue 侦听与业务 Promise，不使用固定耗时模拟网络完成。 */
 async function flush(): Promise<void> { await new Promise<void>(resolve => setImmediate(resolve)) }
+
+test('实际SFC已加载空列表复激活时保留空态，初始化和列表刷新等待及失败均不缩为加载行', async t => {
+  for (const view of ['player', 'worker', 'orders'] as const) await t.test(view, async subtest => {
+    const subject = harness(subtest, view, 0), route = view === 'orders' ? '/orders' : '/services'
+    subject.held.add(route); subject.show(); await flush()
+    assert.equal(subject.showsInitialLoader(), true, '首次加载应显示加载提示')
+    subject.take(route).resolve([]); await flush()
+    assert.equal(subject.showsInitialLoader(), false)
+    subject.props.active = false; await flush()
+    subject.store.state.ready = false; subject.held.add('/bootstrap')
+    subject.props.active = true; await flush()
+    assert.equal(subject.showsInitialLoader(), false, '复激活等待初始化时原空态不能消失')
+    subject.take('/bootstrap').resolve({ games: [subject.game], dev_mode: true }); await flush()
+    assert.equal(subject.page.loading.value, true)
+    assert.equal(subject.showsInitialLoader(), false, '复激活等待业务列表时原空态不能消失')
+    subject.take(route).reject(new Error('刷新暂时失败')); await flush()
+    assert.equal(subject.page.error.value, '')
+    assert.equal(subject.page.moreError.value, '刷新暂时失败')
+    assert.equal(subject.showsInitialLoader(), false)
+    const list = view === 'player' ? subject.page.services : view === 'worker' ? subject.page.mine : subject.page.orders
+    assert.equal(list.value.length, 0)
+  })
+})
+
+test('访客订单和工作台成功空态在重显等待初始化时保留', async t => {
+  for (const view of ['worker', 'orders'] as const) await t.test(view, async subtest => {
+    const subject = harness(subtest, view, 0)
+    subject.store.clearSession(); subject.show(); await flush()
+    assert.equal(subject.showsInitialLoader(), false)
+    if (view === 'worker') assert.equal(subject.page.loadedTabs.value.services, true)
+    else assert.equal(subject.page.hasLoaded.value, true)
+    subject.props.active = false; await flush()
+    subject.store.state.ready = false; subject.held.add('/bootstrap')
+    subject.props.active = true; await flush()
+    assert.equal(subject.page.loading.value, true)
+    assert.equal(subject.showsInitialLoader(), false)
+    subject.take('/bootstrap').resolve({ games: [subject.game], dev_mode: true }); await flush()
+    assert.equal(subject.showsInitialLoader(), false)
+  })
+})
+
+test('新筛选仍显示首次加载，切号立即清除上一身份的成功空态标记', async t => {
+  for (const view of ['player', 'worker', 'orders'] as const) await t.test(view, async subtest => {
+    const subject = harness(subtest, view, 0)
+    subject.show(); await flush()
+    const route = view === 'orders' ? '/orders' : view === 'worker' ? '/jobs' : '/services'
+    subject.held.add(route)
+    if (view === 'orders') subject.page.chooseFilter('completed')
+    else if (view === 'worker') subject.page.changeTab('jobs')
+    else { subject.page.query.value = '新条件'; void subject.page.loadServices() }
+    await flush()
+    assert.equal(subject.showsInitialLoader(), true, '新筛选尚无成功结果，不能沿用其它空态标记')
+    subject.take(route).resolve([]); await flush()
+    assert.equal(subject.showsInitialLoader(), false)
+    if (view !== 'player') {
+      subject.props.active = false; await flush(); subject.store.clearSession()
+      if (view === 'orders') assert.equal(subject.page.hasLoaded.value, false)
+      else assert.deepEqual({ ...subject.page.loadedTabs.value }, { services: false, jobs: false, clubs: false })
+    }
+  })
+})
 
 test('订单深链每个导航版本只消费一次，详情返回保留用户之后选择的筛选', async t => {
   const subject = harness(t, 'orders')

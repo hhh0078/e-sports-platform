@@ -1,21 +1,20 @@
 <!-- 文件作用：唯一主页面常驻四个业务视图和一个底部导航，切换不重建页面。 -->
 <template>
 	<view class="main-shell" :style="[themeStyle, safeStyle]">
-		<view v-if="mainNavigation.tab !== 'player' && mainNavigation.tab !== 'me'" class="main-status-space" />
 		<view class="main-viewport">
-			<scroll-view v-show="mainNavigation.tab === 'player'" scroll-y :show-scrollbar="false" class="main-scroll">
+			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'player' }">
 				<PlayerView :active="mainNavigation.tab === 'player'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
-			<scroll-view v-show="mainNavigation.tab === 'worker'" scroll-y :show-scrollbar="false" class="main-scroll">
+			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll main-scroll-safe" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'worker' }">
 				<WorkerView :active="mainNavigation.tab === 'worker'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
-			<scroll-view v-show="mainNavigation.tab === 'orders'" scroll-y :show-scrollbar="false" class="main-scroll">
+			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll main-scroll-safe" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'orders' }">
 				<OrdersView :active="mainNavigation.tab === 'orders'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
-			<scroll-view v-show="mainNavigation.tab === 'me'" scroll-y :show-scrollbar="false" class="main-scroll">
+			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'me' }">
 				<MeView :active="mainNavigation.tab === 'me'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
@@ -75,13 +74,28 @@
 	}
 
 	.main-scroll {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
 		height: 100%;
 		width: 100%;
-		min-width: 0
+		min-width: 0;
+		z-index: 1;
+		visibility: visible;
+		pointer-events: auto
 	}
 
-	.main-status-space {
-		height: var(--status-bar-height);
-		flex-shrink: 0
+	/* 不可见页面仍保留原生尺寸和滚动范围，仅关闭绘制与触摸。 */
+	.main-scroll-inactive {
+		visibility: hidden;
+		pointer-events: none;
+		z-index: 0
+	}
+
+	/* 状态栏避让属于各自固定滚动容器，切标签不能改变父视口高度并截断隐藏列表位置。 */
+	.main-scroll-safe {
+		top: var(--status-bar-height, 0px);
+		height: calc(100% - var(--status-bar-height, 0px))
 	}
 </style>

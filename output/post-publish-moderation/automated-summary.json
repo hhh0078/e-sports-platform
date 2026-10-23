@@ -1,0 +1,35 @@
+{
+  "文件作用": "本轮自动化与构建检查脱敏摘要；不代表真实AI、真机或资金到账。",
+  "checked_at": "2026-10-23T15:58:52.617301+00:00",
+  "frontend_tests": {
+    "passed": 519,
+    "failed": 0
+  },
+  "backend_tests_and_subcases": {
+    "passed": 282,
+    "failed": 0,
+    "race": true,
+    "real_postgresql_redis": true,
+    "vet_exit_code": 0
+  },
+  "typecheck": true,
+  "standards": {
+    "passed": true,
+    "pages_and_views": 42
+  },
+  "builds": {
+    "h5": true,
+    "mp_weixin": true,
+    "formal_api": "https://game.ai.58it.cn/api"
+  },
+  "share_hooks": {
+    "passed": true,
+    "pages": 7
+  },
+  "not_executed": [
+    "真实AI图文模型调用",
+    "微信真机登录/手机号/资金到账",
+    "手势FPS测量",
+    "微信代码上传提审发布"
+  ]
+}

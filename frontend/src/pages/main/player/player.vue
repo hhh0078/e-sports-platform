@@ -7,7 +7,7 @@
       <scroll-view scroll-x :show-scrollbar="false" class="category-scroll"><view class="categories"><button v-for="item in ['全部', ...(game.categories || [])]" :key="item" :class="['category', { active: category === item }]" @click="chooseCategory(item)">{{ item }}</button></view></scroll-view>
       <view class="service-toolbar"><text class="section-title">精选服务</text><view class="service-tools"><button class="text-btn muted" @click="searchOpen = !searchOpen"><Icon name="search" :size="16" />搜索</button><picker :range="sortOptions" :value="sortIndex" @change="changeSort(Number($event.detail.value))"><view class="sort-control">{{ sortOptions[sortIndex] }}<Icon name="bottom" :size="12" /></view></picker></view></view>
       <view v-if="searchOpen" class="search-row"><Icon name="search" :size="17" /><input class="search-input" v-model="query" placeholder="搜索服务、陪练或任务" confirm-type="search" @confirm="loadServices()" /><button v-if="query" class="text-btn muted" @click="clearSearch"><Icon name="close" :size="14" /></button><button class="text-btn" @click="loadServices()">搜索</button></view>
-      <view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn" @click="reload">重新加载</button></view><view v-else-if="loading && !services.length" class="loading-line">正在寻找好队友…</view><view v-else-if="services.length" class="card-grid"><ServiceCard v-for="service in services" :key="service.id" :service="service" :active="props.active" /></view><EmptyState v-else title="暂时没有匹配的服务" detail="换个分类试试，或发布需求。" icon="game"><button v-if="!timelinePreview" class="btn btn-small" @click="go('/pages/requests/publish')">发布需求</button></EmptyState>
+      <view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn" @click="reload">重新加载</button></view><view v-else-if="loading && !hasLoaded && !services.length" class="loading-line">正在寻找好队友…</view><view v-else-if="services.length" class="card-grid"><ServiceCard v-for="service in services" :key="service.id" :service="service" :active="props.active" /></view><EmptyState v-else title="暂时没有匹配的服务" detail="换个分类试试，或发布需求。" icon="game"><button v-if="!timelinePreview" class="btn btn-small" @click="go('/pages/requests/publish')">发布需求</button></EmptyState>
       <view v-if="moreError" class="hint danger mt">{{ moreError }}</view><button v-if="hasMore && !loading && !error" class="btn-secondary btn-small load-more" :disabled="loadingMore" @click="loadServices(true)">{{ loadingMore ? '正在加载…' : moreError ? '重试加载' : '加载更多服务' }}</button>
       <button class="club-banner" @click="go('/pages/community/clubs/index')"><Icon name="club" :size="23" /><view class="club-banner-copy"><text class="club-banner-title">发现俱乐部</text><text class="club-banner-detail">找到合拍的队伍</text></view><Icon name="arrow" :size="15" /></button><view v-if="state.announcement" class="announcement"><Icon name="bell" :size="13" /><text>{{ state.announcement }}</text></view>
     </view>
@@ -30,6 +30,8 @@ import type { Service } from '../../../types/models'
 const timelinePreview=isTimelinePreview()
 const props = defineProps<{ active: boolean }>()
 const hasMore = ref(false), loadingMore = ref(false), moreError = ref(''), services = ref<Service[]>([]), query = ref(''), category = ref('全部'), loading = ref(false), error = ref(''), sortIndex = ref(0), searchOpen = ref(false)
+/** 已显示空态在返回刷新时保留，只有新游戏、分类或搜索才重新显示首次加载行。 */
+const hasLoaded = ref(false)
 const sortOptions = ['综合排序', '价格从低到高', '成交优先']
 const sortValues = ['recommended', 'price', 'completed']
 let requestVersion = 0, submittedQuery = '', visible = false
@@ -40,7 +42,7 @@ async function loadServices(append = false, preserve = false): Promise<void> {
   if (adding && (loading.value || loadingMore.value || !hasMore.value)) return
   const version = ++requestVersion
   if (adding) loadingMore.value = true
-  else { loading.value = true; error.value = ''; if (!preserve) { hasMore.value = false; submittedQuery = query.value.trim() } }
+  else { loading.value = true; error.value = ''; if (!preserve) { hasMore.value = false; hasLoaded.value = false; submittedQuery = query.value.trim() } }
   moreError.value = ''
   const current = () => visible && version === requestVersion
   /** 使用同一筛选读取指定分页，返回时可以恢复此前全部已加载数据。 */
@@ -48,12 +50,13 @@ async function loadServices(append = false, preserve = false): Promise<void> {
   try {
     if (preserve && services.value.length) { const result = await refreshMainList(services.value.length, 24, read, current); if (result) { services.value = result.items; hasMore.value = result.hasMore } }
     else { const items = await read(24, adding ? services.value.length : 0); if (current()) { services.value = adding ? [...services.value, ...items] : items; hasMore.value = items.length === 24 } }
+    if (current()) hasLoaded.value = true
   }
-  catch (err) { if (version === requestVersion) { if (adding || (preserve && services.value.length)) moreError.value = errorMessage(err); else error.value = errorMessage(err) } }
+  catch (err) { if (version === requestVersion) { if (adding || (preserve && (hasLoaded.value || services.value.length))) moreError.value = errorMessage(err); else error.value = errorMessage(err) } }
   finally { if (version === requestVersion) { loading.value = false; loadingMore.value = false } }
 }
 /** 返回主视图同步可配置主题及服务列表。 */
-async function reload(): Promise<void> { const version = ++requestVersion; try { await init(true,isTimelinePreview()); if (!visible || version !== requestVersion) return; if (category.value !== '全部' && !game.value.categories.includes(category.value)) category.value = '全部'; await loadServices(false, true) } catch (err) { if (visible && version === requestVersion) { if (services.value.length) moreError.value = errorMessage(err); else error.value = errorMessage(err); loading.value = false } } }
+async function reload(): Promise<void> { const version = ++requestVersion; try { await init(true,isTimelinePreview()); if (!visible || version !== requestVersion) return; if (category.value !== '全部' && !game.value.categories.includes(category.value)) category.value = '全部'; await loadServices(false, true) } catch (err) { if (visible && version === requestVersion) { if (hasLoaded.value || services.value.length) moreError.value = errorMessage(err); else error.value = errorMessage(err); loading.value = false } } }
 /** 选择分类时从第一页重新查询。 */
 function chooseCategory(value: string): void { category.value = value; void loadServices() }
 /** 清除搜索并恢复当前游戏全部服务。 */
@@ -64,7 +67,7 @@ function changeSort(index: number): void { sortIndex.value = Math.max(0, Math.mi
 function hidePage(): void { visible = false; requestVersion++; loading.value = false; loadingMore.value = false }
 /** 激活时刷新已加载范围，保留当前筛选及主容器记录的滚动位置。 */
 function showPage(): void { visible = true; void reload() }
-watch(() => state.gameId, () => { category.value = '全部'; query.value = ''; services.value = []; hasMore.value = false; if (visible) void loadServices() })
+watch(() => state.gameId, () => { category.value = '全部'; query.value = ''; services.value = []; hasMore.value = false; hasLoaded.value = false; if (visible) void loadServices() })
 useMainVisibility(() => props.active, showPage, hidePage)
 </script>
 <style scoped>

@@ -32,6 +32,9 @@ const endpoint = process.env.WX_AUTOMATOR_ENDPOINT || 'ws://127.0.0.1:9423'
 const cli = process.env.UI_WECHATIDE_CLI || '/Applications/wechatwebdevtools.app/Contents/MacOS/wechatide'
 const runFile = promisify(execFile)
 const responsive = process.env.UI_TEST_RESPONSIVE === '1'
+const scrollOnly = process.env.UI_TEST_SCROLL_ONLY === '1'
+const publicAPI = process.env.UI_TEST_API || 'https://game.ai.58it.cn/api'
+assert.ok(['https://game.ai.58it.cn/api','http://127.0.0.1:18091/api'].includes(publicAPI),'仅允许正式公开GET或指定本地验收API')
 const automator = require('miniprogram-automator') as { connect(options: { wsEndpoint: string }): Promise<MiniProgram> }
 const SDK = (require('miniprogram-automator/out/MiniProgram') as { default: typeof MiniProgram }).default
 const png = require('pngjs') as { PNG: { sync: { read(bytes: Buffer): ScreenshotPixels } } }
@@ -229,10 +232,10 @@ async function responsiveRules(page: Page, shell: Element, game: string): Promis
   responsiveMeasurements.push({ label: game + '钱包规则', sheet: sheetArea, primary: primaryArea, anchor_before: before, anchor_after: closed })
   passed(game + '访客提现规则为窗口内真实浮层、内部可滚、关闭可用且主操作触控≥44px')
 }
-/** 只读取正式域名已有公开服务，不附身份、不创建数据；每个主题仅取一个真实样本。 */
+/** 从明确的同环境API读取已有公开服务，不附身份、不创建数据；每个主题仅取一个样本。 */
 async function publicService(game: string): Promise<Service> {
-  const response = await fetch('https://game.ai.58it.cn/api/services?game_id=' + encodeURIComponent(game) + '&sort=recommended&limit=1', { method: 'GET', redirect: 'error', signal: AbortSignal.timeout(15000), headers: { Accept: 'application/json' } })
-  assert.equal(response.status, 200, '正式域名公开服务读取失败')
+  const response = await fetch(publicAPI + '/services?game_id=' + encodeURIComponent(game) + '&sort=recommended&limit=1', { method: 'GET', redirect: 'error', signal: AbortSignal.timeout(15000), headers: { Accept: 'application/json' } })
+  assert.equal(response.status, 200, '对应环境公开服务读取失败')
   const result = await response.json() as { data?: Service[] }; assert.ok(Array.isArray(result.data) && result.data.length > 0, game + '没有可验证的真实公开服务')
   const value = result.data[0]; assert.ok(value.id && value.title && Array.isArray(value.labels) && value.game_id === game, '公开服务样本结构错误'); return value
 }
@@ -253,7 +256,7 @@ async function responsiveCover(scopes: Scope[], service: Service, detail: boolea
   const price = await until(() => find(all, detail ? '.price-row' : '.service-price'), '服务价格'), priceArea = await rect(price)
   assert.ok(priceArea.top >= bounds.top + bounds.height - 1, '价格覆盖封面'); assert.ok(priceArea.left >= -1 && priceArea.left + priceArea.width <= Number(viewport?.windowWidth) + 1, '服务价格横向溢出')
   assert.ok(system[0].top + system[0].height <= system[1].top + 1, '服务标题应位于标签上方')
-  responsiveMeasurements.push({ label: service.game_id + (detail ? '详情' : '列表') + '真实样本', service_id: service.id, source: '正式域名公开GET', cover: bounds, user_labels: areas, system, price: priceArea, existing_label_count: expected.length })
+  responsiveMeasurements.push({ label: service.game_id + (detail ? '详情' : '列表') + '真实样本', service_id: service.id, source: publicAPI + '公开GET', cover: bounds, user_labels: areas, system, price: priceArea, existing_label_count: expected.length })
 }
 /** 通过真实列表卡片点击详情，并使用已有公开内容核验，不登录也不提交下单。 */
 async function responsiveService(game: string): Promise<void> {
@@ -305,7 +308,10 @@ async function mainTheme(game: string): Promise<void> {
     const scroll = scrolls[index], scrollArea = await rect(scroll); assert.ok(scrollArea.width > 0 && scrollArea.height > 0)
     assert.deepEqual(rgb(await scroll.style('background-color')), base, '滚动层背景必须与整页相同')
     assert.ok(Math.abs(region.area.top + region.area.height - bottom.area.top) <= 1, '视口与底栏间有空隙或重叠')
-    assert.ok(Math.abs(scrollArea.height - region.area.height) <= 1, '滚动层未填满主视口')
+    const statusInset = tab === 'worker' || tab === 'orders' ? Number(viewport?.statusBarHeight) : 0
+    assert.ok(Math.abs(scrollArea.top - region.area.top - statusInset) <= 1, '滚动层顶部与固定安全区不一致')
+    assert.ok(Math.abs(scrollArea.height - (region.area.height - statusInset)) <= 1, '滚动层未填满扣除自身固定安全区后的视口')
+    assert.ok(Math.abs(scrollArea.top + scrollArea.height - bottom.area.top) <= 1, '滚动层底部与底栏不对齐')
     assert.ok(Math.abs(shell.area.height - Number(viewport?.windowHeight)) <= 1, '整页高度不等于真实窗口')
     await scroll.scrollTo(0, 0); await page.waitFor(120)
     if (tab === 'me') await personal(page, scroll, base, game, bottom.area)
@@ -360,7 +366,7 @@ async function secondary(game: string): Promise<void> {
 /** 将验收结果和真实能力边界写入独立证据目录，失败也保留当前步骤。 */
 function report(): void {
   fs.mkdirSync(output, { recursive: true })
-  fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && restored, stage, project, viewport, checks, measurements, responsive_mode: responsive, responsive_measurements: responsiveMeasurements, scroll_measurements: scrollMeasurements, scroll_retention_measurements: scrollRetentionMeasurements, pixel_samples: pixels, screenshots, version_checks: versionChecks, runtime_exceptions: exceptions, color_warnings: colorWarnings, original_game_preference_restored: restored, original_route: originalRoute, boundaries: ['仅访客官方微信模拟器布局验收；未注入页面业务状态、令牌、登录、支付、转账、后台或缓存写入。', '响应式附加项仅UI_TEST_RESPONSIVE=1开启；已有服务仅两主题各一个公开GET样本，不代表六文案/全部字号/四身份或交易验收，可用UI_TEST_PUBLIC_SERVICES=0略过样本。', '非零滚动保留使用官方SDK程序滚动、真实切标签及navigateBack；不代表手势惯性、帧率或真机流畅度。', '截图由官方 simulator_screenshot --optimize false 产生，仅解码采样，未修改原图。', '不替代真实设备、微信支付、退款、提现或实际资金到账验收。'], ...(failure ? { error: redact(failure instanceof Error ? failure.stack || failure.message : failure) } : {}) }, null, 2) + '\n')
+  fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && restored, stage, project, viewport, checks, measurements, responsive_mode: responsive, scroll_only: scrollOnly, public_api: publicAPI, responsive_measurements: responsiveMeasurements, scroll_measurements: scrollMeasurements, scroll_retention_measurements: scrollRetentionMeasurements, pixel_samples: pixels, screenshots, version_checks: versionChecks, runtime_exceptions: exceptions, color_warnings: colorWarnings, original_game_preference_restored: restored, original_route: originalRoute, boundaries: ['仅访客官方微信模拟器布局验收；未注入页面业务状态、令牌、登录、支付、转账、后台或缓存写入。', '响应式附加项仅UI_TEST_RESPONSIVE=1开启；已有服务仅两主题各一个公开GET样本，不代表六文案/全部字号/四身份或交易验收，可用UI_TEST_PUBLIC_SERVICES=0略过样本。', '非零滚动保留使用官方SDK程序滚动、真实切标签及navigateBack；不代表手势惯性、帧率或真机流畅度。', '截图由官方 simulator_screenshot --optimize false 产生，仅解码采样，未修改原图。', '不替代真实设备、微信支付、退款、提现或实际资金到账验收。'], ...(failure ? { error: redact(failure instanceof Error ? failure.stack || failure.message : failure) } : {}) }, null, 2) + '\n')
 }
 /** 运行两个主题及主次页面检查，finally 恢复原主题与 SDK 校验函数并断开连接。 */
 async function run(): Promise<void> {
@@ -375,7 +381,14 @@ async function run(): Promise<void> {
   assert.equal(await sdk().evaluate(() => Boolean(wx.getStorageSync('jijie_token'))), false, '必须由访客开始；脚本不擅自登录或退出他人会话')
   originalGame = await sdk().evaluate(() => wx.getStorageSync('jijie_game')); preferenceRead = true
   originalRoute = (await sdk().currentPage())?.path || ''
-  for (const game of ['delta', 'honor']) { await mainTheme(game); await secondary(game); if (responsive && process.env.UI_TEST_PUBLIC_SERVICES !== '0') await responsiveService(game) }
+  for (const game of ['delta', 'honor']) {
+    if (scrollOnly) {
+      const page=await open('/pages/main/index?tab=player&game_id='+encodeURIComponent(game)),player=await until(()=>child(page,['player-view','pages\\/main\\/player\\/player']),'滚动样本玩家视图')
+      await until(async()=>(await children(player,['service-card','components\\/ServiceCard'])).length>0,'列表真实数据加载')
+      const nav=await until(()=>child(page,['bottom-nav','components\\/BottomNav']),'唯一主底栏'),buttons=await nav.$$('.nav-item') as Element[];assert.equal(buttons.length,4)
+      await mainScrollRetention(page,buttons,game);await responsiveService(game)
+    } else {await mainTheme(game);await secondary(game);if(responsive&&process.env.UI_TEST_PUBLIC_SERVICES!=='0')await responsiveService(game)}
+  }
   assert.deepEqual(exceptions, [], '微信运行时异常'); assert.deepEqual(colorWarnings, [], '微信颜色告警')
 }
 run().catch(async error => { failure = error; console.error(redact(error)); if (mini) try { await screenshot('failure') } catch { /* 原始失败优先保留，不伪造截图成功。 */ } }).finally(async () => {

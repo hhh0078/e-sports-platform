@@ -1,0 +1,352 @@
+{
+  "passed": true,
+  "stage": "打开 /pages/main/index?tab=me&game_id=delta",
+  "project": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/dev/mp-weixin",
+  "viewport": {
+    "pixelRatio": 2,
+    "safeArea": {
+      "top": 20,
+      "left": 0,
+      "right": 320,
+      "bottom": 568,
+      "width": 320,
+      "height": 548
+    },
+    "screenWidth": 320,
+    "screenHeight": 568,
+    "screenTop": 0,
+    "windowWidth": 320,
+    "windowHeight": 568,
+    "statusBarHeight": 20
+  },
+  "checks": [
+    "delta非零滚动切标签往返保留：3个长视图；短空态单独记录（仅程序几何）",
+    "delta一个已有服务列表与详情：独立文案完整无重叠，标题/分类/价格边界正常（仅访客样本）",
+    "delta服务详情返回保留非零列表位置（仅程序几何）",
+    "honor非零滚动切标签往返保留：3个长视图；短空态单独记录（仅程序几何）",
+    "honor一个已有服务列表与详情：独立文案完整无重叠，标题/分类/价格边界正常（仅访客样本）",
+    "honor服务详情返回保留非零列表位置（仅程序几何）"
+  ],
+  "measurements": [],
+  "responsive_mode": true,
+  "scroll_only": true,
+  "public_api": "http://127.0.0.1:18091/api",
+  "responsive_measurements": [
+    {
+      "label": "delta列表真实样本",
+      "service_id": "delta-service-8",
+      "source": "http://127.0.0.1:18091/api公开GET",
+      "cover": {
+        "left": 14,
+        "top": 325,
+        "width": 142,
+        "height": 113.765625
+      },
+      "user_labels": [
+        {
+          "left": 22,
+          "top": 369.09375,
+          "width": 57,
+          "height": 18.9921875
+        }
+      ],
+      "system": [
+        {
+          "left": 20,
+          "top": 400.765625,
+          "width": 130,
+          "height": 14
+        },
+        {
+          "left": 20,
+          "top": 417.765625,
+          "width": 130,
+          "height": 13
+        },
+        {
+          "left": 118,
+          "top": 325,
+          "width": 38,
+          "height": 31
+        }
+      ],
+      "price": {
+        "left": 20,
+        "top": 438.765625,
+        "width": 130,
+        "height": 20
+      },
+      "existing_label_count": 1
+    },
+    {
+      "label": "delta详情真实样本",
+      "service_id": "delta-service-8",
+      "source": "http://127.0.0.1:18091/api公开GET",
+      "cover": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 261.3515625
+      },
+      "user_labels": [
+        {
+          "left": 8,
+          "top": 68.09375,
+          "width": 100,
+          "height": 30.9921875
+        }
+      ],
+      "system": [
+        {
+          "left": 13,
+          "top": 181.3515625,
+          "width": 294,
+          "height": 24
+        },
+        {
+          "left": 13,
+          "top": 209.3515625,
+          "width": 294,
+          "height": 18
+        },
+        {
+          "left": 13,
+          "top": 231.3515625,
+          "width": 294,
+          "height": 19
+        }
+      ],
+      "price": {
+        "left": 13,
+        "top": 261.3515625,
+        "width": 294,
+        "height": 52
+      },
+      "existing_label_count": 1
+    },
+    {
+      "label": "honor列表真实样本",
+      "service_id": "honor-service-4",
+      "source": "http://127.0.0.1:18091/api公开GET",
+      "cover": {
+        "left": 14,
+        "top": 325,
+        "width": 142,
+        "height": 113.765625
+      },
+      "user_labels": [
+        {
+          "left": 22,
+          "top": 369.09375,
+          "width": 57,
+          "height": 18.9921875
+        }
+      ],
+      "system": [
+        {
+          "left": 20,
+          "top": 400.765625,
+          "width": 130,
+          "height": 14
+        },
+        {
+          "left": 20,
+          "top": 417.765625,
+          "width": 130,
+          "height": 13
+        },
+        {
+          "left": 118,
+          "top": 325,
+          "width": 38,
+          "height": 31
+        }
+      ],
+      "price": {
+        "left": 20,
+        "top": 438.765625,
+        "width": 130,
+        "height": 20
+      },
+      "existing_label_count": 1
+    },
+    {
+      "label": "honor详情真实样本",
+      "service_id": "honor-service-4",
+      "source": "http://127.0.0.1:18091/api公开GET",
+      "cover": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 261.3515625
+      },
+      "user_labels": [
+        {
+          "left": 8,
+          "top": 68.09375,
+          "width": 100,
+          "height": 30.9921875
+        }
+      ],
+      "system": [
+        {
+          "left": 13,
+          "top": 181.3515625,
+          "width": 294,
+          "height": 24
+        },
+        {
+          "left": 13,
+          "top": 209.3515625,
+          "width": 294,
+          "height": 18
+        },
+        {
+          "left": 13,
+          "top": 231.3515625,
+          "width": 294,
+          "height": 19
+        }
+      ],
+      "price": {
+        "left": 13,
+        "top": 261.3515625,
+        "width": 294,
+        "height": 52
+      },
+      "existing_label_count": 1
+    }
+  ],
+  "scroll_measurements": [],
+  "scroll_retention_measurements": [
+    {
+      "label": "delta player",
+      "kind": "tab_roundtrip",
+      "tab": "player",
+      "scrollable_range": 1230,
+      "before": 180,
+      "after": 180,
+      "difference": 0,
+      "status": "passed"
+    },
+    {
+      "label": "delta worker",
+      "kind": "tab_roundtrip",
+      "tab": "worker",
+      "scrollable_range": 0,
+      "status": "not_scrollable"
+    },
+    {
+      "label": "delta orders",
+      "kind": "tab_roundtrip",
+      "tab": "orders",
+      "scrollable_range": 37,
+      "before": 37,
+      "after": 37,
+      "difference": 0,
+      "status": "passed"
+    },
+    {
+      "label": "delta me",
+      "kind": "tab_roundtrip",
+      "tab": "me",
+      "scrollable_range": 263,
+      "before": 180,
+      "after": 180,
+      "difference": 0,
+      "status": "passed"
+    },
+    {
+      "label": "delta服务详情返回",
+      "kind": "detail_return",
+      "tab": "player",
+      "scrollable_range": 1230,
+      "before": 345,
+      "after": 345,
+      "difference": 0,
+      "status": "passed"
+    },
+    {
+      "label": "honor player",
+      "kind": "tab_roundtrip",
+      "tab": "player",
+      "scrollable_range": 938,
+      "before": 180,
+      "after": 180,
+      "difference": 0,
+      "status": "passed"
+    },
+    {
+      "label": "honor worker",
+      "kind": "tab_roundtrip",
+      "tab": "worker",
+      "scrollable_range": 0,
+      "status": "not_scrollable"
+    },
+    {
+      "label": "honor orders",
+      "kind": "tab_roundtrip",
+      "tab": "orders",
+      "scrollable_range": 37,
+      "before": 37,
+      "after": 37,
+      "difference": 0,
+      "status": "passed"
+    },
+    {
+      "label": "honor me",
+      "kind": "tab_roundtrip",
+      "tab": "me",
+      "scrollable_range": 263,
+      "before": 180,
+      "after": 180,
+      "difference": 0,
+      "status": "passed"
+    },
+    {
+      "label": "honor服务详情返回",
+      "kind": "detail_return",
+      "tab": "player",
+      "scrollable_range": 938,
+      "before": 345,
+      "after": 345,
+      "difference": 0,
+      "status": "passed"
+    }
+  ],
+  "pixel_samples": [],
+  "screenshots": [
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/delta-player-scroll-retained.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/delta-orders-scroll-retained.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/delta-me-scroll-retained.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/delta-responsive-service-card.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/delta-responsive-service-detail-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/delta-service-return-scroll-retained.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/honor-player-scroll-retained.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/honor-orders-scroll-retained.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/honor-me-scroll-retained.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/honor-responsive-service-card.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/honor-responsive-service-detail-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/post-review-scroll/mini-320/honor-service-return-scroll-retained.png"
+  ],
+  "version_checks": [
+    {
+      "method": "Tool元数据缺失时读取真实getSystemInfoSync",
+      "SDKVersion": "3.17.4",
+      "minimum": "2.7.3",
+      "passed": true,
+      "original_error": "Cannot read properties of undefined (reading 'split')"
+    }
+  ],
+  "runtime_exceptions": [],
+  "color_warnings": [],
+  "original_game_preference_restored": true,
+  "original_route": "pages/main/index",
+  "boundaries": [
+    "仅访客官方微信模拟器布局验收；未注入页面业务状态、令牌、登录、支付、转账、后台或缓存写入。",
+    "响应式附加项仅UI_TEST_RESPONSIVE=1开启；已有服务仅两主题各一个公开GET样本，不代表六文案/全部字号/四身份或交易验收，可用UI_TEST_PUBLIC_SERVICES=0略过样本。",
+    "非零滚动保留使用官方SDK程序滚动、真实切标签及navigateBack；不代表手势惯性、帧率或真机流畅度。",
+    "截图由官方 simulator_screenshot --optimize false 产生，仅解码采样，未修改原图。",
+    "不替代真实设备、微信支付、退款、提现或实际资金到账验收。"
+  ]
+}

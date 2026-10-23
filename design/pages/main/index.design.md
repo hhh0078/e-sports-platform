@@ -13,3 +13,9 @@
 主容器参考玩家首页：品牌为开机电竞，口号为开机即组队，一起赢，既有布局和主导航不变。 本次只局部替换品牌文字，不新增界面、控件、图片或视觉规则。历史图保留原名称。
 
 编辑提示词：Use case: text-localization. Edit only the product brand text in the attached existing 390x844 design. Use exact Chinese brand 开机电竞. 主容器参考玩家首页：品牌为开机电竞，口号为开机即组队，一起赢，既有布局和主导航不变。 Keep all unrelated layout, artwork, colors, type sizes, fields, amounts, safe areas and dimensions unchanged. No redesign, stretching, added height or new decorations.
+
+## 常驻滚动容器稳定性修订（2026-10-23）
+
+沿用本页及四主视图现有设计图，不新增视觉元素。主内容视口始终占据窗口减底栏后的固定高度，禁止按当前标签在视口外动态增加、移除状态栏占位。四个滚动容器在视口内绝对定位；打手和订单的顶部定位为状态栏实际高度，容器高度为父视口减同样高度，玩家和我的从视口顶部显示封面。四个容器的几何只随窗口／安全区变化，不随激活标签改变，顶端业务内容与底栏的既有可见位置保持不变。
+
+非激活容器仅切换为`visibility:hidden`、`pointer-events:none`和低层级，激活容器可见且可交互；不使用`v-show`、`hidden`、`display:none`或条件销毁，使隐藏状态依然保留原生尺寸与滚动范围。此前真实诊断已证明尺寸归零会使短列表恢复时丢失位置。页面原有`active`状态继续控制请求与卡片测量，不通过`scroll-top`或`@scroll`持续回写补偿。验收需从真实非零位置切标签往返、从详情返回，检查同一Page与滚动位置；顶部／底部截图或每次先归零不等于位置保留通过。

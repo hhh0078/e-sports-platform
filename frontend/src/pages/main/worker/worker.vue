@@ -43,7 +43,7 @@
 		<GamePicker v-if="tab==='jobs'" :active="props.active" />
 		<view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn"
 				@click="load()">重新加载</button></view>
-		<view v-else-if="loading&&!currentListCount" class="loading-line">
+		<view v-else-if="loading&&!loadedTabs[tab]&&!currentListCount" class="loading-line">
 			正在同步{{ tab==='services'?'服务':tab==='jobs'?'需求':'俱乐部' }}…</view>
 		<template v-else-if="tab==='services'">
 			<view v-if="mine.length" class="card-grid">
@@ -106,6 +106,8 @@
 	const claimClubs = ref<Club[]>([]), tab = ref<'services' | 'jobs' | 'clubs'>('services'), jobs = ref<PublicJob[]>([]), mine = ref<Service[]>([]), stats = ref<Partial<UserStats>>({})
 	const error = ref(''), moreError = ref(''), loading = ref(false), loadingMore = ref(false), hasMore = ref(false), claiming = ref(''), pausing = ref('')
 	const publicClubs=ref<Club[]>([])
+	/** 各子页签成功加载后保留原空态，重激活等待网络时不缩成加载行。 */
+	const loadedTabs=ref({services:false,jobs:false,clubs:false})
     const currentListCount=computed(()=>tab.value==='services'?mine.value.length:tab.value==='jobs'?jobs.value.length:publicClubs.value.length)
 	const serviceCountLabel = computed(() => stats.value.services_count === undefined ? '' : String(stats.value.services_count))
 	let version = 0, visible = false
@@ -124,7 +126,7 @@
 		if (adding && (loading.value || loadingMore.value || !hasMore.value)) return
 		const current = ++version, selectedTab = tab.value
 		if (adding) loadingMore.value = true
-		else { loading.value = true; loadingMore.value = false; error.value = ''; if (!preserve) hasMore.value = false }
+		else { loading.value = true; loadingMore.value = false; error.value = ''; if (!preserve) { hasMore.value = false; loadedTabs.value[selectedTab] = false } }
 		moreError.value = ''
 		let session = currentSession()
 		const currentRequest = () => visible && current === version && sameSession(session) && tab.value === selectedTab
@@ -136,9 +138,10 @@
                 if(!listing||!currentRequest())return
                 publicClubs.value=adding?[...publicClubs.value,...listing.items]:listing.items
                 hasMore.value=listing.hasMore||listing.items.length===pageSize
+                loadedTabs.value[selectedTab]=true
                 return
             }
-			if (!state.user) { mine.value = []; stats.value = { earnings_cents: 0 }; claimClubs.value = []; if (selectedTab !== 'jobs') { jobs.value = []; return } }
+			if (!state.user) { mine.value = []; stats.value = { earnings_cents: 0 }; claimClubs.value = []; if (selectedTab !== 'jobs') { jobs.value = []; loadedTabs.value[selectedTab] = true; return } }
 			const gameId = state.gameId
 			/** 使用选定页签和游戏读取服务或需求，刷新时保留此前加载的全部页。 */
 			const read = (limit : number, offset : number) : Promise<Array<Service | PublicJob>> => selectedTab === 'services' ? listServices({ mine: 1, limit, offset }) : listJobs({ game_id: gameId, limit, offset })
@@ -152,8 +155,9 @@
 			if (selectedTab === 'services') { const services = listing.items.filter((item) : item is Service => 'provider_id' in item); mine.value = adding ? [...mine.value, ...services] : services }
 			else { const requests = listing.items.filter((item) : item is PublicJob => 'requirements' in item); jobs.value = adding ? [...jobs.value, ...requests] : requests }
 			hasMore.value = listing.hasMore
+			loadedTabs.value[selectedTab] = true
 			if (!adding) { stats.value = summary || {}; claimClubs.value = (clubs || []).filter(club => club.status === 'active' && ['owner', 'active'].includes(club.membership_status || '')) }
-		} catch (err) { if (currentRequest()) { if (errorStatus(err) === 401) clearSession(); else if (adding || (preserve && currentListCount.value)) moreError.value = errorMessage(err); else error.value = errorMessage(err) } }
+		} catch (err) { if (currentRequest()) { if (errorStatus(err) === 401) clearSession(); else if (adding || (preserve && (loadedTabs.value[selectedTab] || currentListCount.value))) moreError.value = errorMessage(err); else error.value = errorMessage(err) } }
 		finally { if (current === version) { loading.value = false; loadingMore.value = false } }
 	}
 	/** 读取全部挂靠分页，俱乐部多时仍可选择。 */
@@ -185,10 +189,10 @@
 	function stopLoading() : void { visible = false; version++; loading.value = false; loadingMore.value = false }
 	/** 主视图重显时刷新已加载范围，保持滚动依赖的列表高度。 */
 	function showPage() : void { visible = true; void load(false, true) }
-	watch(() => state.gameId, () => { jobs.value = []; if (visible && tab.value === 'jobs') void load() })
+	watch(() => state.gameId, () => { jobs.value = []; loadedTabs.value.jobs = false; if (visible && tab.value === 'jobs') void load() })
 	useMainVisibility(() => props.active, showPage, stopLoading)
 	/** 隐藏时也立即清理上一会话的服务、挂靠和统计，不等待新账号请求完成。 */
-	watch([() => state.user?.id, sessionRevision], () => { version++; mine.value = []; jobs.value = []; publicClubs.value=[]; stats.value = {}; claimClubs.value = []; hasMore.value = false; error.value = ''; moreError.value = ''; claiming.value = ''; pausing.value = ''; loading.value = false; loadingMore.value = false; if (visible) void load() }, { flush: 'sync' })
+	watch([() => state.user?.id, sessionRevision], () => { version++; mine.value = []; jobs.value = []; publicClubs.value=[]; loadedTabs.value={services:false,jobs:false,clubs:false}; stats.value = {}; claimClubs.value = []; hasMore.value = false; error.value = ''; moreError.value = ''; claiming.value = ''; pausing.value = ''; loading.value = false; loadingMore.value = false; if (visible) void load() }, { flush: 'sync' })
 </script>
 <style scoped>
 	.worker-content {

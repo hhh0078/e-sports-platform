@@ -25,3 +25,7 @@ Use case: ui-mockup. Precise local edit of approved Chinese 开机电竞 WeChat 
 接单大厅游戏选择复用共享GameSelector与已批准首页弹框风格，限宽滚动，不由组件擅自改写全局偏好。底栏只有打手为当前主题accent，图标双轴居中。
 
 品牌局部编辑提示词：Use case: text-localization. Replace only 在集结，用游戏技能赚取真实回报 with 在开机电竞，用游戏技能赚取真实回报. Preserve the latest three tabs, club rows, compact publish entry and geometry. Do not restore profile statistics, giant illustration or club banner.
+
+## 空态刷新稳定性（2026-10-23）
+
+三个子页签分别保留成功加载标记，重激活刷新时原有空态与已加载列表不因等待初始化或网络而缩为加载行。首次查询、账号切换或新游戏筛选清除对应标记，仍允许正常首次加载提示；已确认空态刷新失败使用次要错误提示保留原有几何。不改变现有插画、文案和视觉层次。
