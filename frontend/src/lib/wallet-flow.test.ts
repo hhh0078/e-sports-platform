@@ -17,7 +17,7 @@ function harness(t:TestContext){
   let phone=async()=>true
   const histories:{topups:unknown[];withdrawals:unknown[];refunds:unknown[]}={topups:[],withdrawals:[],refunds:[]}
   const state=reactive({user:{id:'A',phone_verified:true},ready:true})
-  const balance={available_cents:10000,recharge_cents:0,spendable_cents:10000,pending_cents:0,withdrawal_frozen_cents:0,deposit_cents:0,deposit_refunding_cents:0,settlement_hold_days:7,dev_mode:true,currency:'CNY'}
+  const balance={deposit_required_cents:0,deposit_shortfall_cents:0,deposit_qualified:false,available_cents:10000,recharge_cents:0,spendable_cents:10000,pending_cents:0,withdrawal_frozen_cents:0,deposit_cents:0,deposit_refunding_cents:0,settlement_hold_days:7,dev_mode:true,currency:'CNY'}
   const context=vm.createContext({reactive,ref,computed,watch,state,init:async()=>{},sessionRevision:()=>revision,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key),requestPayment:(options:typeof payments[number])=>payments.push(options)},
     token:()=>storage.get('jijie_token'),notify:(value:unknown)=>notices.push(value),go:()=>{},requirePhone:()=>phone(),
@@ -173,4 +173,19 @@ test('未知资金提交已由并行读取确认时关闭原表单，迟到错�
   s.histories.withdrawals=[{id:'withdraw-A',amount_cents:1000,status:'pending_review',request_id:writing.body.request_id}];await s.page.load()
   assert.equal(s.page.operation.value,null);writing.reject(new Error('原请求响应丢失'));await applying
   assert.equal(s.page.formError.value,'');assert.ok(![...s.storage.keys()].some(key=>key.startsWith('jijie_wallet_intent:')))
+})
+
+
+test('最低额提高后保留已缴款，补缴默认显示服务端差额且支持不足1元',async t=>{
+  const s=harness(t);s.balance.deposit_cents=9950;s.balance.deposit_required_cents=10000;s.balance.deposit_shortfall_cents=50;s.hooks.show();await flush();s.page.open('deposit');assert.equal(s.page.amount.value,'0.50');assert.equal(s.page.wallet.value.deposit_cents,9950)
+  const pending=s.page.submit();await flush();const request=s.take('/wallet/topups');assert.equal(request.body.amount_cents,50);assert.equal(request.body.purpose,'deposit');request.reject(new Error('停止测试'));await pending;assert.equal(s.page.wallet.value.deposit_cents,9950)
+})
+
+test('门槛变化后未知原提交仍沿原请求号恢复，最低额由服务端校验原单',async t=>{
+  const s=harness(t);s.balance.deposit_shortfall_cents=10000;s.hooks.show();await flush();s.page.open('deposit');const first=s.page.submit();await flush();const original=s.take('/wallet/topups');original.reject(new Error('未知'));await first
+  s.balance.deposit_required_cents=20000;s.balance.deposit_shortfall_cents=20000;await s.page.load();const second=s.page.submit();await flush();const repeated=s.take('/wallet/topups');assert.equal(repeated.body.request_id,original.body.request_id);assert.equal(repeated.body.amount_cents,10000);repeated.reject(new Error('停止测试'));await second
+})
+
+test('资金表单隐藏后不复活旧草稿，返回后的失败可见且仍保留原意图',async t=>{
+  const s=harness(t);s.hooks.show();await flush();s.page.open('deposit');s.page.amount.value='10';const first=s.page.submit();await flush();const request=s.take('/wallet/topups');s.hooks.hide();assert.equal(s.page.operation.value,null);assert.equal(s.page.amount.value,'');s.hooks.show();await flush();request.reject(new Error('微信支付暂不可用'));await first;assert.equal(s.page.operation.value,null);assert.equal(s.notices.length,1);assert.ok([...s.storage.keys()].some(key=>key.startsWith('jijie_wallet_intent:')))
 })

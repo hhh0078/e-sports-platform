@@ -106,7 +106,9 @@ func (a *App) playerProfile(w http.ResponseWriter, r *http.Request) (any, error)
 		clubs[i] = a.decorateClub(r.Context(), clubs[i])
 	}
 	if wallet, e := accountBalance(r.Context(), a.DB, u.ID); e == nil {
-		profile["platform_deposit_cents"] = wallet.DepositCents
+		if settings, e := financialSettings(r.Context(), a.DB); e == nil {
+			profile["platform_deposit_cents"] = qualifiedPlatformDeposit(wallet, settings.PersonalPlatformDepositCents)
+		}
 	}
 	deposits := []map[string]any{}
 	for _, club := range clubs {

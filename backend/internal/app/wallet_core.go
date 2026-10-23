@@ -250,5 +250,13 @@ func (a *App) walletSummaryValue(ctx context.Context, wallet Wallet, clubID stri
 		}
 	}
 	daily := guardDailyWithdrawal(ctx, a.DB, wallet.UserID, time.Now()) == nil
-	return map[string]any{"withdrawal_min_cents": minimum, "withdrawal_name_required": nameRequired, "daily_withdrawal_available": daily, "available_cents": wallet.AvailableCents, "recharge_cents": wallet.RechargeCents, "spendable_cents": spendable, "pending_cents": wallet.PendingCents, "ongoing_cents": ongoing, "settling_cents": settling, "withdrawal_frozen_cents": wallet.WithdrawalFrozenCents, "deposit_cents": wallet.DepositCents, "deposit_refunding_cents": wallet.DepositRefundingCents, "currency": "CNY", "settlement_hold_days": 7, "dev_mode": a.Config.DevMode, "club_id": clubID}, nil
+	settings, e := financialSettings(ctx, a.DB)
+	if e != nil {
+		return nil, e
+	}
+	depositRequired := settings.PersonalPlatformDepositCents
+	if clubID != "" {
+		depositRequired = 0
+	}
+	return map[string]any{"withdrawal_min_cents": minimum, "withdrawal_name_required": nameRequired, "daily_withdrawal_available": daily, "available_cents": wallet.AvailableCents, "recharge_cents": wallet.RechargeCents, "spendable_cents": spendable, "pending_cents": wallet.PendingCents, "ongoing_cents": ongoing, "settling_cents": settling, "withdrawal_frozen_cents": wallet.WithdrawalFrozenCents, "deposit_cents": wallet.DepositCents, "deposit_refunding_cents": wallet.DepositRefundingCents, "deposit_required_cents": depositRequired, "deposit_shortfall_cents": depositShortfall(wallet.DepositCents, depositRequired), "deposit_qualified": qualifiedPlatformDeposit(wallet, depositRequired) > 0, "currency": "CNY", "settlement_hold_days": 7, "dev_mode": a.Config.DevMode, "club_id": clubID}, nil
 }

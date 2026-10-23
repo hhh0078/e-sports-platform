@@ -49,7 +49,9 @@ func (a *App) decorateService(ctx context.Context, s Service) Service {
 	}
 	s.ProviderDepositCents = 0
 	if wallet, err := get[Wallet](ctx, a.DB, "wallets", s.ProviderID, false); err == nil {
-		s.ProviderDepositCents = wallet.DepositCents
+		if settings, e := financialSettings(ctx, a.DB); e == nil {
+			s.ProviderDepositCents = qualifiedPlatformDeposit(wallet, settings.PersonalPlatformDepositCents)
+		}
 	}
 	s.ProviderClubDepositCents = 0
 	s.ClubVerified = false

@@ -12,13 +12,19 @@ func (a *App) decorateClub(ctx context.Context, c Club) Club {
 	if c.AvatarURL == "" {
 		c.AvatarURL = defaultClubAvatar(c.ID)
 	}
-	if settings, e := financialSettings(ctx, a.DB); e == nil {
+	settings, settingsErr := financialSettings(ctx, a.DB)
+	if settingsErr == nil {
 		c.PlatformDepositRequiredCents = clubRequiredDeposit(c, settings)
 	}
+	c.PlatformDepositCents = 0
+	c.DepositReady = false
 	if wallet, e := accountBalance(ctx, a.DB, clubDepositAccount(c.ID)); e == nil {
-		c.PlatformDepositCents = wallet.DepositCents
 		c.PlatformDepositRefundingCents = wallet.DepositRefundingCents
-		c.DepositReady = wallet.DepositRefundingCents == 0 && wallet.DepositCents >= c.PlatformDepositRequiredCents
+		c.PlatformDepositShortfallCents = depositShortfall(wallet.DepositCents, c.PlatformDepositRequiredCents)
+		if settingsErr == nil {
+			c.PlatformDepositCents = qualifiedPlatformDeposit(wallet, c.PlatformDepositRequiredCents)
+			c.DepositReady = wallet.DepositRefundingCents == 0 && wallet.DepositCents >= c.PlatformDepositRequiredCents
+		}
 	}
 	if u, e := get[User](ctx, a.DB, "users", c.OwnerID, false); e == nil {
 		c.OwnerName = u.Nickname

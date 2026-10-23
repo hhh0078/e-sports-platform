@@ -320,10 +320,11 @@ func TestIntegrationWalletProductionRejectsDevFunds(t *testing.T) {
 	}
 }
 
-// TestIntegrationWalletPersonalDepositSmallRefund 验证个人押金分次退款后不足1元的尾款也能精确原路退清，缴纳门槛保持1元。
+// TestIntegrationWalletPersonalDepositSmallRefund 验证个人押金分次退款后不足1元的尾款也能精确原路退清，退款不受新最低额限制。
 func TestIntegrationWalletPersonalDepositSmallRefund(t *testing.T) {
 	api := newTestAPI(t)
 	payment := testTopup(api, "outsider", "deposit", "personal-small-deposit-pay", 150)
+	api.call("admin", "PATCH", "/admin/financial-settings", FinancialSettings{PersonalPlatformDepositCents: 201}, 200, nil)
 	api.call("outsider", "POST", "/wallet/topups", map[string]any{"purpose": "deposit", "amount_cents": 50, "request_id": "personal-small-topup-denied"}, 400, nil)
 	for _, part := range []struct {
 		amount  int64

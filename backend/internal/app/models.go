@@ -93,6 +93,7 @@ type Club struct {
 	PlatformDepositCents          int64            `json:"platform_deposit_cents"`
 	PlatformDepositRefundingCents int64            `json:"platform_deposit_refunding_cents"`
 	PlatformDepositRequiredCents  int64            `json:"platform_deposit_required_cents"`
+	PlatformDepositShortfallCents int64            `json:"platform_deposit_shortfall_cents"`
 	DepositReady                  bool             `json:"deposit_ready"`
 	CoverURL                      string           `json:"cover_url"`
 	DetailBlocks                  []CommunityBlock `json:"detail_blocks"`

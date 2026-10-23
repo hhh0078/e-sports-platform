@@ -1,7 +1,7 @@
 /** 文件作用：声明按资金来源隔离的钱包、微信充值、提现审核和押金原路退还契约。 */
 import type { PaymentParams } from './models'
 /** 钱包不同用途的余额均使用整数分。 */
-export interface Wallet { withdrawal_min_cents?:number; withdrawal_name_required?:boolean; daily_withdrawal_available?:boolean; ongoing_cents?:number; settling_cents?:number; available_cents:number; recharge_cents:number; spendable_cents:number; pending_cents:number; withdrawal_frozen_cents:number; deposit_cents:number; deposit_refunding_cents:number; currency:'CNY'; settlement_hold_days:number; dev_mode:boolean }
+export interface Wallet { deposit_required_cents?:number; deposit_shortfall_cents?:number; deposit_qualified?:boolean; withdrawal_min_cents?:number; withdrawal_name_required?:boolean; daily_withdrawal_available?:boolean; ongoing_cents?:number; settling_cents?:number; available_cents:number; recharge_cents:number; spendable_cents:number; pending_cents:number; withdrawal_frozen_cents:number; deposit_cents:number; deposit_refunding_cents:number; currency:'CNY'; settlement_hold_days:number; dev_mode:boolean }
 /** 不可变资金变动，金额正负由对应资金分区变动决定。 */
 export interface WalletEntry { id:string; kind:string; reference_id:string; amount_cents:number; note:string; created_at:string; recharge_delta:number; available_delta:number; pending_delta:number; withdrawal_frozen_delta:number; deposit_delta:number; deposit_refunding_delta:number }
 /** 微信充值或自愿押金付款。 */
@@ -23,10 +23,12 @@ export interface WalletSettingsResult { settings:WalletSettings; transfer_ready:
 export type WalletTopupPurpose='balance'|'deposit'|'club_platform'|'member_club'
 /** 押金退还范围必须绑定原付款的账户和俱乐部。 */
 export type DepositScope='personal'|'club_platform'|'member_club'
-/** 平台管理员分别配置两类订单抽成和创建俱乐部押金。 */
-export interface FinancialSettings { free_platform_rate_bps:number; club_platform_rate_bps:number; club_creation_deposit_cents:number }
+/** 平台管理员分别配置两类订单抽成、个人自愿押金与俱乐部平台押金下限。 */
+export interface FinancialSettings { free_platform_rate_bps:number; club_platform_rate_bps:number; personal_platform_deposit_cents:number; club_creation_deposit_cents:number }
+/** 托管实缴与当前要求独立，门槛提高不移走原款，差额由服务端确认。 */
+export interface DepositBalance { amount_cents:number;refunding_cents:number;required_cents:number;shortfall_cents?:number;qualified?:boolean }
 /** 指定俱乐部的组织押金与当前成员押金。 */
-export interface ClubDeposits { platform:{amount_cents:number;refunding_cents:number;required_cents:number;can_manage:boolean}; membership:{amount_cents:number;refunding_cents:number;required_cents:number} }
+export interface ClubDeposits { platform:DepositBalance&{can_manage:boolean}; membership:DepositBalance }
 /** 独立组织钱包，不与负责人的个人钱包合并。 */
 export interface ClubWallet extends Wallet { club_id:string }
 /** 提现对应的已核验来源分配；金额全部为整数分。 */

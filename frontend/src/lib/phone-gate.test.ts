@@ -7,6 +7,7 @@ import vm from 'node:vm'
 import { computed,effectScope,nextTick,reactive,ref,watch } from 'vue'
 import { executable,injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest } from './sfc-test'
+import { parseWalletAmount } from './wallet'
 
 /** 只模拟原生窗口和网络完成次序，身份、手机号门槛与组件行为均运行生产代码。 */
 function harness(t:TestContext){
@@ -25,7 +26,7 @@ function harness(t:TestContext){
   const source=readFileSync(new URL('../components/PhoneVerification.vue',import.meta.url),'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)?.[1]
   assert.ok(source)
   const scope=effectScope()
-  scope.run(()=>vm.runInContext(executable(source)+'\nglobalThis.component={popup,prepareNative,verifyWechat,verifyDev,popupChanged,syncPopup,nativePending}',context))
+  scope.run(()=>vm.runInContext(executable(source)+'\nglobalThis.component={popup,prepareNative,verifyWechat,verifyDev,popupChanged,syncPopup,nativePending,popupTheme,close}',context))
   const instance=reactive({showPopup:false,
     /** 原生弹层只记录显示状态，页面代次和取消仍由真实组件处理。 */
     open(){popupEvents.push('open');instance.showPopup=true;context.component.popupChanged({show:true})},
@@ -35,6 +36,8 @@ function harness(t:TestContext){
   context.component.popup.value=instance
   t.after(()=>{hooks.unload();scope.stop()})
   return{gate:context.gate,component:context.component,store:context.store,hooks,requests,popupEvents,instance,
+    /** 在同一真实会话追加钱包组合函数，保留两组件生命周期以验证手机号覆盖资金表单。 */
+    startWallet(){const phoneHooks={...hooks};context.requirePhone=context.gate.requirePhone;context.parseWalletAmount=parseWalletAmount;context.notify=()=>{};scope.run(()=>vm.runInContext('(function(){'+executable(readFileSync(new URL('./use-wallet.ts',import.meta.url),'utf8'))+';globalThis.walletPage=useWallet()})()',context));const walletHooks={...hooks};hooks.show=()=>{phoneHooks.show();walletHooks.show()};hooks.hide=()=>{phoneHooks.hide();walletHooks.hide()};hooks.unload=()=>{phoneHooks.unload();walletHooks.unload()};return context.walletPage},
     /** 取出实际发出的指定请求，重复或未发起均立即失败。 */
     take(path:string,method='GET'){const item=requests.find(row=>!row.taken&&row.path===path&&row.method===method);assert.ok(item,'缺少请求 '+method+' '+path);item.taken=true;return item},
   }
@@ -136,4 +139,17 @@ test('取消后的迟到nextTick不会重新打开官方手机号弹层',async t
   subject.gate.finishPhone(false,current.epoch);await current.pending;await presenting;await flush()
   assert.equal(subject.gate.phoneGate.visible,false);assert.equal(subject.instance.showPopup,false)
   assert.equal(subject.popupEvents.filter(event=>event==='open').length,opened)
+})
+
+test('真实钱包忙碌等待手机号时官方授权层位于资金弹框之上，取消不创建付款单',async t=>{
+  const s=harness(t),wallet=s.startWallet();s.hooks.show();await flush()
+  s.take('/wallet').resolve({deposit_cents:0,deposit_required_cents:100,deposit_shortfall_cents:100,available_cents:0});await flush()
+  for(const path of ['/wallet/entries?limit=30&offset=0','/wallet/topups','/wallet/withdrawals','/wallet/deposit-refunds'])s.take(path).resolve([])
+  await flush();wallet.open('deposit');assert.equal(wallet.amount.value,'1.00');const submitting=wallet.submit();s.take('/me').resolve({id:'A',phone_verified:false});await flush()
+  assert.equal(wallet.busy.value,true);assert.equal(wallet.operation.value,'deposit');assert.equal(s.gate.phoneGate.visible,true);assert.equal(s.instance.showPopup,true)
+  const phone=readFileSync(new URL('../components/PhoneVerification.vue',import.meta.url),'utf8'),funds=readFileSync(new URL('../components/FinancePopup.vue',import.meta.url),'utf8')
+  assert.match(phone,/<!-- #ifdef MP-WEIXIN -->\s*<root-portal>/);assert.match(phone,/:style="popupTheme"/)
+  const phoneLevel=Number(phone.match(/\.phone-layer\{[^}]*z-index:(\d+)/)?.[1]),fundsLevel=Number(funds.match(/\.finance-popup-layer\{[^}]*z-index:(\d+)/)?.[1]);assert.ok(phoneLevel>fundsLevel)
+  assert.ok(s.component.popupTheme.value['--muted']);assert.ok(s.component.popupTheme.value['--line']);assert.equal(s.component.popupTheme.value['--control-height'],'44px')
+  s.component.close();await submitting;assert.equal(wallet.busy.value,false);assert.equal(wallet.operation.value,'deposit');assert.equal(s.requests.filter(item=>item.method==='POST'&&item.path==='/wallet/topups').length,0)
 })

@@ -166,7 +166,8 @@ func (a *App) clubDeposits(w http.ResponseWriter, r *http.Request) (any, error) 
 		return nil, e
 	}
 	m, e := accountBalance(r.Context(), a.DB, memberDepositAccount(c.ID, u.ID))
-	return map[string]any{"platform": map[string]any{"amount_cents": p.DepositCents, "refunding_cents": p.DepositRefundingCents, "required_cents": clubRequiredDeposit(c, s), "can_manage": u.ID == c.OwnerID}, "membership": map[string]any{"amount_cents": m.DepositCents, "refunding_cents": m.DepositRefundingCents, "required_cents": c.DepositCents}}, e
+	required := clubRequiredDeposit(c, s)
+	return map[string]any{"platform": map[string]any{"amount_cents": p.DepositCents, "refunding_cents": p.DepositRefundingCents, "required_cents": required, "shortfall_cents": depositShortfall(p.DepositCents, required), "qualified": qualifiedPlatformDeposit(p, required) > 0, "can_manage": u.ID == c.OwnerID}, "membership": map[string]any{"amount_cents": m.DepositCents, "refunding_cents": m.DepositRefundingCents, "required_cents": c.DepositCents}}, e
 }
 
 // clubWalletSummary 仅负责人或平台管理可读取组织佣金账户，会员押金不会进入其中。

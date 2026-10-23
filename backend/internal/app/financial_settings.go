@@ -8,9 +8,10 @@ import (
 
 // FinancialSettings 使用万分比表达两档平台费率，零押金配置表示不收取而非已经缴纳。
 type FinancialSettings struct {
-	FreePlatformRateBPS      int64 `json:"free_platform_rate_bps"`
-	ClubPlatformRateBPS      int64 `json:"club_platform_rate_bps"`
-	ClubCreationDepositCents int64 `json:"club_creation_deposit_cents"`
+	FreePlatformRateBPS          int64 `json:"free_platform_rate_bps"`
+	ClubPlatformRateBPS          int64 `json:"club_platform_rate_bps"`
+	PersonalPlatformDepositCents int64 `json:"personal_platform_deposit_cents"`
+	ClubCreationDepositCents     int64 `json:"club_creation_deposit_cents"`
 }
 
 // OrderSettlement 保存订单创建时不可追改的分账比例与金额。
@@ -44,12 +45,19 @@ func (a *App) financialSettingsAPI(w http.ResponseWriter, r *http.Request) (any,
 	if r.Method == "GET" {
 		return financialSettings(r.Context(), a.DB)
 	}
-	var v FinancialSettings
-	if e = decode(r, &v); e != nil {
+	var in struct {
+		FinancialSettings
+		PersonalPlatformDepositCents *int64 `json:"personal_platform_deposit_cents"`
+	}
+	if e = decode(r, &in); e != nil {
 		return nil, e
 	}
-	if v.FreePlatformRateBPS < 0 || v.FreePlatformRateBPS > 10000 || v.ClubPlatformRateBPS < 0 || v.ClubPlatformRateBPS > 10000 || v.ClubCreationDepositCents < 0 || v.ClubCreationDepositCents > 10000000 {
-		return nil, fail(400, "抽成须在0至100%，俱乐部平台押金须在0至100000元")
+	v := in.FinancialSettings
+	if in.PersonalPlatformDepositCents != nil {
+		v.PersonalPlatformDepositCents = *in.PersonalPlatformDepositCents
+	}
+	if v.FreePlatformRateBPS < 0 || v.FreePlatformRateBPS > 10000 || v.ClubPlatformRateBPS < 0 || v.ClubPlatformRateBPS > 10000 || v.PersonalPlatformDepositCents < 0 || v.PersonalPlatformDepositCents > 10000000 || v.ClubCreationDepositCents < 0 || v.ClubCreationDepositCents > 10000000 {
+		return nil, fail(400, "抽成须在0至100%，个人及俱乐部平台最低押金须在0至100000元")
 	}
 	tx, e := a.DB.Begin(r.Context())
 	if e != nil {
@@ -59,6 +67,13 @@ func (a *App) financialSettingsAPI(w http.ResponseWriter, r *http.Request) (any,
 	if e = lockFinancialSettings(r.Context(), tx); e != nil {
 		return nil, e
 	}
+	if in.PersonalPlatformDepositCents == nil {
+		current, err := financialSettings(r.Context(), tx)
+		if err != nil {
+			return nil, err
+		}
+		v.PersonalPlatformDepositCents = current.PersonalPlatformDepositCents
+	}
 	var maxClubRate int64
 	if e = tx.QueryRow(r.Context(), `SELECT COALESCE(max((data->>'commission_rate_bps')::bigint),0) FROM clubs WHERE id NOT LIKE 'demo_%'`).Scan(&maxClubRate); e != nil {
 		return nil, e
@@ -67,7 +82,7 @@ func (a *App) financialSettingsAPI(w http.ResponseWriter, r *http.Request) (any,
 		return nil, fail(400, "现有俱乐部抽成与新平台抽成合计超过100%，请先调整俱乐部比例")
 	}
 	if e = put(r.Context(), tx, "settings", "financial", v); e == nil {
-		e = audit(r.Context(), tx, u.ID, "financial.settings", "financial", "调整新订单抽成与俱乐部平台押金")
+		e = audit(r.Context(), tx, u.ID, "financial.settings", "financial", "调整新订单抽成与个人、俱乐部平台最低押金；已有押金保留，可按差额补缴")
 	}
 	if e != nil {
 		return nil, e
@@ -134,10 +149,7 @@ func lockFinancialSettings(ctx context.Context, q querier) error {
 	return e
 }
 
-// clubRequiredDeposit 对未公开创建草稿保留门槛快照，已运行组织按当前平台补缴规则判断。
-func clubRequiredDeposit(c Club, s FinancialSettings) int64 {
-	if contains([]string{"pending_deposit", "pending", "rejected"}, c.Status) && c.CreationDepositVersion > 0 {
-		return c.CreationDepositRequiredCents
-	}
+// clubRequiredDeposit 统一使用当前平台最低押金；历史创建快照只保留审计，不再阻挡补缴或下调门槛。
+func clubRequiredDeposit(_ Club, s FinancialSettings) int64 {
 	return s.ClubCreationDepositCents
 }

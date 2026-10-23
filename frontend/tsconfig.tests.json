@@ -13,6 +13,7 @@
     "../scripts/check-frontend-standards.ts",
     "../scripts/mini-card-matrix.ts",
     "../scripts/mini-finance-smoke.ts",
+    "../scripts/mini-wallet-polish-smoke.ts",
     "../scripts/order-adjustment-api-smoke.ts",
     "../scripts/mini-order-adjustment-smoke.ts",
     "../scripts/check-share-runtime-hooks.ts",

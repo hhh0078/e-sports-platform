@@ -8,6 +8,7 @@
     "dev:h5": "uni --host 0.0.0.0 --port 5173",
     "build:h5": "uni build",
     "build:mp-weixin": "uni build -p mp-weixin",
+    "build:mp-weixin:local": "UNI_OUTPUT_DIR=dist/local/mp-weixin uni build -p mp-weixin --mode local-test",
     "test": "tsx --test src/lib/*.test.ts",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.tests.json",
     "check:standards": "tsx ../scripts/check-frontend-standards.ts"

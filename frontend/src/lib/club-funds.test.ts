@@ -15,7 +15,7 @@ function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platfor
   const hooks:PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
   const state=reactive({user:{id:'user-A'},ready:true});let revision=0
   const wallet={available_cents:10000,recharge_cents:0,pending_cents:0,ongoing_cents:0,settling_cents:0,withdrawal_frozen_cents:0,deposit_cents:0,deposit_refunding_cents:0,withdrawal_min_cents:1,dev_mode:true,currency:'CNY',settlement_hold_days:7}
-  const deposits={platform:{amount_cents:100,refunding_cents:0,required_cents:10000,can_manage:true},membership:{amount_cents:25,refunding_cents:0,required_cents:25}}
+  const deposits={platform:{amount_cents:100,refunding_cents:0,required_cents:10000,shortfall_cents:9900,qualified:false,can_manage:true},membership:{amount_cents:25,refunding_cents:0,required_cents:25}}
   const histories={topups:[] as unknown[],refunds:[] as unknown[],withdrawals:[] as unknown[]}
   const context=vm.createContext({ref,reactive,computed,watch,state,init:async()=>{},sessionRevision:()=>revision,token:()=>state.user.id+'token',parseWalletAmount,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:unknown)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},
@@ -85,4 +85,13 @@ test('并行查单已确认原提交时关闭原表单，迟到超时不诱导�
     original.reject(new Error('原提交响应迟到超时'));await submitting
     assert.equal(s.page.formError.value,'');assert.equal(s.page.operation.value,null);assert.equal(s.pending.length,1)
   })
+})
+
+
+test('组织补缴默认服务端差额，门槛提高不改变已托管原款',async t=>{
+  const s=harness(t);s.deposits.platform.amount_cents=9950;s.deposits.platform.shortfall_cents=50;s.hooks.show();await flush();s.page.open('pay');assert.equal(s.page.amount.value,'0.50');assert.equal(s.page.balance.value.amount_cents,9950);const applying=s.page.submit();await flush();const request=s.take('/wallet/topups');assert.equal(request.body.amount_cents,50);request.reject(new Error('停止测试'));await applying;assert.equal(s.page.balance.value.amount_cents,9950)
+})
+
+test('组织资金表单隐藏返回清草稿且显示迟到失败，不丢原单恢复键',async t=>{
+  const s=harness(t);s.hooks.show();await flush();s.page.open('pay');s.page.amount.value='99';const applying=s.page.submit();await flush();const request=s.take('/wallet/topups');s.hooks.hide();assert.equal(s.page.operation.value,null);assert.equal(s.page.amount.value,'');s.hooks.show();await flush();request.reject(new Error('结果未知'));await applying;assert.equal(s.notices.length,1);assert.ok([...s.storage.keys()].some(key=>key.includes('club_platform')))
 })

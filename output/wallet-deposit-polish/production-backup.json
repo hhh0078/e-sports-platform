@@ -1,0 +1,10 @@
+{
+  "created": true,
+  "backup_dir": "/www/wwwroot/game.ai.58it.cn/.deploy-backups/pre-wallet-polish-20261023-051108",
+  "previous_commit": "67d4592de19e784881f0b169c81b55e522f88798",
+  "previous_image": "jijie-api:20261020-gitee-6ea28d5",
+  "database_dump_sha256": "91c091e8bb973c4efc657ff6f1f1ce5c10a0cbbeaff0976623744dda60751e74",
+  "database_dump_bytes": 121879,
+  "configuration_mode": "600",
+  "directory_mode": "700"
+}

@@ -22,7 +22,7 @@ function intentID(userID:string,kind:WalletOperation,cents:number):{key:string;i
 export function useWallet(){
   const wallet=ref<Wallet|null>(null),entries=ref<WalletEntry[]>([]),topups=ref<WalletTopup[]>([]),withdrawals=ref<WalletWithdrawal[]>([]),refunds=ref<WalletDepositRefund[]>([])
   const loading=ref(false),busy=ref(false),error=ref(''),operation=ref<WalletOperation|null>(null),amount=ref(''),userName=ref(''),formError=ref(''),filter=ref('all'),hasMore=ref(false)
-  let visible=false,disposed=false,version=0
+  let visible=false,disposed=false,version=0,hideRevision=0
   let activeRequest:{ownerID:string;kind:WalletOperation;cents:number;id:string}|null=null
   /** 捕获资金请求真正所属的会话。 */
   function session(){return{id:state.user?.id||'',token:token(),revision:sessionRevision()}}
@@ -68,7 +68,7 @@ export function useWallet(){
   }
   const filteredEntries=computed(()=>entries.value.filter(entry=>filter.value==='all'||(filter.value==='deposit'?!!entry.deposit_delta||!!entry.deposit_refunding_delta:filter.value==='withdrawal'?/withdraw/.test(entry.kind):/topup|recharge/.test(entry.kind)&&!!entry.recharge_delta)))
   /** 弹层每次显式打开才初始化草稿，不在错误时丢弃输入。 */
-  function open(kind:WalletOperation){if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/account/wallet'));return}operation.value=kind;amount.value=kind==='refund'&&wallet.value?String(wallet.value.deposit_cents/100):'';userName.value='';formError.value=''}
+  function open(kind:WalletOperation){if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/account/wallet'));return}operation.value=kind;amount.value=kind==='refund'&&wallet.value?String(wallet.value.deposit_cents/100):kind==='deposit'&&wallet.value?.deposit_shortfall_cents?(wallet.value.deposit_shortfall_cents/100).toFixed(2):'';userName.value='';formError.value=''}
   /** 用户关闭普通表单时释放姓名，处理中保持交易锁。 */
   function close(){if(busy.value)return;operation.value=null;userName.value='';formError.value=''}
   /** 创建充值/押金支付并查原单，微信本地回调不会修改余额。 */
@@ -97,9 +97,9 @@ export function useWallet(){
   /** 同一提交锁覆盖手机号与资金动作，错误或网络未知保持原请求号。 */
   async function submit(){
     if(busy.value||!operation.value||!visible||!state.user)return
-    const owner=session(),kind=operation.value;busy.value=true;formError.value=''
+    const owner=session(),kind=operation.value,hiddenAtStart=hideRevision;busy.value=true;formError.value=''
     try{
-      const cents=parseWalletAmount(amount.value,kind==='withdrawal'?20000000:10000000,kind==='withdrawal'?(wallet.value?.withdrawal_min_cents||1):kind==='refund'?1:100)
+      const cents=parseWalletAmount(amount.value,kind==='withdrawal'?20000000:10000000,kind==='withdrawal'?(wallet.value?.withdrawal_min_cents||1):kind==='balance'?100:1)
       if(kind==='withdrawal'&&wallet.value&&cents>wallet.value.available_cents)throw new Error('提现金额超过可提现服务收入')
       const requestName=userName.value.trim()
       if(kind==='withdrawal'&&cents>=200000&&!requestName)throw new Error('单笔提现达到2000元，请填写微信实名认证姓名')
@@ -113,7 +113,7 @@ export function useWallet(){
         reconcileRequest(owner,kind,cents,record.request_id||intent.id);if(visible)notify(kind==='withdrawal'?'提现已提交，等待平台审核':'已申请原路退还，请查看退款进度')
       }
       if(!same(owner))return;operation.value=null;userName.value='';await load()
-    }catch(err){if(same(owner)&&visible&&operation.value===kind)formError.value=errorMessage(err)}finally{activeRequest=null;busy.value=false}
+    }catch(err){if(same(owner)&&visible){if(operation.value===kind)formError.value=errorMessage(err);else if(!operation.value&&hideRevision>hiddenAtStart)notify(err)}}finally{activeRequest=null;busy.value=false}
   }
   /** 对原记录查单或拉起官方收款确认，状态始终取后端。 */
   async function syncRecord(kind:'topup'|'withdrawal'|'refund',id:string,confirm=false){
@@ -132,7 +132,7 @@ export function useWallet(){
     }catch(err){if(same(owner)&&visible)notify(err);if(same(owner))await load()}finally{busy.value=false}
   }
   /** 官方支付页会暂时隐藏钱包，隐藏时仅清理实名、收款凭据与迟到读取。 */
-  function hide(){visible=false;version++;loading.value=false;userName.value='';withdrawals.value=withdrawals.value.map(({confirmation,...record})=>record)}
+  function hide(){visible=false;hideRevision++;version++;loading.value=false;operation.value=null;amount.value='';formError.value='';userName.value='';withdrawals.value=withdrawals.value.map(({confirmation,...record})=>record)}
   onShow(()=>{visible=true;void load()});onHide(hide);onUnload(()=>{disposed=true;hide();clear()})
   return{wallet,entries,topups,withdrawals,refunds,filteredEntries,loading,busy,error,operation,amount,userName,formError,filter,hasMore,load,open,close,submit,syncRecord,resumeTopup}
 }

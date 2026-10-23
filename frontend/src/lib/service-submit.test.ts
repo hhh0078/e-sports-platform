@@ -289,7 +289,7 @@ test('发布预览换身份立即清除已读押金，旧身份迟到响应不�
 test('新建服务完整预览读取本人两类实缴押金，不使用规则或组织平台押金',async()=>{
   const subject=publishLoadSubject(),loading=subject.page.load();await flush()
   subject.take('/clubs?mine=1').resolve([clubData('club-A')]);await loading
-  subject.take('/wallet').resolve({deposit_cents:12500});await flush()
+  subject.take('/wallet').resolve({deposit_cents:12500,deposit_qualified:true});await flush()
   assert.equal(subject.page.previewService.value.provider_deposit_cents,12500)
   subject.page.form.club_id='club-A'
   subject.take('/clubs/club-A/deposits').resolve({platform:{amount_cents:999999},membership:{amount_cents:23000,required_cents:50000}});await flush()
@@ -313,4 +313,9 @@ test('发布预览切换俱乐部或账号后，迟到押金响应不能恢复�
   await switchAccount(subject);assert.equal(subject.page.previewService.value.provider_deposit_cents,0);assert.equal(subject.page.previewService.value.provider_club_deposit_cents,0)
   oldWallet.resolve({deposit_cents:99999});await flush()
   assert.equal(subject.page.previewService.value.provider_deposit_cents,0);assert.equal(subject.page.previewService.value.provider_club_deposit_cents,0)
+})
+
+
+test('发布预览不把低于最低额或缺少资格字段的保留押金展示为保障标识',async()=>{
+  for(const qualified of [false,undefined]){const subject=publishLoadSubject(),loading=subject.page.load();await flush();subject.take('/clubs?mine=1').resolve([]);await loading;subject.take('/wallet').resolve({deposit_cents:6000,deposit_required_cents:10000,deposit_shortfall_cents:4000,deposit_qualified:qualified});await flush();assert.equal(subject.page.previewService.value.provider_deposit_cents,0)}
 })

@@ -176,16 +176,16 @@ cd 项目源码目录
 ./scripts/release-mini.sh
 ```
 
-脚本默认设置 `VITE_API_BASE=https://game.ai.58it.cn/api`，并将生成项目的 `setting.urlCheck` 设为 `true`。其他域名用 `VITE_API_BASE=https://自己的域名/api ./scripts/release-mini.sh`。本地开发构建仍可保持关闭校验，正式构建不得依赖该调试选项绕过微信后台域名设置。
+脚本默认设置 `VITE_API_BASE=https://game.ai.58it.cn/api`，并将生成项目的 `setting.urlCheck` 设为 `true`。常规 `npm run build:h5` / `npm run build:mp-weixin` 也默认使用此正式 API，不读取私人 `.env.local` 中的本机地址。其他域名用 `VITE_API_BASE=https://自己的域名/api ./scripts/release-mini.sh`；若显式把本机或 HTTP 地址传给正式构建，构建立即拒绝。正式构建不得依赖关闭域名校验绕过微信后台设置。
 
 在微信开发者工具导入 `frontend/dist/build/mp-weixin`，确认 AppID、勾选域名校验，重新编译。用本人微信扫码真机预览，完成本文末尾测试，然后“上传”体验版，添加体验成员，确认无误后提交审核并发布。测试号能力不能替代正式主体账号可发布能力；需要迁移时同时改前端 AppID 和后端两项微信配置。
 
 H5 只用于本地开发预览，不部署到本次服务器。发布包通过后端托管游戏图，首屏需能访问 downloadFile 域名。
 
-另有独立的本地模拟包 `frontend/dist/local/mp-weixin`，本轮验收连接本机 `127.0.0.1:18091` 并允许本地调试，用于五种体验身份与测试交易，不能作为正式上传包。常规开发脚本默认API端口为8090，重建时应按实际运行服务显式指定，不能连接错误环境。重新生成本轮本地包：
+另有独立的本地模拟包 `frontend/dist/local/mp-weixin`，用于五种体验身份与测试交易，不能作为正式上传包。开发服务 `npm run dev:h5` 和显式 `local-test` 模式读取 `.env.local`，未配置时默认本机8090。当前本地联调端口18091，重建本地包：
 
 ```bash
-VITE_API_BASE=http://127.0.0.1:18091/api UNI_OUTPUT_DIR="$(pwd)/frontend/dist/local/mp-weixin" npm --prefix frontend run build:mp-weixin
+VITE_API_BASE=http://127.0.0.1:18091/api npm --prefix frontend run build:mp-weixin:local
 ```
 
 本地 H5 仍为 `http://127.0.0.1:5173/`。两个包各自独立，重新运行 `release-mini.sh` 不会把本地目录当作正式发布产物。

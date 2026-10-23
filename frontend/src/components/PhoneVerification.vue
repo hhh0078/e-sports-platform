@@ -1,6 +1,9 @@
 <!-- 文件作用：使用官方 uni-popup 和微信手机号授权，统一交易前验证弹层。 -->
 <template>
-  <view class="phone-layer">
+  <!-- #ifdef MP-WEIXIN -->
+  <root-portal>
+  <!-- #endif -->
+  <view class="phone-layer" :style="popupTheme">
   <UniPopup ref="popup" type="bottom" :is-mask-click="!phoneGate.busy" background-color="transparent" @change="popupChanged">
     <view class="phone-sheet"><view class="phone-heading"><text>验证手机号</text><button class="icon-btn" aria-label="关闭手机号验证" :disabled="phoneGate.busy" @click="close"><Icon name="close" :size="21" /></button></view><text class="phone-copy">下单与发布前需要验证手机号，方便订单沟通与账号找回。号码不会展示在公开主页。</text><text v-if="phoneGate.error" class="phone-error">{{ phoneGate.error }}</text>
       <!-- #ifdef MP-WEIXIN -->
@@ -13,19 +16,24 @@
     </view>
   </UniPopup>
   </view>
+  <!-- #ifdef MP-WEIXIN -->
+  </root-portal>
+  <!-- #endif -->
 </template>
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import UniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue'
 import Icon from './Icon.vue'
 import { phoneGate, finishPhone, isCurrentPhoneGate } from '../lib/phone'
-import { state, refreshMe, sessionRevision } from '../lib/store'
+import { state, refreshMe, sessionRevision, pageTheme } from '../lib/store'
 import { errorMessage } from '../api/client'
 import { verifyDevPhone, verifyWechatPhone } from '../api/auth.api'
 /** 官方弹层开放的实例方法。 */
 interface PopupController { open: (type?: string) => void; close: () => void; showPopup?: boolean }
 const popup = ref<PopupController | null>(null), active = ref(true), nativePending = ref(false)
+/** 原生根层不继承页面主题，显式补齐文字、边框与当前游戏色。 */
+const popupTheme=computed(()=>({'--control-height':'44px','--compact-height':'36px','--radius':'12px','--muted':'#9aada2','--line':'rgba(255,255,255,0.12)',...pageTheme()}))
 let displayedEpoch = -1, nativeEpoch: number | null = null, disposed = false, closing = false
 /** 当前组件只处理自己实际展示的有效验证弹层。 */
 function ownsGate(epoch = displayedEpoch): boolean { return !disposed && active.value && epoch === displayedEpoch && isCurrentPhoneGate(epoch) }
@@ -60,6 +68,6 @@ onHide(hide)
 onUnload(() => { hide(); disposed = true })
 </script>
 <style scoped>
-.phone-layer{position:relative;z-index:150;height:0;overflow:visible}
-.phone-sheet{display:flex;flex-direction:column;gap:16px;width:100vw;max-width:600px;margin:0 auto;padding:12px 20px calc(24px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;border:1px solid var(--line);background:var(--surface);color:var(--text)}.phone-heading{display:flex;align-items:center;justify-content:space-between;font-size:19px;font-weight:700}.phone-copy{font-size:13px;line-height:22px;color:var(--muted)}.phone-error{font-size:12px;line-height:20px;color:#f1b39d}
+.phone-layer{position:relative;z-index:220;height:0;overflow:visible}
+.phone-sheet{display:flex;flex-direction:column;gap:16px;box-sizing:border-box;width:100vw;max-width:600px;margin:0 auto;padding:12px 20px calc(24px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;border:1px solid var(--line,rgba(255,255,255,0.12));background:var(--surface,#14201b);color:var(--text,#edf4ef)}.phone-heading{display:flex;align-items:center;justify-content:space-between;font-size:19px;font-weight:700}.phone-copy{font-size:13px;line-height:22px;color:var(--muted,#9aada2)}.phone-error{font-size:12px;line-height:20px;color:#f1b39d}
 </style>

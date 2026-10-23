@@ -142,12 +142,12 @@ test('来源刷新失败后保留可读明细但不允许沿用旧通过结果�
 })
 
 test('交易规则直接对象回填，百分比和元转换整数且两个档位互不相加',async t=>{
-  const subject=harness(t,'settings'),initial:FinancialSettings={free_platform_rate_bps:500,club_platform_rate_bps:1000,club_creation_deposit_cents:20000}
+  const subject=harness(t,'settings'),initial:FinancialSettings={free_platform_rate_bps:500,club_platform_rate_bps:1000,personal_platform_deposit_cents:10000,club_creation_deposit_cents:20000}
   subject.hooks.show();await flush();subject.take('/admin/financial-settings').resolve(initial);await flush()
-  assert.equal(subject.page.form.freeRate,'5.00');assert.equal(subject.page.form.clubDeposit,'200.00')
-  Object.assign(subject.page.form,{freeRate:'0.15',clubRate:'99.99',clubDeposit:'0.01'})
+  assert.equal(subject.page.form.freeRate,'5.00');assert.equal(subject.page.form.clubDeposit,'200.00');assert.equal(subject.page.form.personalDeposit,'100.00')
+  Object.assign(subject.page.form,{freeRate:'0.15',clubRate:'99.99',personalDeposit:'88.88',clubDeposit:'0.01'})
   const pending=subject.page.save(),writing=subject.take('/admin/financial-settings','PATCH')
-  assert.equal(writing.body.free_platform_rate_bps,15);assert.equal(writing.body.club_platform_rate_bps,9999);assert.equal(writing.body.club_creation_deposit_cents,1)
+  assert.equal(writing.body.free_platform_rate_bps,15);assert.equal(writing.body.club_platform_rate_bps,9999);assert.equal(writing.body.club_creation_deposit_cents,1);assert.equal(writing.body.personal_platform_deposit_cents,8888)
   writing.resolve(writing.body);await pending
   assert.equal(subject.page.form.freeRate,'0.15')
   for(const value of ['100.01','-1','1e2','0.001']){subject.page.form.freeRate=value;await subject.page.save()}
@@ -157,7 +157,7 @@ test('交易规则直接对象回填，百分比和元转换整数且两个档�
 })
 
 test('旧管理员迟到的交易规则保存不能覆盖新管理员草稿',async t=>{
-  const subject=harness(t,'settings'),first={free_platform_rate_bps:500,club_platform_rate_bps:1000,club_creation_deposit_cents:20000}
+  const subject=harness(t,'settings'),first={free_platform_rate_bps:500,club_platform_rate_bps:1000,personal_platform_deposit_cents:10000,club_creation_deposit_cents:20000}
   subject.hooks.show();await flush();subject.take('/admin/financial-settings').resolve(first);await flush()
   subject.page.form.freeRate='6';const pending=subject.page.save(),old=subject.take('/admin/financial-settings','PATCH')
   subject.switchAdmin();subject.hooks.show();await flush();subject.take('/admin/financial-settings').resolve({...first,free_platform_rate_bps:700});await flush()

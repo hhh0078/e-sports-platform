@@ -19,7 +19,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform') {
   const id=ref(''), club=ref<Club|null>(null), detail=ref<ClubDetail|null>(null), deposits=ref<ClubDeposits|null>(null), wallet=ref<ClubWallet|null>(null)
   const entries=ref<WalletEntry[]>([]), topups=ref<WalletTopup[]>([]), refunds=ref<WalletDepositRefund[]>([]), withdrawals=ref<WalletWithdrawal[]>([])
   const loading=ref(false), busy=ref(false), error=ref(''), formError=ref(''), operation=ref<'pay'|'refund'|'withdraw'|null>(null), amount=ref(''), userName=ref('')
-  let visible=false, disposed=false, loadVersion=0, actionVersion=0
+  let visible=false, disposed=false, loadVersion=0, actionVersion=0, hideRevision=0
   let activeRequest:{ownerID:string;clubID:string;kind:string;cents:number;requestID:string}|null=null
   const balance=computed(()=>scope==='club_platform'?deposits.value?.platform:deposits.value?.membership)
   const canManage=computed(()=>!!detail.value?.can_manage)
@@ -56,7 +56,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform') {
     finally { if(current===loadVersion)loading.value=false }
   }
   /** 打开明确用途的资金表单；访客保留登录后目标。 */
-  function open(kind:'pay'|'refund'|'withdraw'):void { if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/'+(scope==='club_platform'?'funds':'deposit')+'?id='+id.value));return}if(scope==='club_platform'&&!canManage.value)return notify('仅俱乐部负责人可操作');operation.value=kind;formError.value='';userName.value='';amount.value=kind==='pay'?String(Math.max(0,(balance.value?.required_cents||0)-(balance.value?.amount_cents||0))/100):kind==='refund'?String((balance.value?.amount_cents||0)/100):'' }
+  function open(kind:'pay'|'refund'|'withdraw'):void { if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/'+(scope==='club_platform'?'funds':'deposit')+'?id='+id.value));return}if(scope==='club_platform'&&!canManage.value)return notify('仅俱乐部负责人可操作');operation.value=kind;formError.value='';userName.value='';const shortfall=balance.value?.shortfall_cents??Math.max(0,(balance.value?.required_cents||0)-(balance.value?.amount_cents||0));amount.value=kind==='pay'?(shortfall>0?(shortfall/100).toFixed(2):''):kind==='refund'?String((balance.value?.amount_cents||0)/100):'' }
   /** 处理中不能关闭表单把未知结果误认为取消。 */
   function close():void { if(!busy.value){operation.value=null;userName.value='';formError.value=''} }
   /** 原生支付只完成交互，必须按原付款单查询服务端。 */
@@ -73,7 +73,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform') {
   /** 校验金额、手机号和实名后提交稳定业务号，跨账号迟到结果不回填。 */
   async function submit():Promise<void> {
     const kind=operation.value;if(!kind||busy.value||!visible||!state.user)return
-    const owner=session(),action=++actionVersion;busy.value=true;formError.value=''
+    const owner=session(),action=++actionVersion,hiddenAtStart=hideRevision;busy.value=true;formError.value=''
     try {
       const cents=parseWalletAmount(amount.value,kind==='withdraw'?20000000:10000000,kind==='withdraw'?(wallet.value?.withdrawal_min_cents||1):1)
       const name=userName.value.trim()
@@ -87,7 +87,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform') {
       else if(kind==='refund'){const record=await createDepositRefund({scope,club_id:owner.clubID,amount_cents:cents,request_id:requestID});if(!same(owner))return;reconcile(owner,kind,cents,record.request_id||requestID);if(visible)notify('已申请原路退还，请查看资金进度')}
       else {const record=await createClubWithdrawal(owner.clubID,{amount_cents:cents,request_id:requestID,user_name:name});if(!same(owner))return;reconcile(owner,kind,cents,record.request_id||requestID);if(visible)notify('提现已提交，等待平台审核资金来源')}
       if(!same(owner))return;operation.value=null;userName.value='';if(visible)await load()
-    } catch(err) { if(same(owner)&&visible&&operation.value===kind)formError.value=errorMessage(err) }
+    } catch(err) { if(same(owner)&&visible){if(operation.value===kind)formError.value=errorMessage(err);else if(!operation.value&&hideRevision>hiddenAtStart)notify(err)} }
     finally { if(action===actionVersion){activeRequest=null;busy.value=false} }
   }
   /** 跨设备恢复未付款原单，不按相同金额新建付款。 */
@@ -99,7 +99,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform') {
     catch(err){if(same(owner)&&visible)notify(err)}finally{if(action===actionVersion)busy.value=false}
   }
   /** 原生授权或支付暂时隐藏时清除实名与短暂收款凭据，仅使读取失效。 */
-  function hide():void {visible=false;loadVersion++;loading.value=false;userName.value='';withdrawals.value=withdrawals.value.map(({confirmation,...item})=>item)}
+  function hide():void {visible=false;hideRevision++;loadVersion++;loading.value=false;operation.value=null;amount.value='';formError.value='';userName.value='';withdrawals.value=withdrawals.value.map(({confirmation,...item})=>item)}
   watch([()=>state.user?.id,sessionRevision],()=>{clear();if(visible)void load()},{flush:'sync'})
   onLoad((options:Record<string,string|undefined>={})=>{id.value=options.id||'';if(!id.value)error.value='缺少俱乐部编号'})
   onShow(()=>{visible=true;void load()});onHide(hide);onUnload(()=>{disposed=true;hide();clear()})

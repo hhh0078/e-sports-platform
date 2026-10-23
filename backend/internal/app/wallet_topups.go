@@ -39,8 +39,8 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 	if err = walletRequestID(in.RequestID); err != nil {
 		return nil, err
 	}
-	if !contains([]string{"balance", "deposit", "club_platform", "member_club"}, in.Purpose) || in.AmountCents < 1 || in.AmountCents > 10000000 || (in.Purpose == "balance" || in.Purpose == "deposit") && in.AmountCents < 100 {
-		return nil, fail(400, "充值用途或金额无效，个人充值至少1元，组织押金必须为正数且不超过100000元")
+	if !contains([]string{"balance", "deposit", "club_platform", "member_club"}, in.Purpose) || in.AmountCents < 1 || in.AmountCents > 10000000 || in.Purpose == "balance" && in.AmountCents < 100 {
+		return nil, fail(400, "充值用途或金额无效，余额充值至少1元，押金须为正数且不超过100000元")
 	}
 	var paymentConfig wxPayConfig
 	if !a.Config.DevMode {
@@ -67,6 +67,13 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 	id := walletKey("topup", u.ID, in.RequestID)
 	payment, err := get[WalletTopup](ctx, tx, "wallet_topups", id, true)
 	if missing(err) {
+		wallet, e := accountBalance(ctx, tx, accountID)
+		if e != nil {
+			return nil, e
+		}
+		if e = validateNewDepositTopup(ctx, tx, in.Purpose, in.ClubID, wallet, in.AmountCents); e != nil {
+			return nil, e
+		}
 		payment = WalletTopup{AccountID: accountID, ClubID: in.ClubID, ID: id, UserID: u.ID, RequestID: in.RequestID, Purpose: in.Purpose, AmountCents: in.AmountCents, Status: "pending_payment", OrderNo: "WT" + strings.ToUpper(id[:30]), CreatedAt: now(), UpdatedAt: now()}
 		if !a.Config.DevMode {
 			identity, e := get[map[string]string](ctx, tx, "identities", u.ID, false)

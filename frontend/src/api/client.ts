@@ -1,5 +1,6 @@
 /** 文件作用：唯一 HTTP/上传传输层，统一超时、令牌、业务解包及可读错误。 */
-export const API_BASE: string = import.meta.env?.VITE_API_BASE || 'http://127.0.0.1:8090/api'
+// 地址在 Vite 配置阶段校验并注入，正式包不携带开发地址回退分支。
+export const API_BASE: string = import.meta.env?.VITE_API_BASE || ''
 /** 支持的请求方法。 */
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT'
 /** 统一业务错误，保留 HTTP 状态并允许识别取消操作。 */
