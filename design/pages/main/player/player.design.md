@@ -24,6 +24,6 @@ Use case: ui-mockup. Precise local edit of approved Chinese 开机电竞 WeChat 
 
 共享押金短标以本轮规则为准：封面右上贴边、黑金实心盾牌、仅左下圆角；短标8px字、11px图标、最小高18px，背景rgba(24,21,14,0.76)，金额版保留11px字和24px最小高度。旧图下绿色钱包押金行、标签在标题上均不恢复；标题在上、标签在下。金额与资格只取当前服务端结果。
 
-当前PNG保留本分支最新功能结构；品牌文字若仍为旧名，仅作结构参考，实际产品使用上述开机电竞品牌和口号。不得为品牌回退卡片与押金布局。好友、朋友圈和实时海报继续共用分享入口及真实小程序码。
+当前PNG以本分支最新功能图为目标，使用内置ImageGen仅将左上品牌改为开机电竞，再机械缩放至390×844；已逐图确认保留黑金右上角标及标题在标签上方。原图大标题保持输入图原样，实际产品口号以上述“开机即组队，一起赢”为准。不得为品牌回退卡片与押金布局。好友、朋友圈和实时海报继续共用分享入口及真实小程序码。
 
 品牌局部编辑提示词：Use case: text-localization. Change only the top-left product brand 集结 to 开机电竞 in the approved 390x844 design. Preserve the latest top-right black-gold shield badges, title-above-tags cover layers, game artwork, prices, spacing and all other geometry. Do not restore the old image-below deposit row.
