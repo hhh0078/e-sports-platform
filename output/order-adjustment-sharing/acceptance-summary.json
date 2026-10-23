@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-23",
+  "branch": "codex/order-adjustment-sharing",
+  "source_baseline": "db4deb7",
+  "frontend": {
+    "tests_passed": 432,
+    "failed": 0,
+    "skipped": 0,
+    "typecheck": "passed",
+    "standards_pages": 41,
+    "h5": "passed",
+    "wechat_local": "passed",
+    "wechat_release": "passed",
+    "release_url_check": true
+  },
+  "backend": {
+    "full_baseline_top_level": 140,
+    "full_baseline_with_subtests": 242,
+    "final_adjustment_top_level": 10,
+    "final_adjustment_with_subtests": 13,
+    "share_top_level": 13,
+    "share_with_subtests": 23,
+    "all_batches_failed": 0,
+    "all_batches_skipped": 0,
+    "race": "passed",
+    "vet": "passed"
+  },
+  "wechat_sdk": {
+    "order_roles_at_390": 4,
+    "order_roles_at_320": 4,
+    "final_share_checks_at_390": 26,
+    "home_checks_at_320": 5,
+    "guest_checks_at_320": 5,
+    "runtime_exceptions": 0,
+    "canvas_color_warnings": 0
+  },
+  "native_console_review": {
+    "source": "微信开发者工具原生Console辅助功能树",
+    "errors": 1,
+    "warnings": 70,
+    "error_reason": "本地未加载真实微信凭据，auth/wechat/prepare返回503",
+    "warning_classes": [
+      "本机HTTP图片与合法域名调试设置",
+      "旧Canvas建议",
+      "开发者工具预加载与worker提示"
+    ],
+    "invalid_share_json_warnings": "removed and verified absent",
+    "is_zero_diagnostics": false
+  },
+  "local_fixture_cleanup": "normal refund/cancel complete; original recharge restored, no withdrawable income created",
+  "production_deployment": false,
+  "real_wechat_fund_arrival": "not tested",
+  "real_friend_timeline_scan": "requires published target page and real devices"
+}

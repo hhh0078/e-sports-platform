@@ -119,6 +119,9 @@ func guardClubDepositRefund(ctx context.Context, q querier, clubID string) error
 
 // orderBlocksDeposit 统一判断待付款、履约与七天售后是否仍占用押金保障资格。
 func orderBlocksDeposit(o Order) bool {
+	if o.ActiveAdjustmentID != "" {
+		return true
+	}
 	if !contains([]string{"cancelled", "refunded", "completed"}, o.Status) || contains([]string{"requested", "escalated", "processing"}, o.RefundStatus) || o.RefundStatus == "rejected" && !o.RefundFinal {
 		return true
 	}

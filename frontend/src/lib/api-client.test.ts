@@ -1,7 +1,7 @@
 /** 文件作用：验证真实统一请求工具的认证头、HTTP错误、上传解析及业务查询编码。 */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { request, upload, queryString, errorMessage, errorStatus, errorCode } from '../api/client'
+import { request, requestPublic, upload, queryString, errorMessage, errorStatus, errorCode } from '../api/client'
 import { performOrderAction, listMessages } from '../api/orders.api'
 import { verifyDevPhone } from '../api/auth.api'
 
@@ -28,6 +28,11 @@ test('请求统一附带当前令牌并只解包业务data', async () => {
     subject.requests[0].success?.({ statusCode: 200, data: { data: { id: 'current-user' } }, header: {}, cookies: [] })
     assert.deepEqual(await pending, { id: 'current-user' })
   } finally { subject.restore() }
+})
+
+test('朋友圈公共读取即使本机有会话也不携带Authorization且只使用GET',async()=>{
+  const subject=setup()
+  try{const pending=requestPublic<{id:string}>('/shares/public-id');assert.equal(subject.requests[0].header?.Authorization,undefined);assert.equal(subject.requests[0].method,'GET');subject.requests[0].success?.({statusCode:200,data:{data:{id:'public-id'}},header:{},cookies:[]});assert.deepEqual(await pending,{id:'public-id'})}finally{subject.restore()}
 })
 
 test('HTTP401保留状态和服务端消息，网络错误不伪装身份失效', async () => {

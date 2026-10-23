@@ -1,14 +1,14 @@
 /** 文件作用：封装俱乐部目录、详情、装修、申请、退出和成员审核接口。 */
-import { request, queryString } from './client'
+import { request, requestPublic, queryString } from './client'
 import type { Club, ClubDetail, ClubMember, ListQuery, Order } from '../types/models'
 /** 俱乐部列表筛选。 */
 export interface ClubQuery extends ListQuery { mine?: 0 | 1 }
 /** 新俱乐部或装修资料。 */
 export type ClubInput = { request_id?: string } & Pick<Club, 'name' | 'description' | 'game_ids'> & Partial<Pick<Club, 'cover_url' | 'detail_blocks' | 'deposit_cents' | 'assessment' | 'commission_rate_bps' | 'join_note' | 'avatar_url' | 'contact_qr_url' | 'contact_phone' | 'contact_wechat'>>
 /** 读取公开俱乐部或本人挂靠。 */
-export function listClubs(query: ClubQuery = {}): Promise<Club[]> { return request('/clubs' + queryString(query)) }
+export function listClubs(query: ClubQuery = {}): Promise<Club[]> { return (query.mine ? request : requestPublic)('/clubs' + queryString(query)) }
 /** 读取俱乐部资料及有权限的成员信息。 */
-export function getClub(id: string): Promise<ClubDetail> { return request('/clubs/' + encodeURIComponent(id)) }
+export function getClub(id: string, publicOnly = false): Promise<ClubDetail> { return (publicOnly ? requestPublic : request)('/clubs/' + encodeURIComponent(id)) }
 /** 提交新俱乐部审核。 */
 export function createClub(body: ClubInput): Promise<Club> { return request('/clubs', 'POST', body) }
 /** 保存俱乐部装修。 */

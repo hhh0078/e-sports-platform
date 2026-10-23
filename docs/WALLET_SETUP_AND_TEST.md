@@ -73,7 +73,7 @@
 | --- | --- | --- |
 | 启用真实提现 | `withdrawal_enabled` | 默认关闭，资质和资料完整后由管理员开启 |
 | 商家转账场景编号 | `transfer_scene_id` | 使用商户实际获批且适合服务收入的场景，不套用无关现金营销编号 |
-| 转账场景报备字段 | `transfer_scene_report_infos` | 按获批场景逐项添加 `info_type`、`info_content`，每项名称/内容1—32字，最多10项；真实提现至少一项 |
+| 转账场景报备字段 | `transfer_scene_report_infos` | 按获批场景逐项添加 `info_type`、`info_content`，每项名称1—15字、内容1—32字，最多10项；真实提现至少一项 |
 | 转账通知HTTPS地址 | `transfer_notify_url` | `https://game.ai.58it.cn/api/payments/wechat/transfer-notify`，无查询参数 |
 | 转账备注 | `transfer_remark` | 真实提现必填，最多32字 |
 | 收款感知描述 | `user_recv_perception` | 依获批场景填写，最多10字 |

@@ -27,7 +27,7 @@ func guardDepositOrders(ctx context.Context, q querier, userID string) error {
 		return err
 	}
 	for _, o := range orders {
-		blocked := !contains([]string{"cancelled", "refunded", "completed"}, o.Status) || contains([]string{"requested", "escalated", "processing"}, o.RefundStatus) || o.RefundStatus == "rejected" && !o.RefundFinal
+		blocked := o.ActiveAdjustmentID != "" || !contains([]string{"cancelled", "refunded", "completed"}, o.Status) || contains([]string{"requested", "escalated", "processing"}, o.RefundStatus) || o.RefundStatus == "rejected" && !o.RefundFinal
 		if o.Status == "completed" {
 			completed, e := time.Parse(time.RFC3339Nano, o.CompletedAt)
 			blocked = blocked || e != nil || time.Now().Before(completed.Add(walletHoldDuration))

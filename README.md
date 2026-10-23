@@ -75,6 +75,8 @@
 
 ## 验收资料
 
+- [订单加减价、五类分享与新版商家转账验收清单](docs/ORDER_ADJUSTMENT_SHARING_ACCEPTANCE.md)：2026-10-23本轮代码与本地验收；尚未部署生产或验证商户实款。
+
 - [你可以逐项体验的测试清单](docs/USER_TEST_CHECKLIST.md)
 - [实际验收结果与证据](docs/ACCEPTANCE.md)
 - [独立代码与接口审计记录](docs/REVIEW.md)

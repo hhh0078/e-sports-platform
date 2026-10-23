@@ -106,7 +106,7 @@ func (a *App) analytics(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := AnalyticsResult{Period: period, Series: days, DevMode: a.Config.DevMode, DataMode: "production", StatisticsNote: "服务成交额按首次实付记录统计，成功退款按退款日另计；微信提供成功时间时采用官方时间，否则采用平台首次核验入账时间。充值、押金和提现不计服务成交额。历史缺少可靠支付/退款时间或托管资金凭据的订单不计对应曲线，数量为全历史待核账订单数。"}
+	out := AnalyticsResult{Period: period, Series: days, DevMode: a.Config.DevMode, DataMode: "production", StatisticsNote: "服务成交额按首付及每笔成功补款分别计入实际收款日，整单退款及调价退差按各笔成功退款日另计；支付及退款单量只统计原订单首付和整单退款，补款及退差只增加对应金额；微信提供成功时间时采用官方时间，否则采用平台首次核验入账时间。充值、押金和提现不计服务成交额。历史缺少可靠支付/退款时间或托管资金凭据的订单不计对应曲线，数量为全历史待核账订单数。"}
 	if a.Config.DevMode {
 		out.DataMode = "local"
 		out.StatisticsNote = "当前为本地模拟交易统计，不代表真实资金。" + out.StatisticsNote
@@ -122,6 +122,11 @@ func (a *App) analytics(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	defer rows.Close()
+	// 先释放查询游标占用的连接，再核验独立收款分笔，兼容单连接池并避免自锁。
+	records := []struct {
+		order  Order
+		escrow WalletEscrow
+	}{}
 	for rows.Next() {
 		var orderRaw, escrowRaw []byte
 		if err = rows.Scan(&orderRaw, &escrowRaw); err != nil {
@@ -136,6 +141,27 @@ func (a *App) analytics(w http.ResponseWriter, r *http.Request) (any, error) {
 			if err = json.Unmarshal(escrowRaw, &escrow); err != nil {
 				return nil, err
 			}
+		}
+		records = append(records, struct {
+			order  Order
+			escrow WalletEscrow
+		}{order, escrow})
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	rows.Close()
+	for _, record := range records {
+		order, escrow := record.order, record.escrow
+		if order.AdjustmentVersion > 0 {
+			tracked, eventErr := a.addAdjustmentAnalytics(r.Context(), order, escrow, &out, indices, location)
+			if eventErr != nil {
+				return nil, eventErr
+			}
+			if !tracked {
+				out.LegacyUntrackedOrders++
+			}
+			continue
 		}
 		if !analyticsPaymentEvidence(order, escrow, a.Config.DevMode) {
 			out.LegacyUntrackedOrders++

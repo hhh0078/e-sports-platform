@@ -185,6 +185,8 @@ func (a *App) Handler() http.Handler {
 	a.registerWalletRoutes(mux)
 	a.registerAIRoutes(mux)
 	a.registerInboxRoutes(mux)
+	a.registerAdjustmentRoutes(mux)
+	a.registerShareRoutes(mux)
 	routes := map[string]func(http.ResponseWriter, *http.Request) (any, error){
 		"GET /api/players/{id}": a.playerProfile, "PATCH /api/me/profile": a.saveProfile, "POST /api/media/images": a.uploadImage,
 		"GET /health": a.health, "GET /api/health": a.health, "GET /api/bootstrap": a.bootstrap, "GET /api/dev/accounts": a.accounts, "POST /api/auth/dev": a.devLogin, "POST /api/auth/wechat": a.wechatLogin, "POST /api/auth/logout": a.logout, "GET /api/me": a.me, "PATCH /api/me": a.updateMe, "GET /api/me/stats": a.stats,

@@ -35,7 +35,7 @@ func (a *App) walletSettings(ctx context.Context) (WalletSettings, error) {
 
 // validateWalletSettings 校验官方商家转账配置格式，不把保存草稿当作商户场景已获审批。
 func validateWalletSettings(v WalletSettings) error {
-	if len(v.TransferSceneID) > 32 || strings.ContainsAny(v.TransferSceneID, "\r\n\t /?&") {
+	if len(v.TransferSceneID) > 36 || strings.ContainsAny(v.TransferSceneID, "\r\n\t /?&") {
 		return fail(400, "转账场景编号格式无效")
 	}
 	if !length(v.TransferRemark, 0, 32) || !length(v.UserRecvPerception, 0, 10) || len(v.TransferSceneReportInfos) > 10 {
@@ -48,8 +48,8 @@ func validateWalletSettings(v WalletSettings) error {
 		}
 	}
 	for _, info := range v.TransferSceneReportInfos {
-		if !length(info.InfoType, 1, 32) || !length(info.InfoContent, 1, 32) {
-			return fail(400, "转账场景报备字段名称和内容须为1至32字")
+		if !length(info.InfoType, 1, 15) || !length(info.InfoContent, 1, 32) {
+			return fail(400, "转账场景报备字段名称须为1至15字，内容须为1至32字")
 		}
 	}
 	return nil

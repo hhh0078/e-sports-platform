@@ -24,8 +24,8 @@
         <view v-if="settingsError" class="subtle-note error-copy">{{ settingsError }}<button class="text-btn" :disabled="settingsLoading" @click="loadSettings()">重试</button></view>
         <text v-if="settingsLoading" class="hint">正在读取公开配置…</text>
         <view class="enabled-row"><text>启用真实提现</text><NativeSwitch :checked="form.withdrawal_enabled" :disabled="!loaded || saving" :color="game.primary_color" @change="changeEnabled"/></view>
-        <view class="field"><text class="field-label">商家转账场景编号</text><input v-model="form.transfer_scene_id" class="input" maxlength="32" :disabled="!loaded || saving" placeholder="填写商户已获批的场景编号"/></view>
-        <view class="field"><view class="section-heading"><text class="field-label">转账场景报备字段</text><button class="text-btn" :disabled="!loaded || saving || form.transfer_scene_report_infos.length >= 10" @click="addReport">添加字段</button></view><text class="hint">按获批场景填写，最多10项，每项名称和内容1—32字。</text><view v-for="(report, index) in form.transfer_scene_report_infos" :key="index" class="report-row"><input v-model="report.info_type" class="input" maxlength="32" :disabled="saving" placeholder="字段名"/><input v-model="report.info_content" class="input" maxlength="32" :disabled="saving" placeholder="字段内容"/><button class="text-btn" :disabled="saving" aria-label="删除报备字段" @click="removeReport(index)"><Icon name="close" :size="16"/></button></view></view>
+        <view class="field"><text class="field-label">商家转账场景编号</text><input v-model="form.transfer_scene_id" class="input" maxlength="36" :disabled="!loaded || saving" placeholder="填写商户已获批的场景编号"/></view>
+        <view class="field"><view class="section-heading"><text class="field-label">转账场景报备字段</text><button class="text-btn" :disabled="!loaded || saving || form.transfer_scene_report_infos.length >= 10" @click="addReport">添加字段</button></view><text class="hint">按获批场景填写，最多10项，名称1—15字，内容1—32字。</text><view v-for="(report, index) in form.transfer_scene_report_infos" :key="index" class="report-row"><input v-model="report.info_type" class="input" maxlength="15" :disabled="saving" placeholder="字段名"/><input v-model="report.info_content" class="input" maxlength="32" :disabled="saving" placeholder="字段内容"/><button class="text-btn" :disabled="saving" aria-label="删除报备字段" @click="removeReport(index)"><Icon name="close" :size="16"/></button></view></view>
         <view class="field"><text class="field-label">转账通知HTTPS地址</text><input v-model="form.transfer_notify_url" class="input" maxlength="2048" :disabled="!loaded || saving" placeholder="无查询参数的HTTPS回调地址"/></view>
         <view class="field"><text class="field-label">转账备注 · 最多32字</text><input v-model="form.transfer_remark" class="input" maxlength="32" :disabled="!loaded || saving"/></view>
         <view class="field"><text class="field-label">收款感知描述 · 最多10字</text><input v-model="form.user_recv_perception" class="input" maxlength="10" :disabled="!loaded || saving"/></view>
@@ -100,10 +100,10 @@ function removeReport(index: number): void { if (!saving.value) form.transfer_sc
 /** 统一校验后端约束，生成仅含公开字段的保存对象。 */
 function settingsBody(): WalletSettings {
   const body: WalletSettings = { withdrawal_enabled: form.withdrawal_enabled, transfer_scene_id: form.transfer_scene_id.trim(), transfer_scene_report_infos: form.transfer_scene_report_infos.map(item => ({ info_type: item.info_type.trim(), info_content: item.info_content.trim() })), transfer_notify_url: form.transfer_notify_url.trim(), transfer_remark: form.transfer_remark.trim(), user_recv_perception: form.user_recv_perception.trim() }
-  if (body.transfer_scene_id.length > 32 || /[\r\n\t /?&]/.test(body.transfer_scene_id)) throw new Error('转账场景编号格式无效')
+  if (body.transfer_scene_id.length > 36 || /[\r\n\t /?&]/.test(body.transfer_scene_id)) throw new Error('转账场景编号格式无效')
   if (body.transfer_notify_url && !/^https:\/\/[^\s/?#]+(?:\/[^\s?#]*)?$/.test(body.transfer_notify_url)) throw new Error('转账通知地址需要无查询参数的HTTPS地址')
   if (Array.from(body.transfer_remark).length > 32 || Array.from(body.user_recv_perception).length > 10 || body.transfer_scene_report_infos.length > 10) throw new Error('转账备注最多32字，收款感知最多10字，报备字段最多10项')
-  if (body.transfer_scene_report_infos.some(item => [item.info_type, item.info_content].some(value => Array.from(value).length < 1 || Array.from(value).length > 32))) throw new Error('报备字段名称和内容均需1—32字')
+  if (body.transfer_scene_report_infos.some(item => Array.from(item.info_type).length < 1 || Array.from(item.info_type).length > 15 || Array.from(item.info_content).length < 1 || Array.from(item.info_content).length > 32)) throw new Error('报备字段名称需1—15字，内容需1—32字')
   return body
 }
 /** 显式保存配置草稿，不把保存成功解释为微信转账资格通过。 */

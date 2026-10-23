@@ -3,7 +3,7 @@
   <view class="order-settlement">
     <text class="settlement-title">收入明细</text>
     <template v-if="order.settlement?.version">
-      <view class="settlement-row"><text>订单实付金额</text><text>¥{{ money(order.amount_cents) }}</text></view>
+      <view class="settlement-row"><text>{{ order.original_amount_cents!==undefined?'当前净计费金额':'订单实付金额' }}</text><text>¥{{ money(order.amount_cents) }}</text></view>
       <view class="settlement-row"><text>平台服务费 · {{ formatRate(order.settlement.platform_rate_bps) }}</text><text>− ¥{{ money(order.settlement.platform_fee_cents) }}</text></view>
       <view v-if="order.settlement.club_id" class="settlement-row"><text>俱乐部佣金 · {{ formatRate(order.settlement.club_rate_bps) }}</text><text>− ¥{{ money(order.settlement.club_fee_cents) }}</text></view>
       <view class="settlement-row settlement-net"><text>{{ order.payment_status!=='paid'?'预计净收入':'打手净收入' }}</text><text>¥{{ money(order.settlement.provider_income_cents) }}</text></view>

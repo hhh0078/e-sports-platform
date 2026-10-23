@@ -64,14 +64,14 @@
 		</template>
 		<template v-else-if="tab==='jobs'">
 			<view v-if="jobs.length" class="jobs-list">
-				<view v-for="job in jobs" :key="job.id" class="job-card">
+				<view v-for="job in jobs" :key="job.id" class="job-card" @click="go('/pages/requests/detail?id='+job.id)">
 					<view class="job-heading"><text>{{ game.short_name }} ·
 							公开需求</text><text>{{ time(job.created_at) }}</text></view><text
 						class="job-title">{{ job.title }}</text><text v-if="job.requirements"
 						class="job-description">{{ job.requirements }}</text>
 					<view class="job-bottom"><text class="job-price">¥{{ money(job.amount_cents) }}</text><button
 							class="job-claim" :disabled="!!claiming"
-							@click="claim(job)">{{ claiming===job.id?'领取中…':'立即接单' }}</button></view>
+							@click.stop="claim(job)">{{ claiming===job.id?'领取中…':'立即接单' }}</button></view>
 				</view>
 			</view>
 			<EmptyState v-else title="暂时没有待接需求" detail="试试其他游戏，下一位队友也许正在路上。"

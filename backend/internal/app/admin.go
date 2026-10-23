@@ -386,10 +386,19 @@ func (a *App) resolve(w http.ResponseWriter, r *http.Request) (any, error) {
 	if o.RefundStatus != "escalated" && o.Status != "disputed" {
 		return nil, fail(409, "该订单没有待平台处理的争议")
 	}
-	remoteRefund := in.Resolution == "refund" && !a.Config.DevMode && o.PaymentChannel != "balance"
+	if o.ActiveAdjustmentID != "" {
+		return nil, fail(409, "订单仍有未完成调价，不能覆盖资金流程")
+	}
+	adjustedRefund := in.Resolution == "refund" && o.AdjustmentVersion > 0
+	remoteRefund := !adjustedRefund && in.Resolution == "refund" && !a.Config.DevMode && o.PaymentChannel != "balance"
 	switch in.Resolution {
 	case "refund":
-		if remoteRefund {
+		if adjustedRefund {
+			before := o
+			if err = prepareAdjustedFullRefund(r.Context(), tx, &o, before); err != nil {
+				return nil, err
+			}
+		} else if remoteRefund {
 			before := o
 			if err = a.prepareRemoteRefund(&o, before); err != nil {
 				return nil, err
@@ -437,6 +446,12 @@ func (a *App) resolve(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	if remoteRefund {
 		return a.submitRemoteRefund(r.Context(), o, in.Note)
+	}
+	if adjustedRefund {
+		if err = a.processOrderRefunds(r.Context(), o.ID, "full:"+o.ID); err != nil {
+			return nil, err
+		}
+		return get[Order](r.Context(), a.DB, "orders", o.ID, false)
 	}
 	return o, nil
 }

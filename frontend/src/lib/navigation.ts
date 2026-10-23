@@ -1,6 +1,7 @@
 /** 文件作用：维护唯一主页面的标签状态、深链归一化及二级页面返回导航。 */
 import { reactive, watch, onBeforeUnmount } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
+import { isTimelinePreview } from './sharing'
 
 /** 主页面四个常驻视图的标识。 */
 export type MainTab = 'player' | 'worker' | 'orders' | 'me'
@@ -69,6 +70,7 @@ export function applyMainQuery(query: PageQuery = {}): void {
 
 /** 打开页面；主页面已经在栈中时直接返回并切换内容。 */
 export function navigate(url: string): void {
+  if(isTimelinePreview()){uni.showToast({title:'请从微信顶部打开小程序后继续',icon:'none'});return}
   const target = normalizePageUrl(url)
   const fail = () => uni.showToast({ title: '页面打开失败，请重试', icon: 'none' })
   if (target.split('?')[0] !== MAIN_PAGE) {
@@ -85,6 +87,7 @@ export function navigate(url: string): void {
 
 /** 统一普通顶栏与悬浮按钮的返回行为；无历史或原生返回失败时回到唯一主页面。 */
 export function back(): void {
+  if(isTimelinePreview()){uni.showToast({title:'请从微信顶部打开小程序查看详情',icon:'none'});return}
   const url = MAIN_PAGE + '?tab=player'
   if (getCurrentPages().length > 1) uni.navigateBack({ delta: 1, fail: () => uni.reLaunch({ url, fail: () => uni.showToast({ title: '返回失败，请重新打开小程序', icon: 'none' }) }) })
   else navigate(url)

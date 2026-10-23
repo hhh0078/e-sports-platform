@@ -21,10 +21,10 @@ function envelope(value: unknown): { data?: unknown; error?: string; code?: stri
   if (!Object.prototype.hasOwnProperty.call(body, 'data') && typeof body.error !== 'string') throw new ApiError('服务器返回格式异常')
   return { data: body.data, error: typeof body.error === 'string' ? body.error : undefined, code: typeof body.code === 'string' ? body.code : undefined }
 }
-/** 向服务端发送请求，由业务 API 指定并约束返回模型。 */
-export function request<T>(path: string, method: HttpMethod = 'GET', data?: unknown): Promise<T> {
+/** 共享传输实现，公开读取不携带本机持久令牌，避免朋友圈单页混入私有关系。 */
+function sendRequest<T>(path: string, method: HttpMethod, data: unknown, authenticated: boolean): Promise<T> {
   return new Promise((resolve, reject) => {
-    const authToken = token()
+    const authToken = authenticated ? token() : ''
     // uni-app 的类型枚举遗漏了微信与 H5 实际支持的 PATCH，仅在传输边界补全该方法。
     const send = uni.request as (options: Omit<UniApp.RequestOptions, 'method'> & { method: HttpMethod }) => unknown
     send({ url: API_BASE + path, method, data: data as UniApp.RequestOptions['data'], timeout: 15000,
@@ -36,6 +36,10 @@ export function request<T>(path: string, method: HttpMethod = 'GET', data?: unkn
     })
   })
 }
+/** 向服务端发送正常业务请求，由领域API约束模型与权限。 */
+export function request<T>(path: string, method: HttpMethod = 'GET', data?: unknown): Promise<T> { return sendRequest(path,method,data,true) }
+/** 只读公共内容时明确不携带身份，不暴露写方法给匿名分享流程。 */
+export function requestPublic<T>(path:string):Promise<T> { return sendRequest(path,'GET',undefined,false) }
 /** 上传本地图片并按同一响应规则解包。 */
 export function upload<T>(path: string, filePath: string, uploadToken = token()): Promise<T> {
   return new Promise((resolve, reject) => uni.uploadFile({ url: API_BASE + path, filePath, name: 'file', header: { Authorization: 'Bearer ' + uploadToken },

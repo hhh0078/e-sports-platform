@@ -200,6 +200,9 @@ func refundWalletEscrow(ctx context.Context, q querier, o *Order, verifiedWX ...
 
 // walletIncomeEligible 使用服务端时间检查完成、售后和最终裁决状态，拒绝仅凭订单显示状态释放收入。
 func walletIncomeEligible(o Order, stamp time.Time) bool {
+	if o.ActiveAdjustmentID != "" {
+		return false
+	}
 	if o.Status != "completed" || o.PaymentStatus != "paid" || !o.WalletAccounted || o.ProviderID == "" {
 		return false
 	}

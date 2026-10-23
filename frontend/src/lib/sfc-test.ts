@@ -15,6 +15,13 @@ export function executable(source: string): string { const plain = source.replac
 export function pageScript(path: string): string { const source = readFileSync(new URL('../pages/' + path, import.meta.url), 'utf8'); const match = source.match(/<script\s+setup(?:\s+lang="ts")?\s*>([\s\S]*?)<\/script>/); if (!match) throw new Error('页面脚本不存在：' + path); return match[1] }
 /** 注入所有实际 API 的具名方法，传输边界转到可控 api 函数。 */
 export function injectBusinessAPIs(context: vm.Context): void {
+  context.isTimelinePreview ??= () => false
+  context.enablePublicShareMenu ??= () => {}
+  context.onShow ??= () => {}
+  context.onShareAppMessage ??= () => {}
+  context.onShareTimeline ??= () => {}
+  vm.runInContext(executable(readFileSync(new URL('./use-public-share.ts', import.meta.url), 'utf8')), context)
+  context.requestPublic = (path: string) => context.api(path)
   context.request = context.api
   context.newWalletRequestID = newWalletRequestID
   context.queryString = (query: object = {}) => { const entries = Object.entries(query).filter(([, value]) => value !== undefined && value !== null && value !== ''); return entries.length ? '?' + entries.map(([key, value]) => encodeURIComponent(key) + '=' + encodeURIComponent(String(value))).join('&') : '' }

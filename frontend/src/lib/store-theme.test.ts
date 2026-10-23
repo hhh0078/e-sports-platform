@@ -57,7 +57,8 @@ test('只有显式选择有效游戏持久化，局部计算能响应后台主�
 
 test('俱乐部的原生授权勾选色与局部主题一致，不改写用户主游戏偏好', () => {
   const { subject, storage, writes, context } = harness()
-  Object.assign(context,{onLoad:()=>{},onShow:()=>{},onHide:()=>{},onShareAppMessage:()=>{}})
+  Object.assign(context,{onLoad:()=>{},onShow:()=>{},onHide:()=>{},onShareAppMessage:()=>{},onShareTimeline:()=>{},isTimelinePreview:()=>false})
+  vm.runInContext(executable(readFileSync(new URL('./use-public-share.ts',import.meta.url),'utf8')),context)
   vm.runInContext(executable(pageScript('community/clubs/detail.vue'))+'\nglobalThis.clubPage={club,clubGameId,clubTheme}',context)
   context.clubPage.club.value={game_ids:['honor']}
   assert.equal(context.clubPage.clubGameId.value,'honor')

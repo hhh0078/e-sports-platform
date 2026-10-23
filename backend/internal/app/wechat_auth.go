@@ -45,7 +45,13 @@ func (a *App) wechatJSON(ctx context.Context, method, address string, input any,
 	if input != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	response, err := a.HTTPClient.Do(req)
+	if a.HTTPClient == nil {
+		return fail(502, "微信服务暂时不可用，请稍后重试")
+	}
+	// 官方凭证只能发给固定目标，307/308等跳转不能重放含AppSecret或身份code的请求。
+	client := *a.HTTPClient
+	client.CheckRedirect = func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse }
+	response, err := client.Do(req)
 	if err != nil {
 		return fail(502, "微信服务暂时不可用，请稍后重试")
 	}

@@ -1,0 +1,97 @@
+{
+  "passed": true,
+  "scope": "guest",
+  "stage": "打开 /pages/requests/detail?id=6d11125b1788c3dac05f7b90ce125e29",
+  "viewport": {
+    "pixelRatio": 2,
+    "safeArea": {
+      "top": 20,
+      "left": 0,
+      "right": 320,
+      "bottom": 568,
+      "width": 320,
+      "height": 548
+    },
+    "screenWidth": 320,
+    "screenHeight": 568,
+    "screenTop": 0,
+    "windowWidth": 320,
+    "windowHeight": 568,
+    "statusBarHeight": 20
+  },
+  "checks": [
+    "真实UI登录 北辰",
+    "真实UI退出成为访客",
+    "访客 service入口两选项且好友不强制登录",
+    "service 访客官方好友/朋友圈钩子路由与封面可解码",
+    "访客匿名公开需求正常展示，不访问订单权限"
+  ],
+  "rectangles": [
+    {
+      "label": "service方式弹框",
+      "selector": ".share-choices",
+      "left": 0,
+      "top": 568,
+      "width": 320,
+      "height": 254
+    },
+    {
+      "label": "service两种分享",
+      "selector": ".share-choice",
+      "left": 20,
+      "top": 644,
+      "width": 134,
+      "height": 122
+    },
+    {
+      "label": "service两种分享",
+      "selector": ".share-choice",
+      "left": 166,
+      "top": 644,
+      "width": 134,
+      "height": 122
+    },
+    {
+      "label": "访客公开需求",
+      "selector": ".request-body",
+      "left": 0,
+      "top": 260,
+      "width": 320,
+      "height": 440.796875
+    }
+  ],
+  "hooks": [
+    {
+      "kind": "service",
+      "phase": "访客",
+      "friend": {
+        "title": "地图探索 · 默契队友",
+        "path": "/pages/services/detail?id=eggy-service-2",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-2.jpg"
+      },
+      "timeline": {
+        "title": "地图探索 · 默契队友",
+        "query": "id=eggy-service-2",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-2.jpg"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "use": "timeline",
+          "width": 800,
+          "height": 450
+        }
+      ]
+    }
+  ],
+  "runtime_exceptions": [],
+  "canvas_color_warnings": [],
+  "boundaries": [
+    "未实际向微信好友或朋友圈发送内容，未点击相册保存/原生发送菜单，未支付、转账或伪造小程序码。",
+    "官方页面hook输出和原生图片解码不能替代真实手机上的分享展示与扫码验收。"
+  ]
+}

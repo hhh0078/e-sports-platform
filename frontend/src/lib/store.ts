@@ -18,21 +18,32 @@ export type PageTheme = Record<'--accent' | '--bg' | '--surface' | '--text', str
 export function pageTheme(gameId?: string): PageTheme { const selected = state.games.find(item => item.id === gameId) || game.value; return { '--accent': selected.primary_color || '#00e18a', '--bg': selected.bg_color || '#0a1110', '--surface': selected.surface_color || '#15201e', '--text': selected.text_color || '#f2f5f3' } }
 export const themeStyle = computed(() => pageTheme())
 let pending: Promise<void> | null = null
+let publicPending: Promise<void> | null = null
 const sessionVersion = ref(0)
 /** 返回会话修订号，供页面丢弃旧身份的异步结果。 */
 export function sessionRevision(): number { return sessionVersion.value }
 /** 清除会话并使旧请求失效。 */
 export function clearSession(): void { sessionVersion.value++; uni.removeStorageSync('jijie_token'); state.user = null }
-/** 加载平台配置并合并同一时刻的初始化请求。 */
-export async function init(force = false): Promise<void> {
-  if (pending) return pending
+/** 仅加载公开平台配置；朋友圈单页不准备登录或读取本人资料，同类请求合并。 */
+export async function initPublic(force = false): Promise<void> {
+  if (publicPending) return publicPending
   if (state.ready && !force) return
-  pending = (async () => {
+  publicPending = (async () => {
     const data = await getBootstrap()
     state.games = data.games || []; state.devMode = !!data.dev_mode; state.announcement = data.announcement || ''; state.siteName = data.site_name || '集结';state.support_qr_url=data.support_qr_url||'';state.support_phone=data.support_phone||'';state.support_wechat=data.support_wechat||''
     if (!state.games.some(item => item.id === state.gameId)) state.gameId = state.games[0]?.id || 'delta'
-    if (token()) { try { await refreshMe() } catch (error) { if (errorStatus(error) !== 401) throw error } }
     state.ready = true
+  })()
+  try { await publicPending } finally { publicPending = null }
+}
+/** 正常初始化补齐本人身份，公共页面已读配置不能跳过后续完整会话恢复。 */
+export async function init(force = false, publicOnly = false): Promise<void> {
+  if (publicOnly) return initPublic(force)
+  if (pending) return pending
+  if (state.ready && !force && (!token() || state.user)) return
+  pending = (async () => {
+    await initPublic(force)
+    if (token()) { try { await refreshMe() } catch (error) { if (errorStatus(error) !== 401) throw error } }
   })()
   try { await pending } finally { pending = null }
 }

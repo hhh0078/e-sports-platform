@@ -80,8 +80,8 @@ test('公开配置严格限制字段、金额外参数和报备数量，不把�
   subject.page.form.transfer_notify_url = 'https://example.com/notify?token=123'; assert.throws(() => subject.page.settingsBody(), /HTTPS/)
   subject.page.form.transfer_notify_url = 'https://example.com/notify'; subject.page.form.user_recv_perception = '字'.repeat(11); assert.throws(() => subject.page.settingsBody(), /最多10字/)
   subject.page.form.user_recv_perception = '服务报酬'; subject.page.form.transfer_scene_report_infos = Array.from({ length: 11 }, () => ({ info_type: '类型', info_content: '内容' })); assert.throws(() => subject.page.settingsBody(), /最多10项/)
-  subject.page.form.transfer_scene_report_infos = [{ info_type: '', info_content: '内容' }]; assert.throws(() => subject.page.settingsBody(), /1—32字/)
-  subject.page.form.transfer_scene_report_infos = [{ info_type: ' 类型 ', info_content: ' 内容 ' }]
+  subject.page.form.transfer_scene_report_infos = [{ info_type: '', info_content: '内容' }]; assert.throws(() => subject.page.settingsBody(), /1—15字/)
+  subject.page.form.transfer_scene_report_infos = [{ info_type: '类'.repeat(16), info_content: '内容' }]; assert.throws(() => subject.page.settingsBody(), /1—15字/); subject.page.form.transfer_scene_id='a'.repeat(36); subject.page.form.transfer_scene_report_infos = [{ info_type: ' 类型 ', info_content: ' 内容 ' }]
   const saving = subject.page.saveSettings(), request = subject.take('/admin/wallet-settings', 'PATCH')
   assert.deepEqual(Object.keys(request.body).sort(), Object.keys(configuration().settings).sort())
   assert.equal((request.body.transfer_scene_report_infos as Array<{info_type:string}>)[0].info_type, '类型')

@@ -325,8 +325,17 @@ func verifyFundingLot(ctx context.Context, q querier, l FundingLot, dev bool, se
 		}
 	case "order":
 		o, e := get[Order](ctx, q, "orders", r.PaymentID, false)
-		if e != nil || o.AmountCents != r.AmountCents || o.PaymentStatus != "paid" || o.PaymentChannel != r.Channel || (r.Channel != "dev" && (o.PaymentTransactionID != r.TransactionID || o.PaymentMerchantID != r.MerchantID || o.PaymentAppID != r.AppID)) {
+		if e != nil || baseOrderAmount(o) != r.AmountCents || o.PaymentStatus != "paid" || o.PaymentChannel != r.Channel || (r.Channel != "dev" && (o.PaymentTransactionID != r.TransactionID || o.PaymentMerchantID != r.MerchantID || o.PaymentAppID != r.AppID)) {
 			return fail(409, "订单收款凭证未能核对")
+		}
+	case "order_payment":
+		p, e := get[OrderPayment](ctx, q, "order_payments", r.PaymentID, false)
+		if e != nil || p.Kind != "supplement" || p.Status != "paid" || p.TransactionID != r.TransactionID || p.AmountCents != r.AmountCents || p.Channel != r.Channel || p.MerchantID != r.MerchantID || p.AppID != r.AppID {
+			return fail(409, "补款原始收款凭证未能核对")
+		}
+		o, e := get[Order](ctx, q, "orders", p.OrderID, false)
+		if e != nil || o.PaymentStatus != "paid" || o.BuyerID != p.BuyerID {
+			return fail(409, "补款与订单付款归属无法核对")
 		}
 	default:
 		return fail(409, "不支持的收款来源")

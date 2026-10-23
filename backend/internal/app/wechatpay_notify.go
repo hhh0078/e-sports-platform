@@ -164,6 +164,9 @@ func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction
 	if v.MerchantID != c.MerchantID || v.AppID != c.AppID || v.TradeState != "SUCCESS" || v.TransactionID == "" || v.Amount.Currency != "CNY" {
 		return fail(400, "支付商户或交易信息不匹配")
 	}
+	if strings.HasPrefix(v.OrderNo, "OA") {
+		return a.applyAdjustmentWXPayment(ctx, c, v)
+	}
 	if strings.HasPrefix(v.OrderNo, "WT") {
 		var id string
 		if err := a.DB.QueryRow(ctx, "SELECT id FROM wallet_topups WHERE data->>'order_no'=$1", v.OrderNo).Scan(&id); err != nil {
@@ -191,7 +194,7 @@ func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction
 	if err = requireLiveOrder(o); err != nil {
 		return err
 	}
-	if o.AmountCents != v.Amount.Total || o.PayOpenID == "" || o.PayOpenID != v.Payer.OpenID {
+	if baseOrderAmount(o) != v.Amount.Total || o.PayOpenID == "" || o.PayOpenID != v.Payer.OpenID {
 		return fail(400, "支付金额或付款人不匹配")
 	}
 	if o.PaymentTransactionID != "" {
@@ -233,6 +236,9 @@ func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction
 func (a *App) applyWXRefund(ctx context.Context, c wxPayConfig, v wxRefund) error {
 	if v.MerchantID != "" && v.MerchantID != c.MerchantID {
 		return fail(400, "退款商户不匹配")
+	}
+	if strings.HasPrefix(v.OutRefundNo, "OR") {
+		return a.applyOrderPartRefund(ctx, c, v, false)
 	}
 	status := v.RefundStatus
 	if status == "" {
@@ -322,6 +328,12 @@ func (a *App) syncPayment(w http.ResponseWriter, r *http.Request) (any, error) {
 	if u.ID != o.BuyerID && u.Role != "admin" {
 		return nil, fail(403, "仅买家或平台可同步资金状态")
 	}
+	if o.AdjustmentVersion > 0 && o.RefundStatus == "processing" {
+		if err = a.processOrderRefunds(r.Context(), o.ID, "full:"+o.ID); err != nil {
+			return nil, err
+		}
+		return get[Order](r.Context(), a.DB, "orders", o.ID, false)
+	}
 	if a.Config.DevMode || o.PaymentChannel == "balance" {
 		return o, nil
 	}
@@ -364,6 +376,12 @@ func (a *App) retryRefund(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	if err = requireLiveOrder(o); err != nil {
 		return nil, err
+	}
+	if o.AdjustmentVersion > 0 && o.RefundStatus == "processing" {
+		if err = a.processOrderRefunds(r.Context(), o.ID, "full:"+o.ID); err != nil {
+			return nil, err
+		}
+		return get[Order](r.Context(), a.DB, "orders", o.ID, false)
 	}
 	if a.Config.DevMode || o.RefundStatus != "processing" || o.RefundID == "" || o.PaymentStatus != "paid" {
 		return nil, fail(409, "当前订单没有待重试的真实退款")

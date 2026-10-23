@@ -1,0 +1,158 @@
+{
+  "passed": true,
+  "stage": "打开 /pages/orders/detail?id=b6b3ed4c830bf45aad80de5778411c24",
+  "width": 320,
+  "checks": [
+    "worker 费用守恒、三次证据、权限与长原因弹层",
+    "player 费用守恒、三次证据、权限与长原因弹层",
+    "admin 费用守恒、三次证据、权限与长原因弹层",
+    "clubowner 费用守恒、三次证据、权限与长原因弹层"
+  ],
+  "rectangles": [
+    {
+      "selector": ".adjustment-totals",
+      "left": 16,
+      "top": 170,
+      "width": 288,
+      "height": 161
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 399,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 586,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 773,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-sheet",
+      "left": 0,
+      "top": 90.8828125,
+      "width": 320,
+      "height": 570
+    },
+    {
+      "selector": ".adjustment-confirm",
+      "left": 108,
+      "top": 584.8828125,
+      "width": 196,
+      "height": 44
+    },
+    {
+      "selector": ".adjustment-totals",
+      "left": 16,
+      "top": 170,
+      "width": 288,
+      "height": 161
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 399,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 586,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 773,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-sheet",
+      "left": 0,
+      "top": 90.8828125,
+      "width": 320,
+      "height": 592
+    },
+    {
+      "selector": ".adjustment-confirm",
+      "left": 108,
+      "top": 606.8828125,
+      "width": 196,
+      "height": 44
+    },
+    {
+      "selector": ".adjustment-totals",
+      "left": 16,
+      "top": 170,
+      "width": 288,
+      "height": 161
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 343,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 530,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 717,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-totals",
+      "left": 16,
+      "top": 170,
+      "width": 288,
+      "height": 161
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 343,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 530,
+      "width": 288,
+      "height": 187
+    },
+    {
+      "selector": ".adjustment-record",
+      "left": 16,
+      "top": 717,
+      "width": 288,
+      "height": 187
+    }
+  ],
+  "runtime_exceptions": [],
+  "canvas_color_warnings": [],
+  "boundaries": [
+    "仅本地dev订单，只读费用记录与取消表单；补款退款由独立真实本机API流程和资金集成测试验证，未调用真实微信资金。"
+  ]
+}

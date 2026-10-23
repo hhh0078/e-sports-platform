@@ -20,7 +20,7 @@ type querier interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
 }
 
-var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits"}
+var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits", "order_adjustments", "order_payments", "order_refunds", "shares"}
 
 // now 返回统一的 UTC 时间文本。
 func now() string { return time.Now().UTC().Format(time.RFC3339Nano) }
@@ -106,6 +106,9 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	for table, label := range map[string]string{"fund_audits": "不可变提现来源审核快照", "fund_receipts": "已核验外部收款根凭证", "fund_lots": "逐笔资金来源批次及剩余容量", "fund_movements": "不可变资金分配与溯源凭证", "wallets": "分区钱包余额与冻结资金", "wallet_entries": "不可变资金变动账单", "wallet_escrows": "逐订单实付托管及原路退款分账", "wallet_topups": "余额与押金充值付款记录", "wallet_withdrawals": "服务收入提现冻结与官方转账结果", "wallet_deposit_refunds": "平台押金多笔原路退还记录", "wallet_requests": "同账号幂等号资金用途与载荷绑定记录"} {
 		names[table] = label
 	}
+	for table, label := range map[string]string{"order_adjustments": "订单加减价协商与双方确认", "order_payments": "原单及补款不可变收款事实和退款预留", "order_refunds": "按原交易的退款执行分笔", "shares": "永久公开分享目标与分享人映射"} {
+		names[table] = label
+	}
 	for _, table := range tables {
 		sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (id TEXT PRIMARY KEY, data JSONB NOT NULL); COMMENT ON TABLE %s IS '%s'; COMMENT ON COLUMN %s.id IS '领域记录唯一标识'; COMMENT ON COLUMN %s.data IS '经过服务端类型和边界验证的完整领域数据';", table, table, names[table], table, table)
 		if _, err = tx.Exec(ctx, sql); err != nil {
@@ -129,6 +132,9 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 	if err = migrateSupportContactComments(ctx, tx); err != nil {
+		return err
+	}
+	if err = migrateOrderAdjustments(ctx, tx); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)

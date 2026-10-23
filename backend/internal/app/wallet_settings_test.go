@@ -7,6 +7,23 @@ import (
 	"testing"
 )
 
+// TestWalletSettingsNewTransferLimits 对齐新版转账场景36字符及报备字段名15字的官方边界。
+func TestWalletSettingsNewTransferLimits(t *testing.T) {
+	v := WalletSettings{TransferSceneID: strings.Repeat("a", 36), TransferSceneReportInfos: []WalletSceneReport{{InfoType: strings.Repeat("类", 15), InfoContent: strings.Repeat("内", 32)}}}
+	if err := validateWalletSettings(v); err != nil {
+		t.Fatal(err)
+	}
+	v.TransferSceneID += "a"
+	if err := validateWalletSettings(v); err == nil {
+		t.Fatal("场景编号超过36字符仍通过")
+	}
+	v.TransferSceneID = "1000"
+	v.TransferSceneReportInfos[0].InfoType += "名"
+	if err := validateWalletSettings(v); err == nil {
+		t.Fatal("报备字段名称超过15字仍通过")
+	}
+}
+
 // TestIntegrationWalletSettingsAdminOnly 覆盖访客、买家、打手及俱乐部管理员读写后台配置均被拒绝。
 func TestIntegrationWalletSettingsAdminOnly(t *testing.T) {
 	api := newTestAPI(t)

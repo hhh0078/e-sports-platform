@@ -1,0 +1,41 @@
+{
+  "run_id": "20261023014623-942a52f8",
+  "created_at": "2026-10-23T01:46:23.323Z",
+  "api": "http://127.0.0.1:18091/api",
+  "dev_mode": true,
+  "real_wechat": false,
+  "title": "调价验收20261023014623-942a52f8",
+  "passed": true,
+  "keep_active": true,
+  "club_id": "shanhai",
+  "amounts": {
+    "original": 100,
+    "increase": 101,
+    "buyer_decrease": 61,
+    "worker_decrease": 10,
+    "net": 130
+  },
+  "checks": [
+    "固定127.0.0.1:18091且dev_mode=true，仅只读复用可用游戏及俱乐部",
+    "四身份本地登录，会话仅在内存；已有充值余额足够，不充值、不修改资料",
+    "唯一前缀公开需求已余额付款、由认证打手代表俱乐部接单并进入履约",
+    "玩家、打手、平台管理员、俱乐部负责人可读所属订单证据，访客被拒绝",
+    "加价只能本单打手提出，双方外管理员不得代同意，打手不得代付款，资金在途不能交付",
+    "买家确认后余额补款1.01元，原支付金额保留，重复请求不重复扣款，原费率分账守恒",
+    "买家提出减价，另一方同意后按原充值分区退款，不增加可提现余额",
+    "打手提出减价，另一方同意后按原充值分区退款，不增加可提现余额",
+    "玩家、打手、平台管理员、俱乐部负责人可读所属订单证据，访客被拒绝",
+    "三次协商均保存证据，净价1.30元及三方净分账正确，原订单仍正常履约",
+    "正常售后全退完成：剩余1.30元回原充值分区，可提现余额不增加，打手及俱乐部待结算按原分账反冲"
+  ],
+  "cleanup_required": false,
+  "cleanup_complete": true,
+  "order_id": "b6b3ed4c830bf45aad80de5778411c24",
+  "order_status": "refunded",
+  "cleanup_steps": [
+    "仅供root使用订单ID查看本地SDK界面，不代表真实微信交易。",
+    "买家对该order_id执行POST /orders/:id/actions {action:request_refund,note:本地验收完成全退}。",
+    "打手对同一order_id执行POST /orders/:id/actions {action:approve_refund,note:同意退还全部剩余模拟款}。",
+    "核对订单refunded、买家原充值分区恢复、打手及俱乐部待结算反冲。"
+  ]
+}

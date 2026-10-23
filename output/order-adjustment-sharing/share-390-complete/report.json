@@ -1,0 +1,663 @@
+{
+  "passed": true,
+  "scope": "all",
+  "stage": "request真实生成分享",
+  "viewport": {
+    "pixelRatio": 3,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "screenTop": 0,
+    "windowWidth": 390,
+    "windowHeight": 844,
+    "statusBarHeight": 47
+  },
+  "checks": [
+    "真实UI登录 北辰",
+    "真实UI退出成为访客",
+    "访客 service入口两选项且好友不强制登录",
+    "service 访客官方好友/朋友圈钩子路由与封面可解码",
+    "访客匿名公开需求正常展示，不访问订单权限",
+    "真实UI登录 北辰",
+    "home 公开页面官方好友/朋友圈钩子路由与封面可解码",
+    "登录用户 home入口两选项且好友不强制登录",
+    "home 实时生成官方好友/朋友圈钩子路由与封面可解码",
+    "home码故障可见且未伪造海报",
+    "service 公开页面官方好友/朋友圈钩子路由与封面可解码",
+    "登录用户 service入口两选项且好友不强制登录",
+    "service 实时生成官方好友/朋友圈钩子路由与封面可解码",
+    "service码故障可见且未伪造海报",
+    "player 公开页面官方好友/朋友圈钩子路由与封面可解码",
+    "登录用户 player入口两选项且好友不强制登录",
+    "player 实时生成官方好友/朋友圈钩子路由与封面可解码",
+    "player码故障可见且未伪造海报",
+    "club 公开页面官方好友/朋友圈钩子路由与封面可解码",
+    "登录用户 club入口两选项且好友不强制登录",
+    "club 实时生成官方好友/朋友圈钩子路由与封面可解码",
+    "club码故障可见且未伪造海报",
+    "request 公开页面官方好友/朋友圈钩子路由与封面可解码",
+    "登录用户 request入口两选项且好友不强制登录",
+    "request 实时生成官方好友/朋友圈钩子路由与封面可解码",
+    "request码故障可见且未伪造海报"
+  ],
+  "rectangles": [
+    {
+      "label": "service方式弹框",
+      "selector": ".share-choices",
+      "left": 0,
+      "top": 844,
+      "width": 390,
+      "height": 288
+    },
+    {
+      "label": "service两种分享",
+      "selector": ".share-choice",
+      "left": 20,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "service两种分享",
+      "selector": ".share-choice",
+      "left": 201,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "访客公开需求",
+      "selector": ".request-body",
+      "left": 0,
+      "top": 260,
+      "width": 390,
+      "height": 420.3984375
+    },
+    {
+      "label": "home方式弹框",
+      "selector": ".share-choices",
+      "left": 0,
+      "top": 844,
+      "width": 390,
+      "height": 288
+    },
+    {
+      "label": "home两种分享",
+      "selector": ".share-choice",
+      "left": 20,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "home两种分享",
+      "selector": ".share-choice",
+      "left": 201,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "home海报预览",
+      "selector": ".poster-preview",
+      "left": 16,
+      "top": 108,
+      "width": 358,
+      "height": 362
+    },
+    {
+      "label": "home分享操作",
+      "selector": ".share-action",
+      "left": 16,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "home分享操作",
+      "selector": ".share-action",
+      "left": 138.6640625,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "home分享操作",
+      "selector": ".share-action",
+      "left": 261.328125,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "service方式弹框",
+      "selector": ".share-choices",
+      "left": 0,
+      "top": 844,
+      "width": 390,
+      "height": 288
+    },
+    {
+      "label": "service两种分享",
+      "selector": ".share-choice",
+      "left": 20,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "service两种分享",
+      "selector": ".share-choice",
+      "left": 201,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "service海报预览",
+      "selector": ".poster-preview",
+      "left": 16,
+      "top": 108,
+      "width": 358,
+      "height": 362
+    },
+    {
+      "label": "service分享操作",
+      "selector": ".share-action",
+      "left": 16,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "service分享操作",
+      "selector": ".share-action",
+      "left": 138.6640625,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "service分享操作",
+      "selector": ".share-action",
+      "left": 261.328125,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "player方式弹框",
+      "selector": ".share-choices",
+      "left": 0,
+      "top": 844,
+      "width": 390,
+      "height": 288
+    },
+    {
+      "label": "player两种分享",
+      "selector": ".share-choice",
+      "left": 20,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "player两种分享",
+      "selector": ".share-choice",
+      "left": 201,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "player海报预览",
+      "selector": ".poster-preview",
+      "left": 16,
+      "top": 108,
+      "width": 358,
+      "height": 362
+    },
+    {
+      "label": "player分享操作",
+      "selector": ".share-action",
+      "left": 16,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "player分享操作",
+      "selector": ".share-action",
+      "left": 138.6640625,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "player分享操作",
+      "selector": ".share-action",
+      "left": 261.328125,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "club方式弹框",
+      "selector": ".share-choices",
+      "left": 0,
+      "top": 844,
+      "width": 390,
+      "height": 288
+    },
+    {
+      "label": "club两种分享",
+      "selector": ".share-choice",
+      "left": 20,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "club两种分享",
+      "selector": ".share-choice",
+      "left": 201,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "club海报预览",
+      "selector": ".poster-preview",
+      "left": 16,
+      "top": 108,
+      "width": 358,
+      "height": 362
+    },
+    {
+      "label": "club分享操作",
+      "selector": ".share-action",
+      "left": 16,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "club分享操作",
+      "selector": ".share-action",
+      "left": 138.6640625,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "club分享操作",
+      "selector": ".share-action",
+      "left": 261.328125,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "request方式弹框",
+      "selector": ".share-choices",
+      "left": 0,
+      "top": 844,
+      "width": 390,
+      "height": 288
+    },
+    {
+      "label": "request两种分享",
+      "selector": ".share-choice",
+      "left": 20,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "request两种分享",
+      "selector": ".share-choice",
+      "left": 201,
+      "top": 920,
+      "width": 169,
+      "height": 122
+    },
+    {
+      "label": "request海报预览",
+      "selector": ".poster-preview",
+      "left": 16,
+      "top": 108,
+      "width": 358,
+      "height": 362
+    },
+    {
+      "label": "request分享操作",
+      "selector": ".share-action",
+      "left": 16,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "request分享操作",
+      "selector": ".share-action",
+      "left": 138.6640625,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    },
+    {
+      "label": "request分享操作",
+      "selector": ".share-action",
+      "left": 261.328125,
+      "top": 550,
+      "width": 112.6640625,
+      "height": 76
+    }
+  ],
+  "hooks": [
+    {
+      "kind": "service",
+      "phase": "访客",
+      "friend": {
+        "title": "地图探索 · 默契队友",
+        "path": "/pages/services/detail?id=eggy-service-2",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-2.jpg"
+      },
+      "timeline": {
+        "title": "地图探索 · 默契队友",
+        "query": "id=eggy-service-2",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-2.jpg"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "use": "timeline",
+          "width": 800,
+          "height": 450
+        }
+      ]
+    },
+    {
+      "kind": "home",
+      "phase": "公开页面",
+      "friend": {
+        "title": "集结 · 蛋仔派对好队友，即刻集结",
+        "path": "/pages/main/index?tab=player&game_id=eggy",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-1.jpg"
+      },
+      "timeline": {
+        "title": "集结 · 蛋仔派对好队友，即刻集结",
+        "query": "tab=player&game_id=eggy",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-1.jpg"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 800,
+          "height": 448
+        },
+        {
+          "use": "timeline",
+          "width": 800,
+          "height": 448
+        }
+      ]
+    },
+    {
+      "kind": "home",
+      "phase": "实时生成",
+      "friend": {
+        "title": "集结 · 找队友，也成为队友",
+        "path": "/pages/main/index?game_id=eggy&share_id=db8e5ec2aa110c5b513aca8b9f0da709&tab=player",
+        "imageUrl": "http://tmp/b0tuUJqDByx613fe11f6f0dee6fa9acdd80c9780f453.png"
+      },
+      "timeline": {
+        "title": "集结 · 找队友，也成为队友",
+        "query": "share_id=db8e5ec2aa110c5b513aca8b9f0da709",
+        "imageUrl": "http://tmp/AiPC7JlD8DPe43a7987bf6f5f918f14429e045cfe6ad.png"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 500,
+          "height": 400
+        },
+        {
+          "use": "timeline",
+          "width": 500,
+          "height": 500
+        }
+      ]
+    },
+    {
+      "kind": "service",
+      "phase": "公开页面",
+      "friend": {
+        "title": "地图探索 · 默契队友",
+        "path": "/pages/services/detail?id=eggy-service-2",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-2.jpg"
+      },
+      "timeline": {
+        "title": "地图探索 · 默契队友",
+        "query": "id=eggy-service-2",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-2.jpg"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 800,
+          "height": 450
+        },
+        {
+          "use": "timeline",
+          "width": 800,
+          "height": 450
+        }
+      ]
+    },
+    {
+      "kind": "service",
+      "phase": "实时生成",
+      "friend": {
+        "title": "地图探索 · 默契队友",
+        "path": "/pages/services/detail?id=eggy-service-2&share_id=c6eeddc09697b3ecedec55c2ee960e71",
+        "imageUrl": "http://tmp/D5Fii54uVbwH9b29bbbf0cbdbad8fbc769127de747e0.png"
+      },
+      "timeline": {
+        "title": "地图探索 · 默契队友",
+        "query": "share_id=c6eeddc09697b3ecedec55c2ee960e71",
+        "imageUrl": "http://tmp/qgKyB6jWgHDx3c1a28b0941a8c7ed1cca98e77fae8a0.png"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 500,
+          "height": 400
+        },
+        {
+          "use": "timeline",
+          "width": 500,
+          "height": 500
+        }
+      ]
+    },
+    {
+      "kind": "player",
+      "phase": "公开页面",
+      "friend": {
+        "title": "云间旅人的集结主页",
+        "path": "/pages/community/players/detail?id=player",
+        "imageUrl": "http://127.0.0.1:18091/api/media/781f5265c477f17955677bd9645f40e6"
+      },
+      "timeline": {
+        "title": "云间旅人的集结主页",
+        "query": "id=player",
+        "imageUrl": "http://127.0.0.1:18091/api/media/781f5265c477f17955677bd9645f40e6"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 789,
+          "height": 444
+        },
+        {
+          "use": "timeline",
+          "width": 789,
+          "height": 444
+        }
+      ]
+    },
+    {
+      "kind": "player",
+      "phase": "实时生成",
+      "friend": {
+        "title": "云间旅人的集结主页",
+        "path": "/pages/community/players/detail?id=player&share_id=8c651285832bd263106034266d0c6099",
+        "imageUrl": "http://tmp/gAEuGyVcykf64c6eae9dc4cf18c41c8fc11facdc2bf0.png"
+      },
+      "timeline": {
+        "title": "云间旅人的集结主页",
+        "query": "share_id=8c651285832bd263106034266d0c6099",
+        "imageUrl": "http://tmp/DnlFBawM2nZba9f287004ab669262810285ea7284085.png"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 500,
+          "height": 400
+        },
+        {
+          "use": "timeline",
+          "width": 500,
+          "height": 500
+        }
+      ]
+    },
+    {
+      "kind": "club",
+      "phase": "公开页面",
+      "friend": {
+        "title": "原野玩家社 · 集结",
+        "path": "/pages/community/clubs/detail?id=wild",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/delta-1.jpg"
+      },
+      "timeline": {
+        "title": "原野玩家社 · 集结",
+        "query": "id=wild",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/delta-1.jpg"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 800,
+          "height": 444
+        },
+        {
+          "use": "timeline",
+          "width": 800,
+          "height": 444
+        }
+      ]
+    },
+    {
+      "kind": "club",
+      "phase": "实时生成",
+      "friend": {
+        "title": "原野玩家社 · 集结",
+        "path": "/pages/community/clubs/detail?id=wild&share_id=05a2f2cd374df7b7202dab1cfb41700f",
+        "imageUrl": "http://tmp/JM8mEqaXXauIde8f76fb4b16a5c73e47cb77c0c17713.png"
+      },
+      "timeline": {
+        "title": "原野玩家社 · 集结",
+        "query": "share_id=05a2f2cd374df7b7202dab1cfb41700f",
+        "imageUrl": "http://tmp/YOhdZ3vabI0E26dc9d5bd56e516e0650e947ce34566e.png"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 500,
+          "height": 400
+        },
+        {
+          "use": "timeline",
+          "width": 500,
+          "height": 500
+        }
+      ]
+    },
+    {
+      "kind": "request",
+      "phase": "公开页面",
+      "friend": {
+        "title": "分享验收4c0880a3",
+        "path": "/pages/requests/detail?id=6d11125b1788c3dac05f7b90ce125e29",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/delta-1.jpg"
+      },
+      "timeline": {
+        "title": "分享验收4c0880a3",
+        "query": "id=6d11125b1788c3dac05f7b90ce125e29",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/delta-1.jpg"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 800,
+          "height": 444
+        },
+        {
+          "use": "timeline",
+          "width": 800,
+          "height": 444
+        }
+      ]
+    },
+    {
+      "kind": "request",
+      "phase": "实时生成",
+      "friend": {
+        "title": "分享验收4c0880a3",
+        "path": "/pages/requests/detail?id=6d11125b1788c3dac05f7b90ce125e29&share_id=feab3f1b6af5d3bfd2cf2ebee4dc9b71",
+        "imageUrl": "http://tmp/fJPncv3R6jfXbf68fdd51a4cd3482dfd9144e48c8190.png"
+      },
+      "timeline": {
+        "title": "分享验收4c0880a3",
+        "query": "share_id=feab3f1b6af5d3bfd2cf2ebee4dc9b71",
+        "imageUrl": "http://tmp/uwVhAUGMUqge90f05d8693b09dfd0d88855d39eb3d7d.png"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 500,
+          "height": 400
+        },
+        {
+          "use": "timeline",
+          "width": 500,
+          "height": 500
+        }
+      ]
+    }
+  ],
+  "runtime_exceptions": [],
+  "canvas_color_warnings": [],
+  "boundaries": [
+    "home真实码未生成：图片加载失败，请检查图片下载域名或分享配置重试生成；好友和朋友圈内容封面已真实绘制，不使用假码",
+    "service真实码未生成：图片加载失败，请检查图片下载域名或分享配置重试生成；好友和朋友圈内容封面已真实绘制，不使用假码",
+    "player真实码未生成：图片加载失败，请检查图片下载域名或分享配置重试生成；好友和朋友圈内容封面已真实绘制，不使用假码",
+    "club真实码未生成：图片加载失败，请检查图片下载域名或分享配置重试生成；好友和朋友圈内容封面已真实绘制，不使用假码",
+    "request真实码未生成：图片加载失败，请检查图片下载域名或分享配置重试生成；好友和朋友圈内容封面已真实绘制，不使用假码",
+    "未实际向微信好友或朋友圈发送内容，未点击相册保存/原生发送菜单，未支付、转账或伪造小程序码。",
+    "官方页面hook输出和原生图片解码不能替代真实手机上的分享展示与扫码验收。"
+  ]
+}

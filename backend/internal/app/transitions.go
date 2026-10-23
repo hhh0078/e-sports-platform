@@ -13,6 +13,9 @@ func applyAction(o *Order, u User, action, note string) error {
 	if err := requireLiveOrder(*o); err != nil {
 		return err
 	}
+	if o.ActiveAdjustmentID != "" {
+		return fail(409, "当前有未完成调价，请先回应、撤回或同步调价资金状态")
+	}
 	buyer := o.BuyerID == u.ID
 	provider := o.ProviderID == u.ID
 	note = strings.TrimSpace(note)
@@ -243,7 +246,13 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 	}
 
-	remoteRefund := before.PaymentStatus == "paid" && o.PaymentStatus == "refunded" && !a.Config.DevMode && before.PaymentChannel != "balance"
+	adjustedRefund := before.AdjustmentVersion > 0 && before.PaymentStatus == "paid" && o.PaymentStatus == "refunded"
+	if adjustedRefund {
+		if err = prepareAdjustedFullRefund(r.Context(), tx, &o, before); err != nil {
+			return nil, err
+		}
+	}
+	remoteRefund := !adjustedRefund && before.PaymentStatus == "paid" && o.PaymentStatus == "refunded" && !a.Config.DevMode && before.PaymentChannel != "balance"
 	if remoteRefund {
 		if err = a.prepareRemoteRefund(&o, before); err != nil {
 			return nil, err
@@ -281,6 +290,12 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	if remoteRefund {
 		return a.submitRemoteRefund(r.Context(), o, in.Note)
+	}
+	if adjustedRefund {
+		if err = a.processOrderRefunds(r.Context(), o.ID, "full:"+o.ID); err != nil {
+			return nil, err
+		}
+		return get[Order](r.Context(), a.DB, "orders", o.ID, false)
 	}
 	return o, nil
 }

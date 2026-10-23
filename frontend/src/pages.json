@@ -203,6 +203,24 @@
       "style": {
         "navigationBarTitleText": "客服配置"
       }
+    },
+    {
+      "path": "pages/shares/create",
+      "style": {
+        "navigationBarTitleText": "分享"
+      }
+    },
+    {
+      "path": "pages/shares/detail",
+      "style": {
+        "navigationBarTitleText": "分享详情"
+      }
+    },
+    {
+      "path": "pages/requests/detail",
+      "style": {
+        "navigationBarTitleText": "公开需求"
+      }
     }
   ],
   "globalStyle": {

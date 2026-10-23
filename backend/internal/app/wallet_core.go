@@ -60,6 +60,9 @@ func lockWalletOrder(ctx context.Context, q querier, id string, extraUser string
 	if err == nil && (current.BuyerID != before.BuyerID || current.ProviderID != before.ProviderID) {
 		return current, fail(409, "订单归属已更新，请刷新后重试")
 	}
+	if err == nil {
+		err = expireOrderAdjustment(ctx, q, &current)
+	}
 	return current, err
 }
 

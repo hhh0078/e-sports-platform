@@ -126,6 +126,11 @@ type ClubMember struct {
 	CreatedAt                string `json:"created_at"`
 }
 type Order struct {
+	AdjustmentVersion               int             `json:"adjustment_version,omitempty"`
+	OriginalAmountCents             int64           `json:"original_amount_cents,omitempty"`
+	PaidTotalCents                  int64           `json:"paid_total_cents,omitempty"`
+	PriceRefundedCents              int64           `json:"price_refunded_cents,omitempty"`
+	ActiveAdjustmentID              string          `json:"active_adjustment_id,omitempty"`
 	FinancialReconciliationRequired bool            `json:"financial_reconciliation_required,omitempty"`
 	PaymentMerchantID               string          `json:"payment_merchant_id,omitempty"`
 	PaymentAppID                    string          `json:"payment_app_id,omitempty"`

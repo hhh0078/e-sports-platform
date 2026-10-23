@@ -1,0 +1,148 @@
+{
+  "passed": true,
+  "scope": "home",
+  "stage": "home真实生成分享",
+  "viewport": {
+    "pixelRatio": 2,
+    "safeArea": {
+      "top": 20,
+      "left": 0,
+      "right": 320,
+      "bottom": 568,
+      "width": 320,
+      "height": 548
+    },
+    "screenWidth": 320,
+    "screenHeight": 568,
+    "screenTop": 0,
+    "windowWidth": 320,
+    "windowHeight": 568,
+    "statusBarHeight": 20
+  },
+  "checks": [
+    "真实UI登录 北辰",
+    "home 公开页面官方好友/朋友圈钩子路由与封面可解码",
+    "登录用户 home入口两选项且好友不强制登录",
+    "home 实时生成官方好友/朋友圈钩子路由与封面可解码",
+    "home码故障可见且未伪造海报"
+  ],
+  "rectangles": [
+    {
+      "label": "home方式弹框",
+      "selector": ".share-choices",
+      "left": 0,
+      "top": 568,
+      "width": 320,
+      "height": 254
+    },
+    {
+      "label": "home两种分享",
+      "selector": ".share-choice",
+      "left": 20,
+      "top": 644,
+      "width": 134,
+      "height": 122
+    },
+    {
+      "label": "home两种分享",
+      "selector": ".share-choice",
+      "left": 166,
+      "top": 644,
+      "width": 134,
+      "height": 122
+    },
+    {
+      "label": "home海报预览",
+      "selector": ".poster-preview",
+      "left": 16,
+      "top": 81,
+      "width": 288,
+      "height": 384
+    },
+    {
+      "label": "home分享操作",
+      "selector": ".share-action",
+      "left": 16,
+      "top": 545,
+      "width": 89.328125,
+      "height": 76
+    },
+    {
+      "label": "home分享操作",
+      "selector": ".share-action",
+      "left": 115.328125,
+      "top": 545,
+      "width": 89.3359375,
+      "height": 76
+    },
+    {
+      "label": "home分享操作",
+      "selector": ".share-action",
+      "left": 214.6640625,
+      "top": 545,
+      "width": 89.3359375,
+      "height": 76
+    }
+  ],
+  "hooks": [
+    {
+      "kind": "home",
+      "phase": "公开页面",
+      "friend": {
+        "title": "集结 · 蛋仔派对好队友，即刻集结",
+        "path": "/pages/main/index?tab=player&game_id=eggy",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-1.jpg"
+      },
+      "timeline": {
+        "title": "集结 · 蛋仔派对好队友，即刻集结",
+        "query": "tab=player&game_id=eggy",
+        "imageUrl": "http://127.0.0.1:18091/static/covers/official/eggy-1.jpg"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 800,
+          "height": 448
+        },
+        {
+          "use": "timeline",
+          "width": 800,
+          "height": 448
+        }
+      ]
+    },
+    {
+      "kind": "home",
+      "phase": "实时生成",
+      "friend": {
+        "title": "集结 · 找队友，也成为队友",
+        "path": "/pages/main/index?game_id=eggy&share_id=f1ec873c3ec68e1ee7984b192bae037f&tab=player",
+        "imageUrl": "http://tmp/Jy9mIIjC6yRw13fe11f6f0dee6fa9acdd80c9780f453.png"
+      },
+      "timeline": {
+        "title": "集结 · 找队友，也成为队友",
+        "query": "share_id=f1ec873c3ec68e1ee7984b192bae037f",
+        "imageUrl": "http://tmp/LNEbKQPBEwwB43a7987bf6f5f918f14429e045cfe6ad.png"
+      },
+      "imageSizes": [
+        {
+          "use": "friend",
+          "width": 500,
+          "height": 400
+        },
+        {
+          "use": "timeline",
+          "width": 500,
+          "height": 500
+        }
+      ]
+    }
+  ],
+  "runtime_exceptions": [],
+  "canvas_color_warnings": [],
+  "boundaries": [
+    "home真实码未生成：图片加载失败，请检查图片下载域名或分享配置重试生成；好友和朋友圈内容封面已真实绘制，不使用假码",
+    "未实际向微信好友或朋友圈发送内容，未点击相册保存/原生发送菜单，未支付、转账或伪造小程序码。",
+    "官方页面hook输出和原生图片解码不能替代真实手机上的分享展示与扫码验收。"
+  ]
+}
