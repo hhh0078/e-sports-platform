@@ -221,7 +221,7 @@ npm --prefix frontend run build:mp-weixin
 ### 正式部署与验证边界
 
 - 📦 **部署方式：** 后端、PostgreSQL、Redis 使用 Docker Compose，Nginx 提供 HTTPS；具体步骤见[部署指南](docs/DEPLOYMENT.md)。生产 Compose 与本地体验环境分别配置。
-- 🧾 **版本状态：** 生产验收记录带有日期；2026-10-20 的生产记录属于历史快照，不能代表此后新增钱包、AI 审核、消息中心等功能已在生产通过。
+- 🧾 **版本状态：** 2026-10-23已通过宝塔MCP升级后端，63项服务器核查通过，微信代码1.0.0已上传开发版本；首次管理员、商户/AI配置、真人实款和微信审核发布仍待完成，见[本轮交付与清单](docs/WALLET_DEPOSIT_POLISH_ACCEPTANCE.md)。
 - 📱 **真实能力：** 真人微信建号与协议同意、手机号授权、商户付款退款、转账到账、真实模型图文审核、手机真机及微信审核需分别验收。构建成功和本地模拟不替代这些结果。
 - 🔑 **配置管理：** 只使用仓库中的 `.env.example` 作为模板，真实 `.env`、商户密钥、会话和数据库备份保留在私密环境。
 
@@ -233,7 +233,7 @@ npm --prefix frontend run build:mp-weixin
 | --- | --- |
 | 源码部署、Docker、域名与回滚 | [部署指南](docs/DEPLOYMENT.md) |
 | 微信身份、后台配置与支付接入 | [微信配置](docs/WECHAT_BACKEND_SETUP.md) |
-| 钱包、押金、提现与测试 | [资金模块说明](docs/WALLET_SETUP_AND_TEST.md) · [本轮补缴与弹层计划](docs/WALLET_DEPOSIT_POLISH_PLAN.md) |
+| 钱包、押金、提现与测试 | [资金模块说明](docs/WALLET_SETUP_AND_TEST.md) · [本轮交付与测试清单](docs/WALLET_DEPOSIT_POLISH_ACCEPTANCE.md) |
 | 订单调价与微信分享 | [功能与验收记录](docs/ORDER_ADJUSTMENT_SHARING_ACCEPTANCE.md) |
 | 平台控制台与交易统计 | [管理后台说明](docs/ADMIN_CONSOLE.md) |
 | AI 审核与消息中心 | [审核和通知说明](docs/AI_MODERATION_MESSAGES.md) |

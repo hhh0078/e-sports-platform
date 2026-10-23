@@ -1,0 +1,12 @@
+{
+  "uploaded": true,
+  "version": "1.0.0",
+  "uploaded_at": "2026-10-23T06:07:02.615370+00:00",
+  "api_base": "https://game.ai.58it.cn/api",
+  "upload_bytes": 1296370,
+  "official_cli_exit": 0,
+  "result": "upload成功，代码已上传至微信开发版本",
+  "experience_version_confirmed": false,
+  "submitted_for_review": false,
+  "public_release": false
+}

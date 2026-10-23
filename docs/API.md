@@ -120,3 +120,15 @@ GET `/admin/analytics?start=YYYY-MM-DD&end=YYYY-MM-DD` 返回上海自然日周�
 ## 安全与测试
 
 服务端校验所有字符串长度、整数金额范围、封面合法来源及标签配置；用户不能伪造价格、身份、认证状态。所有审计落库。订单收入依据真实托管账本及售后期释放，不能仅凭completed状态虚增可提现余额；退款不能重复计入。开发账号、开发支付和模拟审核在生产必须关闭，配置不全不允许静默模拟成功。
+
+
+## 最低押金与补缴（2026-10-23）
+
+文件作用：补充个人及俱乐部平台押金的当前接口契约，金额均为整数分。
+
+- `GET /api/financial-rules` 返回两档平台费率、`personal_platform_deposit_cents` 和 `club_creation_deposit_cents`，后两项分别是个人和俱乐部最低额。
+- 管理员 `GET/PATCH /api/admin/financial-settings` 管理同一配置。旧客户端省略新增个人最低额字段时保留原值；明确传0才清零。
+- 本人 `GET /api/wallet` 返回实际托管 `deposit_cents`、`deposit_required_cents`、`deposit_shortfall_cents` 和 `deposit_qualified`；公开服务/个人主页仅返回达标的展示金额。
+- `GET /api/clubs/{id}/deposits` 的 `platform` 返回 `amount_cents`、`required_cents`、`shortfall_cents`、`qualified`；成员押金保留独立 `membership` 分区。
+- 缴纳仍用 `POST /api/wallet/topups`：个人用途 `deposit`、俱乐部用途 `club_platform` 并携带 `club_id`。新意图须让累计托管金额达到当前最低额；差额允许到分。
+- 门槛变化只影响资格与新意图校验，不自动移动已有押金。旧意图恢复和已核验付款回调继续按原金额入账；退款仍走原有条件、原渠道与原单幂等。

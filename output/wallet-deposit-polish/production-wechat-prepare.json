@@ -1,0 +1,10 @@
+{
+  "native_login_code_received": true,
+  "prepare_http": 200,
+  "ticket_received": true,
+  "agreement_count": 2,
+  "expires_in": 300,
+  "SDKVersion": "3.17.4",
+  "account_created": false,
+  "scope": "仅官方登录与身份准备，未同意协议、未建号、未验证手机号或支付"
+}

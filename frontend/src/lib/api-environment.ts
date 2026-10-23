@@ -2,7 +2,12 @@
 export const PRODUCTION_API_BASE = 'https://game.ai.58it.cn/api'
 export const DEVELOPMENT_API_BASE = 'http://127.0.0.1:8090/api'
 
-/** 按运行环境解析 API；正式环境只允许有效的公网 HTTPS 地址与 /api 路径。 */
+/**
+ * 按运行环境解析 API，正式环境仅允许 HTTPS 域名与 /api 路径。
+ * @param production - 是否为正式构建。
+ * @param configured - 显式配置的 API 地址，未提供时使用对应环境默认值。
+ * @returns 去除末尾斜杠的完整地址；非法配置会抛出错误。
+ */
 export function resolveAPIBase(production: boolean, configured?: string): string {
   const value = (configured || (production ? PRODUCTION_API_BASE : DEVELOPMENT_API_BASE)).replace(/\/$/, '')
   const url = new URL(value)

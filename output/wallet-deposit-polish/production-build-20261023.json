@@ -1,0 +1,87 @@
+{
+  "file_purpose": "MCP生产发布准备及源码镜像构建的脱敏证据；尚未切换运行API，不代表已部署新版功能",
+  "recorded_at": "2026-10-23T05:52:40.793965+00:00",
+  "source_commit": "ecac760b185ec33f7025c01a7e072d734ef49343",
+  "git_remote": "https://github.com/hhh0078/e-sports-platform.git",
+  "transport": "configured_baota_mcp_json_rpc_with_pinned_tls",
+  "github_fetch_timeout_seconds": 18,
+  "source_delivery": {
+    "method": "official_MCP_Upload_git_bundle",
+    "upload_ready": true,
+    "bundle_size": 191313472,
+    "bundle_sha256": "14784bdd411d16f676c96f2cc2f61b067db85bf4e6d848a988f6f575b138c0e0",
+    "expected_sha256_matched": true,
+    "server_bundle_verify": true,
+    "server_fetch_head_match": true
+  },
+  "backup": {
+    "backup_dir": "/www/wwwroot/game.ai.58it.cn/.deploy-backups/pre-wallet-polish-20261023-051108",
+    "previous_commit": "67d4592de19e784881f0b169c81b55e522f88798",
+    "previous_image": "jijie-api:20261020-gitee-6ea28d5",
+    "database_dump_sha256": "91c091e8bb973c4efc657ff6f1f1ce5c10a0cbbeaff0976623744dda60751e74",
+    "database_dump_bytes": 121879,
+    "env_mode": "600",
+    "backup_mode": "700",
+    "created_at": "2026-10-23T05:11:09.428712+00:00"
+  },
+  "build": {
+    "mcp_task_exit_code": 0,
+    "duration_seconds": 117.486,
+    "phases": [
+      {
+        "phase": "bundle_verified_locally",
+        "release_commit": "ecac760b185ec33f7025c01a7e072d734ef49343",
+        "image_tag": "20261023-wallet-ecac760"
+      },
+      {
+        "phase": "source_checked_out",
+        "commit": "ecac760b185ec33f7025c01a7e072d734ef49343",
+        "env_preserved": true,
+        "api_still_old": true
+      },
+      {
+        "phase": "image_built_not_activated",
+        "release_commit": "ecac760b185ec33f7025c01a7e072d734ef49343",
+        "image_tag": "20261023-wallet-ecac760",
+        "image_id": "sha256:2223ed469980de5cd3613cb059b9d84f5342e782228413623ebd604156eda3b8",
+        "image_created": "2026-10-23T13:50:35.798929551+08:00",
+        "api_container_unchanged": true,
+        "env_unchanged": true,
+        "completed_at": "2026-10-23T05:50:36.851119+00:00",
+        "disk_free_bytes": 3721404416
+      }
+    ]
+  },
+  "running_state": {
+    "health": {
+      "data": {
+        "database": "ok",
+        "dev_mode": false,
+        "redis": "ok",
+        "status": "ok"
+      }
+    },
+    "containers": [
+      {
+        "name": "jijie-api-1",
+        "image": "jijie-api:20261020-gitee-6ea28d5",
+        "health": "healthy"
+      },
+      {
+        "name": "jijie-postgres-1",
+        "image": "postgres:16-alpine",
+        "health": "healthy"
+      },
+      {
+        "name": "jijie-redis-1",
+        "image": "redis:7-alpine",
+        "health": "healthy"
+      }
+    ],
+    "new_image_exists": true,
+    "active_image_unchanged": true
+  },
+  "activation_performed": false,
+  "payment_executed": false,
+  "administrator_granted": false
+}

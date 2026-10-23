@@ -1,0 +1,9 @@
+{
+  "production_api_present": true,
+  "local_api_absent": true,
+  "url_check": true,
+  "private_config_absent": true,
+  "appid_matches_manifest": true,
+  "local_package_preserved": true,
+  "artifact_bytes": 1167767
+}

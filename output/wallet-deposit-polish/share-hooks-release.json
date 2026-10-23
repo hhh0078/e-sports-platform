@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "directory": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/build/mp-weixin",
+  "pages": [
+    {
+      "page": "pages/main/index",
+      "runtime_hooks": 6,
+      "friend_registrations": 1,
+      "timeline_registrations": 1
+    },
+    {
+      "page": "pages/services/detail",
+      "runtime_hooks": 6,
+      "friend_registrations": 1,
+      "timeline_registrations": 1
+    },
+    {
+      "page": "pages/requests/detail",
+      "runtime_hooks": 6,
+      "friend_registrations": 1,
+      "timeline_registrations": 1
+    },
+    {
+      "page": "pages/community/players/detail",
+      "runtime_hooks": 6,
+      "friend_registrations": 1,
+      "timeline_registrations": 1
+    },
+    {
+      "page": "pages/community/clubs/detail",
+      "runtime_hooks": 6,
+      "friend_registrations": 1,
+      "timeline_registrations": 1
+    },
+    {
+      "page": "pages/shares/create",
+      "runtime_hooks": 6,
+      "friend_registrations": 1,
+      "timeline_registrations": 1
+    },
+    {
+      "page": "pages/shares/detail",
+      "runtime_hooks": 6,
+      "friend_registrations": 1,
+      "timeline_registrations": 1
+    }
+  ]
+}

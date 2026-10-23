@@ -1,11 +1,10 @@
 {
   "passed": true,
-  "top_level_tests": 151,
-  "including_subtests": 262,
+  "top_level_tests": 154,
+  "including_subtests": 268,
   "skipped_tests": 0,
   "race_detected": false,
+  "go_vet": true,
   "environment": "独立测试schema的本地PostgreSQL/Redis，非生产资金",
-  "no_test_packages": [
-    "jijie/cmd/server"
-  ]
+  "scope": "合并品牌更新后的最终后端"
 }

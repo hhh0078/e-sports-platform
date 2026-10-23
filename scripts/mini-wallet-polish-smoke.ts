@@ -104,13 +104,19 @@ async function popup(page: Page, form = true, ruleScope?: Element): Promise<{ sc
   const native = await until(() => child(finance, ['uni-popup', 'node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-popup\\/uni-popup']), '官方 UniPopup')
   const scopes: Array<Page | Element> = [host, finance, native, page], sheet = await until(() => find(scopes, '.finance-popup-sheet'), '真实资金弹框内容')
   await until(async () => (await rect(sheet)).width > 0, '弹框打开动画完成')
+  const sheetArea = await rect(sheet)
+  assert.ok(sheetArea.height <= Number(viewport?.windowHeight) * 0.82 + 1, '资金弹框超过82vh：' + sheetArea.height)
+  assert.ok(sheetArea.top >= -1 && sheetArea.top + sheetArea.height <= Number(viewport?.windowHeight) + 1, '资金弹框越出窗口')
   const official = await until(() => native.$('.uni-popup'), '官方固定定位根节点')
   assert.equal(await official.style('position'), 'fixed', '弹框必须脱离普通文档流')
-  const transitions = await native.$$('uni-transition') as Element[]
+  let transitions = await native.$$('uni-transition') as Element[]
+  if (!transitions.length) transitions = await native.$$('node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-transition\\/uni-transition') as Element[]
   assert.ok(transitions.length >= 2, '官方遮罩和内容过渡必须同时存在')
   const mask = await until(() => transitions[0].$('view'), '官方遮罩实际视图'), maskArea = await rect(mask)
   assert.equal(await mask.style('position'), 'fixed'); assert.ok(Math.abs(maskArea.width - Number(viewport?.windowWidth)) <= 1, '遮罩未覆盖窗口宽度')
   await within(scopes, '.finance-popup-sheet'); await within(scopes, '.finance-popup-close')
+  const primary = await find(scopes, form ? '.funds-form-actions .btn' : '.withdrawal-rules-close')
+  if (primary) assert.equal(Math.round((await rect(primary)).height), 44, '资金弹框主按钮应为44px')
   return { scopes, finance, native, sheet }
 }
 /** 关闭真实浮层并等待官方关闭动画结束，不修改父页面 operation 状态。 */
@@ -212,8 +218,8 @@ async function publicBadges(serviceID: string, clubID: string): Promise<void> {
 }
 /** 普通身份尝试进入配置路由时，真实页面不渲染商户/交易规则输入字段。 */
 async function denied(): Promise<void> {
-  for (const route of ['/pages/manage/finance/settings', '/pages/manage/wallet', '/pages/manage/payment']) {
-    const page = await open(route), empty = await until(() => child(page, ['empty-state', 'components\\/EmptyState']), '普通用户配置拒绝')
+  for (const route of ['/pages/manage/finance/settings', '/pages/manage/wallet', '/pages/manage/settings']) {
+    const page = await open(route), empty = await until(async () => await page.$('.access-note') || await child(page, ['empty-state', 'components\\/EmptyState']), '普通用户配置拒绝')
     assert.match(await empty.text(), /管理员/); assert.equal((await page.$$('input') as Element[]).length, 0)
   }
   await record('普通玩家不能查看商户支付、转账或最低押金配置')
@@ -254,7 +260,7 @@ async function nativeGuards(): Promise<void> {
   for (const method of ['requestPayment', 'requestMerchantTransfer']) { await sdk().mockWxMethod(method, (options: { fail?: (result: { errMsg: string }) => void; complete?: (result: { errMsg: string }) => void }, name: string) => { walletPolishForbidden(name); const result = { errMsg: name + ':fail UI smoke blocked' }; options.fail?.(result); options.complete?.(result) }, method); mocks.push(method) }
 }
 /** 输出脱敏断言、截图及真实微信能力未测试的明确边界。 */
-function report(): void { fs.mkdirSync(output, { recursive: true }); fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && restored, viewport, checks, screenshots, runtime_exceptions: exceptions, canvas_color_warnings: colorWarnings, forbidden_native_calls: forbidden, original_financial_settings_restored: restored, remaining: [...remaining, '本地 SDK 未验证真实微信支付、退款、提现到账；本次未创建资金交易。'], ...(failure ? { error: redacted(failure instanceof Error ? failure.message : failure) } : {}) }, null, 2) + '\n') }
+function report(): void { fs.mkdirSync(output, { recursive: true }); fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && restored, project, api, package_mode: '本地API构建复制至实际微信工程；不是生产接口或已上传包', viewport, checks, screenshots, runtime_exceptions: exceptions, canvas_color_warnings: colorWarnings, forbidden_native_calls: forbidden, original_financial_settings_restored: restored, remaining: [...remaining, '本地 SDK 未验证真实微信支付、退款、提现到账；本次未创建资金交易。'], ...(failure ? { error: redacted(failure instanceof Error ? failure.message : failure) } : {}) }, null, 2) + '\n') }
 /** 执行四身份与两类押金规则验收，所有临时财务设置在 finally 恢复原值。 */
 async function run(): Promise<void> {
   fs.mkdirSync(output, { recursive: true }); assert.equal((await call<{ dev_mode: boolean }>('/bootstrap')).dev_mode, true); localVerified = true

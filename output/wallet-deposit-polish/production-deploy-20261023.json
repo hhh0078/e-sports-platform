@@ -1,0 +1,947 @@
+{
+  "checked_at": "2026-10-23T06:01:01.680655+00:00",
+  "source_commit": "ecac760b185ec33f7025c01a7e072d734ef49343",
+  "image_tag": "20261023-wallet-ecac760",
+  "image_id": "sha256:2223ed469980de5cd3613cb059b9d84f5342e782228413623ebd604156eda3b8",
+  "backup_dir": "/www/wwwroot/game.ai.58it.cn/.deploy-backups/pre-wallet-activation-20261023-055806",
+  "database_dump_bytes": 123542,
+  "database_dump_sha256": "3a276b89238c7fc99828dce1d365d51cd57c6cf90997d68b332db330140c7f00",
+  "checks": [
+    {
+      "name": "https_health",
+      "passed": true,
+      "detail": {
+        "http": 200,
+        "content_type": "application/json; charset=utf-8",
+        "bytes": 71,
+        "body": {
+          "data": {
+            "database": "ok",
+            "dev_mode": false,
+            "redis": "ok",
+            "status": "ok"
+          }
+        }
+      }
+    },
+    {
+      "name": "jijie-api-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_id_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_mounts_ports_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_id_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_mounts_ports_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "api_exact_built_image",
+      "passed": true
+    },
+    {
+      "name": "api_recreated",
+      "passed": true
+    },
+    {
+      "name": "api_loopback_only",
+      "passed": true
+    },
+    {
+      "name": "only_image_tag_changed",
+      "passed": true
+    },
+    {
+      "name": "env_mode_600",
+      "passed": true
+    },
+    {
+      "name": "encryption_key_unchanged",
+      "passed": true
+    },
+    {
+      "name": "runtime_encryption_key_matches",
+      "passed": true
+    },
+    {
+      "name": "runtime_production_mode",
+      "passed": true
+    },
+    {
+      "name": "rows_preserved_users",
+      "passed": true,
+      "detail": {
+        "before": 62,
+        "after": 62
+      }
+    },
+    {
+      "name": "rows_preserved_games",
+      "passed": true,
+      "detail": {
+        "before": 13,
+        "after": 13
+      }
+    },
+    {
+      "name": "rows_preserved_services",
+      "passed": true,
+      "detail": {
+        "before": 130,
+        "after": 130
+      }
+    },
+    {
+      "name": "rows_preserved_clubs",
+      "passed": true,
+      "detail": {
+        "before": 6,
+        "after": 6
+      }
+    },
+    {
+      "name": "rows_preserved_members",
+      "passed": true,
+      "detail": {
+        "before": 42,
+        "after": 42
+      }
+    },
+    {
+      "name": "rows_preserved_orders",
+      "passed": true,
+      "detail": {
+        "before": 52,
+        "after": 52
+      }
+    },
+    {
+      "name": "rows_preserved_messages",
+      "passed": true,
+      "detail": {
+        "before": 260,
+        "after": 260
+      }
+    },
+    {
+      "name": "rows_preserved_reviews",
+      "passed": true,
+      "detail": {
+        "before": 8,
+        "after": 8
+      }
+    },
+    {
+      "name": "rows_preserved_audit",
+      "passed": true,
+      "detail": {
+        "before": 11,
+        "after": 11
+      }
+    },
+    {
+      "name": "rows_preserved_settings",
+      "passed": true,
+      "detail": {
+        "before": 3,
+        "after": 10
+      }
+    },
+    {
+      "name": "rows_preserved_evidence",
+      "passed": true,
+      "detail": {
+        "before": 62,
+        "after": 62
+      }
+    },
+    {
+      "name": "rows_preserved_identities",
+      "passed": true,
+      "detail": {
+        "before": 2,
+        "after": 2
+      }
+    },
+    {
+      "name": "all_expected_tables_created",
+      "passed": true
+    },
+    {
+      "name": "tables_chinese_comments",
+      "passed": true
+    },
+    {
+      "name": "columns_documented",
+      "passed": true,
+      "detail": {
+        "documented_columns": 58
+      }
+    },
+    {
+      "name": "financial_immutable_triggers",
+      "passed": true
+    },
+    {
+      "name": "no_historical_finance_fabrication",
+      "passed": true,
+      "detail": {
+        "wallet_entries": 0,
+        "wallet_topups": 0,
+        "wallet_escrows": 0,
+        "wallet_withdrawals": 0,
+        "wallet_deposit_refunds": 0,
+        "fund_receipts": 0,
+        "fund_lots": 0,
+        "fund_movements": 0,
+        "fund_audits": 0,
+        "order_adjustments": 0,
+        "order_payments": 0,
+        "order_refunds": 0
+      }
+    },
+    {
+      "name": "wallets_not_credited_by_migration",
+      "passed": true,
+      "detail": {
+        "accounts": 0,
+        "recharge": 0,
+        "available": 0,
+        "pending": 0,
+        "deposit": 0,
+        "deposit_refunding": 0,
+        "withdrawal_frozen": 0
+      }
+    },
+    {
+      "name": "no_guessed_admin",
+      "passed": true,
+      "detail": {
+        "admin_count": 0
+      }
+    },
+    {
+      "name": "provider_default_migration",
+      "passed": true
+    },
+    {
+      "name": "brand_marker_migrated",
+      "passed": true,
+      "detail": {
+        "setting_ids": [
+          "agreement:privacy:c2cb35dd686187002d02093d706fd2ccbea8e3f5648bd4373174674a7ca91a36",
+          "agreement:privacy:d360ef973d0d7abfa1b26a3f0767be32d517c9eb7f8c9c186e726935f8247379",
+          "agreement:user:c2cb35dd686187002d02093d706fd2ccbea8e3f5648bd4373174674a7ca91a36",
+          "agreement:user:d360ef973d0d7abfa1b26a3f0767be32d517c9eb7f8c9c186e726935f8247379",
+          "agreements",
+          "catalog-official-v1",
+          "catalog-presentation-v1",
+          "default-avatars-fluent-v1",
+          "default-brand-kaiji-v1",
+          "platform"
+        ]
+      }
+    },
+    {
+      "name": "public_/api/bootstrap",
+      "passed": true
+    },
+    {
+      "name": "public_/api/financial-rules",
+      "passed": true
+    },
+    {
+      "name": "public_/api/services",
+      "passed": true
+    },
+    {
+      "name": "public_/api/clubs",
+      "passed": true
+    },
+    {
+      "name": "protected_/api/dev/accounts",
+      "passed": true,
+      "detail": {
+        "http": 404,
+        "expected": 404
+      }
+    },
+    {
+      "name": "protected_/api/admin/overview",
+      "passed": true,
+      "detail": {
+        "http": 401,
+        "expected": 401
+      }
+    },
+    {
+      "name": "protected_/api/admin/payment-settings",
+      "passed": true,
+      "detail": {
+        "http": 401,
+        "expected": 401
+      }
+    },
+    {
+      "name": "protected_/api/admin/ai-settings",
+      "passed": true,
+      "detail": {
+        "http": 401,
+        "expected": 401
+      }
+    },
+    {
+      "name": "protected_/deploy/.env",
+      "passed": true,
+      "detail": {
+        "http": 404,
+        "expected": 404
+      }
+    },
+    {
+      "name": "protected_/.env",
+      "passed": true,
+      "detail": {
+        "http": 404,
+        "expected": 404
+      }
+    },
+    {
+      "name": "protected_/.deploy-backups/",
+      "passed": true,
+      "detail": {
+        "http": 405,
+        "allowed_denial_statuses": [
+          403,
+          404,
+          405
+        ],
+        "allow_header": "OPTIONS",
+        "generic_denial": true,
+        "not_directory_listing": true
+      }
+    },
+    {
+      "name": "two_platform_deposit_rules_public",
+      "passed": true,
+      "detail": {
+        "keys": [
+          "free_platform_rate_bps",
+          "club_platform_rate_bps",
+          "personal_platform_deposit_cents",
+          "club_creation_deposit_cents"
+        ]
+      }
+    },
+    {
+      "name": "bootstrap_production_mode",
+      "passed": true
+    },
+    {
+      "name": "game_images_all_accessible",
+      "passed": true,
+      "detail": {
+        "count": 43
+      }
+    },
+    {
+      "name": "private_backup_file_denied_config.env",
+      "passed": true,
+      "detail": {
+        "http": 404
+      }
+    },
+    {
+      "name": "private_backup_file_denied_database.sql.gz",
+      "passed": true,
+      "detail": {
+        "http": 404
+      }
+    },
+    {
+      "name": "final_backup_files_mode_600",
+      "passed": true
+    },
+    {
+      "name": "final_backup_directory_mode_700",
+      "passed": true
+    },
+    {
+      "name": "public_brand_is_kaiji",
+      "passed": true,
+      "detail": {
+        "site_name": "开机电竞"
+      }
+    },
+    {
+      "name": "public_services_nonempty",
+      "passed": true,
+      "detail": {
+        "sampled": 100
+      }
+    },
+    {
+      "name": "public_services_no_unfunded_deposit_badges",
+      "passed": true
+    },
+    {
+      "name": "public_clubs_no_unfunded_platform_badges",
+      "passed": true
+    },
+    {
+      "name": "public_club_detail",
+      "passed": true
+    },
+    {
+      "name": "public_service_detail",
+      "passed": true
+    },
+    {
+      "name": "public_player_detail",
+      "passed": true
+    },
+    {
+      "name": "migrated_default_avatars_accessible",
+      "passed": true,
+      "detail": {
+        "count": 6
+      }
+    }
+  ],
+  "passed": 63,
+  "failed": 0,
+  "counts_before": {
+    "users": 62,
+    "games": 13,
+    "services": 130,
+    "clubs": 6,
+    "members": 42,
+    "orders": 52,
+    "messages": 260,
+    "reviews": 8,
+    "audit": 11,
+    "settings": 3,
+    "evidence": 62,
+    "identities": 2
+  },
+  "counts_after": {
+    "users": 62,
+    "games": 13,
+    "services": 130,
+    "clubs": 6,
+    "members": 42,
+    "orders": 52,
+    "messages": 260,
+    "reviews": 8,
+    "audit": 11,
+    "settings": 10,
+    "evidence": 62,
+    "identities": 2,
+    "wallets": 0,
+    "wallet_entries": 0,
+    "wallet_escrows": 0,
+    "wallet_topups": 0,
+    "wallet_withdrawals": 0,
+    "wallet_deposit_refunds": 0,
+    "wallet_requests": 0,
+    "inbox": 0,
+    "inbox_receipts": 0,
+    "fund_receipts": 0,
+    "fund_lots": 0,
+    "fund_movements": 0,
+    "fund_audits": 0,
+    "order_adjustments": 0,
+    "order_payments": 0,
+    "order_refunds": 0,
+    "shares": 0
+  },
+  "containers": {
+    "jijie-api-1": {
+      "id": "3bbbbd751699e405d1ab73736cbb000b0e9f418f016d6001d9684a4a092eeeda",
+      "image": "jijie-api:20261023-wallet-ecac760",
+      "image_id": "sha256:2223ed469980de5cd3613cb059b9d84f5342e782228413623ebd604156eda3b8",
+      "health": "healthy",
+      "mounts": [],
+      "ports": {
+        "8090/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18090"
+          }
+        ]
+      }
+    },
+    "jijie-postgres-1": {
+      "id": "391d232e9c0802035f099537684c122355b7e94aa28047173c7072ba39866c1d",
+      "image": "postgres:16-alpine",
+      "image_id": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "health": "healthy",
+      "mounts": [
+        {
+          "destination": "/var/lib/postgresql/data",
+          "name": "jijie_postgres-data",
+          "type": "volume"
+        }
+      ],
+      "ports": {
+        "5432/tcp": null
+      }
+    },
+    "jijie-redis-1": {
+      "id": "e66f9045ede73b78e9f82dc81425d553f772e301d77063df8c802cd0a8a1fb47",
+      "image": "redis:7-alpine",
+      "image_id": "sha256:f84b0c4678011602b9b98c227a4dcd5468bf8b088b02fdd4165cb7758bad8058",
+      "health": "healthy",
+      "mounts": [
+        {
+          "destination": "/data",
+          "name": "jijie_redis-data",
+          "type": "volume"
+        }
+      ],
+      "ports": {
+        "6379/tcp": null
+      }
+    }
+  },
+  "public_summary": {
+    "/api/bootstrap": {
+      "http": 200,
+      "data_type": "dict"
+    },
+    "/api/financial-rules": {
+      "http": 200,
+      "data_type": "dict"
+    },
+    "/api/services": {
+      "http": 200,
+      "data_type": "list"
+    },
+    "/api/clubs": {
+      "http": 200,
+      "data_type": "list"
+    }
+  },
+  "game_images": [
+    {
+      "path": "/static/covers/official/arena-1.jpg",
+      "http": 200,
+      "bytes": 57785,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/arena-2.jpg",
+      "http": 200,
+      "bytes": 38441,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/arena-icon.jpg",
+      "http": 200,
+      "bytes": 6134,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/cfm-1.jpg",
+      "http": 200,
+      "bytes": 62748,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/cfm-2.jpg",
+      "http": 200,
+      "bytes": 57700,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/cfm-icon.jpg",
+      "http": 200,
+      "bytes": 7739,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/codm-1.jpg",
+      "http": 200,
+      "bytes": 36712,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/codm-2.jpg",
+      "http": 200,
+      "bytes": 31084,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/codm-icon.jpg",
+      "http": 200,
+      "bytes": 3492,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/delta-1.jpg",
+      "http": 200,
+      "bytes": 42047,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/delta-2.jpg",
+      "http": 200,
+      "bytes": 46852,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/delta-3.jpg",
+      "http": 200,
+      "bytes": 41915,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/delta-4.jpg",
+      "http": 200,
+      "bytes": 40115,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/delta-icon.jpg",
+      "http": 200,
+      "bytes": 8582,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/eggy-1.jpg",
+      "http": 200,
+      "bytes": 35331,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/eggy-2.jpg",
+      "http": 200,
+      "bytes": 58695,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/eggy-icon.jpg",
+      "http": 200,
+      "bytes": 3688,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/honor-1.jpg",
+      "http": 200,
+      "bytes": 46123,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/honor-2.jpg",
+      "http": 200,
+      "bytes": 55507,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/honor-3.jpg",
+      "http": 200,
+      "bytes": 35316,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/honor-4.jpg",
+      "http": 200,
+      "bytes": 46776,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/honor-icon.jpg",
+      "http": 200,
+      "bytes": 5605,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/identityv-1.jpg",
+      "http": 200,
+      "bytes": 38118,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/identityv-2.jpg",
+      "http": 200,
+      "bytes": 37869,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/identityv-icon.jpg",
+      "http": 200,
+      "bytes": 3087,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/lol-1.jpg",
+      "http": 200,
+      "bytes": 32302,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/lol-2.jpg",
+      "http": 200,
+      "bytes": 41400,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/lol-icon.jpg",
+      "http": 200,
+      "bytes": 1860,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/narakam-1.jpg",
+      "http": 200,
+      "bytes": 32017,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/narakam-2.jpg",
+      "http": 200,
+      "bytes": 25397,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/narakam-icon.jpg",
+      "http": 200,
+      "bytes": 2700,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/peace-1.jpg",
+      "http": 200,
+      "bytes": 50718,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/peace-2.jpg",
+      "http": 200,
+      "bytes": 54088,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/peace-icon.jpg",
+      "http": 200,
+      "bytes": 9025,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/tft-1.jpg",
+      "http": 200,
+      "bytes": 61261,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/tft-2.jpg",
+      "http": 200,
+      "bytes": 48339,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/tft-icon.jpg",
+      "http": 200,
+      "bytes": 9455,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/valorant-1.jpg",
+      "http": 200,
+      "bytes": 49084,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/valorant-2.jpg",
+      "http": 200,
+      "bytes": 38853,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/valorant-icon.jpg",
+      "http": 200,
+      "bytes": 10430,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/valorantm-1.jpg",
+      "http": 200,
+      "bytes": 25529,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/valorantm-2.jpg",
+      "http": 200,
+      "bytes": 34725,
+      "content_type": "image/jpeg",
+      "passed": true
+    },
+    {
+      "path": "/static/covers/official/valorantm-icon.jpg",
+      "http": 200,
+      "bytes": 2793,
+      "content_type": "image/jpeg",
+      "passed": true
+    }
+  ],
+  "startup_log_tail": [
+    "2026/10/23 05:58:08 开机电竞 API 启动于 0.0.0.0:8090，开发模式=false"
+  ],
+  "disk_free_bytes": 3717337088,
+  "activation_performed": true,
+  "real_payment_executed": false,
+  "admin_configured": false,
+  "payment_settings_present": false,
+  "ai_settings_present": false,
+  "wallet_settings_present": false,
+  "private_backup_verification": {
+    "private_backup_paths": [
+      {
+        "path": "/.deploy-backups/",
+        "http": 405,
+        "allow": "OPTIONS",
+        "content_type": "text/plain; charset=utf-8",
+        "generic_denial": true,
+        "exposed": false
+      },
+      {
+        "path": "/.deploy-backups/pre-wallet-activation-20261023-055806/config.env",
+        "http": 404,
+        "allow": null,
+        "content_type": "text/html",
+        "generic_denial": false,
+        "exposed": false
+      },
+      {
+        "path": "/.deploy-backups/pre-wallet-activation-20261023-055806/database.sql.gz",
+        "http": 404,
+        "allow": null,
+        "content_type": "text/html",
+        "generic_denial": false,
+        "exposed": false
+      }
+    ],
+    "startup_log_tail": [
+      "2026/10/23 05:58:08 开机电竞 API 启动于 0.0.0.0:8090，开发模式=false"
+    ],
+    "backup_file_modes": {
+      "config.env": "0o600",
+      "manifest.json": "0o600",
+      "database.sql.gz": "0o600",
+      "verification.json": "0o600"
+    },
+    "backup_dir_mode": "0o700",
+    "no_private_content_exposed": true
+  },
+  "default_avatars": [
+    {
+      "path": "/static/avatars/dog_face.png",
+      "http": 200,
+      "bytes": 43188,
+      "type": "image/png",
+      "passed": true
+    },
+    {
+      "path": "/static/avatars/dolphin.png",
+      "http": 200,
+      "bytes": 24515,
+      "type": "image/png",
+      "passed": true
+    },
+    {
+      "path": "/static/avatars/fox.png",
+      "http": 200,
+      "bytes": 41966,
+      "type": "image/png",
+      "passed": true
+    },
+    {
+      "path": "/static/avatars/lion.png",
+      "http": 200,
+      "bytes": 50059,
+      "type": "image/png",
+      "passed": true
+    },
+    {
+      "path": "/static/avatars/octopus.png",
+      "http": 200,
+      "bytes": 34258,
+      "type": "image/png",
+      "passed": true
+    },
+    {
+      "path": "/static/avatars/polar_bear.png",
+      "http": 200,
+      "bytes": 43298,
+      "type": "image/png",
+      "passed": true
+    }
+  ],
+  "verification_adjustments": [
+    {
+      "initial_failure": "备份目录拒绝检查预期写死404，实际405；其余50项通过",
+      "resolution": "针对补核确认Allow=OPTIONS、正文仅Method Not Allowed、具体配置与数据库快照均404；修正目录拒绝状态预期为403/404/405，无线上配置变更"
+    }
+  ],
+  "activation_task_exit_code": 0,
+  "finalized_at": "2026-10-23T06:08:30.950959+00:00",
+  "wechat_publication_performed": false
+}

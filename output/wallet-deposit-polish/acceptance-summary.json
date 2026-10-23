@@ -1,0 +1,65 @@
+{
+  "updated_at": "2026-10-23T06:26:51.079602+00:00",
+  "backend_source_commit": "ecac760b185ec33f7025c01a7e072d734ef49343",
+  "backend": {
+    "passed": true,
+    "top_level_tests": 154,
+    "including_subtests": 268,
+    "skipped_tests": 0,
+    "race_detected": false,
+    "go_vet": true,
+    "environment": "独立测试schema的本地PostgreSQL/Redis，非生产资金",
+    "scope": "合并品牌更新后的最终后端"
+  },
+  "frontend": {
+    "typecheck": true,
+    "standards_pages": 41,
+    "tests_passed": 451,
+    "h5_build": true,
+    "wechat_local_build": true,
+    "wechat_release_build": true
+  },
+  "mini_program": {
+    "320": {
+      "passed": true,
+      "checks": 24
+    },
+    "390": {
+      "passed": true,
+      "checks": 24
+    }
+  },
+  "production": {
+    "domain": "https://game.ai.58it.cn",
+    "passed": 63,
+    "failed": 0,
+    "image_tag": "20261023-wallet-ecac760"
+  },
+  "release_package": {
+    "production_api_present": true,
+    "local_api_absent": true,
+    "url_check": true,
+    "private_config_absent": true,
+    "appid_matches_manifest": true,
+    "local_package_preserved": true,
+    "artifact_bytes": 1167767
+  },
+  "wechat_upload": {
+    "uploaded": true,
+    "version": "1.0.0",
+    "uploaded_at": "2026-10-23T06:07:02.615370+00:00",
+    "api_base": "https://game.ai.58it.cn/api",
+    "upload_bytes": 1296370,
+    "official_cli_exit": 0,
+    "result": "upload成功，代码已上传至微信开发版本",
+    "experience_version_confirmed": false,
+    "submitted_for_review": false,
+    "public_release": false
+  },
+  "remaining": [
+    "首次真实用户登录及管理员可信授权",
+    "真实手机号授权",
+    "商户、提现和AI密钥配置及渠道实测",
+    "微信体验版设置、审核及公开发布"
+  ]
+}

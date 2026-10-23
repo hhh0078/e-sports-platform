@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "viewport": {
+    "pixelRatio": 3,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "screenTop": 0,
+    "windowWidth": 390,
+    "windowHeight": 844,
+    "statusBarHeight": 47
+  },
+  "page": "pages/main/index",
+  "api": "https://game.ai.58it.cn/api",
+  "service_grid_visible": true,
+  "scope": "正式产物连接生产API的访客首页，仅浏览，未建号或付款"
+}
