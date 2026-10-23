@@ -17,6 +17,7 @@
       <view class="form-section form-panel"><text class="section-title">服务信息</text><view class="field"><text class="field-label">服务标题</text><input v-model="form.title" class="input" maxlength="40" placeholder="例如：三角洲双人护航 · 耐心沟通"/></view><view class="field"><text class="field-label">服务类型</text><picker :range="selectedGame?.categories || []" :value="categoryIndex" @change="form.category=selectedGame.categories[Number($event.detail.value)]"><view class="input picker-value">{{ form.category || '请选择' }}<Icon name="arrow" :size="14"/></view></picker></view><view class="price-grid"><view class="field"><text class="field-label">价格（元）</text><input v-model="form.price" type="digit" class="input" placeholder="例如 29"/></view><view class="field"><text class="field-label">计价单位</text><picker :range="units" :value="units.indexOf(form.unit)" @change="form.unit=units[Number($event.detail.value)]"><view class="input">每 {{ form.unit }}</view></picker></view></view><view class="field"><text class="field-label">服务说明与交付标准</text><textarea v-model="form.description" class="input description" maxlength="1000" placeholder="明确服务包含什么、预约方式、服务时长、验收标准以及不包含的内容。请勿提供外挂或索取账号密码。"/></view><view class="field"><text class="field-label">服务标签（逗号分隔，最多4个）</text><input v-model="form.tagsText" class="input" maxlength="60" placeholder="耐心沟通,稳定在线,新手友好"/></view><view class="field"><text class="field-label">俱乐部挂靠（可选）</text><picker :range="clubOptions" range-key="name" :value="clubIndex" @change="form.club_id=clubOptions[Number($event.detail.value)].id"><view class="input picker-value">{{ clubOptions[clubIndex]?.name || '自由打手 · 无需挂靠' }}<Icon name="arrow" :size="14"/></view></picker><text class="hint">仅能选择已通过挂靠的俱乐部。认证由平台审核，不影响自由接单。</text></view></view>
       <view class="subtle-note mb">发布后进行图文审核；无AI时由管理员人工处理。审核未通过会通知修改，已有订单的约定保持不变。</view><button class="btn submit" :disabled="busy" @click="save">{{ busy ? '正在发布…' : '发布服务' }}</button>
     </template>
+    <SubscribeReminder ref="subscriptionReminder" :scenes="['provider_order']" :entry="false" title="发布成功" description="有人购买你的服务时，及时收到微信提醒。拒绝订阅不影响接单。" button-label="接收新订单提醒"/>
   </AppShell>
 </template>
 <script setup lang="ts">
@@ -28,6 +29,7 @@ import AppShell from '../../components/AppShell.vue'
 import ServiceCard from '../../components/ServiceCard.vue'
 import GameSelector from '../../components/GameSelector.vue'
 import Icon from '../../components/Icon.vue'
+import SubscribeReminder from '../../components/SubscribeReminder.vue'
 import { state, init, sessionRevision } from '../../lib/store'
 import { getService, createService, updateService } from '../../api/services.api'
 import { listClubs } from '../../api/clubs.api'
@@ -39,6 +41,7 @@ import { go, notify, assetUrl } from '../../lib/format'
 import { newLabel, POSITIONS, gameCovers, randomGameCover, normalizeLabelText } from '../../lib/cover'
 import { designPixels } from '../../lib/design-units'
 const positionEditor = ref('')
+const subscriptionReminder=ref<{offer:(next?:()=>void)=>void}|null>(null)
 /** 原生slider旋钮接口使用实际像素，并限制在官方允许的12至28像素范围。 */
 const sliderBlockSize=ref(16)
 /** 按窗口宽度同步旋钮，避免表单缩放后仍保留固定像素。 */
@@ -124,7 +127,7 @@ async function save() {
     const body={game_id:form.game_id,title:form.title.trim(),description:form.description.trim(),category:form.category,price_cents:price,unit:form.unit,cover_url:form.cover_url,labels:form.labels,tags:form.tagsText.split(/[,，]/).map(item=>item.trim()).filter(Boolean).slice(0,4),club_id:form.club_id}
     await (serviceId.value?updateService(serviceId.value,body):createService(body))
     if(!sameSession(session))return
-    notify('服务已发布，图文审核中');go('/pages/main/index?tab=worker')
+    notify('服务已发布，图文审核中');if(subscriptionReminder.value)subscriptionReminder.value.offer(()=>go('/pages/main/index?tab=worker'));else go('/pages/main/index?tab=worker')
   }catch(e){if(sameSession(session)){error.value=errorMessage(e);notify(e)}}finally{busy.value=false}
 }
 onLoad(options=>{serviceId.value=options?.id||'';load()})

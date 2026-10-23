@@ -6,6 +6,7 @@
     <template v-if="club&&canManage">
       <view class="club-console-identity"><image v-if="club.avatar_url" class="club-console-avatar" :src="assetUrl(club.avatar_url)" mode="aspectFill"/><view class="club-console-copy"><text class="club-console-title">{{ club.name }}</text><text class="subtle-note">负责人控制台</text></view></view>
       <view class="club-console-summary"><text>认证成员</text><text>{{ club.member_count }} 人</text></view>
+      <SubscribeReminder :scenes="['club_member','club_dispute']" label="接收成员申请与争议提醒"/>
       <view class="club-console-links"><button v-for="item in links" :key="item.page" class="club-console-link" @click="go(item.page+encodeURIComponent(id))"><view class="club-console-icon"><Icon :name="item.icon" :size="22"/></view><view class="club-console-copy"><text class="club-console-label">{{ item.title }}</text><text class="subtle-note">{{ item.detail }}</text></view><Icon name="arrow" :size="14"/></button></view>
       <text class="subtle-note">押金、佣金和负责人的个人资产分别记账。资金操作须通过平台核验。</text>
     </template>
@@ -14,6 +15,7 @@
 </template>
 <script setup lang="ts">
 import AppShell from '../../../components/AppShell.vue'
+import SubscribeReminder from '../../../components/SubscribeReminder.vue'
 import Icon from '../../../components/Icon.vue'
 import { useClubFunds } from '../../../lib/use-club-funds'
 import { assetUrl, go } from '../../../lib/format'

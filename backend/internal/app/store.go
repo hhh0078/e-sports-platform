@@ -20,7 +20,7 @@ type querier interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
 }
 
-var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits", "order_adjustments", "order_payments", "order_refunds", "shares", "moderation_tasks", "moderation_targets"}
+var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits", "order_adjustments", "order_payments", "order_refunds", "shares", "moderation_tasks", "moderation_targets", "subscription_deliveries", "subscription_authorizations", "subscription_preferences", "subscription_receipts", "subscription_callbacks"}
 
 // now 返回统一的 UTC 时间文本。
 func now() string { return time.Now().UTC().Format(time.RFC3339Nano) }
@@ -73,15 +73,46 @@ func put(ctx context.Context, q querier, table, id string, value any) error {
 
 // putRaw 仅由可信业务与审核事务持久化数据，不递归触发审核。
 func putRaw(ctx context.Context, q querier, table, id string, value any) error {
+	// 领域消息与业务数据同事务落库；连接池直写也先转换成事务，外部微信发送只由后台执行。
+	if domainNoticeTable(table) {
+		if pool, ok := q.(*pgxpool.Pool); ok {
+			tx, err := pool.Begin(ctx)
+			if err != nil {
+				return err
+			}
+			defer tx.Rollback(ctx)
+			if err = putRaw(ctx, tx, table, id, value); err != nil {
+				return err
+			}
+			return tx.Commit(ctx)
+		}
+	}
 	raw, err := json.Marshal(value)
 	if err != nil {
 		return err
+	}
+	var previous []byte
+	if domainNoticeTable(table) {
+		err = q.QueryRow(ctx, "SELECT data FROM "+validTable(table)+" WHERE id=$1 FOR UPDATE", id).Scan(&previous)
+		if missing(err) {
+			// 缺行没有可锁对象，仅在新建竞争时使用事务锁并重读；已有行保持原锁序避免锁反转。
+			if _, err = q.Exec(ctx, "SELECT pg_advisory_xact_lock(hashtextextended($1,0))", "jijie-domain-create:"+table+":"+id); err != nil {
+				return err
+			}
+			err = q.QueryRow(ctx, "SELECT data FROM "+validTable(table)+" WHERE id=$1 FOR UPDATE", id).Scan(&previous)
+		}
+		if err != nil && !missing(err) {
+			return err
+		}
 	}
 	statement := "INSERT INTO " + validTable(table) + " (id,data) VALUES ($1,$2) ON CONFLICT(id) DO UPDATE SET data=EXCLUDED.data"
 	if table == "evidence" {
 		statement = `INSERT INTO evidence(id,data) VALUES($1,$2) ON CONFLICT(id) DO UPDATE SET data=CASE WHEN evidence.data->>'moderation'='rejected' THEN evidence.data || (EXCLUDED.data-'data'-'moderation'-'sha256'-'owner_id'-'order_id'-'public') ELSE EXCLUDED.data END`
 	}
 	_, err = q.Exec(ctx, statement, id, raw)
+	if err == nil && domainNoticeTable(table) {
+		err = captureDomainNotices(ctx, q, table, id, previous, raw)
+	}
 	return err
 }
 
@@ -118,6 +149,9 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 	names := map[string]string{"users": "平台用户与权限", "games": "游戏主题与服务分类", "services": "服务发布与审核", "clubs": "俱乐部组织与认证", "members": "俱乐部挂靠申请与成员", "orders": "交易订单与状态", "messages": "订单沟通与文字证据", "reviews": "订单完成评价", "audit": "管理员操作审计", "settings": "平台运营配置", "evidence": "订单原始图片证据与完整性摘要", "identities": "微信私密身份映射", "inbox": "用户未读系统通知", "inbox_receipts": "同日审核拒绝通知防重复摘要", "moderation_tasks": "图文后置审核持久任务与人工决定", "moderation_targets": "图文字段单调版本与审核展示状态"}
+	for table, label := range map[string]string{"subscription_deliveries": "微信订阅业务提醒持久发件箱", "subscription_authorizations": "微信一次性模板候选与消费记录", "subscription_preferences": "用户订阅场景偏好", "subscription_receipts": "订阅事件与请求幂等摘要", "subscription_callbacks": "微信验签订阅回调摘要"} {
+		names[table] = label
+	}
 	for table, label := range map[string]string{"fund_audits": "不可变提现来源审核快照", "fund_receipts": "已核验外部收款根凭证", "fund_lots": "逐笔资金来源批次及剩余容量", "fund_movements": "不可变资金分配与溯源凭证", "wallets": "分区钱包余额与冻结资金", "wallet_entries": "不可变资金变动账单", "wallet_escrows": "逐订单实付托管及原路退款分账", "wallet_topups": "余额与押金充值付款记录", "wallet_withdrawals": "服务收入提现冻结与官方转账结果", "wallet_deposit_refunds": "平台押金多笔原路退还记录", "wallet_requests": "同账号幂等号资金用途与载荷绑定记录"} {
 		names[table] = label
 	}
@@ -141,6 +175,9 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 	if _, err = tx.Exec(ctx, `CREATE INDEX IF NOT EXISTS inbox_user_time_idx ON inbox ((data->>'user_id'),(data->>'created_at'),id);`); err != nil {
+		return err
+	}
+	if err = migrateSubscriptions(ctx, tx); err != nil {
 		return err
 	}
 	if err = migrateModeration(ctx, tx); err != nil {

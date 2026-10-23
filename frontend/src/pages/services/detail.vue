@@ -14,7 +14,7 @@
         <view class="content-section"><text class="section-title">服务说明</text><text class="description">{{ service.description }}</text><view class="service-traits"><text v-for="tag in service.tags||[]" :key="tag" class="trait">{{ tag }}</text></view></view>
         <template v-if="!timelinePreview && service.status==='active' && service.provider_id!==state.user?.id">
           <view class="content-section order-form"><text class="section-title">下单信息</text><view class="quantity-row"><text class="field-label">数量（{{ service.unit||'单' }}）</text><view class="quantity"><button aria-label="减少数量" @click="changeQuantity(-1)" :disabled="quantity<=1">−</button><text>{{ quantity }}</text><button aria-label="增加数量" @click="changeQuantity(1)" :disabled="quantity>=99">＋</button></view></view><view class="field"><text class="field-label">需求与验收标准</text><textarea v-model="requirements" class="input" maxlength="1000" placeholder="填写区服、预约时间、服务目标与验收标准"/><text class="hint">{{ requirements.length }}/1000 · 请在订单聊天室确认细节</text></view><text class="transaction-hint">订单内保留沟通与交付记录。请勿提供游戏账号密码。</text></view>
-          <view class="checkout"><view class="checkout-total"><text class="checkout-caption">合计</text><text class="total">¥{{ money(service.price_cents*quantity) }}</text></view><button class="btn" :disabled="submitting" @click="createOrder">{{ submitting?'正在创建…':state.user?'确认下单':'登录后下单' }}<Icon name="arrow" :size="14"/></button></view>
+          <SubscribeReminder :scenes="['buyer_accepted']" label="订单被接单时微信提醒"/><view class="checkout"><view class="checkout-total"><text class="checkout-caption">合计</text><text class="total">¥{{ money(service.price_cents*quantity) }}</text></view><button class="btn" :disabled="submitting" @click="createOrder">{{ submitting?'正在创建…':state.user?'确认下单':'登录后下单' }}<Icon name="arrow" :size="14"/></button></view>
         </template>
         <view v-else class="notice">{{ timelinePreview?'请从微信顶部打开小程序后下单。':service.provider_id===state.user?.id?'这是你发布的服务，可前往打手工作台管理。':'该服务暂未上架，无法下单。' }}</view>
         <view class="section-row"><text class="section-title">玩家评价</text><text class="muted">{{ reviews.length }} 条</text></view><view v-if="reviews.length" class="stack"><view v-for="review in reviews" :key="review.id" class="review"><view class="row between"><text>{{ review.buyer_name||'玩家' }}</text><text class="accent">{{ review.rating }} / 5</text></view><text class="review-content">{{ review.content }}</text><text class="hint">{{ time(review.created_at) }}</text></view></view><EmptyState v-else title="还没有评价" detail="完成订单后，玩家可留下真实体验。" icon="star"/>
@@ -27,6 +27,7 @@ import { requirePhone } from '../../lib/phone'
 import { ref, computed } from 'vue'
 import { onLoad, onUnload, onShareAppMessage, onShareTimeline, onShow, onResize } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
+import SubscribeReminder from '../../components/SubscribeReminder.vue'
 import CoverArt from '../../components/CoverArt.vue'
 import DepositBadge from '../../components/DepositBadge.vue'
 import EmptyState from '../../components/EmptyState.vue'

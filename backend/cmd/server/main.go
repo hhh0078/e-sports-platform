@@ -21,6 +21,7 @@ func main() {
 	}
 	defer a.Close()
 	a.StartModerationWorker(ctx)
+	a.StartSubscriptionWorker(ctx)
 	srv := &http.Server{Addr: a.Config.Addr, Handler: a.Handler(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
 	go func() {
 		<-ctx.Done()

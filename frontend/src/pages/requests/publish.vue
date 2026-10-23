@@ -4,6 +4,7 @@
     <view v-if="error" class="error-box mb">{{ error }}</view>
     <view class="form-section request-fields"><view class="field request-game-field"><text class="field-label">选择游戏</text><GameSelector :value="gameId" :disabled="busy" @change="gameId=$event"/></view><view class="field"><view class="field-heading"><text class="field-label">需求标题</text><text class="field-count">{{title.length}} / 40</text></view><input v-model="title" class="input" maxlength="40" placeholder="例如：今晚找位耐心的三角洲陪练"/></view><view class="field"><view class="field-heading"><text class="field-label">目标与验收标准</text><text class="field-count">{{requirements.length}} / 1000</text></view><textarea v-model="requirements" class="input request-requirements" maxlength="1000" placeholder="说明区服、时段、任务目标、时长，以及怎样算完成，请不要填写密码。"/></view><view class="field"><text class="field-label">总预算（元）</text><input v-model="price" class="input" type="digit" placeholder="1～10000，最多两位小数"/></view></view>
     <view class="request-note"><Icon class="note-icon" name="info" :size="15"/><text class="subtle-note request-note-copy">支付后进入接单大厅，未接单可取消；协作约定与沟通随订单保存。</text></view><view class="request-note rules-note"><Icon class="note-icon" name="shield" :size="15"/><text class="subtle-note request-note-copy">遵守游戏官方规则，请勿填写账号密码或提出外挂要求。</text></view>
+    <SubscribeReminder :scenes="['buyer_accepted']" label="需求被接单时微信提醒"/>
     <view class="action-footer"><button class="btn request-submit" :disabled="busy" @click="submit">{{busy?'正在创建…':'确认需求，去支付'}}</button></view>
   </AppShell>
 </template>
@@ -15,6 +16,7 @@ import { onLoad, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import GameSelector from '../../components/GameSelector.vue'
 import Icon from '../../components/Icon.vue'
+import SubscribeReminder from '../../components/SubscribeReminder.vue'
 import { state,init,sessionRevision } from '../../lib/store'
 import { createRequest } from '../../api/orders.api'
 import { token,errorMessage } from '../../api/client'

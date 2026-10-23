@@ -19,20 +19,24 @@ import (
 
 type Config struct {
 	DatabaseURL, RedisAddr, RedisPassword, RedisPrefix, Addr, WechatAppID, WechatSecret, Env string
+	WechatMessageToken, WechatMessageAESKey                                                  string
 	DevMode                                                                                  bool
 }
 type App struct {
-	reviewWorkerMu     sync.Mutex
-	reviewWorkerCancel context.CancelFunc
-	reviewWorkerWG     sync.WaitGroup
-	paymentConfigMu    sync.RWMutex
-	paymentConfig      *paymentConfigState
-	DB                 *pgxpool.Pool
-	Redis              *redis.Client
-	Config             Config
-	HTTPClient         *http.Client
-	AIHTTPClient       *http.Client
-	EvidenceKey        []byte
+	subscriptionWorkerMu     sync.Mutex
+	subscriptionWorkerCancel context.CancelFunc
+	subscriptionWorkerWG     sync.WaitGroup
+	reviewWorkerMu           sync.Mutex
+	reviewWorkerCancel       context.CancelFunc
+	reviewWorkerWG           sync.WaitGroup
+	paymentConfigMu          sync.RWMutex
+	paymentConfig            *paymentConfigState
+	DB                       *pgxpool.Pool
+	Redis                    *redis.Client
+	Config                   Config
+	HTTPClient               *http.Client
+	AIHTTPClient             *http.Client
+	EvidenceKey              []byte
 }
 type apiError struct {
 	Status  int
@@ -56,7 +60,7 @@ func env(key, fallback string) string {
 
 // LoadConfig 加载配置，开发能力必须显式开启。
 func LoadConfig() Config {
-	return Config{DatabaseURL: env("DATABASE_URL", "postgres://postgres:postgres@127.0.0.1:5432/jijie_dev?sslmode=disable"), RedisAddr: env("REDIS_ADDR", "127.0.0.1:56379"), RedisPassword: os.Getenv("REDIS_PASSWORD"), RedisPrefix: env("REDIS_PREFIX", "jijie:"), Addr: env("ADDR", "127.0.0.1:8090"), WechatAppID: os.Getenv("WECHAT_APP_ID"), WechatSecret: os.Getenv("WECHAT_APP_SECRET"), Env: env("APP_ENV", "development"), DevMode: os.Getenv("DEV_MODE") == "true"}
+	return Config{DatabaseURL: env("DATABASE_URL", "postgres://postgres:postgres@127.0.0.1:5432/jijie_dev?sslmode=disable"), RedisAddr: env("REDIS_ADDR", "127.0.0.1:56379"), RedisPassword: os.Getenv("REDIS_PASSWORD"), RedisPrefix: env("REDIS_PREFIX", "jijie:"), Addr: env("ADDR", "127.0.0.1:8090"), WechatAppID: os.Getenv("WECHAT_APP_ID"), WechatSecret: os.Getenv("WECHAT_APP_SECRET"), WechatMessageToken: os.Getenv("WECHAT_MESSAGE_TOKEN"), WechatMessageAESKey: os.Getenv("WECHAT_MESSAGE_AES_KEY"), Env: env("APP_ENV", "development"), DevMode: os.Getenv("DEV_MODE") == "true"}
 }
 
 // New 校验生产边界、连接存储并进行幂等初始化。
@@ -103,7 +107,12 @@ func New(ctx context.Context, cfg Config) (*App, error) {
 }
 
 // Close 释放数据库与会话连接。
-func (a *App) Close() { a.stopModerationWorker(); a.DB.Close(); a.Redis.Close() }
+func (a *App) Close() {
+	a.stopSubscriptionWorker()
+	a.stopModerationWorker()
+	a.DB.Close()
+	a.Redis.Close()
+}
 
 // decode 限制请求体大小并拒绝未知字段与多份 JSON。
 func decode(r *http.Request, out any) error {
@@ -199,6 +208,7 @@ func (a *App) Handler() http.Handler {
 	a.registerAIRoutes(mux)
 	a.registerModerationRoutes(mux)
 	a.registerInboxRoutes(mux)
+	a.registerSubscriptionRoutes(mux)
 	a.registerAdjustmentRoutes(mux)
 	a.registerShareRoutes(mux)
 	routes := map[string]func(http.ResponseWriter, *http.Request) (any, error){

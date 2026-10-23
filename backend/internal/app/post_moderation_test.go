@@ -437,7 +437,14 @@ func TestIntegrationPostReviewRevocationAndAuthorNotice(t *testing.T) {
 		Items []InboxMessage `json:"items"`
 	}
 	api.call("worker", "GET", "/messages", nil, 200, &notices)
-	if len(notices.Items) != 1 || notices.Items[0].ActionPath != "/pages/orders/detail?id="+order.ID || notices.Items[0].ActionLabel == "" {
+	// 新订单提醒也会进入同一站内消息列表；按审核任务定位，避免把新增合法业务通知误判为重复处罚。
+	var rejected []InboxMessage
+	for _, notice := range notices.Items {
+		if notice.ID == "review_task_"+delivery.ID {
+			rejected = append(rejected, notice)
+		}
+	}
+	if len(rejected) != 1 || rejected[0].UserID != "worker" || rejected[0].TargetID != order.ID || rejected[0].ActionPath != "/pages/orders/detail?id="+order.ID || rejected[0].ActionLabel == "" {
 		t.Fatal("审核通知缺少真实业务入口或发错用户")
 	}
 }

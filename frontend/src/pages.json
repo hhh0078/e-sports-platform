@@ -227,6 +227,18 @@
       "style": {
         "navigationBarTitleText": "公开需求"
       }
+    },
+    {
+      "path": "pages/account/subscriptions",
+      "style": {
+        "navigationBarTitleText": "微信提醒"
+      }
+    },
+    {
+      "path": "pages/manage/subscriptions",
+      "style": {
+        "navigationBarTitleText": "微信订阅管理"
+      }
     }
   ],
   "globalStyle": {
