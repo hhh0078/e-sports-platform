@@ -36,7 +36,7 @@ async function until<T>(read: () => Promise<T | false | null | undefined>, label
 /** 打开本地实际路由，不注入组件状态。 */
 async function open(url: string): Promise<Page> { stage = url; console.log('CHECK ' + stage); const page = await sdk().reLaunch(url); assert.ok(page); return page }
 /** 兼容官方SDK公开组件标签的短名称与编译路径名称。 */
-async function component(scope: Scope, name: string): Promise<Element | null> { const aliases: Record<string,string> = { 'bottom-nav':'BottomNav','app-shell':'AppShell','manage-list':'ManageList','list-load-state':'ListLoadState','funds-form':'FundsForm','finance-popup':'FinancePopup','empty-state':'EmptyState' }; return await scope.$(name) || await scope.$('components\\/' + aliases[name]) }
+async function component(scope: Scope, name: string): Promise<Element | null> { const aliases: Record<string,string> = { 'bottom-nav':'BottomNav','app-shell':'AppShell','manage-list':'ManageList','list-load-state':'ListLoadState','funds-form':'FundsForm','finance-popup':'FinancePopup','empty-state':'EmptyState' }; return await scope.$(name) || await scope.$(name==='player-view'?'pages\\/main\\/player\\/player':'components\\/' + aliases[name]) }
 /** 仅沿页面公开组件递归寻找真实节点。 */
 async function find(scope: Scope, selector: string, depth = 0): Promise<Element | null> {
   const direct = await scope.$(selector); if (direct) return direct
@@ -80,6 +80,16 @@ async function mainViews(): Promise<void> {
     const scroll = scrolls[index]
     await scroll.scrollTo(0, 0); await scroll.trigger('refresherrefresh'); await scroll.trigger('refresherrefresh')
     await until(async () => { const value = await scroll.property('refresherTriggered'); return value === false || value === 'false' }, '主容器停止刷新动画')
+    if(index===0){
+      const player=await until(()=>component(page,'player-view'),'玩家业务视图')
+      await until(()=>player.$('.card-grid'),'玩家真实首屏数据')
+      await sdk().mockWxMethod('request',()=>({statusCode:503,data:{error:'本地SDK受控下拉失败'},header:{}}));mockActive=true
+      await scroll.trigger('refresherrefresh');await until(()=>find(player,'.list-load-retry'),'原生主容器确实调用子视图读取')
+      assert.ok(await player.$('.card-grid'),'下拉失败应保留已有服务')
+      await sdk().restoreWxMethod('request');mockActive=false;await scroll.trigger('refresherrefresh')
+      await until(async()=>!await find(player,'.list-load-retry'),'主容器再次下拉恢复真实数据')
+      await pass('主容器实际调用子视图读取，受控失败保留卡片且再次下拉恢复')
+    }
     await scroll.scrollTo(0, 100000); await page.waitFor(250)
     const top = Number(await scroll.property('scrollTop'))
     await buttons[(index + 1) % 4].tap(); await buttons[index].tap(); await page.waitFor(200)
@@ -155,5 +165,5 @@ async function run(): Promise<void> {
 run().catch(async error => { failure = error; console.error(redact(error)); if (mini) try { await pass('失败现场保留', 'failure') } catch { /* 不掩盖原错误。 */ } process.exitCode = 1 }).finally(async () => {
   if (mockActive) try { await mini?.restoreWxMethod('request'); mockActive = false } catch (error) { failure ||= error; process.exitCode = 1 }
   if (mini) { try { await logout() } catch (error) { failure ||= error; process.exitCode = 1 } await mini.disconnect() }
-  fs.mkdirSync(output, { recursive: true }); fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ file_purpose: '本地微信SDK刷新分页验收，不代表真机手势性能或真实资金', passed: !failure, stage, viewport, checks, measurements, runtime_exceptions: exceptions, compatibility_warnings: warnings, ...(failure ? { error: redact(failure) } : {}), boundaries: ['主容器刷新使用官方SDK事件，二级刷新使用官方startPullDownRefresh；物理手势另行记录。','列表来自本地真实API，仅下一页503为受控替身；未提交订单、支付、退款或后台配置。','手机实际手势流畅度和网络需单独真机验收。'] }, null, 2) + '\n')
+  fs.mkdirSync(output, { recursive: true }); fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ file_purpose: '本地微信SDK刷新分页验收，不代表真机手势性能或真实资金', passed: !failure, stage, viewport, checks, measurements, runtime_exceptions: exceptions, compatibility_warnings: warnings, ...(failure ? { error: redact(failure) } : {}), boundaries: ['主容器刷新使用官方SDK事件，二级刷新使用官方startPullDownRefresh；不将程序事件等同手机物理手势。','列表来自本地真实API，仅下拉及下一页503为受控替身；未提交订单、支付、退款或后台配置。','手机实际手势流畅度和网络需单独真机验收。'] }, null, 2) + '\n')
 })

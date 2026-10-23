@@ -1,0 +1,71 @@
+{
+  "file_purpose": "本地微信SDK刷新分页验收，不代表真机手势性能或真实资金",
+  "passed": true,
+  "stage": "/pages/account/profile",
+  "viewport": {
+    "pixelRatio": 2,
+    "safeArea": {
+      "top": 20,
+      "left": 0,
+      "right": 320,
+      "bottom": 568,
+      "width": 320,
+      "height": 548
+    },
+    "screenWidth": 320,
+    "screenHeight": 568,
+    "screenTop": 0,
+    "windowWidth": 320,
+    "windowHeight": 568,
+    "statusBarHeight": 20
+  },
+  "checks": [
+    "主容器实际调用子视图读取，受控失败保留卡片且再次下拉恢复",
+    "主导航0官方刷新事件结束且切页保留位置",
+    "主导航1官方刷新事件结束且切页保留位置",
+    "主导航2官方刷新事件结束且切页保留位置",
+    "主导航3官方刷新事件结束且切页保留位置",
+    "真实列表第二页失败保留20条且显示轻量重试",
+    "用户列表触底完整加载66条、无重复并与真实API一致",
+    "管理列表原生下拉重新读取并结束动画",
+    "服务详情下拉保留下单说明草稿",
+    "钱包弹层下拉受阻且金额草稿保留，未创建付款",
+    "/pages/manage/index只读下拉后正常展示",
+    "/pages/account/messages/index只读下拉后正常展示",
+    "/pages/account/subscriptions只读下拉后正常展示",
+    "/pages/community/clubs/index只读下拉后正常展示"
+  ],
+  "measurements": [
+    {
+      "tab": 0,
+      "scroll_before": 1279,
+      "scroll_after": 1279,
+      "width": 320
+    },
+    {
+      "tab": 1,
+      "scroll_before": 0,
+      "scroll_after": 0,
+      "width": 320
+    },
+    {
+      "tab": 2,
+      "scroll_before": 37,
+      "scroll_after": 37,
+      "width": 320
+    },
+    {
+      "tab": 3,
+      "scroll_before": 263,
+      "scroll_after": 263,
+      "width": 320
+    }
+  ],
+  "runtime_exceptions": [],
+  "compatibility_warnings": [],
+  "boundaries": [
+    "主容器刷新使用官方SDK事件，二级刷新使用官方startPullDownRefresh；不将程序事件等同手机物理手势。",
+    "列表来自本地真实API，仅下拉及下一页503为受控替身；未提交订单、支付、退款或后台配置。",
+    "手机实际手势流畅度和网络需单独真机验收。"
+  ]
+}

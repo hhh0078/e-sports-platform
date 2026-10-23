@@ -1,0 +1,180 @@
+{
+  "file_purpose": "全站下拉刷新与触底分页后端的脱敏生产发布验收，不代表小程序已上传或真人支付验收",
+  "checked_at": "2026-10-24T04:05:54.474591+08:00",
+  "production_url": "https://game.ai.58it.cn",
+  "source_commit": "d6777e62c1d33a61ee5fcd974eedb032d735d80f",
+  "image_tag": "20261024-refresh-d6777e6",
+  "image_id": "sha256:8341661d65889f504fefc98b6b88571bde0d7add58152fa1866b2750cbda3a6d",
+  "deployment_channel": "宝塔MCP固定证书；未操作浏览器或SSH",
+  "source_acquisition": {
+    "github_fetch": "精确SHA拉取35秒超时",
+    "fallback": "官方MCP Upload next_action上传增量Git bundle，服务器校验SHA256并用git bundle verify核验所有前提",
+    "bundle_bytes": 2422959,
+    "bundle_prerequisite": "已部署7d30f3561d78896c1a82ec27daa015baad0c8425",
+    "bundle_verified": true
+  },
+  "checks": {
+    "passed": 102,
+    "failed": 0
+  },
+  "containers": {
+    "api": {
+      "exact_built_image": true,
+      "health": "healthy",
+      "loopback": "127.0.0.1:18090"
+    },
+    "postgres": {
+      "health": "healthy",
+      "container_unchanged": true,
+      "volume_unchanged": true,
+      "no_public_port": true
+    },
+    "redis": {
+      "health": "healthy",
+      "container_unchanged": true,
+      "volume_unchanged": true,
+      "no_public_port": true
+    }
+  },
+  "nginx_https_config_unchanged": true,
+  "only_image_tag_changed_in_env": true,
+  "env_mode": "600",
+  "master_key_and_wechat_payment_secrets_preserved": true,
+  "backups": {
+    "database_gzip_valid": true,
+    "roles_gzip_valid": true,
+    "database_bytes": 133488,
+    "roles_bytes": 458,
+    "directory_mode": "700",
+    "files_mode": "600",
+    "private_paths_publicly_denied": true,
+    "location": "服务器站点.deploy-backups私密目录，完整路径只保留于私密发布记录"
+  },
+  "counts_before": {
+    "audit": 14,
+    "clubs": 6,
+    "evidence": 62,
+    "fund_audits": 0,
+    "fund_lots": 0,
+    "fund_movements": 0,
+    "fund_receipts": 0,
+    "games": 13,
+    "identities": 2,
+    "inbox": 0,
+    "inbox_receipts": 0,
+    "members": 42,
+    "messages": 260,
+    "moderation_targets": 0,
+    "moderation_tasks": 0,
+    "order_adjustments": 0,
+    "order_payments": 0,
+    "order_refunds": 0,
+    "orders": 52,
+    "reviews": 8,
+    "services": 130,
+    "settings": 15,
+    "shares": 4,
+    "subscription_authorizations": 0,
+    "subscription_callbacks": 0,
+    "subscription_deliveries": 0,
+    "subscription_preferences": 0,
+    "subscription_receipts": 0,
+    "users": 62,
+    "wallet_deposit_refunds": 0,
+    "wallet_entries": 0,
+    "wallet_escrows": 0,
+    "wallet_requests": 0,
+    "wallet_topups": 0,
+    "wallet_withdrawals": 0,
+    "wallets": 0
+  },
+  "counts_after": {
+    "audit": 14,
+    "clubs": 6,
+    "evidence": 62,
+    "fund_audits": 0,
+    "fund_lots": 0,
+    "fund_movements": 0,
+    "fund_receipts": 0,
+    "games": 13,
+    "identities": 2,
+    "inbox": 0,
+    "inbox_receipts": 0,
+    "members": 42,
+    "messages": 260,
+    "moderation_targets": 0,
+    "moderation_tasks": 0,
+    "order_adjustments": 0,
+    "order_payments": 0,
+    "order_refunds": 0,
+    "orders": 52,
+    "reviews": 8,
+    "services": 130,
+    "settings": 15,
+    "shares": 4,
+    "subscription_authorizations": 0,
+    "subscription_callbacks": 0,
+    "subscription_deliveries": 0,
+    "subscription_preferences": 0,
+    "subscription_receipts": 0,
+    "users": 62,
+    "wallet_deposit_refunds": 0,
+    "wallet_entries": 0,
+    "wallet_escrows": 0,
+    "wallet_requests": 0,
+    "wallet_topups": 0,
+    "wallet_withdrawals": 0,
+    "wallets": 0
+  },
+  "business_and_financial_records_preserved": true,
+  "database_tables_added": [],
+  "six_subscription_scene_settings_preserved_by_full_hash": true,
+  "requested_guagua_admin_active": true,
+  "public_pagination": {
+    "service_offset_first_and_second_distinct": true,
+    "review_first_page": {
+      "visible_reviews": 1,
+      "returned": 1
+    },
+    "review_next_page": {
+      "returned": 0
+    },
+    "review_terminal_empty": true,
+    "note": "生产样本可公开评价1条；超过100条和同时间稳定分页已由隔离数据库集成测试验收，未向生产添加评价或订单"
+  },
+  "protected_history_endpoints_reject_anonymous": true,
+  "game_images_verified": 43,
+  "callback_configuration_unchanged": {
+    "token": false,
+    "aes_key": false
+  },
+  "production_session_created": false,
+  "production_user_content_mutated_for_testing": false,
+  "real_payment_executed": false,
+  "real_subscription_message_sent_for_testing": false,
+  "mini_program_uploaded_or_published": false,
+  "free_bytes_after_build": 7740411904,
+  "verification_adjustments": [
+    {
+      "issue": "GitHub精确fetch在35秒超时",
+      "resolution": "使用官方MCP Upload next_action上传2.42MB Git bundle，SHA256与git bundle verify完整依赖均通过"
+    },
+    {
+      "issue": "首个私密激活脚本INITIAL仍指上轮构建清单，版本守卫在任何配置或容器修改前拒绝",
+      "resolution": "仅更正私密脚本的本轮备份路径，重新核验构建和精确SHA后激活；源码不变"
+    },
+    {
+      "issue": "激活未完成时提前启动的一次只读验证缺activation.json立即退出",
+      "resolution": "待激活任务exit0后再独立启动最终全量只读验证"
+    },
+    {
+      "issue": "首次101项只读验证100通过，API官方Docker健康状态尚处starting；HTTPS和数据库Redis均已正常",
+      "resolution": "补核同一容器/同一精确镜像待Docker官方健康检查转healthy，不改镜像、配置或健康检查；仅复核未就绪项"
+    }
+  ],
+  "verification_boundary": [
+    "本次只部署并验收API后端；微信小程序前端需另行上传发布",
+    "所有生产验证为无会话只读请求及聚合数据库检查，未创建订单、支付、提现或授权记录",
+    "真实微信通知、真机滑动手感与真实资金到账不由本报告代替"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "file_purpose": "全站下拉刷新与触底加载脱敏交付摘要，区分自动化、SDK、生产及真机边界",
+  "frontend_source_commit": "9d2ab071081734018f4bfb8efc583ea8702bd7d9",
+  "backend_source_commit": "d6777e62c1d33a61ee5fcd974eedb032d735d80f",
+  "frontend": {
+    "tests": 631,
+    "failed": 0,
+    "skipped": 0,
+    "typecheck": true,
+    "standards_pages": 44,
+    "main_views": 4,
+    "native_refresh_secondary_pages": 24,
+    "design_notes_updated": 29,
+    "h5_build": true,
+    "mini_production_build": true,
+    "mini_local_build": true,
+    "official_and_local_share_pages": 7
+  },
+  "backend": {
+    "isolated_postgresql_redis_race_tests_and_subtests": 332,
+    "failed": 0,
+    "skipped": 0,
+    "vet": true
+  },
+  "production": {
+    "readonly_checks": 102,
+    "failed": 0,
+    "backend_deployed": true,
+    "funds_and_subscription_settings_preserved": true
+  },
+  "mini_program_uploaded_or_published": false,
+  "physical_phone_gesture_performance_verified": false,
+  "real_payment_or_transfer_verified": false,
+  "release_packages": [
+    {
+      "directory": "frontend/dist/build/mp-weixin",
+      "api": "https://game.ai.58it.cn/api",
+      "client_sha256": "2fbdee22d3952d58f0750fbecfb5cec3310c9817543831a6195023f5e740137b"
+    },
+    {
+      "directory": "frontend/dist/dev/mp-weixin",
+      "api": "http://127.0.0.1:18091/api",
+      "sdk_test_build_client_sha256": "408da010eeee90066d3e16596a5b7f8d155a32da9604465c84510dad40046e67",
+      "restored_watch_client_sha256": "d8dccc366c3aaeb3a4bfac1242feb36254be08b8802e9a4d6fbe6d9737dffdf0",
+      "note": "SDK验收后恢复同源码开发watch；两种构建文件形式不同，API与七页分享事件重新核对通过"
+    }
+  ],
+  "sdk": [
+    {
+      "width": 320,
+      "passed": true,
+      "checks": 14,
+      "runtime_exceptions": 0,
+      "color_and_selector_warnings": 0,
+      "actual_user_list_matched_api": true,
+      "native_events": "official SDK main event and native startPullDownRefresh",
+      "real_pointer_or_phone_fps_verified": false
+    },
+    {
+      "width": 390,
+      "passed": true,
+      "checks": 14,
+      "runtime_exceptions": 0,
+      "color_and_selector_warnings": 0,
+      "actual_user_list_matched_api": true,
+      "native_events": "official SDK main event and native startPullDownRefresh",
+      "real_pointer_or_phone_fps_verified": false
+    }
+  ],
+  "local_runtime_restored": {
+    "api_health_200": true,
+    "h5_5173_200": true,
+    "mini_watch_running": true,
+    "mini_device_width": 390,
+    "guest_restored": true
+  }
+}
