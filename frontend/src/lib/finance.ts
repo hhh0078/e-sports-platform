@@ -17,3 +17,14 @@ export function fundsIntentKey(userID: string, clubID: string, operation: string
 export function paymentPurposeName(purpose: WalletTopupPurpose): string { return ({ balance: '余额充值', deposit: '个人平台押金', club_platform: '俱乐部平台押金', member_club: '成员俱乐部押金' })[purpose] }
 /** 押金退款范围转换为对应付款用途。 */
 export function depositPurpose(scope: DepositScope): Exclude<WalletTopupPurpose, 'balance'> { return scope === 'personal' ? 'deposit' : scope }
+/**
+ * 按服务端唯一编号合并资金历史，保留原顺序并用新快照更新重复记录。
+ * @param existing - 已展示的同账号记录。
+ * @param incoming - 本次GET分页返回的记录。
+ * @returns 合并去重后的记录，不据此推算任何资金余额。
+ */
+export function mergeFundRecords<T extends { id: string }>(existing: T[], incoming: T[]): T[] {
+  const records = new Map(existing.map(item => [item.id, item]))
+  incoming.forEach(item => records.set(item.id, item))
+  return [...records.values()]
+}

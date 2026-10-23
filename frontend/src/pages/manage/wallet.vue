@@ -5,9 +5,9 @@
     <view v-if="state.ready && state.user?.role !== 'admin'" class="access-note"><text>仅平台管理员可访问</text><button class="text-btn" @click="go('/pages/account/login')">切换账号</button></view>
     <template v-else-if="state.user?.role === 'admin'">
       <view class="finance-links"><button class="finance-link" @click="go('/pages/manage/finance/index')"><view class="finance-link-copy"><text class="finance-link-title">资金来源审核</text><text class="hint finance-link-note">逐笔核验个人与俱乐部提现来源</text></view><Icon name="arrow" :size="16"/></button><button class="finance-link" @click="go('/pages/manage/finance/settings')"><view class="finance-link-copy"><text class="finance-link-title">交易规则</text><text class="hint finance-link-note">平台抽成与创建俱乐部押金</text></view><Icon name="arrow" :size="16"/></button></view>
-      <view class="section-heading"><text class="section-title">提现申请</text><button class="text-btn" :disabled="listLoading" @click="loadList()"><Icon name="refresh" :size="14"/>刷新</button></view>
+      <view class="section-heading"><text class="section-title">提现申请</text></view>
       <scroll-view scroll-x :show-scrollbar="false" class="status-scroll"><view class="status-filters"><button v-for="item in filters" :key="item.value" :class="['status-filter', { selected: status === item.value }]" @click="chooseStatus(item.value)">{{ item.label }}</button></view></scroll-view>
-      <view v-if="listError" class="subtle-note error-copy">{{ listError }}<button class="text-btn" :disabled="listLoading" @click="loadList()">重试</button></view>
+      <view v-if="listError" class="subtle-note error-copy">{{ listError }}<button class="text-btn" :disabled="listLoading" @click="retryFailed">重试</button></view>
       <view v-if="listLoading && !withdrawals.length" class="loading-line">正在读取提现申请…</view>
       <view v-else-if="!withdrawals.length && !listError" class="empty-list"><Icon name="orders" :size="28"/><text>暂无{{ statusName(status) }}提现</text><text class="hint">用户提交申请后在此审核</text></view>
       <view v-for="item in withdrawals" :key="item.id" class="withdrawal-row">
@@ -16,12 +16,12 @@
         <text v-if="item.failure_reason" class="failure-reason">{{ item.failure_reason }}</text>
         <view class="withdrawal-actions"><button class="text-btn" @click="openAudit(item.id)">{{ item.status==='pending_review'?'查看来源并审核':'来源与处理记录' }}<Icon name="arrow" :size="13"/></button></view>
       </view>
-      <button v-if="hasMore" class="text-btn load-more" :disabled="listLoading" @click="loadList(true)">加载更多</button>
+      <ListLoadState :loading="listLoading" :has-more="hasMore" :error="listError" @retry="retryFailed"/>
       <text v-if="loaded && !transferReady && !state.devMode" class="subtle-note">提现通道尚未就绪，请先核对下方商家转账及支付配置。</text>
       <view class="form-section">
         <view class="section-heading"><text class="section-title">商家转账配置</text><text class="ready-label">{{ transferReady ? '已就绪' : '未就绪' }}</text></view>
         <text class="subtle-note">{{ configurationNotice || '保存配置不代表微信商家转账场景已经获批。' }}</text>
-        <view v-if="settingsError" class="subtle-note error-copy">{{ settingsError }}<button class="text-btn" :disabled="settingsLoading" @click="loadSettings()">重试</button></view>
+        <view v-if="settingsError" class="subtle-note error-copy">{{ settingsError }}<button class="text-btn" :disabled="settingsLoading" @click="retrySettingsFailed">重试</button></view>
         <text v-if="settingsLoading" class="hint">正在读取公开配置…</text>
         <view class="enabled-row"><text>启用真实提现</text><NativeSwitch :checked="form.withdrawal_enabled" :disabled="!loaded || saving" :color="game.primary_color" @change="changeEnabled"/></view>
         <view class="field"><text class="field-label">商家转账场景编号</text><input v-model="form.transfer_scene_id" class="input" maxlength="36" :disabled="!loaded || saving" placeholder="填写商户已获批的场景编号"/></view>
@@ -42,6 +42,8 @@ import { onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import NativeSwitch from '../../components/NativeSwitch.vue'
 import Icon from '../../components/Icon.vue'
+import ListLoadState from '../../components/ListLoadState.vue'
+import { useNativePageRefresh } from '../../lib/native-page-refresh'
 import { state, game, init, sessionRevision } from '../../lib/store'
 import { token, errorMessage } from '../../api/client'
 import { listAdminWithdrawals, getWalletSettings, saveWalletSettings } from '../../api/wallet.api'
@@ -56,7 +58,9 @@ const status = ref<WithdrawalStatus>('pending_review'), withdrawals = ref<Wallet
 const form = reactive<WalletSettings>(emptySettings()), settingsLoading = ref(false), settingsError = ref(''), saving = ref(false), loaded = ref(false), transferReady = ref(false), configurationNotice = ref('')
 const bootstrapError = ref(''), initializing = ref(false)
 let visible = false, pageRevision = 0, listVersion = 0, listOffset = 0, settingsVersion = 0, saveVersion = 0, savedSettings = ''
+let listFailedAppend=false,settingsFailedPreserveDraft=false
 let loadedSession: ReturnType<typeof currentSession> | null = null
+useNativePageRefresh({refresh:refreshPage,more:()=>listError.value?retryFailed():hasMore.value?loadList(true):Promise.resolve(),blocked:()=>saving.value||settingsLoading.value||initializing.value,context:()=>[state.user?.id,state.user?.role,sessionRevision(),status.value]})
 
 /** 创建不含秘密的空配置，不预设商户获批场景。 */
 function emptySettings(): WalletSettings { return { withdrawal_enabled: false, transfer_scene_id: '', transfer_scene_report_infos: [], transfer_notify_url: '', transfer_remark: '', user_recv_perception: '' } }
@@ -75,18 +79,24 @@ async function loadList(append = false): Promise<void> {
   if (!visible || state.user?.role !== 'admin' || (append && listLoading.value)) return
   const current = ++listVersion, session = currentSession(), selected = status.value, offset = append ? listOffset : 0
   listLoading.value = true; listError.value = ''
-  try { const result = await listAdminWithdrawals({ status: selected, limit: 20, offset }); if (current !== listVersion || !sameSession(session) || selected !== status.value) return; const known = new Set(append ? withdrawals.value.map(item => item.id) : []); withdrawals.value = append ? [...withdrawals.value, ...result.filter(item => !known.has(item.id))] : result; listOffset = offset + result.length; hasMore.value = result.length === 20 }
-  catch (error) { if (current === listVersion && sameSession(session)) listError.value = errorMessage(error) }
+  try { const result = await listAdminWithdrawals({ status: selected, limit: 20, offset }); if (current !== listVersion || !sameSession(session) || selected !== status.value) return; const known = new Set(append ? withdrawals.value.map(item => item.id) : []); withdrawals.value = append ? [...withdrawals.value, ...result.filter(item => !known.has(item.id))] : result; listOffset = offset + result.length; hasMore.value = result.length === 20;listFailedAppend=false }
+  catch (error) { if (current === listVersion && sameSession(session)) {listFailedAppend=append;listError.value = errorMessage(error)} }
   finally { if (current === listVersion) listLoading.value = false }
 }
 /** 读取公开转账配置，不请求密钥或实名信息。 */
-async function loadSettings(): Promise<void> {
+async function loadSettings(preserveDraft=false): Promise<void> {
   if (!visible || state.user?.role !== 'admin' || saving.value) return
   const current = ++settingsVersion, session = currentSession(); settingsLoading.value = true; settingsError.value = ''
-  try { const value = await getWalletSettings(); if (current === settingsVersion && sameSession(session)) applySettings(value) }
-  catch (error) { if (current === settingsVersion && sameSession(session)) settingsError.value = errorMessage(error) }
+  try { const value = await getWalletSettings(); if (current === settingsVersion && sameSession(session)) { settingsFailedPreserveDraft=false;if(preserveDraft){transferReady.value=value.transfer_ready;configurationNotice.value=value.configuration_notice}else applySettings(value) } }
+  catch (error) { if (current === settingsVersion && sameSession(session)) {settingsFailedPreserveDraft=preserveDraft;settingsError.value = errorMessage(error)} }
   finally { if (current === settingsVersion) settingsLoading.value = false }
 }
+/** 资金列表错误始终重试原始刷新/追加页，不受已有hasMore误导。 */
+async function retryFailed():Promise<void>{if(!listLoading.value&&!saving.value)await loadList(listFailedAppend)}
+/** 公开配置读取重试保留原读取的草稿保护模式，绝不顺带保存配置。 */
+async function retrySettingsFailed():Promise<void>{if(!settingsLoading.value&&!saving.value)await loadSettings(settingsFailedPreserveDraft)}
+/** 下拉只刷新当前列表和真实通道状态，不覆盖已编辑的转账配置草稿。 */
+async function refreshPage():Promise<void>{if(!visible||saving.value)return;await init();if(!visible||state.user?.role!=='admin')return;await Promise.all([loadList(),loadSettings(loaded.value)])}
 /** 切换服务端状态分页，不混入上一状态的数据。 */
 function chooseStatus(value: WithdrawalStatus): void { if (value === status.value) return; status.value = value; withdrawals.value = []; hasMore.value = false; void loadList() }
 /** 所有提现操作必须先进入独立来源明细，旧列表不再绕过核验直接执行。 */
@@ -112,13 +122,13 @@ async function saveSettings(): Promise<void> {
   let body: WalletSettings; try { body = settingsBody() } catch (error) { notify(error); return }
   const current = ++saveVersion, session = currentSession(); saving.value = true; settingsError.value = ''; settingsVersion++
   try { const value = await saveWalletSettings(body); if (current !== saveVersion || !sameSession(session)) return; applySettings(value); notify('公开配置已保存，实际转账资格以微信及服务端状态为准') }
-  catch (error) { if (current === saveVersion && sameSession(session)) settingsError.value = errorMessage(error) }
+  catch (error) { if (current === saveVersion && sameSession(session)) {settingsFailedPreserveDraft=true;settingsError.value = errorMessage(error)} }
   finally { if (current === saveVersion) saving.value = false }
 }
 /** 取消仅恢复同一管理员已经读取的公开配置，不发起写请求。 */
 function restoreSettings(): void { if (!saving.value && savedSettings) { setDraft(JSON.parse(savedSettings) as WalletSettings); notify('未保存的修改已取消') } }
 /** 清除旧管理员的资金列表、公开草稿和未确认操作。 */
-function clearData(): void { withdrawals.value = []; listOffset = 0; hasMore.value = false; loaded.value = false; loadedSession = null; savedSettings = ''; setDraft(emptySettings()); transferReady.value = false; configurationNotice.value = ''; listError.value = ''; settingsError.value = ''; bootstrapError.value = '' }
+function clearData(): void { withdrawals.value = []; listOffset = 0; hasMore.value = false; loaded.value = false; loadedSession = null; savedSettings = ''; setDraft(emptySettings()); transferReady.value = false; configurationNotice.value = ''; listError.value = ''; settingsError.value = ''; bootstrapError.value = '';listFailedAppend=false;settingsFailedPreserveDraft=false }
 /** 页面显示时核对身份；同管理员返回保留未保存的公开草稿。 */
 async function showPage(): Promise<void> { visible = true; if (initializing.value) return; const revision = pageRevision; initializing.value = true; bootstrapError.value = ''; try { await init(); if (!visible || revision !== pageRevision) return; if (state.user?.role !== 'admin') { clearData(); return }; if (loadedSession && loadedSession.id === state.user.id && loadedSession.token === token() && loadedSession.revision === sessionRevision() && loaded.value) { await loadList(); return }; await Promise.all([loadList(), loadSettings()]) } catch (error) { if (visible && revision === pageRevision) bootstrapError.value = errorMessage(error) } finally { if (revision === pageRevision) initializing.value = false } }
 /** 隐藏即作废回调和确认操作，不在客户端缓存资金信息。 */

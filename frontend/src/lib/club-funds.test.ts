@@ -5,33 +5,40 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import { reactive, ref, computed, watch, effectScope } from 'vue'
-import { executable, injectBusinessAPIs } from './sfc-test'
+import { executable, pageScript, injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest, PageLifecycle } from './sfc-test'
 import { parseWalletAmount } from './wallet'
 
 /** 使用真实业务方法，仅控制网络、微信交互完成顺序及账号变化。 */
-function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platform'){
+function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platform',summaryOnly=false){
   const storage=new Map<string,unknown>(),pending:DeferredRequest[]=[],notices:unknown[]=[],payments:Array<{resolve:()=>void;reject:(error:unknown)=>void}>=[]
   const hooks:PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
-  const state=reactive({user:{id:'user-A'},ready:true});let revision=0
+  const state=reactive({user:{id:'user-A'},ready:true});let revision=0,bottom=()=>{}
   const wallet={available_cents:10000,recharge_cents:0,pending_cents:0,ongoing_cents:0,settling_cents:0,withdrawal_frozen_cents:0,deposit_cents:0,deposit_refunding_cents:0,withdrawal_min_cents:1,dev_mode:true,currency:'CNY',settlement_hold_days:7}
   const deposits={platform:{amount_cents:100,refunding_cents:0,required_cents:10000,shortfall_cents:9900,qualified:false,can_manage:true},membership:{amount_cents:25,refunding_cents:0,required_cents:25}}
-  const histories={topups:[] as unknown[],refunds:[] as unknown[],withdrawals:[] as unknown[]}
-  const context=vm.createContext({ref,reactive,computed,watch,state,init:async()=>{},sessionRevision:()=>revision,token:()=>state.user.id+'token',parseWalletAmount,
+  const histories={entries:[] as unknown[],topups:[] as unknown[],refunds:[] as unknown[],withdrawals:[] as unknown[]}
+  const reads:string[]=[];let nextReadFailure=''
+  const context=vm.createContext({ref,reactive,computed,watch,state,onReachBottom:(callback:()=>void)=>{bottom=callback},init:async()=>{},sessionRevision:()=>revision,token:()=>state.user.id+'token',parseWalletAmount,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:unknown)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},
     requirePhone:async()=>true,go:()=>{},notify:(value:unknown)=>notices.push(value),
     requestWechatPayment:()=>new Promise<void>((resolve,reject)=>payments.push({resolve,reject})),confirmWechatTransfer:async()=>{},
     onLoad:(callback:PageLifecycle['load'])=>hooks.load=callback,onShow:(callback:()=>void)=>hooks.show=callback,onHide:(callback:()=>void)=>hooks.hide=callback,onUnload:(callback:()=>void)=>hooks.unload=callback,
     /** 资金写入与原单同步由用例逐个结束；读取返回明确组织归属。 */
     api(path:string,method='GET',body:Record<string,unknown>={}){
-      if(method==='GET')return Promise.resolve(path==='/clubs/club-A'?{club:{id:'club-A',name:'测试俱乐部'},can_manage:true,members:[],services:[],my_membership:null}:path.endsWith('/deposits')?deposits:path.endsWith('/wallet')?{...wallet}:path.endsWith('/withdrawals')?histories.withdrawals:path==='/wallet/topups'?histories.topups:path==='/wallet/deposit-refunds'?histories.refunds:[])
+      if(method==='GET'){reads.push(path);if(nextReadFailure&&path.startsWith(nextReadFailure)){nextReadFailure='';return Promise.reject(new Error('读取失败'))};const url=new URL(path,'https://test.local'),base=url.pathname,offset=Number(url.searchParams.get('offset')||0),limit=Number(url.searchParams.get('limit')||30);return Promise.resolve(base==='/clubs/club-A'?{club:{id:'club-A',name:'测试俱乐部'},can_manage:true,members:[],services:[],my_membership:null}:base.endsWith('/deposits')?deposits:base.endsWith('/wallet')?{...wallet}:(base.endsWith('/withdrawals')?histories.withdrawals:base.endsWith('/entries')?histories.entries:base==='/wallet/topups'?histories.topups:base==='/wallet/deposit-refunds'?histories.refunds:[]).slice(offset,offset+limit))}
       return new Promise((resolve,reject)=>pending.push({path,method,body,resolve,reject,taken:false}))
     },
   })
   injectBusinessAPIs(context)
-  const scopeEffect=effectScope();scopeEffect.run(()=>vm.runInContext(executable(readFileSync(new URL('./use-club-funds.ts',import.meta.url),'utf8'))+'\nglobalThis.page=useClubFunds('+JSON.stringify(scope)+')',context));t.after(()=>scopeEffect.stop())
+  const scopeEffect=effectScope();scopeEffect.run(()=>vm.runInContext(executable(readFileSync(new URL('./use-club-funds.ts',import.meta.url),'utf8'))+'\nglobalThis.page=useClubFunds('+JSON.stringify(scope)+','+JSON.stringify({summaryOnly})+')',context));t.after(()=>scopeEffect.stop())
   hooks.load({id:'club-A'})
-  return{page:context.page,hooks,pending,storage,notices,payments,wallet,deposits,histories,
+  return{
+    /** 挂载负责人资金或成员押金页的真实原生分页回调，复用当前资金模型。 */
+    attachBottom(){scopeEffect.run(()=>{vm.runInContext(executable(readFileSync(new URL('./native-page-refresh.ts',import.meta.url),'utf8')),context);vm.runInContext('(function(useClubFunds){'+executable(pageScript('community/clubs/'+(scope==='club_platform'?'funds':'deposit')+'.vue'))+'})(()=>globalThis.page)',context)})},
+    /** 触发页面实际注册的触底事件。 */
+    bottom(){bottom()},page:context.page,hooks,pending,storage,notices,payments,wallet,deposits,histories,reads,
+    /** 让指定下一页读取失败，验证重试不会跳过历史。 */
+    failRead(prefix:string){nextReadFailure=prefix},
     /** 切换真实响应式身份并触发生产会话清理。 */
     switchUser(){revision++;state.user={id:'user-B'}},
     /** 取得确定发出的资金接口，缺失即失败。 */
@@ -95,3 +102,34 @@ test('组织补缴默认服务端差额，门槛提高不改变已托管原款',
 test('组织资金表单隐藏返回清草稿且显示迟到失败，不丢原单恢复键',async t=>{
   const s=harness(t);s.hooks.show();await flush();s.page.open('pay');s.page.amount.value='99';const applying=s.page.submit();await flush();const request=s.take('/wallet/topups');s.hooks.hide();assert.equal(s.page.operation.value,null);assert.equal(s.page.amount.value,'');s.hooks.show();await flush();request.reject(new Error('结果未知'));await applying;assert.equal(s.notices.length,1);assert.ok([...s.storage.keys()].some(key=>key.includes('club_platform')))
 })
+
+test('组织提现超过100条仍可触底读完，组织付款退款由服务端按本人用途筛选',async t=>{
+  const s=harness(t);s.histories.entries=Array.from({length:35},(_,i)=>({id:'entry-'+i}));s.histories.withdrawals=Array.from({length:105},(_,i)=>({id:'withdraw-'+i,status:'pending_review',amount_cents:1}));s.histories.topups=Array.from({length:33},(_,i)=>({id:'payment-'+i,status:'pending_payment'}));s.histories.refunds=Array.from({length:32},(_,i)=>({id:'refund-'+i,status:'processing'}))
+  s.hooks.show();await flush();assert.equal(s.page.withdrawals.value.length,30);s.page.open('withdraw');s.page.amount.value='10';s.page.userName.value='负责人实名';s.reads.length=0
+  for(let i=0;i<3;i++)await s.page.load(true)
+  assert.equal(s.page.withdrawals.value.length,105);assert.equal(s.page.entries.value.length,35);assert.equal(s.page.topups.value.length,33);assert.equal(s.page.refunds.value.length,32);assert.equal(s.page.hasMore.value,false)
+  assert.ok(s.reads.includes('/clubs/club-A/withdrawals?limit=30&offset=90'));assert.equal(s.reads.some(path=>path==='/clubs/club-A'||path.endsWith('/wallet')),false)
+  const topupRequest=s.reads.find(path=>path.startsWith('/wallet/topups?'));assert.ok(topupRequest);const query=new URL(topupRequest,'https://test.local').searchParams;assert.equal(query.get('club_id'),'club-A');assert.equal(query.get('purpose'),'club_platform')
+  assert.equal(s.page.amount.value,'10');assert.equal(s.page.userName.value,'负责人实名');assert.equal(s.pending.length,0)
+})
+
+test('组织历史读取失败不清空押金输入，重试不推进失败页面',async t=>{
+  const s=harness(t);s.histories.topups=Array.from({length:31},(_,i)=>({id:'payment-'+i,status:'pending_payment'}));s.hooks.show();await flush();s.page.open('pay');s.page.amount.value='98.76';s.failRead('/wallet/topups')
+  await s.page.load(true);assert.equal(s.page.topups.value.length,30);assert.equal(s.page.amount.value,'98.76');assert.match(s.page.error.value,/读取失败/)
+  await s.page.load(true);assert.equal(s.page.topups.value.length,31);assert.equal(s.page.operation.value,'pay');assert.equal(s.page.error.value,'')
+  assert.equal(s.reads.filter(path=>path.includes('/wallet/topups?')&&path.includes('offset=30')).length,2)
+})
+
+test('俱乐部控制台只GET组织权限，不为下拉读取资金或历史',async t=>{
+  const s=harness(t,'club_platform',true);s.hooks.show();await flush();assert.deepEqual(s.reads,['/clubs/club-A']);assert.equal(s.page.wallet.value,null);assert.equal(s.page.hasMore.value,false)
+  await s.page.load();assert.deepEqual(s.reads,['/clubs/club-A','/clubs/club-A']);assert.equal(s.pending.length,0)
+})
+
+test('组织资金刷新与追加错误分别重试原动作，不用旧hasMore推断',async t=>{
+  const s=harness(t);s.histories.topups=Array.from({length:40},(_,i)=>({id:'payment-'+i,status:'pending_payment'}));s.hooks.show();await flush();assert.equal(s.page.hasMore.value,true)
+  s.failRead('/clubs/club-A');await s.page.load();s.reads.length=0;await s.page.retryFailed()
+  assert.ok(s.reads.includes('/clubs/club-A'));assert.ok(s.reads.some(path=>path.startsWith('/wallet/topups?')&&path.includes('offset=0')));assert.equal(s.reads.some(path=>path.includes('offset=30')),false)
+  s.failRead('/wallet/topups');await s.page.load(true);s.reads.length=0;await s.page.retryFailed();assert.equal(s.reads.length,1);assert.ok(s.reads[0].includes('offset=30'));assert.equal(s.page.topups.value.length,40)
+})
+
+test('两个俱乐部资金页面原生触底按失败方向重试，不跳过刷新或追加页',async t=>{for(const scope of ['club_platform','member_club'] as const)await t.test(scope,async subtest=>{const s=harness(subtest,scope);s.histories.topups=Array.from({length:40},(_,i)=>({id:'payment-'+i,status:'pending_payment'}));s.hooks.show();await flush();s.attachBottom();s.failRead('/clubs/club-A');await s.page.load();s.reads.length=0;s.bottom();await flush();assert.ok(s.reads.some(path=>path.startsWith('/wallet/topups')&&path.includes('offset=0')));assert.equal(s.reads.some(path=>path.includes('offset=30')),false);s.failRead('/wallet/topups');await s.page.load(true);s.reads.length=0;s.bottom();await flush();assert.equal(s.reads.length,1);assert.ok(s.reads[0].includes('offset=30'));assert.equal(s.page.topups.value.length,40)})})

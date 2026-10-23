@@ -1,7 +1,7 @@
 <!-- 文件作用：独立查询订单与售后记录，复用既有订单详情处理聊天室、证据和平台裁定。 -->
 <template>
   <AppShell title="订单与售后" back>
-    <ManageList v-model:query="query" placeholder="搜索订单号、标题或用户" :loading="loading" :error="error" :empty="!orders.length" :has-more="hasMore" :count="orders.length" @search="loadData()" @more="loadData(true)" @prepare="showPage">
+    <ManageList v-model:query="query" placeholder="搜索订单号、标题或用户" :loading="loading" :error="error" :empty="!orders.length" :has-more="hasMore" :count="orders.length" @search="loadData()" @more="loadData(true)" @retry="retryFailed" @prepare="showPage">
       <template #filters><view class="order-filters"><button :class="['order-filter', { selected: !refundOnly }]" @click="chooseFilter(false)">全部订单</button><button :class="['order-filter', { selected: refundOnly }]" @click="chooseFilter(true)">退款与争议</button></view></template>
       <view v-for="order in orders" :key="order.id" class="order-row" @click="go('/pages/orders/detail?id=' + encodeURIComponent(order.id))"><view class="order-heading"><text class="order-title">{{ order.title }}</text><text class="order-amount">¥{{ money(order.amount_cents) }}</text></view><text class="order-number">订单号：{{ order.order_no }}</text><view class="order-parties"><text class="order-party">{{ order.buyer_name || '买方' }} → {{ order.provider_name || '等待接单' }}</text><Icon name="arrow" :size="16"/></view><view class="order-footer"><text class="order-status">{{ statusLabel(order.status) }}</text><text v-if="order.refund_status && order.refund_status !== 'none'" class="refund-status">{{ refundName(order.refund_status) }}</text><text v-else class="order-link">查看订单</text></view></view>
     </ManageList>
@@ -16,7 +16,7 @@ import Icon from '../../components/Icon.vue'
 import { useManageResource } from '../../lib/manage-resource'
 import { go, money, statusLabel } from '../../lib/format'
 const refundOnly = ref(false)
-const { items: orders, query, loading, error, hasMore, loadData, showPage } = useManageResource('orders', { params: () => refundOnly.value ? { refund: 1 } : {} })
+const { items: orders, query, loading, error, hasMore, loadData, retryFailed, showPage } = useManageResource('orders', { params: () => refundOnly.value ? { refund: 1 } : {} })
 /** 只使用后端支持的全部或退款争议查询，切换时重新读取第一页。 */
 function chooseFilter(value: boolean): void { if (refundOnly.value === value) return; refundOnly.value = value; orders.value = []; hasMore.value = false; void loadData() }
 /** 显示资金通道的实际售后状态，不把处理中当作退款到账。 */

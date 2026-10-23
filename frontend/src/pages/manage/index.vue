@@ -13,7 +13,7 @@
         <text v-else-if="!chartError" class="chart-loading">尚未读取交易数据</text>
       </view>
       <view class="finance-modules"><button class="finance-module-card" @click="go('/pages/manage/finance/index')"><view class="finance-module-copy"><text class="finance-module-title">资金审核</text><text class="finance-module-note">查看订单付款来源与提现占用</text></view><Icon name="arrow" :size="16"/></button><button class="finance-module-card" @click="go('/pages/manage/finance/settings')"><view class="finance-module-copy"><text class="finance-module-title">交易规则</text><text class="finance-module-note">平台抽成与创建俱乐部押金</text></view><Icon name="arrow" :size="16"/></button></view>
-      <view class="console-section-heading module-heading"><text class="section-title">管理模块</text><button class="text-btn" :disabled="loading||chartLoading" @click="load">刷新数据</button></view>
+      <view class="console-section-heading module-heading"><text class="section-title">管理模块</text></view>
       <view class="module-grid"><button v-for="module in modules" :key="module.route" class="module-card" @click="go(module.route)"><view class="module-icon"><Icon :name="module.icon" :size="21"/></view><text class="module-label">{{ module.label }}</text><Icon name="arrow" :size="13"/></button></view>
     </template>
     <view v-else-if="!error" class="loading-line">正在读取管理员身份…</view>

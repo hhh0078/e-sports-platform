@@ -8,18 +8,21 @@ import { getClubDeposits, getClubWallet, listClubWithdrawals, listClubWalletEntr
 import { createWalletTopup, payWalletTopup, syncWalletTopup, listWalletTopups, listDepositRefunds, createDepositRefund, syncDepositRefund, syncWalletWithdrawal } from '../api/wallet.api'
 import type { Club, ClubDetail } from '../types/models'
 import type { ClubDeposits, ClubWallet, WalletTopup, WalletDepositRefund, WalletWithdrawal, WalletEntry } from '../types/wallet'
-import { fundsIntentKey } from './finance'
+import { fundsIntentKey, mergeFundRecords } from './finance'
 import { newWalletRequestID, parseWalletAmount } from './wallet'
 import { requestWechatPayment, confirmWechatTransfer } from './payment'
 import { requirePhone } from './phone'
 import { go, notify } from './format'
 
 /** 根据资金用途加载当前成员押金或负责人独立钱包，不在本地推算到账。 */
-export function useClubFunds(scope: 'member_club' | 'club_platform') {
+export function useClubFunds(scope: 'member_club' | 'club_platform', options: { summaryOnly?: boolean } = {}) {
   const id=ref(''), club=ref<Club|null>(null), detail=ref<ClubDetail|null>(null), deposits=ref<ClubDeposits|null>(null), wallet=ref<ClubWallet|null>(null)
   const entries=ref<WalletEntry[]>([]), topups=ref<WalletTopup[]>([]), refunds=ref<WalletDepositRefund[]>([]), withdrawals=ref<WalletWithdrawal[]>([])
-  const loading=ref(false), busy=ref(false), error=ref(''), formError=ref(''), operation=ref<'pay'|'refund'|'withdraw'|null>(null), amount=ref(''), userName=ref('')
+  const hasMore=ref(false), loading=ref(false), busy=ref(false), error=ref(''), formError=ref(''), operation=ref<'pay'|'refund'|'withdraw'|null>(null), amount=ref(''), userName=ref('')
   let visible=false, disposed=false, loadVersion=0, actionVersion=0, hideRevision=0
+  let lastFailedAppend=false
+  const historyPageSize=30
+  const cursors={entries:{offset:0,more:true},topups:{offset:0,more:true},withdrawals:{offset:0,more:true},refunds:{offset:0,more:true}}
   let activeRequest:{ownerID:string;clubID:string;kind:string;cents:number;requestID:string}|null=null
   const balance=computed(()=>scope==='club_platform'?deposits.value?.platform:deposits.value?.membership)
   const canManage=computed(()=>!!detail.value?.can_manage)
@@ -28,7 +31,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform') {
   /** 迟到结果不能进入另一个组织或账号，页面销毁后不得继续操作。 */
   function same(owner:ReturnType<typeof session>):boolean { return !disposed&&owner.id===(state.user?.id||'')&&owner.token===token()&&owner.revision===sessionRevision()&&owner.clubID===id.value }
   /** 清除上个身份的组织资金、表单与收款秘密。 */
-  function clear():void { activeRequest=null;loadVersion++; actionVersion++; club.value=null;detail.value=null;deposits.value=null;wallet.value=null;entries.value=[];topups.value=[];refunds.value=[];withdrawals.value=[];operation.value=null;userName.value='';amount.value='';error.value='';formError.value='';busy.value=false;loading.value=false }
+  function clear():void { activeRequest=null;loadVersion++; actionVersion++; club.value=null;detail.value=null;deposits.value=null;wallet.value=null;entries.value=[];topups.value=[];refunds.value=[];withdrawals.value=[];operation.value=null;userName.value='';amount.value='';error.value='';formError.value='';busy.value=false;loading.value=false;hasMore.value=false;lastFailedAppend=false;Object.values(cursors).forEach(cursor=>{cursor.offset=0;cursor.more=true}) }
   /** 服务端已接收的原请求才移除对应缓存，旧记录不能删除后来的同金额意图。 */
   function reconcile(owner:ReturnType<typeof session>,kind:string,cents:number,requestID?:string):void {
     if(!same(owner)||!requestID)return
@@ -36,25 +39,44 @@ export function useClubFunds(scope: 'member_club' | 'club_platform') {
     if(String(uni.getStorageSync(key)||'')===requestID)uni.removeStorageSync(key)
     if(activeRequest?.ownerID===owner.id&&activeRequest.clubID===owner.clubID&&activeRequest.kind===kind&&activeRequest.cents===cents&&activeRequest.requestID===requestID&&operation.value===kind){operation.value=null;userName.value='';formError.value=''}
   }
-  /** 同时读取组织、押金与有权限的账目，读取失败保留上次已确认金额。 */
-  async function load():Promise<void> {
-    if(!visible||disposed||!id.value)return
+  /** 首屏读取组织和押金，触底仅追加有权限的本人组织历史，不重置资金表单或查原付款单。 */
+  async function load(append=false):Promise<void> {
+    if(!visible||disposed||!id.value||(append&&(loading.value||!hasMore.value)))return
     const current=++loadVersion;loading.value=true;error.value='';let owner:ReturnType<typeof session>|undefined
     try {
       await init();if(!visible||disposed||current!==loadVersion)return;owner=session()
-      const result=await getClub(id.value)
-      if(!visible||current!==loadVersion||!same(owner))return
+      const result=append?detail.value:await getClub(id.value)
+      if(!result||!visible||current!==loadVersion||!same(owner))return
       club.value=result.club;detail.value=result
-      if(!state.user)return
-      const [security,payments,returned]=await Promise.all([getClubDeposits(id.value),listWalletTopups(),listDepositRefunds()])
+      if(options.summaryOnly||!state.user)return
+      const summary=!append&&scope==='club_platform'&&result.can_manage?await getClubWallet(id.value):wallet.value
       if(!visible||current!==loadVersion||!same(owner))return
-      deposits.value=security;topups.value=payments.filter(item=>item.club_id===id.value&&item.purpose===scope);refunds.value=returned.filter(item=>item.club_id===id.value&&item.scope===scope)
-      topups.value.filter(item=>item.status==='paid'||item.status==='refunded').forEach(item=>reconcile(owner!,'pay',item.amount_cents,item.request_id))
-      refunds.value.forEach(item=>reconcile(owner!,'refund',item.amount_cents,item.request_id))
-      if(scope==='club_platform'&&result.can_manage){const [summary,history,ledger]=await Promise.all([getClubWallet(id.value),listClubWithdrawals(id.value),listClubWalletEntries(id.value,{limit:30})]);if(!visible||current!==loadVersion||!same(owner))return;wallet.value=summary;withdrawals.value=history;entries.value=ledger;history.forEach(item=>reconcile(owner!,'withdraw',item.amount_cents,item.request_id))}
-    } catch(err) { if(visible&&current===loadVersion&&(!owner||same(owner)))error.value=errorMessage(err) }
+      const positions={entries:append?cursors.entries.offset:0,topups:append?cursors.topups.offset:0,withdrawals:append?cursors.withdrawals.offset:0,refunds:append?cursors.refunds.offset:0}
+      const manages=scope==='club_platform'&&result.can_manage
+      const [security,payments,returned,history,ledger]=await Promise.all([
+        append?Promise.resolve(deposits.value):getClubDeposits(id.value),
+        !append||cursors.topups.more?listWalletTopups({club_id:id.value,purpose:scope,limit:historyPageSize,offset:positions.topups}):Promise.resolve(null),
+        !append||cursors.refunds.more?listDepositRefunds({club_id:id.value,scope,limit:historyPageSize,offset:positions.refunds}):Promise.resolve(null),
+        manages&&(!append||cursors.withdrawals.more)?listClubWithdrawals(id.value,{limit:historyPageSize,offset:positions.withdrawals}):Promise.resolve(null),
+        manages&&(!append||cursors.entries.more)?listClubWalletEntries(id.value,{limit:historyPageSize,offset:positions.entries}):Promise.resolve(null),
+      ])
+      if(!visible||current!==loadVersion||!same(owner))return
+      deposits.value=security;wallet.value=summary
+      if(payments)topups.value=mergeFundRecords(append?topups.value:[],payments)
+      if(returned)refunds.value=mergeFundRecords(append?refunds.value:[],returned)
+      if(history)withdrawals.value=mergeFundRecords(append?withdrawals.value:[],history)
+      if(ledger)entries.value=mergeFundRecords(append?entries.value:[],ledger)
+      payments?.filter(item=>item.status==='paid'||item.status==='refunded').forEach(item=>reconcile(owner!,'pay',item.amount_cents,item.request_id))
+      returned?.forEach(item=>reconcile(owner!,'refund',item.amount_cents,item.request_id))
+      history?.forEach(item=>reconcile(owner!,'withdraw',item.amount_cents,item.request_id))
+      const pages={entries:ledger,topups:payments,withdrawals:history,refunds:returned}
+      ;(Object.keys(cursors) as Array<keyof typeof cursors>).forEach(key=>{const rows=pages[key];if(rows){cursors[key].offset=positions[key]+rows.length;cursors[key].more=rows.length===historyPageSize}else if(!manages&&(key==='entries'||key==='withdrawals'))cursors[key].more=false})
+      hasMore.value=Object.values(cursors).some(cursor=>cursor.more);lastFailedAppend=false
+    } catch(err) { if(visible&&current===loadVersion&&(!owner||same(owner))){lastFailedAppend=append;error.value=errorMessage(err)} }
     finally { if(current===loadVersion)loading.value=false }
   }
+  /** 保留失败时原始分页动作，刷新失败不能错误地跳到下一页。 */
+  async function retryFailed():Promise<void>{if(loading.value||busy.value||operation.value)return;await load(lastFailedAppend)}
   /** 打开明确用途的资金表单；访客保留登录后目标。 */
   function open(kind:'pay'|'refund'|'withdraw'):void { if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/'+(scope==='club_platform'?'funds':'deposit')+'?id='+id.value));return}if(scope==='club_platform'&&!canManage.value)return notify('仅俱乐部负责人可操作');operation.value=kind;formError.value='';userName.value='';const shortfall=balance.value?.shortfall_cents??Math.max(0,(balance.value?.required_cents||0)-(balance.value?.amount_cents||0));amount.value=kind==='pay'?(shortfall>0?(shortfall/100).toFixed(2):''):kind==='refund'?String((balance.value?.amount_cents||0)/100):'' }
   /** 处理中不能关闭表单把未知结果误认为取消。 */
@@ -103,5 +125,5 @@ export function useClubFunds(scope: 'member_club' | 'club_platform') {
   watch([()=>state.user?.id,sessionRevision],()=>{clear();if(visible)void load()},{flush:'sync'})
   onLoad((options:Record<string,string|undefined>={})=>{id.value=options.id||'';if(!id.value)error.value='缺少俱乐部编号'})
   onShow(()=>{visible=true;void load()});onHide(hide);onUnload(()=>{disposed=true;hide();clear()})
-  return {id,club,detail,deposits,balance,wallet,entries,topups,refunds,withdrawals,canManage,loading,busy,error,formError,operation,amount,userName,load,open,close,submit,resume,sync}
+  return {id,club,detail,deposits,balance,wallet,entries,topups,refunds,withdrawals,canManage,hasMore,loading,busy,error,formError,operation,amount,userName,load,retryFailed,open,close,submit,resume,sync}
 }

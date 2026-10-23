@@ -78,11 +78,7 @@
 				illustration="/static/illustrations/empty-orders-light.png" compact />
 		</template>
         <template v-else-if="tab==='clubs'"><view v-if="publicClubs.length" class="join-club-list"><button v-for="club in publicClubs" :key="club.id" class="join-club-row" @click="go('/pages/community/clubs/detail?id='+club.id)"><view class="join-club-avatar"><image v-if="club.avatar_url" class="join-club-image" lazy-load :src="assetUrl(club.avatar_url)" mode="aspectFill"/><Icon v-else name="club" :size="26"/></view><view class="join-club-copy"><text class="join-club-name">{{ club.name }}</text><view class="join-club-count"><Icon name="club" :size="12"/><text>{{ club.member_count||0 }}位成员</text></view><text class="join-club-description">{{ club.description||'一起认真游戏，寻找合拍的队友。' }}</text></view><Icon name="arrow" :size="15"/></button></view><EmptyState v-else title="暂时没有俱乐部" detail="新的团队正在集结，稍后再来看看。" icon="club"/></template>
-		<view v-if="moreError" class="hint danger">{{ moreError }}</view><button v-if="hasMore&&!loading&&!error"
-			class="load-more" :disabled="loadingMore"
-			@click="load(true)">{{ loadingMore?'正在加载…':moreError?'重试加载':'加载更多' }}
-			<Icon name="bottom" :size="12" />
-		</button>
+        <ListLoadState v-if="!error&&(currentListCount||moreError)" :loading="loadingMore" :has-more="hasMore" :error="moreError" @retry="retryList"/>
 
 	</view>
 </template>
@@ -92,6 +88,8 @@
 	import GamePicker from '../../../components/GamePicker.vue'
 	import ServiceCard from '../../../components/ServiceCard.vue'
 	import EmptyState from '../../../components/EmptyState.vue'
+	import ListLoadState from '../../../components/ListLoadState.vue'
+	import { appendUniqueRows } from '../../../lib/list-page'
 	import { state, game, init, sessionRevision, clearSession } from '../../../lib/store'
 	import { listServices, pauseService } from '../../../api/services.api'
 	import { listJobs, claimJob } from '../../../api/orders.api'
@@ -102,6 +100,8 @@
 	import { useMainVisibility, refreshMainList } from '../../../lib/navigation'
 	import type { Club, PublicJob, Service, UserStats } from '../../../types/models'
 	const props = defineProps<{ active : boolean }>()
+/** 查询上下文变化使父容器撤销旧刷新显示，不等待被替代的网络请求。 */
+const refreshKey=ref(0)
 	const pageSize = 20
 	const claimClubs = ref<Club[]>([]), tab = ref<'services' | 'jobs' | 'clubs'>('services'), jobs = ref<PublicJob[]>([]), mine = ref<Service[]>([]), stats = ref<Partial<UserStats>>({})
 	const error = ref(''), moreError = ref(''), loading = ref(false), loadingMore = ref(false), hasMore = ref(false), claiming = ref(''), pausing = ref('')
@@ -110,7 +110,8 @@
 	const loadedTabs=ref({services:false,jobs:false,clubs:false})
     const currentListCount=computed(()=>tab.value==='services'?mine.value.length:tab.value==='jobs'?jobs.value.length:publicClubs.value.length)
 	const serviceCountLabel = computed(() => stats.value.services_count === undefined ? '' : String(stats.value.services_count))
-	let version = 0, visible = false
+	let version = 0, visible = false, failedAppend = false
+	const nextOffsets={services:0,jobs:0,clubs:0}
 	/** 捕获当前私有数据及原生操作所属的账号与会话。 */
 	function currentSession() { return { id: state.user?.id, token: token(), revision: sessionRevision() } }
 	/** 会话轮换后不能提交旧请求、旧操作菜单或迟到的跳转。 */
@@ -126,7 +127,7 @@
 		if (adding && (loading.value || loadingMore.value || !hasMore.value)) return
 		const current = ++version, selectedTab = tab.value
 		if (adding) loadingMore.value = true
-		else { loading.value = true; loadingMore.value = false; error.value = ''; if (!preserve) { hasMore.value = false; loadedTabs.value[selectedTab] = false } }
+		else { loading.value = true; loadingMore.value = false; error.value = ''; if (!preserve) { refreshKey.value++; nextOffsets[selectedTab]=0; hasMore.value = false; loadedTabs.value[selectedTab] = false } }
 		moreError.value = ''
 		let session = currentSession()
 		const currentRequest = () => visible && current === version && sameSession(session) && tab.value === selectedTab
@@ -134,36 +135,39 @@
 			await init(); if (current !== version || !visible) return; session = currentSession()
             if(selectedTab==='clubs'){
                 const readClubs=(limit:number,offset:number)=>listClubs({limit,offset,status:'active'})
-                const listing=preserve&&publicClubs.value.length?await refreshMainList(publicClubs.value.length,pageSize,readClubs,currentRequest):{items:await readClubs(pageSize,adding?publicClubs.value.length:0),hasMore:false}
+                const offset=adding?nextOffsets.clubs:0
+                const listing=preserve&&publicClubs.value.length?await refreshMainList(Math.max(nextOffsets.clubs,publicClubs.value.length),pageSize,readClubs,currentRequest):await readClubs(pageSize,offset).then(items=>({items,hasMore:items.length===pageSize}))
                 if(!listing||!currentRequest())return
-                publicClubs.value=adding?[...publicClubs.value,...listing.items]:listing.items
-                hasMore.value=listing.hasMore||listing.items.length===pageSize
+                nextOffsets.clubs=offset+listing.items.length
+                publicClubs.value=appendUniqueRows(adding?publicClubs.value:[],listing.items)
+                hasMore.value=listing.hasMore
                 loadedTabs.value[selectedTab]=true
                 return
             }
-			if (!state.user) { mine.value = []; stats.value = { earnings_cents: 0 }; claimClubs.value = []; if (selectedTab !== 'jobs') { jobs.value = []; loadedTabs.value[selectedTab] = true; return } }
+			if (!state.user) { mine.value = []; stats.value = { earnings_cents: 0 }; claimClubs.value = []; if (selectedTab !== 'jobs') { jobs.value = []; nextOffsets[selectedTab]=0; hasMore.value=false; loadedTabs.value[selectedTab] = true; return } }
 			const gameId = state.gameId
 			/** 使用选定页签和游戏读取服务或需求，刷新时保留此前加载的全部页。 */
 			const read = (limit : number, offset : number) : Promise<Array<Service | PublicJob>> => selectedTab === 'services' ? listServices({ mine: 1, limit, offset }) : listJobs({ game_id: gameId, limit, offset })
 			const loadedCount = selectedTab === 'services' ? mine.value.length : jobs.value.length
 			const retained = preserve && loadedCount > 0
 			const [listing, summary, clubs] = await Promise.all([
-				retained ? refreshMainList(loadedCount, pageSize, read, currentRequest) : read(pageSize, adding ? loadedCount : 0).then(items => ({ items, hasMore: items.length === pageSize })),
+				retained ? refreshMainList(Math.max(nextOffsets[selectedTab],loadedCount), pageSize, read, currentRequest) : read(pageSize, adding ? nextOffsets[selectedTab] : 0).then(items => ({ items, hasMore: items.length === pageSize })),
 				adding || !state.user ? null : getMyStats(), adding || !state.user ? null : loadClaimClubs(current),
 			])
 			if (!listing || !currentRequest() || (selectedTab === 'jobs' && state.gameId !== gameId)) return
-			if (selectedTab === 'services') { const services = listing.items.filter((item) : item is Service => 'provider_id' in item); mine.value = adding ? [...mine.value, ...services] : services }
-			else { const requests = listing.items.filter((item) : item is PublicJob => 'requirements' in item); jobs.value = adding ? [...jobs.value, ...requests] : requests }
+			nextOffsets[selectedTab]=(adding?nextOffsets[selectedTab]:0)+listing.items.length
+			if (selectedTab === 'services') { const services = listing.items.filter((item) : item is Service => 'provider_id' in item); mine.value = appendUniqueRows(adding ? mine.value : [], services) }
+			else { const requests = listing.items.filter((item) : item is PublicJob => 'requirements' in item); jobs.value = appendUniqueRows(adding ? jobs.value : [], requests) }
 			hasMore.value = listing.hasMore
 			loadedTabs.value[selectedTab] = true
 			if (!adding) { stats.value = summary || {}; claimClubs.value = (clubs || []).filter(club => club.status === 'active' && ['owner', 'active'].includes(club.membership_status || '')) }
-		} catch (err) { if (currentRequest()) { if (errorStatus(err) === 401) clearSession(); else if (adding || (preserve && (loadedTabs.value[selectedTab] || currentListCount.value))) moreError.value = errorMessage(err); else error.value = errorMessage(err) } }
+		} catch (err) { if (currentRequest()) { if (errorStatus(err) === 401) clearSession(); else if (adding || (preserve && (loadedTabs.value[selectedTab] || currentListCount.value))) {failedAppend=adding;moreError.value = errorMessage(err);} else error.value = errorMessage(err) } }
 		finally { if (current === version) { loading.value = false; loadingMore.value = false } }
 	}
 	/** 读取全部挂靠分页，俱乐部多时仍可选择。 */
 	async function loadClaimClubs(current : number) : Promise<Club[]> { const clubs : Club[] = []; while (current === version) { const batch = await listClubs({ mine: 1, limit: 100, offset: clubs.length }); clubs.push(...batch); if (batch.length < 100) break } return clubs }
 	/** 切换服务管理或接单大厅。 */
-	function changeTab(value : 'services' | 'jobs' | 'clubs') : void { if (tab.value !== value) { tab.value = value; void load(false, true) } }
+	function changeTab(value : 'services' | 'jobs' | 'clubs') : void { if (tab.value !== value) { refreshKey.value++; tab.value = value; void load(false, true) } }
 	/** 领取需求前明确选择挂靠，取消选择不创建交易。 */
 	async function claim(job : PublicJob) : Promise<void> {
 		if (!state.user) return go('/pages/account/login?next=' + encodeURIComponent('/pages/main/index?tab=worker'))
@@ -189,10 +193,17 @@
 	function stopLoading() : void { visible = false; version++; loading.value = false; loadingMore.value = false }
 	/** 主视图重显时刷新已加载范围，保持滚动依赖的列表高度。 */
 	function showPage() : void { visible = true; void load(false, true) }
-	watch(() => state.gameId, () => { jobs.value = []; loadedTabs.value.jobs = false; if (visible && tab.value === 'jobs') void load() })
+	watch(() => state.gameId, () => { jobs.value = []; nextOffsets.jobs=0; loadedTabs.value.jobs = false; if (visible && tab.value === 'jobs') void load() })
 	useMainVisibility(() => props.active, showPage, stopLoading)
 	/** 隐藏时也立即清理上一会话的服务、挂靠和统计，不等待新账号请求完成。 */
-	watch([() => state.user?.id, sessionRevision], () => { version++; mine.value = []; jobs.value = []; publicClubs.value=[]; loadedTabs.value={services:false,jobs:false,clubs:false}; stats.value = {}; claimClubs.value = []; hasMore.value = false; error.value = ''; moreError.value = ''; claiming.value = ''; pausing.value = ''; loading.value = false; loadingMore.value = false; if (visible) void load() }, { flush: 'sync' })
+	watch([() => state.user?.id, sessionRevision], () => { version++; nextOffsets.services=0;nextOffsets.jobs=0;nextOffsets.clubs=0;mine.value = []; jobs.value = []; publicClubs.value=[]; loadedTabs.value={services:false,jobs:false,clubs:false}; stats.value = {}; claimClubs.value = []; hasMore.value = false; error.value = ''; moreError.value = ''; claiming.value = ''; pausing.value = ''; loading.value = false; loadingMore.value = false; if (visible) void load() }, { flush: 'sync' })
+	/** 下拉只同步当前子页签，领取和暂停期间不并发改动列表。 */
+	async function refresh():Promise<void>{if(!visible||loading.value||loadingMore.value||claiming.value||pausing.value)return;await load(false,true)}
+	/** 触底只追加当前子页签，防止交易操作期间产生额外读取。 */
+	async function loadMore():Promise<void>{if(!visible||loading.value||loadingMore.value||claiming.value||pausing.value)return;if(moreError.value&&!failedAppend)await load(false,true);else await load(true)}
+	/** 失败重试沿用原动作，刷新失败不误跳到下一页。 */
+	async function retryList():Promise<void>{await loadMore()}
+	defineExpose({refresh,loadMore,refreshKey})
 </script>
 <style scoped>
 	.worker-content {

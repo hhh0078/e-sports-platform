@@ -1,7 +1,7 @@
 <!-- 文件作用：按先行设计提供平台图文人工审核，独立展示待审任务、内容详情和可追溯处理结果。 -->
 <template>
   <AppShell title="图文审核" back>
-    <view v-if="error" class="error-box moderation-error"><text>{{ error }}</text><button class="text-btn" :disabled="loading" @click="loadList()">重新加载</button></view>
+    <view v-if="error" class="error-box moderation-error"><text>{{ error }}</text><button class="text-btn" :disabled="loading" @click="retryFailed">重新加载</button></view>
     <view v-if="loading&&!authorized" class="loading-line">正在核验管理员身份…</view>
     <EmptyState v-else-if="!authorized&&!error" title="仅平台管理员可访问" detail="审核原文和操作记录仅对平台管理员开放。" icon="shield"><button class="text-btn" @click="go('/pages/account/login')">切换账号</button></EmptyState>
     <template v-if="authorized">
@@ -11,7 +11,7 @@
       <view v-if="loading&&!tasks.length" class="loading-line">正在读取审核队列…</view>
       <button v-for="item in tasks" :key="item.id" class="moderation-row" :disabled="busy" @click="openTask(item.id)"><view class="moderation-kind"><Icon :name="item.kind==='image'?'image':'receipt'" :size="21"/></view><view class="moderation-row-copy"><view class="moderation-row-heading"><text class="moderation-field">{{ item.field_label }}</text><text :class="['moderation-status',statusClass(item.status)]">{{ statusLabel(item.status) }}</text></view><text class="moderation-owner">{{ item.target_type }} · {{ item.target_id }}</text><text class="moderation-preview">{{ item.kind==='image'?'图片内容 · 点击安全查看':item.preview||'无文字内容' }}</text><text class="moderation-time">{{ time(item.created_at) }}</text></view><Icon name="arrow" :size="13"/></button>
       <EmptyState v-if="!loading&&!tasks.length&&!error" title="当前没有审核任务" detail="新的用户图文提交后会出现在这里。" icon="shield"/>
-      <view class="moderation-pagination"><text class="hint">已展示 {{ tasks.length }} 条</text><button v-if="nextCursor" class="text-btn" :disabled="loading||busy" @click="loadList(true)">{{ loading?'正在加载…':'加载更多' }}</button><button v-else class="text-btn" :disabled="loading||busy" @click="loadList()">刷新队列</button></view>
+      <view v-if="tasks.length" class="moderation-pagination"><text class="hint">已展示 {{ tasks.length }} 条</text><ListLoadState :loading="loading" :has-more="!!nextCursor" :error="error" @retry="retryFailed"/></view>
     </template>
     <FinancePopup :opened="detailOpened" title="审核详情" :busy="busy" @close="closeDetail">
       <view v-if="detailError" class="error-box"><text>{{ detailError }}</text><button class="text-btn" @click="selectedId&&openTask(selectedId)">重新读取</button></view>
@@ -36,6 +36,9 @@ import { computed, ref, watch } from 'vue'
 import { onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import ListLoadState from '../../components/ListLoadState.vue'
+import {useNativePageRefresh} from '../../lib/native-page-refresh'
+import {appendUniqueRows} from '../../lib/list-page'
 import FinancePopup from '../../components/FinancePopup.vue'
 import Icon from '../../components/Icon.vue'
 import { state, init, sessionRevision } from '../../lib/store'
@@ -49,7 +52,7 @@ const metrics:Array<{key:ModerationStatus;label:string}>=[{key:'manual_pending',
 const tasks=ref<ModerationTask[]>([]),counts=ref<ModerationCounts|null>(null),nextCursor=ref(''),status=ref<''|ModerationStatus>(''),loading=ref(false),authorized=ref(false),error=ref('')
 const selected=ref<ModerationTask|null>(null),selectedId=ref(''),detailOpened=ref(false),detailLoading=ref(false),detailError=ref(''),busy=ref(false),reason=ref(''),imagePath=ref(''),imageLoading=ref(false),imageError=ref('')
 const canDecide=computed(()=>!!selected.value&&['ai_pending','ai_processing','manual_pending'].includes(selected.value.status))
-let visible=false,listVersion=0,detailVersion=0,imageVersion=0,operationVersion=0
+let visible=false,listVersion=0,detailVersion=0,imageVersion=0,operationVersion=0,lastFailedAppend=false
 /** 捕获完整管理员会话，异步原文和确认框不能跨身份继续。 */
 function currentSession(){return{id:state.user?.id,token:token(),revision:sessionRevision()}}
 /** 页面仍可见且当前账号仍为相同管理员时才允许使用结果。 */
@@ -65,7 +68,9 @@ function removeImage(path:string){if(!path)return;try{const manager=uni.getFileS
 /** 清除详情和在途回调，关闭后不继续保留用户原文。 */
 function closeDetail(){if(busy.value)return;detailVersion++;imageVersion++;detailOpened.value=false;selected.value=null;selectedId.value='';reason.value='';detailError.value='';detailLoading.value=false;imageLoading.value=false;imageError.value='';removeImage(imagePath.value);imagePath.value=''}
 /** 请求队列前先核验身份；状态切换使旧分页请求失效。 */
-async function loadList(more=false){if(!visible||busy.value||more&&(loading.value||!nextCursor.value))return;const current=++listVersion;loading.value=true;error.value='';let session:ReturnType<typeof currentSession>|undefined;try{await init();if(!visible||current!==listVersion)return;authorized.value=state.user?.role==='admin';if(!authorized.value){tasks.value=[];counts.value=null;return}session=currentSession();const data=await listModerationTasks({...(status.value?{status:status.value}:{}),...(more?{cursor:nextCursor.value}:{}),limit:20});if(current!==listVersion||!sameSession(session))return;tasks.value=more?[...tasks.value,...data.items.filter(item=>!tasks.value.some(previous=>previous.id===item.id))]:data.items;nextCursor.value=data.next_cursor||'';counts.value=data.counts}catch(err){if(visible&&current===listVersion&&(!session||sameSession(session)))error.value=errorMessage(err)}finally{if(current===listVersion)loading.value=false}}
+async function loadList(more=false){if(!visible||busy.value||more&&(loading.value||!nextCursor.value))return;const current=++listVersion;loading.value=true;error.value='';let session:ReturnType<typeof currentSession>|undefined;try{await init();if(!visible||current!==listVersion)return;authorized.value=state.user?.role==='admin';if(!authorized.value){tasks.value=[];counts.value=null;return}session=currentSession();const data=await listModerationTasks({...(status.value?{status:status.value}:{}),...(more?{cursor:nextCursor.value}:{}),limit:20});if(current!==listVersion||!sameSession(session))return;tasks.value=appendUniqueRows(more?tasks.value:[],data.items);nextCursor.value=data.next_cursor||'';counts.value=data.counts}catch(err){if(visible&&current===listVersion&&(!session||sameSession(session))){lastFailedAppend=more;error.value=errorMessage(err)}}finally{if(current===listVersion)loading.value=false}}
+/** 所有队列错误入口恢复失败的首读或原游标追加，不重放人工审核。 */
+async function retryFailed(){if(loading.value||busy.value)return;await loadList(lastFailedAppend)}
 /** 切换状态保留服务端过滤语义，不对已加载页做局部假筛选。 */
 function chooseStatus(value:''|ModerationStatus){if(busy.value||status.value===value)return;closeDetail();status.value=value;tasks.value=[];nextCursor.value='';void loadList()}
 /** 从固定同源管理员端点下载图片，账号变化后立即丢弃临时文件。 */
@@ -79,12 +84,13 @@ async function decide(decision:'allow'|'reject'){if(busy.value||!canDecide.value
 /** AI重试只作用于待人工任务，无配置时仍保留人工操作。 */
 async function retryAI(){if(busy.value||selected.value?.status!=='manual_pending'||!sameSession(currentSession()))return;const task=selected.value,session=currentSession(),operation=++operationVersion,detail=detailVersion;busy.value=true;try{const result=await retryModerationTask(task.id);if(operation!==operationVersion||detail!==detailVersion||!sameSession(session))return;selected.value=result;notify(result.status==='manual_pending'?'AI暂不可用，任务继续等待人工审核':'已加入AI审核队列')}catch(err){if(operation===operationVersion&&sameSession(session)){detailError.value=errorMessage(err);if(errorStatus(err)===409)selected.value=null}}finally{if(operation===operationVersion){busy.value=false;if(sameSession(session))void loadList()}}}
 /** 隐藏或换号清空原文与临时文件，使旧确认和回调失效。 */
-function clearPage(){listVersion++;operationVersion++;busy.value=false;closeDetail();tasks.value=[];counts.value=null;nextCursor.value='';authorized.value=false;loading.value=false;error.value=''}
+function clearPage(){lastFailedAppend=false;listVersion++;operationVersion++;busy.value=false;closeDetail();tasks.value=[];counts.value=null;nextCursor.value='';authorized.value=false;loading.value=false;error.value=''}
 /** 显示时重新核验真实权限，不使用缓存的管理员身份访问内容。 */
 function showPage(){visible=true;void loadList()}
 /** 隐藏后撤销所有在途UI结果；已提交人工决定仍由服务端原任务保证唯一性。 */
 function hidePage(){visible=false;clearPage()}
 watch([()=>state.user?.id,()=>state.user?.role,sessionRevision],()=>{clearPage();if(visible)void loadList()})
+useNativePageRefresh({refresh:()=>loadList(),more:()=>error.value?retryFailed():loadList(true),context:()=>[state.user?.id,state.user?.role,sessionRevision(),status.value],blocked:()=>busy.value||detailOpened.value})
 onShow(showPage)
 onHide(hidePage)
 onUnload(hidePage)

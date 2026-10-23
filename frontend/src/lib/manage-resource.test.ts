@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import { ref, shallowRef, reactive, computed, watch, effectScope } from 'vue'
 import { executable, injectBusinessAPIs } from './sfc-test'
+import type { NativePageRefreshOptions } from './native-page-refresh'
 import type { DeferredRequest, PageLifecycle } from './sfc-test'
 
 const resourceSource = readFileSync(new URL('./manage-resource.ts', import.meta.url), 'utf8')
@@ -12,8 +13,9 @@ const storeSource = readFileSync(new URL('./store.ts', import.meta.url), 'utf8')
 /** 建立可控制真实请求完成顺序的列表环境。 */
 function harness(role = 'admin') {
   const storage = new Map([['jijie_token', 'token-A']]), requests: DeferredRequest[] = [], notices: unknown[] = [], scope = effectScope()
+  const native:{options?:NativePageRefreshOptions}={}
   const lifecycle: PageLifecycle = { load: () => {}, show: () => {}, hide: () => {}, unload: () => {} }
-  const context = vm.createContext({ ref, shallowRef, reactive, computed, watch, params: {}, cleared: 0, preserved: false,
+  const context = vm.createContext({ ref, shallowRef, reactive, computed, watch,useNativePageRefresh:(options:NativePageRefreshOptions)=>{native.options=options;return{}}, params: {}, cleared: 0, preserved: false,
     uni: { getStorageSync: (key: string) => storage.get(key), setStorageSync: (key: string, value: string) => storage.set(key, value), removeStorageSync: (key: string) => storage.delete(key) },
     token: () => storage.get('jijie_token') || '', notify: (value: unknown) => notices.push(value),
     /** 只模拟网络边界，列表和审核逻辑使用生产实现。 */
@@ -24,7 +26,7 @@ function harness(role = 'admin') {
   vm.runInContext(executable(storeSource) + '\nglobalThis.store = { state, login, sessionRevision }', context)
   context.store.state.user = { id: 'A', nickname: '管理员A', role }; context.store.state.ready = true
   scope.run(() => vm.runInContext(executable(resourceSource) + '\nglobalThis.list = useManageResource("users", { params: () => params, preserveDraft: () => preserved, clearDraft: () => { cleared++ } })', context))
-  return { list: context.list, store: context.store, context, requests, notices, lifecycle, scope,
+  return { list: context.list, store: context.store, context, requests, notices, lifecycle, scope,native,
     /** 获取真实发出的目标请求，不容许重复消费。 */
     take(path: string, method = 'GET') { const request = [...requests].reverse().find(item => !item.taken && item.path === path && item.method === method); assert.ok(request, `缺少请求 ${method} ${path}`); request.taken = true; return request },
   }
@@ -44,7 +46,7 @@ test('更早搜索的成功或失败均不能替换最新搜索', async () => {
   const subject = harness(), showing = subject.list.showPage(); await flush(); const initial = subject.take('/admin/users?limit=20&offset=0')
   subject.list.query.value = '新关键词'; const searching = subject.list.loadData(), latest = subject.take('/admin/users?limit=20&offset=0&q=%E6%96%B0%E5%85%B3%E9%94%AE%E8%AF%8D')
   latest.resolve([{ id: 'new' }]); await searching; initial.reject(new Error('旧请求失败')); await showing
-  assert.deepEqual(subject.list.items.value.map((item: { id: string }) => item.id), ['new']); assert.equal(subject.list.error.value, ''); subject.scope.stop()
+  assert.deepEqual(Array.from(subject.list.items.value, (item: { id: string }) => item.id), ['new']); assert.equal(subject.list.error.value, ''); subject.scope.stop()
 })
 
 test('分页按服务器原始记录推进偏移，重复记录只展示一次', async () => {
@@ -61,7 +63,7 @@ test('账号切换立即清除列表，旧账号迟到响应不进入新页', as
   subject.list.items.value = [{ id: 'private-A' }]; await loginB(subject)
   assert.equal(subject.list.items.value.length, 0)
   const current = subject.take('/admin/users?limit=20&offset=0'); current.resolve([{ id: 'B-visible' }]); await flush(); old.resolve([{ id: 'A-stale' }]); await showing
-  assert.deepEqual(subject.list.items.value.map((item: { id: string }) => item.id), ['B-visible']); assert.equal(subject.notices.length, 0); subject.scope.stop()
+  assert.deepEqual(Array.from(subject.list.items.value, (item: { id: string }) => item.id), ['B-visible']); assert.equal(subject.notices.length, 0); subject.scope.stop()
 })
 
 test('审核请求重复点击仅提交一次，切换账号后不提示成功或额外刷新', async () => {
@@ -97,15 +99,16 @@ test('筛选条件改变后拒绝旧分页结果，不混入新状态', async ()
   const showing = subject.list.showPage(); await flush(); const old = subject.take('/admin/users?status=pending&limit=20&offset=0')
   subject.context.params = { status: 'active' }; const filtered = subject.list.loadData(); subject.take('/admin/users?status=active&limit=20&offset=0').resolve([{ id: 'active' }]); await filtered
   old.resolve([{ id: 'pending' }]); await showing
-  assert.deepEqual(subject.list.items.value.map((item: { id: string }) => item.id), ['active']); subject.scope.stop()
+  assert.deepEqual(Array.from(subject.list.items.value, (item: { id: string }) => item.id), ['active']); subject.scope.stop()
 })
 
-test('修改搜索词后点击更多从新条件首页读取，不混合两次查询', async () => {
+test('未确认的搜索草稿不会通过触底提交，明确搜索后才读取新第一页', async () => {
   const subject = harness(), showing = subject.list.showPage(); await flush()
   subject.take('/admin/users?limit=20&offset=0').resolve(Array.from({ length: 20 }, (_, index) => ({ id: 'A-' + index }))); await showing
-  subject.list.query.value = 'B'; const more = subject.list.loadData(true)
-  subject.take('/admin/users?limit=20&offset=0&q=B').resolve([{ id: 'B-first-page' }]); await more
-  assert.deepEqual(subject.list.items.value.map((item: { id: string }) => item.id), ['B-first-page']); assert.equal(subject.list.hasMore.value, false); subject.scope.stop()
+  subject.list.query.value = 'B'; await subject.list.loadData(true)
+  assert.equal(subject.requests.filter(item=>!item.taken).length,0); assert.equal(subject.list.items.value.length,20)
+  const searching = subject.list.loadData(); subject.take('/admin/users?limit=20&offset=0&q=B').resolve([{ id: 'B-first-page' }]); await searching
+  assert.deepEqual(Array.from(subject.list.items.value, (item: { id: string }) => item.id), ['B-first-page']); assert.equal(subject.list.hasMore.value, false); subject.scope.stop()
 })
 
 test('冷启动配置读取失败可重新核验身份并加载列表，不停留在空白管理页', async () => {
@@ -115,5 +118,29 @@ test('冷启动配置读取失败可重新核验身份并加载列表，不停�
   const retry = subject.list.showPage(); assert.equal(subject.list.error.value, '')
   subject.take('/bootstrap').resolve({ games: [], dev_mode: true }); await flush(); subject.take('/me').resolve({ id: 'A', role: 'admin', nickname: '管理员A' }); await flush()
   subject.take('/admin/users?limit=20&offset=0').resolve([{ id: 'recovered' }]); await retry; await flush()
-  assert.equal(subject.store.state.ready, true); assert.equal(subject.store.state.user.role, 'admin'); assert.deepEqual(subject.list.items.value.map((item: { id: string }) => item.id), ['recovered']); assert.equal(subject.list.error.value, ''); subject.scope.stop()
+  assert.equal(subject.store.state.ready, true); assert.equal(subject.store.state.user.role, 'admin'); assert.deepEqual(Array.from(subject.list.items.value, (item: { id: string }) => item.id), ['recovered']); assert.equal(subject.list.error.value, ''); subject.scope.stop()
+})
+
+test('管理页原生刷新可恢复初始化失败，审核和编辑草稿期间不启动手势读取',async()=>{
+  const subject=harness();subject.store.state.user=null;subject.store.state.ready=false
+  const initial=subject.list.showPage();subject.take('/bootstrap').reject(new Error('启动失败'));await initial
+  const refreshing=subject.native.options?.refresh();subject.take('/bootstrap').resolve({games:[],dev_mode:true});await flush();subject.take('/me').resolve({id:'A',role:'admin'});await flush()
+  subject.take('/admin/users?limit=20&offset=0').resolve([{id:'recovered'}]);await refreshing;assert.equal(subject.list.items.value[0].id,'recovered')
+  subject.context.preserved=true;assert.equal(subject.native.options?.blocked?.(),true);subject.context.preserved=false;subject.list.busy.value=true;assert.equal(subject.native.options?.blocked?.(),true)
+  assert.equal(subject.requests.some(item=>item.method!=='GET'),false);subject.scope.stop()
+})
+
+test('管理列表错误重试保留首读或追加的方向和查询快照，输入草稿不改写失败请求',async()=>{
+  const s=harness(),initial=s.list.showPage();await flush();s.take('/admin/users?limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({id:'user'+i})));await initial
+  const refresh=s.native.options?.refresh();await flush();s.take('/admin/users?limit=20&offset=0').reject(new Error('首读失败'));await refresh
+  const firstRetry=s.list.retryFailed();s.take('/admin/users?limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({id:'user'+i})));await firstRetry
+  const more=s.list.loadData(true);s.take('/admin/users?limit=20&offset=20').reject(new Error('追加失败'));await more;s.list.query.value='未确认草稿'
+  const secondRetry=s.list.retryFailed();s.take('/admin/users?limit=20&offset=20').resolve([{id:'last'}]);await secondRetry
+  assert.equal(s.list.items.value.length,21);assert.equal(s.list.query.value,'未确认草稿');assert.equal(s.requests.some(item=>item.method!=='GET'),false);s.scope.stop()
+})
+
+test('管理列表首读新搜索失败后，重试使用失败查询而不提交后续输入',async()=>{
+  const s=harness(),initial=s.list.showPage();await flush();s.take('/admin/users?limit=20&offset=0').resolve([]);await initial
+  s.list.query.value='A';const searching=s.list.loadData();s.take('/admin/users?limit=20&offset=0&q=A').reject(new Error('搜索失败'));await searching;s.list.query.value='B'
+  const retry=s.list.retryFailed();s.take('/admin/users?limit=20&offset=0&q=A').resolve([{id:'A-result'}]);await retry;assert.equal(s.list.items.value[0].id,'A-result');assert.equal(s.list.query.value,'B');s.scope.stop()
 })

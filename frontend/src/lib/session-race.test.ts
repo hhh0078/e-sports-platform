@@ -253,12 +253,14 @@ test('迟到的微信登录响应不能覆盖后来完成的身份切换', async
 test('订单当前401切回可登录空态，旧账号响应不影响新账号', async t => {
   await t.test('expiredSession', async () => {
     const subject = harness('orders')
-    subject.page.loading.value = false
-    subject.page.orders.value = [{ id: 'old-order' }]
-    subject.page.hasMore.value = true
+    const initial = subject.page.load()
+    await flush()
+    subject.take('/orders?role=buyer&status=all&limit=20&offset=0').resolve(Array.from({length:20},(_,index)=>({id:'old-order-'+index})))
+    await initial
+    assert.equal(subject.page.hasMore.value,true)
     const reading = subject.page.load(true)
     await flush()
-    subject.take('/orders?role=buyer&status=all&limit=20&offset=1').reject(Object.assign(new Error('请先登录'), { status: 401 }))
+    subject.take('/orders?role=buyer&status=all&limit=20&offset=20').reject(Object.assign(new Error('请先登录'), { status: 401 }))
     await reading
     assert.equal(subject.store.state.user, null)
     assert.equal(subject.storage.has('jijie_token'), false)

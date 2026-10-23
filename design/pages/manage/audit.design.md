@@ -27,3 +27,10 @@
 
 Use case: ui-mockup. Asset type: one independent production Chinese WeChat Mini Program readonly “操作审计” admin page, exactflat390×844portrait, nodeviceframe.
 Match 开机电竞’s naturalblackgreeneditorialdesign:background#0a1110,text#edf3ef,muted#91a299,mint#83e7b7,thin#ffffff12divider,16pxinsets,officialthincenteredicons,nobluepurplegradient. Native safestatus9:41 then sharedsecondarynavleftbackchevron, centered exacttitle “操作审计”, nobottomnavigation. At y100 quietfullwidth searchinput smallsearchicon placeholder “搜索操作、用户或对象” and light refreshglyph. Below showactualrecordshapedreadonlyopenrows with fine horizontal separators, no timeline decoration, no cards orfakecharts. Each row bold action left and time right, next lines “操作人” + ID and “目标”+ID, optional fullwrappedplain-text note. Exactlayoutsample rows: “service.active” / “10-22 13:08” / “操作人 admin-demo” / “目标 service-demo-01” / “服务审核通过”; “club.active” / “10-22 12:45” / “操作人 admin-demo” / “目标 club-demo-01” / “俱乐部申请通过并认证”; “user.frozen” / “10-22 12:10” / “操作人 admin-demo” / “目标 user-demo-02” / “冻结账号”; “game.save” / “10-22 11:56” / “操作人 admin-demo” / “目标 delta” / “更新游戏配置”. These IDs are obviously illustrative only, no fabricated real identities or financial claims. Use ample lineheight and readable14pxsecondarytext, longobjectIDs wrap instead of squeezing. Below rows quiet centered “加载更多”. Page contains only search and actualauditrecords; no modify/delete buttons, no extra unsupportedstatusfilters,noheroillustration,nofakecounts,noadjudicationcontrols. Distinctstronghierarchy,butminimalquietadminutility. Generateexactlyonescreen,nota multi-screenboard. Chinese exact wording desirable; implementation documentation remains authoritative.
+
+## 2026-10-24 原生下拉刷新与触底加载
+
+沿用本页已批准设计图、原生页面滚动、主题与版式，不新增嵌套滚动容器。下拉只刷新当前可读数据，所有成功、错误、访客、权限拒绝和被保护的忙碌状态都结束原生刷新动画；不调用支付、审核、创建、撤销等写接口。已有数据刷新期间保留，失败可重试；同一列表触底只允许一条请求，刷新或筛选后的旧页不得追加。分页页脚统一使用官方uni-load-more的轻状态，只有失败时显示重试入口，移除普通“加载更多”按钮。
+保持服务端搜索、筛选与20条原始offset，刷新重置分页，分页去重不改变服务端offset；管理编辑、原生确认和提交草稿保持不变。
+
+错误重试统一恢复刚才失败的首读或追加请求，不根据旧页脚推断；搜索输入是草稿，触底不得自动提交新关键词，需明确搜索后才应用。页面身份和筛选变化同步撤销旧手势加载状态，原业务版本守卫继续隔离迟到回包。

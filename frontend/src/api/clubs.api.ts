@@ -8,7 +8,7 @@ export type ClubInput = { request_id?: string } & Pick<Club, 'name' | 'descripti
 /** 读取公开俱乐部或本人挂靠。 */
 export function listClubs(query: ClubQuery = {}): Promise<Club[]> { return (query.mine ? request : requestPublic)('/clubs' + queryString(query)) }
 /** 读取俱乐部资料及有权限的成员信息。 */
-export function getClub(id: string, publicOnly = false): Promise<ClubDetail> { return (publicOnly ? requestPublic : request)('/clubs/' + encodeURIComponent(id)) }
+export function getClub(id: string, publicOnly = false, query: ListQuery = {}): Promise<ClubDetail> { return (publicOnly ? requestPublic : request)('/clubs/' + encodeURIComponent(id) + queryString(query)) }
 /** 提交新俱乐部审核。 */
 export function createClub(body: ClubInput): Promise<Club> { return request('/clubs', 'POST', body) }
 /** 保存俱乐部装修。 */

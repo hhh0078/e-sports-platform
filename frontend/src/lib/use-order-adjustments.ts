@@ -19,6 +19,7 @@ export type AdjustmentDialog = 'create'|'accept'|'reject'|'withdraw'|'pay'
 export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
   const records=ref<OrderAdjustment[]>([]),loading=ref(false),busy=ref(false),error=ref(''),formError=ref(''),dialog=ref<AdjustmentDialog|null>(null),kind=ref<AdjustmentKind>('increase'),amount=ref(''),reason=ref(''),selected=ref<OrderAdjustment|null>(null),channel=ref<'wechat'|'balance'>('wechat'),wallet=ref<Wallet|null>(null),walletLoading=ref(false),walletError=ref('')
   let visible=true,disposed=false,readVersion=0,operation=0,walletVersion=0
+  let currentRead:Promise<void>|null=null
   let resumeDraft:{kind:AdjustmentKind;amount:string;reason:string}|null=null
   const pending=computed(()=>records.value.find(record=>record.id===readOrder()?.active_adjustment_id&&adjustmentPending(record))||null)
   const canIncrease=computed(()=>!loading.value&&!error.value&&!pending.value&&canProposeAdjustment(readOrder(),state.user?.id||'','increase'))
@@ -29,8 +30,19 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
   function same(t:ReturnType<typeof ticket>):boolean{return!disposed&&t.id===state.user?.id&&t.token===token()&&t.revision===sessionRevision()&&t.order===readOrder()?.id}
   /** 只有当前页面与当前版本可修改可见记录或发起后续资金操作。 */
   function current(t:ReturnType<typeof ticket>,version:number):boolean{return visible&&same(t)&&version===operation}
-  /** 读取权限受保护的调价记录，失败不把历史记录伪装成空态。 */
-  async function load():Promise<void>{const id=readOrder()?.id;if(!visible||disposed||!id||!state.user||busy.value)return;const version=++readVersion,t=ticket();loading.value=true;error.value='';try{const result=await listOrderAdjustments(id);if(visible&&same(t)&&version===readVersion){records.value=result;for(const record of result)if(record.proposer_id===t.id&&record.request_id)clearCreationRequest(record.request_id)}}catch(e){if(visible&&same(t)&&version===readVersion)error.value=errorMessage(e)}finally{if(version===readVersion)loading.value=false}}
+  /** 订单下拉与updated_at监听复用同一在途GET；失败保留历史和调价草稿。 */
+  function load():Promise<void>{
+    const id=readOrder()?.id
+    if(!visible||disposed||!id||!state.user||busy.value)return Promise.resolve()
+    if(loading.value&&currentRead)return currentRead
+    const version=++readVersion,t=ticket();loading.value=true;error.value=''
+    currentRead=(async()=>{
+      try{const result=await listOrderAdjustments(id);if(visible&&same(t)&&version===readVersion){records.value=result;for(const record of result)if(record.proposer_id===t.id&&record.request_id)clearCreationRequest(record.request_id)}}
+      catch(e){if(visible&&same(t)&&version===readVersion)error.value=errorMessage(e)}
+      finally{if(version===readVersion){loading.value=false;currentRead=null}}
+    })()
+    return currentRead
+  }
   /** 清空确认和输入，仅当用户主动取消或切页时丢弃未提交草稿。 */
   function close():void{if(busy.value)return;walletVersion++;dialog.value=null;selected.value=null;wallet.value=null;walletLoading.value=false;walletError.value='';formError.value=''}
   /** 打开创建表单，尚无双方确认或资金请求。 */
@@ -55,7 +67,7 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
   async function confirm():Promise<void>{
     const action=dialog.value,order=readOrder(),record=selected.value
     if(!visible||disposed||busy.value||!action||!order)return
-    const t=ticket(),version=++operation;busy.value=true;formError.value='';readVersion++;loading.value=false
+    const t=ticket(),version=++operation;busy.value=true;formError.value='';readVersion++;loading.value=false;currentRead=null
     try{
       if(action==='create'){
         const cents=parseAdjustmentAmount(amount.value),text=reason.value.trim();if(Array.from(text).length<2||Array.from(text).length>500)throw new Error('请填写2—500字原因');if(kind.value==='decrease'&&cents>order.amount_cents)throw new Error('退差金额不能超过当前订单金额');if(!(await requirePhone())||!current(t,version))return
@@ -79,7 +91,7 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
   /** 买家及平台只同步既有付款/退款结果，不代替双方同意或另建资金单。 */
   async function synchronize(record:OrderAdjustment):Promise<void>{if(!visible||busy.value||!canSynchronize())return;const t=ticket(),version=++operation;busy.value=true;error.value='';try{await syncOrderAdjustment(t.order||'',record.id);if(!current(t,version))return;busy.value=false;changed();await load()}catch(e){if(current(t,version))error.value=errorMessage(e)}finally{if(version===operation)busy.value=false}}
   /** 切账号/订单立即清空旧证据、草稿与所有未发出的后续资金操作。 */
-  function clear():void{operation++;readVersion++;walletVersion++;resumeDraft=null;records.value=[];loading.value=false;busy.value=false;error.value='';dialog.value=null;selected.value=null;wallet.value=null;walletLoading.value=false;walletError.value='';formError.value='';amount.value='';reason.value=''}
+  function clear():void{operation++;readVersion++;walletVersion++;resumeDraft=null;records.value=[];loading.value=false;currentRead=null;busy.value=false;error.value='';dialog.value=null;selected.value=null;wallet.value=null;walletLoading.value=false;walletError.value='';formError.value='';amount.value='';reason.value=''}
   /** 原生授权临时隐藏只撤销旧操作和支付意图，同账号创建草稿保留供用户重新打开。 */
   function hide():void{visible=false;const draft=dialog.value==='create'?{kind:kind.value,amount:amount.value,reason:reason.value}:null;clear();resumeDraft=draft}
   watch([()=>readOrder()?.id,()=>state.user?.id,sessionRevision],()=>{clear();if(visible)void load()},{immediate:true,flush:'sync'})

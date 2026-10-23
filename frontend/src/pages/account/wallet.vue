@@ -1,7 +1,7 @@
 <!-- 文件作用：按先行设计展示真实钱包分区、资金原单与自愿平台押金，所有资金变化由服务端记账。 -->
 <template>
   <AppShell title="我的钱包" back :style="{'--accent-soft':softAccent}">
-    <view v-if="error" class="error-box" @click="load()">{{ error }} · 点击重试</view>
+    <view v-if="error" class="error-box" @click="retryFailed">{{ error }} · 点击重试</view>
     <view class="balance-section">
       <text class="balance-caption">可提现余额</text>
       <view class="balance-main"><text class="balance-value">{{ state.user ? (wallet ? '¥'+fixed(wallet.available_cents) : '—') : '¥0.00' }}</text><view class="wallet-actions"><button class="btn btn-secondary btn-small" :disabled="busy" @click="open('balance')">充值</button><button class="btn btn-small" :disabled="busy" @click="open('withdrawal')">提现</button></view></view>
@@ -16,9 +16,9 @@
       <view v-for="record in activeWithdrawals" :key="record.id" class="progress-row"><view class="record-copy"><text>提现 ¥{{ fixed(record.amount_cents) }}</text><text class="wallet-note">{{ walletStatus(record.status) }}</text><text v-if="record.failure_reason" class="wallet-note">{{ record.failure_reason }}</text></view><button class="text-btn" :disabled="busy" @click="syncRecord('withdrawal',record.id,record.status==='wait_user_confirm')">{{ record.status==='wait_user_confirm'?'确认收款':'同步' }}</button></view>
       <view v-for="record in activeRefunds" :key="record.id" class="progress-row"><view class="record-copy"><text>退还押金 ¥{{ fixed(record.amount_cents) }}</text><text class="wallet-note">{{ walletStatus(record.status) }}</text></view><button class="text-btn" :disabled="busy" @click="syncRecord('refund',record.id)">同步</button></view>
     </view>
-    <view class="ledger-section"><view class="wallet-heading ledger-heading"><text class="section-title">交易明细</text><button v-if="state.user" class="text-btn" :disabled="loading" @click="load()">刷新</button></view><view class="ledger-tabs"><button v-for="tab in tabs" :key="tab.id" :class="['ledger-tab',{selected:filter===tab.id}]" @click="filter=tab.id">{{ tab.label }}</button></view>
+    <view class="ledger-section"><view class="wallet-heading ledger-heading"><text class="section-title">交易明细</text></view><view class="ledger-tabs"><button v-for="tab in tabs" :key="tab.id" :class="['ledger-tab',{selected:filter===tab.id}]" @click="filter=tab.id">{{ tab.label }}</button></view>
       <view v-if="loading&&!entries.length" class="ledger-empty">正在读取资金记录…</view><view v-else-if="!filteredEntries.length" class="ledger-empty"><Icon name="receipt" :size="28"/><text>{{ state.user?'暂无资金记录':'请登录后查看资金记录' }}</text><button v-if="!state.user" class="text-btn" @click="open('balance')">去登录</button></view>
-      <view v-for="entry in filteredEntries" :key="entry.id" class="ledger-row"><view class="record-copy"><text class="entry-title">{{ entry.note || entryName(entry) }}</text><text class="wallet-note">{{ time(entry.created_at) }} · {{ entryName(entry) }}</text></view><text class="entry-amount">¥{{ fixed(entry.amount_cents) }}</text></view><button v-if="hasMore" class="text-btn load-more" :disabled="loading" @click="load(true)">加载更多明细</button>
+      <view v-for="entry in filteredEntries" :key="entry.id" class="ledger-row"><view class="record-copy"><text class="entry-title">{{ entry.note || entryName(entry) }}</text><text class="wallet-note">{{ time(entry.created_at) }} · {{ entryName(entry) }}</text></view><text class="entry-amount">¥{{ fixed(entry.amount_cents) }}</text></view><ListLoadState v-if="state.user" :loading="loading" :has-more="hasMore" :error="error" @retry="retryFailed"/>
     </view>
     <text v-if="wallet?.dev_mode" class="wallet-note dev-note">本地测试钱包，充值、支付和提现均为模拟资金。</text>
     <FundsForm :opened="!!operation" :title="operation?titles[operation]:''" :description="operation?descriptions[operation]:''" v-model:amount="amount" v-model:user-name="userName" :name-required="operation==='withdrawal'&&Number(amount)>=2000" :error="formError" :busy="busy" @close="close" @submit="submit"/>
@@ -30,13 +30,16 @@ import AppShell from '../../components/AppShell.vue'
 import Icon from '../../components/Icon.vue'
 import WithdrawalRules from '../../components/WithdrawalRules.vue'
 import FundsForm from '../../components/FundsForm.vue'
+import ListLoadState from '../../components/ListLoadState.vue'
+import { useNativePageRefresh } from '../../lib/native-page-refresh'
 import { paymentPurposeName } from '../../lib/finance'
-import { state,game } from '../../lib/store'
+import { state,game,sessionRevision } from '../../lib/store'
 import { time } from '../../lib/format'
 import { useWallet } from '../../lib/use-wallet'
 import type { WalletEntry } from '../../types/wallet'
 import { walletStatus,walletKind } from '../../lib/wallet'
-const {wallet,entries,topups,withdrawals,refunds,filteredEntries,loading,busy,error,operation,amount,userName,formError,filter,hasMore,load,open,close,submit,syncRecord,resumeTopup}=useWallet()
+const {wallet,entries,topups,withdrawals,refunds,filteredEntries,loading,busy,error,operation,amount,userName,formError,filter,hasMore,load,retryFailed,open,close,submit,syncRecord,resumeTopup}=useWallet()
+useNativePageRefresh({refresh:()=>load(),more:()=>error.value?retryFailed():load(true),blocked:()=>busy.value||!!operation.value,context:()=>[state.user?.id,state.user?.role,sessionRevision(),filter.value]})
 /** 低对比主题底色沿用当前游戏主色，兼容微信端不支持color-mix的渲染器。 */
 const softAccent=computed(()=>/^#[0-9a-f]{6}$/i.test(game.value.primary_color)?game.value.primary_color+'24':'#8de8b624')
 const tabs=[{id:'all',label:'全部'},{id:'recharge',label:'充值'},{id:'withdrawal',label:'提现'},{id:'deposit',label:'押金'}]

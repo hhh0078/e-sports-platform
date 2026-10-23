@@ -1,7 +1,7 @@
 <!-- 文件作用：只读查询真实管理员操作记录，提供服务端搜索分页而不允许编辑或删除审计。 -->
 <template>
   <AppShell title="操作审计" back>
-    <ManageList v-model:query="query" placeholder="搜索操作、用户或对象" :loading="loading" :error="error" :empty="!audits.length" :has-more="hasMore" :count="audits.length" @search="loadData()" @more="loadData(true)" @prepare="showPage">
+    <ManageList v-model:query="query" placeholder="搜索操作、用户或对象" :loading="loading" :error="error" :empty="!audits.length" :has-more="hasMore" :count="audits.length" @search="loadData()" @more="loadData(true)" @retry="retryFailed" @prepare="showPage">
       <view v-for="entry in audits" :key="entry.id" class="audit-row"><view class="audit-heading"><text class="audit-action">{{ entry.action }}</text><text class="audit-time">{{ time(entry.created_at) }}</text></view><view class="audit-field"><text class="audit-label">操作人</text><text class="audit-value">{{ entry.actor_id }}</text></view><view class="audit-field"><text class="audit-label">目标</text><text class="audit-value">{{ entry.target_id }}</text></view><text v-if="entry.note" class="audit-note">{{ noteText(entry.note) }}</text></view>
     </ManageList>
   </AppShell>
@@ -11,7 +11,7 @@ import AppShell from '../../components/AppShell.vue'
 import ManageList from '../../components/ManageList.vue'
 import { useManageResource } from '../../lib/manage-resource'
 import { time } from '../../lib/format'
-const { items: audits, query, loading, error, hasMore, loadData, showPage } = useManageResource('audit')
+const { items: audits, query, loading, error, hasMore, loadData, retryFailed, showPage } = useManageResource('audit')
 /** 审计说明作为纯文本显示，不解析可执行HTML或把说明编造成操作记录。 */
 function noteText(value: unknown): string { return typeof value === 'string' ? value : JSON.stringify(value) || '' }
 </script>

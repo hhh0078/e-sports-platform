@@ -1,7 +1,7 @@
 <!-- 文件作用：独立审核服务，按服务端状态搜索分页，保留通过、拒绝、下架及详情入口。 -->
 <template>
   <AppShell title="服务审核" back>
-    <ManageList v-model:query="query" placeholder="搜索服务标题、发布者" :loading="loading" :busy="busy" :error="error" :empty="!services.length" :has-more="hasMore" :count="services.length" @search="loadData()" @more="loadData(true)" @prepare="showPage">
+    <ManageList v-model:query="query" placeholder="搜索服务标题、发布者" :loading="loading" :busy="busy" :error="error" :empty="!services.length" :has-more="hasMore" :count="services.length" @search="loadData()" @more="loadData(true)" @retry="retryFailed" @prepare="showPage">
       <template #filters><scroll-view scroll-x :show-scrollbar="false" class="filter-scroll"><view class="status-filters"><button v-for="item in filters" :key="item.value" :class="['status-filter', { selected: status === item.value }]" :disabled="busy" @click="chooseStatus(item.value)">{{ item.label }}</button></view></scroll-view></template>
       <view v-for="service in services" :key="service.id" class="service-row"><view class="service-summary"><image class="service-image" :src="assetUrl(service.cover_url)" mode="aspectFill"/><view class="service-copy"><view class="service-heading"><text class="service-title">{{ service.title }}</text><text class="service-status">{{ serviceStatus(service.status) }}</text></view><text class="service-meta">{{ service.provider_name }} · {{ service.category }}</text><text class="service-price">¥{{ money(service.price_cents) }}<text class="service-unit"> / {{ service.unit }}</text></text></view></view><text class="service-description">{{ service.description }}</text><view class="service-actions"><button class="text-btn service-detail" @click="go('/pages/services/detail?id=' + encodeURIComponent(service.id))">查看详情<Icon name="arrow" :size="13"/></button><button v-if="service.status === 'pending'" class="btn btn-secondary btn-small" :disabled="busy" @click="review(service.id, 'rejected')">拒绝</button><button v-if="service.status !== 'active'" class="btn btn-small" :disabled="busy" @click="review(service.id, 'active')"><Icon name="check" :size="14"/>通过</button><button v-else class="btn btn-secondary btn-small" :disabled="busy" @click="review(service.id, 'paused')">暂停</button></view></view>
     </ManageList>
@@ -18,7 +18,7 @@ import { moderateResource } from '../../api/admin.api'
 import { go, assetUrl, money, statusLabel } from '../../lib/format'
 const filters = [{ value: '', label: '全部' }, { value: 'pending', label: '待审核' }, { value: 'active', label: '已通过' }, { value: 'paused', label: '已暂停' }, { value: 'rejected', label: '已拒绝' }]
 const status = ref('')
-const { items: services, query, loading, busy, error, hasMore, loadData, showPage, mutate } = useManageResource('services', { params: () => ({ status: status.value || undefined }) })
+const { items: services, query, loading, busy, error, hasMore, loadData, retryFailed, showPage, mutate } = useManageResource('services', { params: () => ({ status: status.value || undefined }) })
 /** 管理审核状态与筛选文案一致，未知状态仍保留共享可辨识文案。 */
 function serviceStatus(value: string): string { return filters.find(item => item.value === value)?.label || statusLabel(value) }
 /** 切换服务端状态筛选，重新从第一页读取，禁止只过滤已加载记录。 */

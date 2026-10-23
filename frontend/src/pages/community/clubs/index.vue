@@ -1,12 +1,12 @@
 <!-- 文件作用：发现俱乐部、查看个人挂靠并申请创建新的电竞俱乐部。 -->
 <template>
   <AppShell title="俱乐部" back>
-    <view class="club-search"><Icon name="search" :size="18"/><input v-model="query" class="search-input" placeholder="搜索俱乐部" confirm-type="search" @confirm="load"/></view>
+    <view class="club-search"><Icon name="search" :size="18"/><input v-model="query" class="search-input" placeholder="搜索俱乐部" confirm-type="search" @confirm="load()"/></view>
     <view class="club-toolbar"><view class="club-tabs"><button :class="['club-tab',{active:!mine}]" @click="mine=false;load()">发现俱乐部</button><button :class="['club-tab',{active:mine}]" @click="mine=true;load()">我的俱乐部</button></view><button class="text-btn create-entry" @click="openCreate">创建</button></view>
-    <view v-if="error" class="list-error" @click="load">{{ error }} · 重试</view>
+    <view v-if="error" class="list-error" @click="retryFailed">{{ error }} · 重试</view>
     <view v-if="loading&&!clubs.length" class="loading-line">正在读取俱乐部…</view>
     <view v-else-if="!clubs.length&&!error" class="club-empty"><text class="empty-title">{{ mine&&!state.user?'请登录后查看':mine?'暂未加入俱乐部':'暂未找到俱乐部' }}</text><text class="hint">{{ mine?'到发现页寻找合适的团队，或创建自己的俱乐部。':'试试其他名称，或成为第一位组织者。' }}</text><button v-if="mine&&!state.user" class="text-btn" @click="go('/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/index?mine=1'))">登录开机电竞 <Icon name="arrow" :size="12"/></button></view>
-    <ClubCard v-for="club in clubs" :key="club.id" :club="club"/>
+    <ClubCard v-for="club in clubs" :key="club.id" :club="club"/><ListLoadState v-if="clubs.length" :loading="loading" :has-more="hasMore" :error="error" @retry="retryFailed"/>
     <view v-if="creating" class="modal-mask" @click="creating=false"><view class="modal" @click.stop>
       <scroll-view scroll-y class="modal-scroll"><view class="create-form form-section">
         <text class="section-title">创建俱乐部</text><text class="create-hint hint">先保存草稿，按平台要求缴纳押金后提交审核。</text>
@@ -27,6 +27,9 @@ import AppShell from '../../../components/AppShell.vue'
 import GameSelector from '../../../components/GameSelector.vue'
 import Icon from '../../../components/Icon.vue'
 import ClubCard from '../../../components/ClubCard.vue'
+import ListLoadState from '../../../components/ListLoadState.vue'
+import {useNativePageRefresh} from '../../../lib/native-page-refresh'
+import {appendUniqueRows} from '../../../lib/list-page'
 import { state,init,sessionRevision } from '../../../lib/store'
 import { listClubs, createClub } from '../../../api/clubs.api'
 import { getFinancialRules } from '../../../api/finance.api'
@@ -36,6 +39,10 @@ import type { Club } from '../../../types/models'
 import { token,errorMessage } from '../../../api/client'
 import { go,notify,money } from '../../../lib/format'
 const clubs=ref<Club[]>([]),query=ref(''),mine=ref(false),loading=ref(false),error=ref(''),creating=ref(false),busy=ref(false),form=reactive({name:'',description:'',game_ids:[] as string[]})
+const hasMore=ref(false)
+let nextOffset=0,appliedQuery=''
+/** 失败查询独立于输入草稿保存，重试沿用原方向、关键词与偏移。 */
+let failedRead:{append:boolean;onlyMine:boolean;search:string;key:string;offset:number}|undefined
 const creationDeposit=ref<number|null>(null)
 const clubGameSelector=ref<InstanceType<typeof GameSelector>|null>(null)
 let listVersion=0,pageVersion=0,createVersion=0,visible=true,disposed=false
@@ -46,12 +53,30 @@ function sameSession(session: ReturnType<typeof currentSession>){return session.
 /** 仅接收当前可见页面发出的最新列表请求。 */
 function currentList(current: number,session: ReturnType<typeof currentSession>){return visible&&!disposed&&current===listVersion&&sameSession(session)}
 /** 账号变化立即清除私有列表和创建草稿，再按新身份刷新。 */
-function resetIdentity(){listVersion++;pageVersion++;createVersion++;clubs.value=[];error.value='';loading.value=false;creating.value=false;busy.value=false;Object.assign(form,{name:'',description:'',game_ids:[]});if(visible&&!disposed)load()}
+function resetIdentity(){listVersion++;pageVersion++;createVersion++;clubs.value=[];hasMore.value=false;nextOffset=0;appliedQuery='';failedRead=undefined;error.value='';loading.value=false;creating.value=false;busy.value=false;Object.assign(form,{name:'',description:'',game_ids:[]});if(visible&&!disposed)load()}
 watch(()=>state.user?.id,resetIdentity)
 /** 根据入口参数选择个人俱乐部列表，首次加载即可读取本人挂靠。 */
 function applyRoute(options: Record<string,string | undefined> = {}){mine.value=options?.mine==='1'}
 /** 刷新俱乐部列表，仅登录后才能读取个人挂靠。 */
-async function load(){if(!visible||disposed)return;const current=++listVersion,onlyMine=mine.value,search=query.value.trim();let session: ReturnType<typeof currentSession> | undefined;loading.value=true;error.value='';try{await init();if(!visible||disposed||current!==listVersion)return;session=currentSession();if(onlyMine&&!state.user){clubs.value=[];return}const result=await listClubs({...onlyMine?{mine:1}:{},q:search});if(currentList(current,session))clubs.value=result}catch(e){if(visible&&!disposed&&current===listVersion&&(!session||sameSession(session)))error.value=errorMessage(e)}finally{if(current===listVersion)loading.value=false}}
+async function load(append=false,retrying=false){
+  const adding=append===true
+  if(!visible||disposed||adding&&(loading.value||!hasMore.value))return
+  const draftKey=JSON.stringify([mine.value,query.value.trim()]);if(adding&&!retrying&&draftKey!==appliedQuery)return
+  const read=retrying&&failedRead?failedRead:{append:adding,onlyMine:mine.value,search:query.value.trim(),key:draftKey,offset:adding?nextOffset:0}
+  const current=++listVersion,{onlyMine,search,key,offset}=read,extending=read.append
+  let session:ReturnType<typeof currentSession>|undefined
+  loading.value=true;error.value=''
+  try{
+    await init();if(!visible||disposed||current!==listVersion)return
+    session=currentSession();if(onlyMine&&!state.user){clubs.value=[];hasMore.value=false;return}
+    const result=await listClubs({...onlyMine?{mine:1}:{},q:search,limit:20,offset})
+    if(!currentList(current,session)||!retrying&&(onlyMine!==mine.value||search!==query.value.trim()))return
+    clubs.value=appendUniqueRows(extending?clubs.value:[],result)
+    failedRead=undefined;nextOffset=offset+result.length;appliedQuery=key;hasMore.value=result.length===20
+  }catch(e){if(visible&&!disposed&&current===listVersion&&(!session||sameSession(session))){failedRead=read;error.value=errorMessage(e)}}finally{if(current===listVersion)loading.value=false}
+}
+/** 目录的两处错误入口重试原失败查询，不提交未确认的搜索文字。 */
+async function retryFailed(){if(loading.value||busy.value)return;await load(failedRead?.append||false,!!failedRead)}
 /** 打开创建表单，默认选择当前游戏。 */
 function openCreate(){if(!state.user)return go('/pages/account/login');form.game_ids=[state.gameId];creating.value=true;void loadCreationRule()}
 /** 只读当前创建门槛；最终支付前以草稿快照和资金页金额为准。 */
@@ -83,6 +108,7 @@ async function create(){
 function showPage(){visible=true;load()}
 /** 离开页面后使在途列表和创建结果失效。 */
 function hidePage(){visible=false;listVersion++;pageVersion++;loading.value=false}
+useNativePageRefresh({refresh:()=>load(),more:()=>error.value?retryFailed():load(true),context:()=>[state.user?.id,state.user?.role,sessionRevision(),mine.value,query.value],blocked:()=>busy.value||creating.value})
 onLoad(applyRoute)
 onShow(showPage)
 onHide(hidePage)

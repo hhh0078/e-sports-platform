@@ -67,7 +67,7 @@
 			</button></view>
 
 		<view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn"
-				@click="load">重新加载</button></view>
+				@click="load()">重新加载</button></view>
 		<view class="menu-list">
 			<ContactSupport :active="props.active" /><button class="menu-item messages-entry"
 				@click="go('/pages/account/messages/index')">
@@ -133,9 +133,9 @@
 	/** 主动验证手机号，授权拒绝不绕过交易门槛。 */
 	async function verifyPhone() : Promise<void> { if (!state.user) { protectedGo('/pages/main/index?tab=me'); return } if (state.user.phone_verified) { notify('已验证 ' + (state.user.phone_masked || '手机号')); return } const session = currentSession(); try { await requirePhone() } catch (err) { if (visible && sameSession(session)) notify(err) } }
 	/** 刷新个人资料和真实统计，保留隐藏及跨账号竞态保护。 */
-	async function load() : Promise<void> {
-		const version = invalidateLoad(); let session : ReturnType<typeof currentSession> | undefined; error.value = ''
-		try { await init(); if (!visible || version !== loadVersion || !state.user) return; session = currentSession(); const user = await getMe(); if (!currentRequest(version, session)) return; state.user = user; const [summary, funds] = await Promise.allSettled([getMyStats(), getWallet()]); if (!currentRequest(version, session)) return; if (summary.status === 'rejected' && errorStatus(summary.reason) === 401 || funds.status === 'rejected' && errorStatus(funds.reason) === 401) { clearSession(); return } if (summary.status === 'fulfilled') stats.value = summary.value || {}; else error.value = errorMessage(summary.reason); if (funds.status === 'fulfilled') wallet.value = funds.value; else walletError.value = '钱包暂未同步，点击进入重试' }
+	async function load(preserve=false) : Promise<void> {
+		const version = preserve?++loadVersion:invalidateLoad(); let session : ReturnType<typeof currentSession> | undefined; error.value = ''
+		try { await init(); if (!visible || version !== loadVersion || !state.user) return; session = currentSession(); const user = await getMe(); if (!currentRequest(version, session)) return; state.user = user; const [summary, funds] = await Promise.allSettled([getMyStats(), getWallet()]); if (!currentRequest(version, session)) return; if (summary.status === 'rejected' && errorStatus(summary.reason) === 401 || funds.status === 'rejected' && errorStatus(funds.reason) === 401) { clearSession(); return } if (summary.status === 'fulfilled') stats.value = summary.value || {}; else error.value = errorMessage(summary.reason); if (funds.status === 'fulfilled') {wallet.value = funds.value;walletError.value=''} else walletError.value = '钱包暂未同步，点击进入重试' }
 		catch (err) { if (!visible || version !== loadVersion || (session && !sameSession(session))) return; if (errorStatus(err) === 401) { clearSession(); return } error.value = errorMessage(err) }
 	}
 	/** 激活视图时读取数据。 */
@@ -145,6 +145,9 @@
 	useMainVisibility(() => props.active, showPage, hidePage)
 	/** 隐藏时也清除旧身份统计，并在同账号会话轮换后拒绝迟到回调。 */
 	watch([() => state.user?.id, sessionRevision], () => { invalidateLoad(); error.value = ''; if (visible) void load() }, { flush: 'sync' })
+	/** 下拉读取本人最新摘要，等待与故障不清空已确认余额。 */
+	async function refresh():Promise<void>{if(!visible)return;await load(true)}
+	defineExpose({refresh})
 </script>
 <style scoped>
 	.me-content {

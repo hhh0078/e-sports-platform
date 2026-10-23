@@ -2,7 +2,9 @@
 import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import ts from 'typescript'
+import { ref } from 'vue'
 import { newWalletRequestID } from './wallet'
+import type { NativePageRefreshOptions } from './native-page-refresh'
 /** 测试中等待明确返回的真实业务请求。 */
 export interface DeferredRequest { path: string; method: string; body: Record<string, unknown>; resolve: (value: unknown) => void; reject: (error?: unknown) => void; taken: boolean }
 /** 测试中等待原生图片选择完成的上传。 */
@@ -18,8 +20,18 @@ export function injectBusinessAPIs(context: vm.Context): void {
   context.isTimelinePreview ??= () => false
   context.enablePublicShareMenu ??= () => {}
   context.onShow ??= () => {}
+  context.onHide ??= () => {}
+  context.onUnload ??= () => {}
+  context.onPullDownRefresh ??= () => {}
+  context.onReachBottom ??= () => {}
   context.onShareAppMessage ??= () => {}
   context.onShareTimeline ??= () => {}
+  context.defineExpose ??= () => {}
+  context.uni ??= {}
+  context.uni.stopPullDownRefresh ??= () => {}
+  // 旧页面夹具只存一个生命周期，原生适配本身由native-page-refresh.test执行真实实现。
+  context.useNativePageRefresh ??= (options: NativePageRefreshOptions) => ({ refreshing: ref(false), loadingMore: ref(false), refresh: options.refresh, loadMore: options.more || (async () => {}) })
+  vm.runInContext(executable(readFileSync(new URL('./list-page.ts', import.meta.url), 'utf8')), context)
   vm.runInContext(executable(readFileSync(new URL('./use-public-share.ts', import.meta.url), 'utf8')), context)
   context.requestPublic = (path: string) => context.api(path)
   context.request = context.api

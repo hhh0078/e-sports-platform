@@ -6,14 +6,16 @@ import vm from 'node:vm'
 import { readFileSync } from 'node:fs'
 import { reactive,ref,watch,effectScope } from 'vue'
 import { executable,injectBusinessAPIs } from './sfc-test'
+import type { NativePageRefreshOptions } from './native-page-refresh'
 import type { DeferredRequest } from './sfc-test'
 import { adminDateRange } from './admin-chart'
 /** 保持真实控制台生命周期和领域API，仅控制请求结束顺序。 */
 function harness(t:TestContext,role='admin'){
   const pending:DeferredRequest[]=[],state=reactive({user:{id:'A',role}}),hooks={show:()=>{},hide:()=>{},unload:()=>{}}
-  const context=vm.createContext({ref,watch,state,adminDateRange,init:async()=>{},token:()=>state.user.id,sessionRevision:()=>0,onShow:(fn:()=>void)=>{hooks.show=fn},onHide:(fn:()=>void)=>{hooks.hide=fn},onUnload:(fn:()=>void)=>{hooks.unload=fn},api:(path:string,method='GET',body={})=>new Promise((resolve,reject)=>pending.push({path,method,body,resolve,reject,taken:false}))})
+  const native:{options?:NativePageRefreshOptions}={}
+  const context=vm.createContext({ref,watch,state,useNativePageRefresh:(options:NativePageRefreshOptions)=>{native.options=options;return{}},adminDateRange,init:async()=>{},token:()=>state.user.id,sessionRevision:()=>0,onShow:(fn:()=>void)=>{hooks.show=fn},onHide:(fn:()=>void)=>{hooks.hide=fn},onUnload:(fn:()=>void)=>{hooks.unload=fn},api:(path:string,method='GET',body={})=>new Promise((resolve,reject)=>pending.push({path,method,body,resolve,reject,taken:false}))})
   injectBusinessAPIs(context);const scope=effectScope();scope.run(()=>vm.runInContext(executable(readFileSync(new URL('./use-admin-console.ts',import.meta.url),'utf8'))+'\nglobalThis.page=useAdminConsole();globalThis.validatePeriod=validateAdminPeriod',context));t.after(()=>scope.stop())
-  return{page:context.page,validate:context.validatePeriod,state,hooks,pending,
+  return{page:context.page,validate:context.validatePeriod,state,hooks,pending,native,
     /** 真实请求必须存在，不能用假结果跳过统计调用。 */
     take(prefix:string){const item=pending.find(row=>!row.taken&&row.path.startsWith(prefix));assert.ok(item,prefix);item.taken=true;return item},
   }
@@ -30,3 +32,12 @@ test('自定义日期校验真实日历、顺序及366日上限',t=>{const s=har
 test('统计失败不清除已核实平台总览',async t=>{const s=harness(t);s.hooks.show();await flush();s.take('/admin/overview').resolve({users:8});s.take('/admin/analytics?').reject(new Error('统计暂不可用'));await flush();assert.equal(s.page.overview.value.users,8);assert.match(s.page.chartError.value,/不可用/);assert.equal(s.page.analytics.value,null)})
 test('切换身份或销毁时迟到统计不回填私有经营数据',async t=>{for(const action of ['switch','unload']){const s=harness(t);s.hooks.show();await flush();const old=s.take('/admin/analytics?');if(action==='switch')s.state.user={id:'B',role:'user'};else s.hooks.unload();await flush();old.resolve(result());await flush();assert.equal(s.page.analytics.value,null)}})
 test('跨日只有补款或退差金额时真实模板不显示无交易空态',()=>{const source=readFileSync(new URL('../pages/manage/index.vue',import.meta.url),'utf8'),condition=source.match(/<text v-if="([^"]+)" class="chart-empty">/);assert.ok(condition);for(const [gmv,refund,empty]of[[1000,0,false],[0,500,false],[0,0,true]] as const){const analytics={summary:{gmv_cents:gmv,refund_cents:refund,paid_order_count:0,refunded_order_count:0}};assert.equal(vm.runInNewContext(condition[1],{analytics}),empty)}})
+
+test('控制台下拉只更新已应用周期，不把未应用自定义日期写入统计请求',async t=>{
+  const s=harness(t);s.hooks.show();await flush();s.take('/admin/overview').resolve({users:8});s.take('/admin/analytics?').resolve(result());await flush()
+  s.page.chooseRange('custom');s.page.startDate.value='2026-01-01';s.page.endDate.value='2026-01-31'
+  const refreshing=s.native.options?.refresh();await flush();const request=s.take('/admin/analytics?');assert.match(request.path,/start=2026-10-16&end=2026-10-22/)
+  request.resolve(result());s.take('/admin/overview').resolve({users:9});await refreshing
+  assert.equal(s.page.overview.value.users,9);assert.equal(s.page.startDate.value,'2026-01-01');assert.equal(s.page.endDate.value,'2026-01-31')
+  assert.equal(s.pending.some(item=>item.method!=='GET'),false)
+})

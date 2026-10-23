@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import { reactive,ref,computed,watch,effectScope } from 'vue'
-import { executable,injectBusinessAPIs } from './sfc-test'
+import { executable,pageScript,injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest } from './sfc-test'
 import { parseWalletAmount } from './wallet'
 
@@ -13,18 +13,19 @@ import { parseWalletAmount } from './wallet'
 function harness(t:TestContext){
   const storage=new Map<string,string>([['jijie_token','token-A']]),pending:DeferredRequest[]=[],notices:unknown[]=[],payments:Array<{success:()=>void;fail:(error:unknown)=>void}>=[]
   const hooks={show:()=>{},hide:()=>{},unload:()=>{}}
-  let revision=0
+  let revision=0,bottom=()=>{}
   let phone=async()=>true
-  const histories:{topups:unknown[];withdrawals:unknown[];refunds:unknown[]}={topups:[],withdrawals:[],refunds:[]}
+  const histories:{entries:unknown[];topups:unknown[];withdrawals:unknown[];refunds:unknown[]}={entries:[],topups:[],withdrawals:[],refunds:[]}
+  const reads:string[]=[];let nextReadFailure=''
   const state=reactive({user:{id:'A',phone_verified:true},ready:true})
   const balance={deposit_required_cents:0,deposit_shortfall_cents:0,deposit_qualified:false,available_cents:10000,recharge_cents:0,spendable_cents:10000,pending_cents:0,withdrawal_frozen_cents:0,deposit_cents:0,deposit_refunding_cents:0,settlement_hold_days:7,dev_mode:true,currency:'CNY'}
-  const context=vm.createContext({reactive,ref,computed,watch,state,init:async()=>{},sessionRevision:()=>revision,
+  const context=vm.createContext({reactive,ref,computed,watch,state,onReachBottom:(callback:()=>void)=>{bottom=callback},init:async()=>{},sessionRevision:()=>revision,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key),requestPayment:(options:typeof payments[number])=>payments.push(options)},
     token:()=>storage.get('jijie_token'),notify:(value:unknown)=>notices.push(value),go:()=>{},requirePhone:()=>phone(),
     onShow:(callback:()=>void)=>{hooks.show=callback},onHide:(callback:()=>void)=>{hooks.hide=callback},onUnload:(callback:()=>void)=>{hooks.unload=callback},
     /** 查询默认返回合法空列表，资金写入和查单逐个受控。 */
     api(path:string,method='GET',body:Record<string,unknown>={}){
-      if(method==='GET')return Promise.resolve(path==='/wallet'?{...balance}:path==='/wallet/topups'?histories.topups:path==='/wallet/withdrawals'?histories.withdrawals:path==='/wallet/deposit-refunds'?histories.refunds:[])
+      if(method==='GET'){reads.push(path);if(nextReadFailure&&path.startsWith(nextReadFailure)){nextReadFailure='';return Promise.reject(new Error('读取失败'))};const url=new URL(path,'https://test.local'),offset=Number(url.searchParams.get('offset')||0),limit=Number(url.searchParams.get('limit')||30),base=url.pathname;return Promise.resolve(base==='/wallet'?{...balance}:(base==='/wallet/entries'?histories.entries:base==='/wallet/topups'?histories.topups:base==='/wallet/withdrawals'?histories.withdrawals:base==='/wallet/deposit-refunds'?histories.refunds:[]).slice(offset,offset+limit))}
       return new Promise((resolve,reject)=>pending.push({path,method,body,resolve,reject,taken:false}))
     },
   })
@@ -32,7 +33,13 @@ function harness(t:TestContext){
   vm.runInContext(executable(readFileSync(new URL('./wallet.ts',import.meta.url),'utf8')),context)
   vm.runInContext(executable(readFileSync(new URL('./payment.ts',import.meta.url),'utf8')),context)
   const scope=effectScope();scope.run(()=>vm.runInContext(executable(readFileSync(new URL('./use-wallet.ts',import.meta.url),'utf8'))+'\nglobalThis.page=useWallet()',context));t.after(()=>scope.stop())
-  return{page:context.page,hooks,pending,storage,notices,payments,balance,histories,
+  return{page:context.page,hooks,pending,storage,notices,payments,balance,histories,reads,
+    /** 挂载真实钱包页的原生触底回调，复用已创建的真实资金组合函数。 */
+    attachBottom(){scope.run(()=>{vm.runInContext(executable(readFileSync(new URL('./native-page-refresh.ts',import.meta.url),'utf8')),context);vm.runInContext('(function(useWallet){'+executable(pageScript('account/wallet.vue'))+'})(()=>globalThis.page)',context)})},
+    /** 通过官方生命周期注册的回调触发分页，不直接调用重试方法。 */
+    bottom(){bottom()},
+    /** 仅使下一次匹配的GET读取失败，不影响付款与查单。 */
+    failRead(prefix:string){nextReadFailure=prefix},
     /** 控制手机号原生授权前后的页面生命周期。 */
     setPhone(callback:()=>Promise<boolean>){phone=callback},
     /** 真实会话变化触发watch清理，不直接操作页面内部状态。 */
@@ -189,3 +196,39 @@ test('门槛变化后未知原提交仍沿原请求号恢复，最低额由服�
 test('资金表单隐藏后不复活旧草稿，返回后的失败可见且仍保留原意图',async t=>{
   const s=harness(t);s.hooks.show();await flush();s.page.open('deposit');s.page.amount.value='10';const first=s.page.submit();await flush();const request=s.take('/wallet/topups');s.hooks.hide();assert.equal(s.page.operation.value,null);assert.equal(s.page.amount.value,'');s.hooks.show();await flush();request.reject(new Error('微信支付暂不可用'));await first;assert.equal(s.page.operation.value,null);assert.equal(s.notices.length,1);assert.ok([...s.storage.keys()].some(key=>key.startsWith('jijie_wallet_intent:')))
 })
+
+test('钱包四类资金记录独立分页，触底只GET历史并保留金额实名草稿',async t=>{
+  const s=harness(t)
+  s.histories.entries=Array.from({length:45},(_,i)=>({id:'entry-'+i,kind:'topup',created_at:'2026-10-24'}))
+  s.histories.topups=Array.from({length:32},(_,i)=>({...topup,id:'topup-'+i}))
+  s.histories.withdrawals=Array.from({length:31},(_,i)=>({id:'withdraw-'+i,status:'pending_review',amount_cents:1}))
+  s.hooks.show();await flush();assert.equal(s.page.entries.value.length,30);assert.equal(s.page.hasMore.value,true)
+  s.page.open('withdrawal');s.page.amount.value='12.34';s.page.userName.value='未提交的实名';s.reads.length=0
+  await Promise.all([s.page.load(true),s.page.load(true)])
+  assert.equal(s.page.entries.value.length,45);assert.equal(s.page.topups.value.length,32);assert.equal(s.page.withdrawals.value.length,31);assert.equal(s.page.hasMore.value,false)
+  assert.equal(s.page.amount.value,'12.34');assert.equal(s.page.userName.value,'未提交的实名');assert.equal(s.page.operation.value,'withdrawal')
+  assert.equal(s.reads.includes('/wallet'),false);assert.equal(s.reads.filter(path=>path.startsWith('/wallet/entries?')).length,1);assert.equal(s.pending.length,0)
+})
+
+test('资金下一页失败保留旧账目，重试使用原始offset且不跳页',async t=>{
+  const s=harness(t);s.histories.entries=Array.from({length:35},(_,i)=>({id:'entry-'+i}));s.hooks.show();await flush()
+  s.failRead('/wallet/entries');await s.page.load(true);assert.equal(s.page.entries.value.length,30);assert.match(s.page.error.value,/读取失败/)
+  await s.page.load(true);assert.equal(s.page.entries.value.length,35);assert.equal(s.page.error.value,'')
+  assert.equal(s.reads.filter(path=>path==='/wallet/entries?limit=30&offset=30').length,2)
+})
+
+test('分页期间新增记录导致重复时按id更新，游标仍按服务器原始数量推进',async t=>{
+  const s=harness(t);s.histories.entries=Array.from({length:60},(_,i)=>({id:'entry-'+i}));s.hooks.show();await flush()
+  s.histories.entries.unshift({id:'new-head'});await s.page.load(true);assert.equal(s.page.entries.value.length,59)
+  await s.page.load(true);assert.equal(s.page.entries.value.length,60);assert.equal(new Set(s.page.entries.value.map((item:{id:string})=>item.id)).size,60)
+  assert.ok(s.reads.includes('/wallet/entries?limit=30&offset=60'));assert.equal(s.page.hasMore.value,false)
+})
+
+test('钱包刷新失败保留旧hasMore时，错误重试仍从第一页GET而非跳下一页',async t=>{
+  const s=harness(t);s.histories.entries=Array.from({length:40},(_,i)=>({id:'entry-'+i}));s.hooks.show();await flush();assert.equal(s.page.hasMore.value,true)
+  s.failRead('/wallet');await s.page.load();assert.equal(s.page.entries.value.length,30);s.reads.length=0
+  await s.page.retryFailed();assert.ok(s.reads.includes('/wallet'));assert.ok(s.reads.includes('/wallet/entries?limit=30&offset=0'));assert.equal(s.reads.some(path=>path.includes('offset=30')),false)
+  s.failRead('/wallet/entries');await s.page.load(true);s.reads.length=0;await s.page.retryFailed();assert.deepEqual(s.reads,['/wallet/entries?limit=30&offset=30']);assert.equal(s.page.entries.value.length,40)
+})
+
+test('钱包页原生触底在刷新或追加失败后重试同一offset',async t=>{const s=harness(t);s.histories.entries=Array.from({length:40},(_,i)=>({id:'entry-'+i}));s.hooks.show();await flush();s.attachBottom();s.failRead('/wallet');await s.page.load();s.reads.length=0;s.bottom();await flush();assert.ok(s.reads.includes('/wallet/entries?limit=30&offset=0'));assert.equal(s.reads.some(path=>path.includes('offset=30')),false);s.failRead('/wallet/entries');await s.page.load(true);s.reads.length=0;s.bottom();await flush();assert.deepEqual(s.reads,['/wallet/entries?limit=30&offset=30']);assert.equal(s.page.entries.value.length,40)})

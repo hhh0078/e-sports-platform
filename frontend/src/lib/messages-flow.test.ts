@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import { ref, reactive, computed, watch, effectScope } from 'vue'
 import { executable, injectBusinessAPIs, pageScript } from './sfc-test'
+import type { NativePageRefreshOptions } from './native-page-refresh'
 import type { DeferredRequest, PageLifecycle } from './sfc-test'
 import type { CachedMessage, SystemMessage } from '../types/messages'
 
@@ -14,8 +15,9 @@ const message: SystemMessage = { id: 'message-1', title: '订单进度更新', b
 /** 以实际SFC、缓存、store和领域API搭建环境，只替换网络及官方同步存储边界。 */
 function harness(kind: 'list' | 'detail' = 'list', loggedIn = true) {
   const storage = new Map<string, unknown>(loggedIn ? [['jijie_token', 'token-A']] : []), requests: DeferredRequest[] = [], navigations: string[] = [], control = { fail: false, silent: false }, scope = effectScope()
+  const native:{options?:NativePageRefreshOptions}={}
   const lifecycle: PageLifecycle = { load: () => {}, show: () => {}, hide: () => {}, unload: () => {} }
-  const context = vm.createContext({ ref, reactive, computed, watch,
+  const context = vm.createContext({ ref, reactive, computed, watch,useNativePageRefresh:(options:NativePageRefreshOptions)=>{native.options=options;return{}},
     uni: { getStorageSync: (key: string) => storage.get(key), setStorageSync: (key: string, value: unknown) => { if (key.startsWith('jijie_messages_v1:') && control.fail) throw new Error('quota exceeded'); if (!key.startsWith('jijie_messages_v1:') || !control.silent) storage.set(key, value) }, removeStorageSync: (key: string) => storage.delete(key) },
     token: () => String(storage.get('jijie_token') || ''), go: (value: string) => navigations.push(value),
     /** 记录真实领域请求，不复制消息同步算法。 */
@@ -25,10 +27,10 @@ function harness(kind: 'list' | 'detail' = 'list', loggedIn = true) {
   injectBusinessAPIs(context)
   vm.runInContext(executable(sources[0]) + '\nglobalThis.store={state,login,clearSession}', context)
   context.store.state.user = loggedIn ? { id: 'A', nickname: '用户A', role: 'user' } : null; context.store.state.ready = true
-  const exposed = kind === 'list' ? 'items,loading,error,pendingCount,showPage,retryPending,openMessage' : 'selected,cacheOwner,loading,error,showPage,retryPending,id,action,openAction'
+  const exposed = kind === 'list' ? 'items,visibleItems,hasMoreLocal,loading,error,pendingCount,showPage,retryPending,openMessage' : 'selected,cacheOwner,loading,error,showPage,retryPending,id,action,openAction'
   scope.run(() => vm.runInContext(executable(sources[1]) + '\n' + executable(sources[2]) + '\n' + executable(actionSource) + '\n' + executable(pageScript('account/messages/' + (kind === 'list' ? 'index' : 'detail') + '.vue')) + '\nglobalThis.page={' + exposed + '};globalThis.cache={readMessageCache,writeMessageCache,mergeMessageCache,messageCacheKey}', context))
   if (kind === 'detail') lifecycle.load({ id: message.id })
-  return { page: context.page, store: context.store, context, cache: context.cache, storage, requests, navigations, control, lifecycle, scope,
+  return { page: context.page, store: context.store, context, cache: context.cache, storage, requests, navigations, control, lifecycle, scope,native,
     /** 查找最新未消费的目标请求，账号轮换时更早请求仍可单独验证。 */
     take(path: string, method = 'GET') { const request = [...requests].reverse().find(item => !item.taken && item.path === path && item.method === method); assert.ok(request, `缺少请求 ${method} ${path}`); request.taken = true; return request },
     /** 使用真实缓存写入建立已存在的本机历史。 */
@@ -164,4 +166,13 @@ test('恶意行动仅作为本机文本字段保存，详情不执行；换号�
   subject.seed('A',[{...message,action_path:'/pages/community/clubs/detail?id=club-A',read:true,ack_pending:false}]);await subject.page.showPage();assert.ok(subject.page.action.value)
   await loginB(subject);subject.page.openAction();assert.deepEqual(subject.navigations,[]);assert.equal(subject.page.action.value,null)
   subject.scope.stop()
+})
+
+test('消息先完整收取并保存在本机，触底仅增加20条可见项，不确认未读',async()=>{
+  const subject=harness(),showing=subject.page.showPage();await flush()
+  const items=Array.from({length:65},(_,i)=>({...message,id:'message-'+i}));subject.take('/messages?limit=100&offset=0').resolve({items,total:65});await showing
+  assert.equal(subject.page.items.value.length,65);assert.equal(subject.page.visibleItems.value.length,20);assert.equal(subject.cache.readMessageCache('A').length,65)
+  await subject.native.options?.more?.();assert.equal(subject.page.visibleItems.value.length,40);await subject.native.options?.more?.();assert.equal(subject.page.visibleItems.value.length,60)
+  await subject.native.options?.more?.();assert.equal(subject.page.visibleItems.value.length,65);assert.equal(subject.page.hasMoreLocal.value,false)
+  assert.equal(subject.requests.length,1);assert.equal(subject.requests.some(item=>item.method==='DELETE'),false);subject.scope.stop()
 })

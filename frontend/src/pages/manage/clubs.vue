@@ -1,7 +1,7 @@
 <!-- 文件作用：独立处理俱乐部审核与平台认证，并提供公开主页、成员和团队订单入口。 -->
 <template>
   <AppShell title="俱乐部管理" back>
-    <ManageList v-model:query="query" placeholder="搜索俱乐部名称、管理员" :loading="loading" :busy="busy" :error="error" :empty="!clubs.length" :has-more="hasMore" :count="clubs.length" @search="loadData()" @more="loadData(true)" @prepare="showPage">
+    <ManageList v-model:query="query" placeholder="搜索俱乐部名称、管理员" :loading="loading" :busy="busy" :error="error" :empty="!clubs.length" :has-more="hasMore" :count="clubs.length" @search="loadData()" @more="loadData(true)" @retry="retryFailed" @prepare="showPage">
       <template #filters><scroll-view scroll-x :show-scrollbar="false" class="filter-scroll"><view class="status-filters"><button v-for="item in filters" :key="item.value" :class="['status-filter', { selected: status === item.value }]" :disabled="busy" @click="chooseStatus(item.value)">{{ item.label }}</button></view></scroll-view></template>
       <view v-for="club in clubs" :key="club.id" class="club-row"><view class="club-summary"><view class="club-thumbnail"><image v-if="club.cover_url" class="club-image" :src="assetUrl(club.cover_url)" mode="aspectFill"/><Icon v-else name="club" :size="30"/></view><view class="club-copy"><view class="club-heading"><text class="club-name">{{ club.name }}</text><text class="club-label">{{ clubStatus(club.status) }}</text><text v-if="club.verified" class="club-label verified">已认证</text></view><text class="club-meta">管理员 {{ club.owner_name }} · {{ club.member_count || 0 }} 名成员</text><text class="club-description">{{ club.description }}</text></view></view><view class="club-actions"><button v-if="club.status === 'pending'" class="btn btn-secondary btn-small" :disabled="busy" @click="review(club, 'rejected', false)">拒绝</button><button v-if="club.status !== 'active'" class="btn btn-small" :disabled="busy" @click="review(club, 'active', true)">通过并认证</button><button v-else class="btn btn-secondary btn-small" :disabled="busy" @click="review(club, 'active', !club.verified)"><Icon name="shield" :size="14"/>{{ club.verified ? '取消认证' : '授予认证' }}</button></view><view class="club-links"><button class="text-btn club-link" @click="openClub(club.id)"><Icon name="home" :size="16"/>主页<Icon name="arrow" :size="12"/></button><button class="text-btn club-link" @click="openClub(club.id, 'members')"><Icon name="club" :size="16"/>成员<Icon name="arrow" :size="12"/></button><button class="text-btn club-link" @click="openClub(club.id, 'orders')"><Icon name="orders" :size="16"/>订单<Icon name="arrow" :size="12"/></button></view></view>
     </ManageList>
@@ -19,7 +19,7 @@ import { assetUrl, go, statusLabel } from '../../lib/format'
 import type { Club } from '../../types/models'
 const filters = [{ value: '', label: '全部' }, { value: 'pending', label: '待审核' }, { value: 'active', label: '已通过' }, { value: 'rejected', label: '已拒绝' }]
 const status = ref('')
-const { items: clubs, query, loading, busy, error, hasMore, loadData, showPage, mutate } = useManageResource('clubs', { params: () => ({ status: status.value || undefined }) })
+const { items: clubs, query, loading, busy, error, hasMore, loadData, retryFailed, showPage, mutate } = useManageResource('clubs', { params: () => ({ status: status.value || undefined }) })
 /** 俱乐部审核显示通过状态，不沿用商品的已上架措辞。 */
 function clubStatus(value: string): string { return filters.find(item => item.value === value)?.label || statusLabel(value) }
 /** 服务端筛选完整俱乐部资源，不在单页记录内做假筛选。 */

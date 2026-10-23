@@ -1,7 +1,7 @@
 <!-- 文件作用：独立配置游戏主题、服务分类和多封面素材，使用官方弹层保留完整游戏编辑流程。 -->
 <template>
   <AppShell title="游戏配置" back>
-    <ManageList v-model:query="query" placeholder="搜索游戏名称或标识" :loading="loading" :busy="editorBusy" :error="error" :empty="!games.length" :has-more="hasMore" :count="games.length" @search="loadData()" @more="loadData(true)" @prepare="showPage">
+    <ManageList v-model:query="query" placeholder="搜索游戏名称或标识" :loading="loading" :busy="editorBusy" :error="error" :empty="!games.length" :has-more="hasMore" :count="games.length" @search="loadData()" @more="loadData(true)" @retry="retryFailed" @prepare="showPage">
       <view class="game-list-heading"><text class="section-title">全部游戏</text><button class="text-btn" :disabled="editorBusy" @click="editGame()"><Icon name="plus" :size="17"/>添加游戏</button></view>
       <view v-for="item in games" :key="item.id" class="game-row"><view class="game-summary"><image class="game-cover" :src="assetUrl(item.cover_url)" mode="aspectFill"/><view class="game-copy"><text class="game-name">{{ item.name }}</text><text class="game-id">{{ item.id }}</text><view class="game-colors"><view v-for="key in colorKeys" :key="key.id" class="game-color" :style="{ background: item[key.id] }"/></view><text class="game-categories">{{ (item.categories || []).join(' · ') }}</text></view></view><view class="game-footer"><view class="game-state"><text :class="['game-enabled', { hidden: !item.enabled }]">● {{ item.enabled ? '已启用' : '已隐藏' }}</text><text class="game-sort">排序 {{ item.sort_order }}</text></view><button class="btn btn-secondary btn-small" :disabled="editorBusy" @click="editGame(item)">编辑</button></view></view>
     </ManageList>
@@ -42,7 +42,7 @@ const colorKeys: Array<{ id: GameColorKey; name: string }> = [{ id: 'primary_col
 const editing = ref(false), newGame = ref(false), saving = ref(false), uploading = ref(false), editorPopup = ref<PopupController | null>(null), uploadedCovers = ref<string[]>([])
 const gameForm = reactive<GameDraft>(emptyGame()), editorBusy = computed(() => saving.value || uploading.value)
 let choosingImage = false, editorVersion = 0
-const { items: games, query, loading, error, hasMore, loadData, currentSession, sameSession, showPage } = useManageResource('games', { preserveDraft: () => choosingImage, clearDraft: clearGameDraft })
+const { items: games, query, loading, error, hasMore, loadData, retryFailed, currentSession, sameSession, showPage } = useManageResource('games', { preserveDraft: () => choosingImage, clearDraft: clearGameDraft })
 const coverLibrary = computed(() => [...new Set([...gameForm.covers, ...uploadedCovers.value, ...state.games.flatMap(item => [...(item.covers || []), item.cover_url].filter(Boolean))])])
 
 /** 创建独立草稿，不修改已经发布的公共游戏主题。 */

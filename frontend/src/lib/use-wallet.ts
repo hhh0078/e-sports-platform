@@ -9,6 +9,7 @@ import { requirePhone } from './phone'
 import { go,notify } from './format'
 import { parseWalletAmount,newWalletRequestID } from './wallet'
 import { requestWechatPayment,confirmWechatTransfer } from './payment'
+import { mergeFundRecords } from './finance'
 /** 钱包弹层对应的唯一资金意图。 */
 export type WalletOperation='balance'|'deposit'|'withdrawal'|'refund'
 /** 按本人、资金用途及整数分定位原请求缓存，不保存实名或支付参数。 */
@@ -23,6 +24,9 @@ export function useWallet(){
   const wallet=ref<Wallet|null>(null),entries=ref<WalletEntry[]>([]),topups=ref<WalletTopup[]>([]),withdrawals=ref<WalletWithdrawal[]>([]),refunds=ref<WalletDepositRefund[]>([])
   const loading=ref(false),busy=ref(false),error=ref(''),operation=ref<WalletOperation|null>(null),amount=ref(''),userName=ref(''),formError=ref(''),filter=ref('all'),hasMore=ref(false)
   let visible=false,disposed=false,version=0,hideRevision=0
+  let lastFailedAppend=false
+  const historyPageSize=30
+  const cursors={entries:{offset:0,more:true},topups:{offset:0,more:true},withdrawals:{offset:0,more:true},refunds:{offset:0,more:true}}
   let activeRequest:{ownerID:string;kind:WalletOperation;cents:number;id:string}|null=null
   /** 捕获资金请求真正所属的会话。 */
   function session(){return{id:state.user?.id||'',token:token(),revision:sessionRevision()}}
@@ -31,7 +35,7 @@ export function useWallet(){
   /** 请求仍属当前可见页才更新私人余额与凭据。 */
   function current(value:ReturnType<typeof session>,requestVersion:number):boolean{return visible&&version===requestVersion&&same(value)}
   /** 清除上个账号的资金及表单，不保留实名和收款凭据。 */
-  function clear(){activeRequest=null;wallet.value=null;entries.value=[];topups.value=[];withdrawals.value=[];refunds.value=[];operation.value=null;userName.value='';amount.value='';error.value='';formError.value='';hasMore.value=false;version++;loading.value=false}
+  function clear(){activeRequest=null;wallet.value=null;entries.value=[];topups.value=[];withdrawals.value=[];refunds.value=[];operation.value=null;userName.value='';amount.value='';error.value='';formError.value='';hasMore.value=false;lastFailedAppend=false;Object.values(cursors).forEach(cursor=>{cursor.offset=0;cursor.more=true});version++;loading.value=false}
   watch(()=>state.user?.id,()=>{clear();if(visible)void load()})
   /** 仅清理服务端确认存在的同账号原请求，旧记录不得删除未来同金额的新业务号。
    * 本次提交若已被并行查单确认，则关闭其表单，避免迟到网络错误诱导再次提交。
@@ -47,25 +51,39 @@ export function useWallet(){
   function reconcileTopup(owner:ReturnType<typeof session>,record:WalletTopup,fallbackRequestID?:string){
     if((record.purpose==='balance'||record.purpose==='deposit')&&(record.status==='paid'||record.status==='refunded'))reconcileRequest(owner,record.purpose,record.amount_cents,record.request_id||fallbackRequestID)
   }
-  /** 余额和资金单整体更新；失败保留上次真实金额并显示错误，绝不写假零余额。 */
+  /** 首屏刷新读取余额和第一页；触底仅GET各自下一页，失败不推进游标或清空资金草稿。 */
   async function load(append=false){
-    if(!visible||disposed)return
+    if(!visible||disposed||(append&&(loading.value||!hasMore.value)))return
     const requestVersion=++version;loading.value=true
     let owner:ReturnType<typeof session>|undefined
     try{
       await init();if(!visible||requestVersion!==version)return
       if(!state.user){clear();return}
       owner=session()
-      const offset=append?entries.value.length:0
-      const summary=await getWallet()
+      const summary=append?wallet.value:await getWallet()
       if(!current(owner,requestVersion))return
-      // 余额读取会释放到期托管，随后读取账单才能包含这次结算分录。
-      const histories=await Promise.all([listWalletEntries({limit:30,offset}),listWalletTopups(),listWalletWithdrawals(),listDepositRefunds()])
+      const positions={entries:append?cursors.entries.offset:0,topups:append?cursors.topups.offset:0,withdrawals:append?cursors.withdrawals.offset:0,refunds:append?cursors.refunds.offset:0}
+      // 余额读取沿用既有到期结算，随后读取账单；触底追加不会重读余额或同步付款原单。
+      const histories=await Promise.all([
+        !append||cursors.entries.more?listWalletEntries({limit:historyPageSize,offset:positions.entries}):Promise.resolve(null),
+        !append||cursors.topups.more?listWalletTopups({limit:historyPageSize,offset:positions.topups}):Promise.resolve(null),
+        !append||cursors.withdrawals.more?listWalletWithdrawals({limit:historyPageSize,offset:positions.withdrawals}):Promise.resolve(null),
+        !append||cursors.refunds.more?listDepositRefunds({limit:historyPageSize,offset:positions.refunds}):Promise.resolve(null),
+      ])
       if(!current(owner,requestVersion))return
-      histories[1].forEach(record=>reconcileTopup(owner!,record));histories[2].forEach(record=>reconcileRequest(owner!,'withdrawal',record.amount_cents,record.request_id));histories[3].forEach(record=>reconcileRequest(owner!,'refund',record.amount_cents,record.request_id))
-      wallet.value=summary;entries.value=append?[...entries.value,...histories[0]]:histories[0];topups.value=histories[1];withdrawals.value=histories[2];refunds.value=histories[3];hasMore.value=histories[0].length===30;error.value=''
-    }catch(err){if(visible&&requestVersion===version&&(!owner||same(owner)))error.value=errorMessage(err)}finally{if(requestVersion===version)loading.value=false}
+      histories[1]?.forEach(record=>reconcileTopup(owner!,record));histories[2]?.forEach(record=>reconcileRequest(owner!,'withdrawal',record.amount_cents,record.request_id));histories[3]?.forEach(record=>reconcileRequest(owner!,'refund',record.amount_cents,record.request_id))
+      wallet.value=summary
+      if(histories[0])entries.value=mergeFundRecords(append?entries.value:[],histories[0])
+      if(histories[1])topups.value=mergeFundRecords(append?topups.value:[],histories[1])
+      if(histories[2])withdrawals.value=mergeFundRecords(append?withdrawals.value:[],histories[2])
+      if(histories[3])refunds.value=mergeFundRecords(append?refunds.value:[],histories[3])
+      const keys=['entries','topups','withdrawals','refunds'] as const
+      keys.forEach((key,index)=>{const rows=histories[index];if(rows){cursors[key].offset=positions[key]+rows.length;cursors[key].more=rows.length===historyPageSize}})
+      hasMore.value=keys.some(key=>cursors[key].more);error.value='';lastFailedAppend=false
+    }catch(err){if(visible&&requestVersion===version&&(!owner||same(owner))){lastFailedAppend=append;error.value=errorMessage(err)}}finally{if(requestVersion===version)loading.value=false}
   }
+  /** 错误重试沿用失败的刷新或追加意图，不能用旧hasMore推断请求类型。 */
+  async function retryFailed():Promise<void>{if(loading.value||busy.value||operation.value)return;await load(lastFailedAppend)}
   const filteredEntries=computed(()=>entries.value.filter(entry=>filter.value==='all'||(filter.value==='deposit'?!!entry.deposit_delta||!!entry.deposit_refunding_delta:filter.value==='withdrawal'?/withdraw/.test(entry.kind):/topup|recharge/.test(entry.kind)&&!!entry.recharge_delta)))
   /** 弹层每次显式打开才初始化草稿，不在错误时丢弃输入。 */
   function open(kind:WalletOperation){if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/account/wallet'));return}operation.value=kind;amount.value=kind==='refund'&&wallet.value?String(wallet.value.deposit_cents/100):kind==='deposit'&&wallet.value?.deposit_shortfall_cents?(wallet.value.deposit_shortfall_cents/100).toFixed(2):'';userName.value='';formError.value=''}
@@ -134,5 +152,5 @@ export function useWallet(){
   /** 官方支付页会暂时隐藏钱包，隐藏时仅清理实名、收款凭据与迟到读取。 */
   function hide(){visible=false;hideRevision++;version++;loading.value=false;operation.value=null;amount.value='';formError.value='';userName.value='';withdrawals.value=withdrawals.value.map(({confirmation,...record})=>record)}
   onShow(()=>{visible=true;void load()});onHide(hide);onUnload(()=>{disposed=true;hide();clear()})
-  return{wallet,entries,topups,withdrawals,refunds,filteredEntries,loading,busy,error,operation,amount,userName,formError,filter,hasMore,load,open,close,submit,syncRecord,resumeTopup}
+  return{wallet,entries,topups,withdrawals,refunds,filteredEntries,loading,busy,error,operation,amount,userName,formError,filter,hasMore,load,retryFailed,open,close,submit,syncRecord,resumeTopup}
 }

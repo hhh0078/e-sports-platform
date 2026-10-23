@@ -13,3 +13,10 @@
 ## 生成提示词
 
 Use case: ui-mockup. Single flat Chinese 390:844 mobile admin UI, no device frame. Restrained dark natural green #0a1110/#15201e, white text and mint accent, no blue/purple. Shared back title 图文审核. Three compact real-data placeholders, status filters, thin-divider moderation rows, and lower detail sheet with plain text, required rejection reason counter, muted red 拒绝 and mint 通过 actions at 44px touch height. 16px margins, readable body, no promotional illustration or bottom tabbar. Original generated source saved under Codex generated_images and final project reference is moderation.png.
+
+## 2026-10-24 原生下拉刷新与触底加载
+
+沿用本页已批准设计图、原生页面滚动、主题与版式，不新增嵌套滚动容器。下拉只刷新当前可读数据，所有成功、错误、访客、权限拒绝和被保护的忙碌状态都结束原生刷新动画；不调用支付、审核、创建、撤销等写接口。已有数据刷新期间保留，失败可重试；同一列表触底只允许一条请求，刷新或筛选后的旧页不得追加。分页页脚统一使用官方uni-load-more的轻状态，只有失败时显示重试入口，移除普通“加载更多”按钮。
+审核队列沿用服务端next_cursor，触底追加；完整原文弹层、拒绝原因草稿及审核处理中不被下拉清除。
+
+错误重试统一恢复刚才失败的首读或追加请求，不根据旧页脚推断；搜索输入是草稿，触底不得自动提交新关键词，需明确搜索后才应用。页面身份和筛选变化同步撤销旧手势加载状态，原业务版本守卫继续隔离迟到回包。

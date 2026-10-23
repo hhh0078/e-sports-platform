@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import { reactive, ref, computed, watch, effectScope } from 'vue'
 import { executable, pageScript, injectBusinessAPIs } from './sfc-test'
+import type { NativePageRefreshOptions } from './native-page-refresh'
 import type { DeferredRequest, PageLifecycle } from './sfc-test'
 
 const storeSource=readFileSync(new URL('./store.ts',import.meta.url),'utf8')
@@ -16,9 +17,10 @@ const accountB={id:'B',nickname:'另一位申请者'}
 /** 只控制网络完成次序，保留真实业务API、Vue侦听和共享会话行为。 */
 function harness(t: TestContext){
   const storage=new Map<string,string>([['jijie_token','token-A']]),requests: DeferredRequest[]=[],notices: unknown[]=[],navigations: string[]=[]
+  const native:{options?:NativePageRefreshOptions}={}
   const lifecycle: PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
   const context=vm.createContext({
-    reactive,ref,computed,watch,requirePhone:async()=>true,
+    reactive,ref,computed,watch,useNativePageRefresh:(options:NativePageRefreshOptions)=>{native.options=options;return{}},requirePhone:async()=>true,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},
     token:()=>storage.get('jijie_token')||'',
     /** 每次请求都由用例显式结束，迟到响应不会被模拟器自动丢弃。 */
@@ -30,9 +32,9 @@ function harness(t: TestContext){
   vm.runInContext(executable(storeSource)+'\nglobalThis.store={state,login,clearSession}',context)
   context.store.state.ready=true;context.store.state.user={...accountA}
   const scope=effectScope()
-  scope.run(()=>vm.runInContext(executable(pageSource)+'\nglobalThis.page={load,create,openCreate,clubs,query,mine,loading,error,creating,busy,form}',context))
+  scope.run(()=>vm.runInContext(executable(pageSource)+'\nglobalThis.page={load,retryFailed,create,openCreate,clubs,query,mine,loading,error,creating,busy,form,hasMore}',context))
   t.after(()=>scope.stop())
-  return{store:context.store,page:context.page,requests,notices,navigations,lifecycle,
+  return{store:context.store,page:context.page,requests,notices,navigations,lifecycle,native,
     /** 取得实际发出的单次请求，重复或缺失调用直接失败。 */
     take(path:string,method='GET'){const request=requests.find(item=>!item.taken&&item.path===path&&item.method===method);assert.ok(request,`缺少请求 ${method} ${path}`);request.taken=true;return request},
   }
@@ -51,9 +53,9 @@ test('俱乐部筛选只接收最新请求，旧成功和旧错误均不能覆�
   for(const oldResult of ['success','error'])await t.test(oldResult,async child=>{
     const subject=harness(child)
     subject.page.query.value='山海';const first=subject.page.load();await flush()
-    const old=subject.take('/clubs?q='+encodeURIComponent('山海'))
+    const old=subject.take('/clubs?q='+encodeURIComponent('山海')+'&limit=20&offset=0')
     subject.page.query.value='云上';const latest=subject.page.load();await flush()
-    subject.take('/clubs?q='+encodeURIComponent('云上')).resolve([{id:'latest'}]);await latest
+    subject.take('/clubs?q='+encodeURIComponent('云上')+'&limit=20&offset=0').resolve([{id:'latest'}]);await latest
     if(oldResult==='success')old.resolve([{id:'old'}]);else old.reject(new Error('过期筛选错误'))
     await first
     assert.equal(subject.page.clubs.value[0].id,'latest')
@@ -64,15 +66,15 @@ test('俱乐部筛选只接收最新请求，旧成功和旧错误均不能覆�
 
 test('我的俱乐部切换账号立即清空原资料，旧响应不回填新身份',async t=>{
   const subject=harness(t);subject.page.mine.value=true
-  const initial=subject.page.load();await flush();subject.take('/clubs?mine=1').resolve([{id:'A-loaded'}]);await initial
-  const refreshing=subject.page.load();await flush();const old=subject.take('/clubs?mine=1')
+  const initial=subject.page.load();await flush();subject.take('/clubs?mine=1&limit=20&offset=0').resolve([{id:'A-loaded'}]);await initial
+  const refreshing=subject.page.load();await flush();const old=subject.take('/clubs?mine=1&limit=20&offset=0')
   prepareDraft(subject)
   await switchAccount(subject)
   assert.equal(subject.page.clubs.value.length,0)
   assert.equal(subject.page.creating.value,false)
   assert.equal(subject.page.form.name,'')
   assert.equal(subject.page.form.game_ids.length,0)
-  const latest=subject.take('/clubs?mine=1')
+  const latest=subject.take('/clubs?mine=1&limit=20&offset=0')
   old.resolve([{id:'old-A'}]);await refreshing
   assert.equal(subject.page.clubs.value.length,0)
   assert.equal(subject.page.loading.value,true,'旧请求结束不能解除新请求的加载状态')
@@ -90,7 +92,7 @@ test('俱乐部旧创建的成功或失败不能导航、关闭或解锁新身�
     await subject.page.create()
     assert.equal(subject.requests.filter(item=>item.method==='POST').length,1,'连续点击只创建一次')
     await switchAccount(subject)
-    subject.take('/clubs').resolve([]);await flush()
+    subject.take('/clubs?limit=20&offset=0').resolve([]);await flush()
     prepareDraft(subject,'新账号俱乐部')
     const creating=subject.page.create();await flush();const latest=subject.take('/clubs','POST')
     assert.equal(latest.body.name,'新账号俱乐部')
@@ -109,7 +111,7 @@ test('俱乐部旧创建的成功或失败不能导航、关闭或解锁新身�
 
 test('离开俱乐部目录后在途读取与创建结果均不再影响界面',async t=>{
   for(const boundary of ['hide','unload'] as const)await t.test(boundary,async child=>{
-    const subject=harness(child),loading=subject.page.load();await flush();const oldList=subject.take('/clubs')
+    const subject=harness(child),loading=subject.page.load();await flush();const oldList=subject.take('/clubs?limit=20&offset=0')
     prepareDraft(subject);const creating=subject.page.create();await flush();const oldCreation=subject.take('/clubs','POST')
     subject.lifecycle[boundary]()
     oldList.resolve([{id:'late-list'}]);oldCreation.resolve({id:'late-club'});await Promise.all([loading,creating])
@@ -118,7 +120,7 @@ test('离开俱乐部目录后在途读取与创建结果均不再影响界面',
     assert.deepEqual(subject.navigations,[])
     assert.deepEqual(subject.notices,[])
     if(boundary==='hide'){
-      subject.lifecycle.show();await flush();subject.take('/clubs').resolve([]);await flush()
+      subject.lifecycle.show();await flush();subject.take('/clubs?limit=20&offset=0').resolve([]);await flush()
       assert.equal(subject.page.form.name,'山海电竞','同一身份返回仍保留未保存草稿')
     }
   })
@@ -163,4 +165,29 @@ test('创建介绍与编辑一致支持1000码点，扩展字符按单个码点�
   const creating=subject.page.create();await flush()
   const write=subject.take('/clubs','POST');assert.equal(write.body.description,'游'.repeat(1000));assert.equal(write.body.name,'😀😀')
   write.resolve({id:'unicode-club'});await creating
+})
+
+test('俱乐部触底按原始分页前进且下拉覆盖迟到的旧追加页',async t=>{
+  const s=harness(t),initial=s.page.load();await flush();s.take('/clubs?limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({id:'club'+i})));await initial
+  const second=s.native.options?.more?.();await flush();s.take('/clubs?limit=20&offset=20').resolve(Array.from({length:20},(_,i)=>({id:'club'+(i+19)})));await second;assert.equal(s.page.clubs.value.length,39)
+  const third=s.native.options?.more?.();await flush();const old=s.take('/clubs?limit=20&offset=40')
+  const refreshing=s.native.options?.refresh();await flush();s.take('/clubs?limit=20&offset=0').resolve([{id:'fresh'}]);await refreshing
+  old.resolve([{id:'stale'}]);await third;assert.deepEqual([...s.page.clubs.value.map((item:{id:string})=>item.id)],['fresh']);assert.equal(s.page.hasMore.value,false)
+})
+
+test('俱乐部触底不提交未确认搜索，明确搜索不重建创建草稿',async t=>{
+  const s=harness(t),initial=s.page.load();await flush();s.take('/clubs?limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({id:'club'+i})));await initial
+  prepareDraft(s);const draft=JSON.stringify(s.page.form);assert.equal(s.native.options?.blocked?.(),true)
+  s.page.creating.value=false;s.page.query.value='新游戏';await s.native.options?.more?.();assert.equal(s.requests.filter(item=>!item.taken).length,0);assert.equal(s.page.clubs.value.length,20)
+  const refreshing=s.page.load();await flush();s.take('/clubs?q='+encodeURIComponent('新游戏')+'&limit=20&offset=0').resolve([{id:'new-game'}]);await refreshing
+  assert.equal(JSON.stringify(s.page.form),draft);assert.deepEqual([...s.page.clubs.value.map((item:{id:string})=>item.id)],['new-game'])
+})
+
+test('俱乐部目录失败重试保留原首读和追加偏移，不被搜索草稿改写',async t=>{
+  const s=harness(t),initial=s.page.load();await flush();s.take('/clubs?limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({id:'club'+i})));await initial
+  const refresh=s.native.options?.refresh();await flush();s.take('/clubs?limit=20&offset=0').reject(new Error('首读失败'));await refresh
+  const firstRetry=s.page.retryFailed();await flush();s.take('/clubs?limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({id:'club'+i})));await firstRetry
+  const more=s.native.options?.more?.();await flush();s.take('/clubs?limit=20&offset=20').reject(new Error('追加失败'));await more;s.page.query.value='未确认草稿'
+  const secondRetry=s.page.retryFailed();await flush();s.take('/clubs?limit=20&offset=20').resolve([{id:'last'}]);await secondRetry
+  assert.equal(s.page.clubs.value.length,21);assert.equal(s.page.query.value,'未确认草稿')
 })

@@ -1,7 +1,7 @@
 <!-- 文件作用：提供俱乐部负责人控制台，将佣金押金、成员、团队订单和装修拆分为清晰入口。 -->
 <template>
   <AppShell title="俱乐部管理" back>
-    <view v-if="error" class="error-box" @click="load">{{ error }} · 点击重试</view>
+    <view v-if="error" class="error-box" @click="retryFailed">{{ error }} · 点击重试</view>
     <view v-if="loading&&!club" class="loading-line">正在读取管理权限…</view>
     <template v-if="club&&canManage">
       <view class="club-console-identity"><image v-if="club.avatar_url" class="club-console-avatar" :src="assetUrl(club.avatar_url)" mode="aspectFill"/><view class="club-console-copy"><text class="club-console-title">{{ club.name }}</text><text class="subtle-note">负责人控制台</text></view></view>
@@ -17,9 +17,12 @@
 import AppShell from '../../../components/AppShell.vue'
 import SubscribeReminder from '../../../components/SubscribeReminder.vue'
 import Icon from '../../../components/Icon.vue'
+import {state,sessionRevision} from '../../../lib/store'
+import { useNativePageRefresh } from '../../../lib/native-page-refresh'
 import { useClubFunds } from '../../../lib/use-club-funds'
 import { assetUrl, go } from '../../../lib/format'
-const {id,club,canManage,loading,error,load}=useClubFunds('club_platform')
+const {id,club,canManage,loading,error,load,retryFailed}=useClubFunds('club_platform',{summaryOnly:true})
+useNativePageRefresh({refresh:()=>load(),context:()=>[state.user?.id,state.user?.role,sessionRevision(),id.value]})
 const links=[{title:'俱乐部资金',detail:'平台押金、佣金与提现',icon:'wallet',page:'/pages/community/clubs/funds?id='},{title:'加入规则与装修',detail:'抽成、备注、封面与图文',icon:'edit',page:'/pages/community/clubs/edit?id='},{title:'联系方式',detail:'客服二维码、电话与微信号',icon:'phone',page:'/pages/community/clubs/edit?section=contact&id='},{title:'成员管理',detail:'申请审核与认证',icon:'club',page:'/pages/community/clubs/detail?tab=manage&id='},{title:'团队订单',detail:'查看履约进度与售后',icon:'orders',page:'/pages/community/clubs/detail?tab=orders&id='}]
 </script>
 <style scoped>

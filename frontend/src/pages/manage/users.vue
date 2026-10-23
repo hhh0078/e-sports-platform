@@ -1,7 +1,7 @@
 <!-- 文件作用：独立管理用户搜索与冻结审核，复用统一列表和身份隔离，不暴露其他管理资源。 -->
 <template>
   <AppShell title="用户管理" back>
-    <ManageList v-model:query="query" placeholder="搜索昵称或用户ID" :loading="loading" :busy="busy || confirming" :error="error" :empty="!users.length" :has-more="hasMore" :count="users.length" @search="loadData()" @more="loadData(true)" @prepare="showPage">
+    <ManageList v-model:query="query" placeholder="搜索昵称或用户ID" :loading="loading" :busy="busy || confirming" :error="error" :empty="!users.length" :has-more="hasMore" :count="users.length" @search="loadData()" @more="loadData(true)" @retry="retryFailed" @prepare="showPage">
       <view v-for="user in users" :key="user.id" class="user-row">
         <view class="avatar user-avatar"><image v-if="user.avatar" class="avatar-image" :src="assetUrl(user.avatar)" mode="aspectFill"/><text v-else>{{ user.nickname?.slice(0, 1) || '用' }}</text></view>
         <view class="user-copy"><view class="user-heading"><text class="user-name">{{ user.nickname || '未设置昵称' }}</text><text class="role-label">{{ roleName(user) }}</text></view><text class="user-meta">ID: {{ user.id }}</text><view class="user-meta-line"><text :class="['user-status', { frozen: user.status === 'frozen' }]">{{ user.status === 'frozen' ? '已冻结' : '正常' }}</text><text class="user-meta">{{ user.phone_verified ? '手机已验证' : '手机未验证' }}</text></view><text class="user-bio">{{ user.bio || '暂未填写简介' }}</text></view>
@@ -21,7 +21,7 @@ import { assetUrl, notify } from '../../lib/format'
 import type { User } from '../../types/models'
 const confirming = ref(false)
 let confirmationVersion = 0
-const { items: users, query, loading, busy, error, hasMore, loadData, showPage, mutate, currentSession, sameSession } = useManageResource('users', { clearDraft: clearConfirmation })
+const { items: users, query, loading, busy, error, hasMore, loadData, retryFailed, showPage, mutate, currentSession, sameSession } = useManageResource('users', { clearDraft: clearConfirmation })
 /** 页面离开或身份变化时作废未确认操作，不让旧弹框恢复后执行冻结。 */
 function clearConfirmation(): void { confirmationVersion++; confirming.value = false }
 /** 使用服务端真实角色展示账号身份，不从昵称或认证猜测。 */

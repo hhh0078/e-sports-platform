@@ -2,6 +2,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import uni from '@dcloudio/vite-plugin-uni'
 import { resolveAPIBase } from './src/lib/api-environment'
+import { classBasedLoadMore } from './build/uni-load-more-compat'
 
 /** 兼容官方插件 CommonJS 在 ESM 项目下的 default 导出层级。 */
 const uniPlugin = typeof uni === 'function' ? uni : (uni as unknown as { default: typeof uni }).default
@@ -12,7 +13,11 @@ export default defineConfig(({ command, mode }) => {
   const apiBase = resolveAPIBase(production, configured)
   return {
     define: { 'import.meta.env.VITE_API_BASE': JSON.stringify(apiBase) },
-    plugins: [uniPlugin()],
+    plugins: [{
+      name: 'official-load-more-class-selector', enforce: 'pre',
+      /** 官方组件原生选择器兼容在编译前修正，不改安装包和其它组件。 */
+      transform(source, id) { if (!id.replace(/\\/g, '/').split('?')[0].endsWith('/@dcloudio/uni-ui/lib/uni-load-more/uni-load-more.vue')) return; return { code: classBasedLoadMore(source), map: null } },
+    }, uniPlugin()],
     server: { host: '0.0.0.0', port: 5173, strictPort: true },
   }
 })

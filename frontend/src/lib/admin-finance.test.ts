@@ -10,20 +10,23 @@ import type { DeferredRequest,PageLifecycle } from './sfc-test'
 import type { FinancialSettings,WalletWithdrawal,WithdrawalAudit } from '../types/wallet'
 
 /** 页面VM依赖真实API方法和Vue响应式实现，仅将网络与原生生命周期设为可控制边界。 */
-function harness(t:TestContext,name:'detail'|'index'|'settings'='detail',devMode=false){
+function harness(t:TestContext,name:'detail'|'index'|'settings'='detail',devMode=false,realGestures=false){
   const requests:DeferredRequest[]=[],notices:unknown[]=[],routes:string[]=[]
   const state=reactive({ready:true,devMode,user:{id:'admin-A',role:'admin'}})
-  let authToken='token-A',revision=1
+  let authToken='token-A',revision=1,bottom=()=>{}
   const hooks:PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
-  const context=vm.createContext({ref,reactive,computed,watch,nextTick,state,token:()=>authToken,sessionRevision:()=>revision,init:async()=>{},notify:(value:unknown)=>notices.push(value),go:(url:string)=>routes.push(url),time:(value:string)=>value,onLoad:(callback:PageLifecycle['load'])=>{hooks.load=callback},onShow:(callback:()=>void)=>{hooks.show=callback},onHide:(callback:()=>void)=>{hooks.hide=callback},onUnload:(callback:()=>void)=>{hooks.unload=callback},api(path:string,method='GET',body:Record<string,unknown>={}){return new Promise<unknown>((resolve,reject)=>requests.push({path,method,body,resolve,reject,taken:false}))}})
+  const context=vm.createContext({ref,reactive,computed,watch,nextTick,state,onReachBottom:(callback:()=>void)=>{bottom=callback},token:()=>authToken,sessionRevision:()=>revision,init:async()=>{},notify:(value:unknown)=>notices.push(value),go:(url:string)=>routes.push(url),time:(value:string)=>value,onLoad:(callback:PageLifecycle['load'])=>{hooks.load=callback},onShow:(callback:()=>void)=>{hooks.show=callback},onHide:(callback:()=>void)=>{hooks.hide=callback},onUnload:(callback:()=>void)=>{hooks.unload=callback},api(path:string,method='GET',body:Record<string,unknown>={}){return new Promise<unknown>((resolve,reject)=>requests.push({path,method,body,resolve,reject,taken:false}))}})
   injectBusinessAPIs(context)
+  if(realGestures)vm.runInContext(executable(readFileSync(new URL('./native-page-refresh.ts',import.meta.url),'utf8')),context)
   vm.runInContext(executable(readFileSync(new URL('./wallet.ts',import.meta.url),'utf8')),context)
-  const exposed={detail:'load,prepare,confirmAction,audit,verified,fresh,canApprove,canSynchronize,pendingAction,rejectReason,devOutcome,actionError,busy,error',index:'load,chooseStatus,withdrawals,status,hasMore,error',settings:'load,save,form,formError,loaded,error'}[name]
+  const exposed={detail:'load,prepare,confirmAction,audit,verified,fresh,canApprove,canSynchronize,pendingAction,rejectReason,devOutcome,actionError,busy,error',index:'load,retryFailed,chooseStatus,withdrawals,status,hasMore,error',settings:'load,save,form,formError,loaded,error'}[name]
   const scope=effectScope()
   scope.run(()=>vm.runInContext(executable(pageScript('manage/finance/'+name+'.vue'))+'\nglobalThis.page={'+exposed+'}',context))
   hooks.load({id:'request-A'})
   t.after(()=>{hooks.unload();scope.stop()})
   return{page:context.page,requests,notices,routes,hooks,state,
+    /** 直接触发真实注册的触底回调，禁止用手工retry调用代替入口验收。 */
+    bottom(){bottom()},
     /** 取得实际发出的单个请求，禁止将缺少网络调用的假通过当作验证结果。 */
     take(path:string,method='GET'){const request=requests.find(item=>!item.taken&&item.path===path&&item.method===method);assert.ok(request,`缺少请求 ${method} ${path}`);request.taken=true;return request},
     /** 隐藏后更换管理员，触发页面真实的同步会话清理。 */
@@ -175,3 +178,13 @@ test('独立资金列表筛选的迟到响应不覆盖新状态，错误保留�
   const refreshing=subject.page.load();await flush();subject.take('/admin/wallet/withdrawals?status=processing&limit=20&offset=0').reject(new Error('刷新失败'));await refreshing
   assert.equal(subject.page.withdrawals.value[0].id,'request-A');assert.match(subject.page.error.value,/刷新失败/)
 })
+
+test('资金审核列表刷新失败和追加失败各自重试原始页',async t=>{
+  const s=harness(t,'index');s.hooks.show();await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({...auditResult().withdrawal,id:'r-'+i})));await flush()
+  const refresh=s.page.load();await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').reject(new Error('刷新失败'));await refresh;assert.equal(s.page.hasMore.value,true)
+  const retry=s.page.retryFailed();await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({...auditResult().withdrawal,id:'n-'+i})));await retry
+  const more=s.page.load(true);await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=20').reject(new Error('追加失败'));await more
+  const again=s.page.retryFailed();await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=20').resolve([]);await again;assert.equal(s.page.withdrawals.value.length,20);assert.ok(s.requests.every(item=>item.method==='GET'))
+})
+
+test('资金审核原生触底在刷新和追加失败后保持原offset',async t=>{const s=harness(t,'index',false,true);s.hooks.show();await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({...auditResult().withdrawal,id:'r-'+i})));await flush();const refresh=s.page.load();await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').reject(new Error('刷新失败'));await refresh;s.bottom();await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({...auditResult().withdrawal,id:'n-'+i})));await flush();const more=s.page.load(true);await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=20').reject(new Error('追加失败'));await more;s.bottom();await flush();s.take('/admin/wallet/withdrawals?status=pending_review&limit=20&offset=20').resolve([]);await flush();assert.ok(s.requests.every(item=>item.method==='GET'))})

@@ -6,6 +6,7 @@ import { errorMessage, token } from '../api/client'
 import { state, init, sessionRevision } from './store'
 import { readMessageCache, writeMessageCache, mergeMessageCache, markCachedMessageRead } from './messages-cache'
 import type { CachedMessage, MessageInbox } from '../types/messages'
+import { useNativePageRefresh } from './native-page-refresh'
 
 /** 详情只读取本机消息，不再请求可能已删除的远端正文。 */
 interface MessageViewOptions { detailId?: () => string }
@@ -14,6 +15,7 @@ interface MessageViewOptions { detailId?: () => string }
 export function useMessages(options: MessageViewOptions = {}) {
   const items = ref<CachedMessage[]>([]), selected = ref<CachedMessage | null>(null), loading = ref(false), error = ref(''), cacheOwner = ref('')
   const unreadCount = computed(() => items.value.filter(item => !item.read).length), pendingCount = computed(() => items.value.filter(item => item.read && item.ack_pending).length)
+  const renderLimit=ref(20),visibleItems=computed(()=>items.value.slice(0,renderLimit.value)),hasMoreLocal=computed(()=>renderLimit.value<items.value.length)
   let visible = false, disposed = false, pageVersion = 0, operationVersion = 0
 
   /** 捕获明确账号、令牌和页面版本，旧响应不能写入另一身份。 */
@@ -89,12 +91,13 @@ export function useMessages(options: MessageViewOptions = {}) {
     finally { if (sameSession(session) && operation === operationVersion) loading.value = false }
   }
   /** 清除内存中的旧身份数据，但按要求保留该账号在设备里的消息历史。 */
-  function clearView(): void { items.value = []; selected.value = null; cacheOwner.value = ''; error.value = ''; loading.value = false }
+  function clearView(): void { items.value = []; selected.value = null; cacheOwner.value = ''; error.value = ''; loading.value = false;renderLimit.value=20 }
   /** 页面隐藏立即作废迟到响应，远端未确认消息留待下一次同步。 */
   function hidePage(): void { visible = false; pageVersion++; operationVersion++; clearView() }
   watch([() => state.user?.id, sessionRevision], () => { const wasVisible = visible; pageVersion++; operationVersion++; clearView(); if (wasVisible) void showPage() }, { flush: 'sync' })
   onShow(showPage)
   onHide(hidePage)
   onUnload(() => { disposed = true; hidePage() })
-  return { items, selected, loading, error, cacheOwner, unreadCount, pendingCount, showPage, retryPending }
+  if(!options.detailId)useNativePageRefresh({refresh:showPage,context:()=>[state.user?.id,state.user?.role,sessionRevision()],more:async()=>{if(hasMoreLocal.value)renderLimit.value+=20},blocked:()=>loading.value})
+  return { items,visibleItems,hasMoreLocal, selected, loading, error, cacheOwner, unreadCount, pendingCount, showPage, retryPending }
 }

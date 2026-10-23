@@ -145,7 +145,7 @@ test('取消后的迟到nextTick不会重新打开官方手机号弹层',async t
 test('真实钱包忙碌等待手机号时官方授权层位于资金弹框之上，取消不创建付款单',async t=>{
   const s=harness(t),wallet=s.startWallet();s.hooks.show();await flush()
   s.take('/wallet').resolve({deposit_cents:0,deposit_required_cents:100,deposit_shortfall_cents:100,available_cents:0});await flush()
-  for(const path of ['/wallet/entries?limit=30&offset=0','/wallet/topups','/wallet/withdrawals','/wallet/deposit-refunds'])s.take(path).resolve([])
+  for(const path of ['/wallet/entries?limit=30&offset=0','/wallet/topups?limit=30&offset=0','/wallet/withdrawals?limit=30&offset=0','/wallet/deposit-refunds?limit=30&offset=0'])s.take(path).resolve([])
   await flush();wallet.open('deposit');assert.equal(wallet.amount.value,'1.00');const submitting=wallet.submit();s.take('/me').resolve({id:'A',phone_verified:false});await flush()
   assert.equal(wallet.busy.value,true);assert.equal(wallet.operation.value,'deposit');assert.equal(s.gate.phoneGate.visible,true);assert.equal(s.instance.showPopup,true)
   const phone=readFileSync(new URL('../components/PhoneVerification.vue',import.meta.url),'utf8'),funds=readFileSync(new URL('../components/FinancePopup.vue',import.meta.url),'utf8')

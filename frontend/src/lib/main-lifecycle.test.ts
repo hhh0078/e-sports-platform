@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import { reactive, ref, computed, watch, effectScope, proxyRefs } from 'vue'
 import { executable, pageScript, injectBusinessAPIs } from './sfc-test'
+import { appendUniqueRows } from './list-page'
 import type { DeferredRequest } from './sfc-test'
 
 /** 本测试执行的四个常驻内容视图。 */
@@ -23,7 +24,7 @@ function harness(t: TestContext, view: ViewName, total = 125) {
   const rows: Row[] = Array.from({ length: total }, (_, index) => ({ id: 'row-' + index, provider_id: 'A', requirements: '完成约定任务', status: 'pending' }))
   const game = { id: 'delta', categories: ['任务协作'], covers: [], primary_color: '#00e18a' }
   const context = vm.createContext({
-    reactive, ref, computed, watch,
+    reactive, ref, computed, watch, appendUniqueRows, defineExpose:()=>{},
     defineProps: () => props,
     onShow: (callback: () => void) => shows.push(callback), onHide: (callback: () => void) => hides.push(callback), onBeforeUnmount: () => {},
     uni: { getStorageSync: (key: string) => storage.get(key), setStorageSync: (key: string, value: string) => storage.set(key, value), removeStorageSync: (key: string) => storage.delete(key) },
@@ -49,10 +50,10 @@ function harness(t: TestContext, view: ViewName, total = 125) {
   vm.runInContext(executable(readFileSync(new URL('./navigation.ts', import.meta.url), 'utf8')) + '\nglobalThis.navigation={mainNavigation,applyMainQuery}', context)
   vm.runInContext(executable(readFileSync(new URL('./order-list.ts', import.meta.url), 'utf8')), context)
   const exposed: Record<ViewName, string> = {
-    player: 'services,hasMore,error,moreError,query,category,loading,hasLoaded,loadServices,reload,showPage,hidePage',
-    worker: 'mine,jobs,stats,claimClubs,hasMore,error,moreError,tab,currentListCount,loading,loadedTabs,load,showPage,stopLoading,changeTab,claim',
-    orders: 'orders,hasMore,error,moreError,role,filter,loading,hasLoaded,load,showPage,hidePage,chooseFilter,chooseRole',
-    me: 'stats,load,showPage,hidePage',
+    player: 'refreshKey,refresh,loadMore,retryList,services,hasMore,error,moreError,query,category,loading,hasLoaded,loadServices,reload,showPage,hidePage',
+    worker: 'refreshKey,refresh,loadMore,retryList,publicClubs,nextOffsets,mine,jobs,stats,claimClubs,hasMore,error,moreError,tab,currentListCount,loading,loadedTabs,load,showPage,stopLoading,changeTab,claim',
+    orders: 'refreshKey,refresh,loadMore,retryList,orders,hasMore,error,moreError,role,filter,loading,hasLoaded,load,showPage,hidePage,chooseFilter,chooseRole',
+    me: 'refresh,wallet,walletError,stats,load,showPage,hidePage',
   }
   const scope = effectScope()
   scope.run(() => vm.runInContext(executable(pageScript('main/' + view + '/' + view + '.vue')) + '\nglobalThis.page={' + exposed[view] + '}', context))
@@ -260,3 +261,15 @@ test('工作台旧本地接单标记为false时仍可申请领取，不再要求
   request.resolve({id:'accepted-order'});await claiming
   assert.deepEqual(subject.navigations,['/pages/orders/detail?id=accepted-order'])
 })
+
+
+test('三个主列表连续触底只追加一次，重复ID不导致原始offset倒退',async t=>{for(const view of ['player','worker','orders'] as const)await t.test(view,async subtest=>{const s=harness(subtest,view,90),route=view==='orders'?'/orders':'/services',list=view==='player'?s.page.services:view==='worker'?s.page.mine:s.page.orders,size=view==='player'?24:20;s.show();await flush();s.held.add(route);const first=s.page.loadMore(),duplicate=s.page.loadMore();await flush();assert.equal(s.pending.filter(item=>item.path.split('?')[0]===route).length,1);const page=[s.rows[size-1],...s.rows.slice(size,size*2-1)];s.take(route).resolve(page);await Promise.all([first,duplicate]);assert.equal(list.value.length,size*2-1);assert.equal(new Set(list.value.map((item:Row)=>item.id)).size,list.value.length);const next=s.page.loadMore();await flush();const request=s.take(route),url=new URL('http://unit.test'+request.path);assert.equal(Number(url.searchParams.get('offset')),size*2);request.resolve([]);await next;assert.equal(s.page.hasMore.value,false);const count=s.requests.length;await s.page.loadMore();assert.equal(s.requests.length,count)})})
+test('下拉失败保留主列表，错误重试仍刷新原范围而不是跳下一页',async t=>{for(const view of ['player','worker','orders'] as const)await t.test(view,async subtest=>{const s=harness(subtest,view,65),route=view==='orders'?'/orders':'/services',list=view==='player'?s.page.services:view==='worker'?s.page.mine:s.page.orders;s.show();await flush();const before=list.value.length;s.held.add(route);const refreshing=s.page.refresh();await flush();s.take(route).reject(new Error('下拉网络失败'));await refreshing;assert.equal(list.value.length,before);assert.equal(s.page.moreError.value,'下拉网络失败');const retry=s.page.retryList();await flush();const request=s.take(route);assert.equal(new URL('http://unit.test'+request.path).searchParams.get('offset'),'0');request.resolve(s.rows.slice(0,before+1));await retry})})
+test('俱乐部页签恰好20条时保留刷新正确判定到底，不再触底空转',async t=>{const s=harness(t,'worker');s.show();await flush();s.held.add('/clubs');s.page.changeTab('clubs');await flush();s.take('/clubs').resolve(s.rows.slice(0,20));await flush();assert.equal(s.page.hasMore.value,true);const refreshing=s.page.refresh();await flush();const request=s.take('/clubs');assert.equal(new URL('http://unit.test'+request.path).searchParams.get('limit'),'21');request.resolve(s.rows.slice(0,20));await refreshing;assert.equal(s.page.publicClubs.value.length,20);assert.equal(s.page.hasMore.value,false)})
+test('我的下拉等待和故障保留已确认统计与余额',async t=>{const s=harness(t,'me');s.show();await flush();s.page.stats.value={buyer_order_count:42};s.page.wallet.value={available_cents:12345};s.held.add('/me');const refreshing=s.page.refresh();await flush();assert.equal(s.page.stats.value.buyer_order_count,42);assert.equal(s.page.wallet.value.available_cents,12345);s.take('/me').reject(new Error('暂时离线'));await refreshing;assert.equal(s.page.stats.value.buyer_order_count,42);assert.equal(s.page.wallet.value.available_cents,12345)})
+
+test('真实子视图更换分类、子页签及订单筛选会更新容器上下文',async t=>{for(const view of ['player','worker','orders'] as const)await t.test(view,async subtest=>{const s=harness(subtest,view);s.show();await flush();const key=s.page.refreshKey.value;if(view==='player')await s.page.loadServices();else if(view==='worker')s.page.changeTab('jobs');else s.page.chooseFilter('working');assert.ok(s.page.refreshKey.value>key)})})
+
+test('我的下拉成功后清除历史钱包同步错误，不保留过期警告',async t=>{const s=harness(t,'me');s.show();await flush();s.page.walletError.value='历史钱包读取失败';await s.page.refresh();assert.equal(s.page.walletError.value,'')})
+
+test('主列表原生触底在刷新失败后恢复首读，追加失败后仍重试原页',async t=>{for(const view of ['player','worker','orders'] as const)await t.test(view,async subtest=>{const s=harness(subtest,view,65),route=view==='orders'?'/orders':'/services',size=view==='player'?24:20;s.show();await flush();s.held.add(route);const refreshing=s.page.refresh();await flush();s.take(route).reject(new Error('刷新失败'));await refreshing;const retry=s.page.loadMore();await flush();const first=s.take(route);assert.equal(new URL('http://unit.test'+first.path).searchParams.get('offset'),'0');first.resolve(s.rows.slice(0,size+1));await retry;const appending=s.page.loadMore();await flush();const failed=s.take(route);assert.equal(Number(new URL('http://unit.test'+failed.path).searchParams.get('offset')),size);failed.reject(new Error('追加失败'));await appending;const again=s.page.loadMore();await flush();const repeated=s.take(route);assert.equal(Number(new URL('http://unit.test'+repeated.path).searchParams.get('offset')),size);repeated.resolve([]);await again;assert.equal(s.page.hasMore.value,false)})})

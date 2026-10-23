@@ -7,8 +7,8 @@ export interface ServiceQuery extends ListQuery { category?: string; mine?: 0 | 
 export type ServiceInput = Pick<Service, 'game_id' | 'title' | 'description' | 'category' | 'price_cents' | 'unit' | 'cover_url' | 'labels' | 'tags' | 'club_id'>
 /** 分页搜索服务。 */
 export function listServices(query: ServiceQuery = {}): Promise<Service[]> { return (query.mine ? request : requestPublic)('/services' + queryString(query)) }
-/** 读取单条可见服务。 */
-export function getService(id: string, publicOnly = false): Promise<Service> { return (publicOnly ? requestPublic : request)('/services/' + encodeURIComponent(id)) }
+/** 读取单条可见服务，可按原始偏移分页取得公开评价。 */
+export function getService(id: string, publicOnly = false, query: ListQuery = {}): Promise<Service> { return (publicOnly ? requestPublic : request)('/services/' + encodeURIComponent(id) + queryString(query)) }
 /** 发布新服务，进入审核。 */
 export function createService(body: ServiceInput): Promise<Service> { return request('/services', 'POST', body) }
 /** 保存服务修改并重新审核。 */

@@ -12,6 +12,7 @@ import {token,errorMessage} from '../../api/client'
 import {getSubscriptions,updateSubscriptionPreferences,recordSubscriptionAuthorization} from '../../api/subscriptions.api'
 import {subscriptionCandidates,requestSubscriptionFromGesture,wechatSubscribeAPI} from '../../lib/subscriptions'
 import {go,notify} from '../../lib/format'
+import {useNativePageRefresh} from '../../lib/native-page-refresh'
 import type {SubscriptionOverview,SubscriptionScene} from '../../types/subscriptions'
 const overview=ref<SubscriptionOverview|null>(null),selected=ref<SubscriptionScene[]>([]),loading=ref(false),busy=ref(false),error=ref('')
 const accent=computed(()=>game.value.primary_color),selectedCandidates=computed(()=>subscriptionCandidates(overview.value,selected.value))
@@ -21,7 +22,7 @@ function session(){return{id:state.user?.id,token:token(),revision:sessionRevisi
 /** 原生授权暂时隐藏后允许记录原账号回包，但不能跨账号。 */
 function same(owner:ReturnType<typeof session>){return !disposed&&!!owner.id&&owner.id===state.user?.id&&owner.token===token()&&owner.revision===sessionRevision()}
 /** 读取个人场景，不访问管理员模板配置。 */
-async function load(){if(!visible)return;const version=++readVersion;loading.value=true;error.value='';try{await init();if(!visible||version!==readVersion)return;if(!state.user){overview.value=null;return}const owner=session(),result=await getSubscriptions();if(visible&&same(owner)&&version===readVersion){overview.value=result;selected.value=subscriptionCandidates(result,result.scenes.map(item=>item.scene)).map(item=>item.scene)}}catch(err){if(visible&&version===readVersion)error.value=errorMessage(err)}finally{if(version===readVersion)loading.value=false}}
+async function load(){if(!visible)return;const version=++readVersion;loading.value=true;error.value='';try{await init();if(!visible||version!==readVersion)return;if(!state.user){overview.value=null;return}const owner=session(),result=await getSubscriptions();if(visible&&same(owner)&&version===readVersion){const initial=!overview.value;overview.value=result;selected.value=subscriptionCandidates(result,initial?result.scenes.map(item=>item.scene):selected.value).map(item=>item.scene)}}catch(err){if(visible&&version===readVersion)error.value=errorMessage(err)}finally{if(version===readVersion)loading.value=false}}
 /** 手动选择只改变本次申请，最多三个不同模板；不写任何授权额度。 */
 function toggleSelection(scene:SubscriptionScene){if(busy.value)return;if(selected.value.includes(scene)){selected.value=selected.value.filter(item=>item!==scene);return}const next=[...selected.value,scene],templates=new Set((overview.value?.scenes||[]).filter(item=>next.includes(item.scene)&&item.available&&item.enabled&&item.template_id).map(item=>item.template_id));if(templates.size>3)return notify('每次最多申请三个不同模板，请先取消一项');if(subscriptionCandidates(overview.value,next).some(item=>item.scene===scene))selected.value=next}
 /** 用户偏好按单场景更新，服务端权限仍为准。 */
@@ -31,6 +32,7 @@ async function subscribe(){if(!visible||busy.value||loading.value||!selectedCand
 /** 换号撤销个人场景与旧操作，不在本地持久化配置。 */
 function clear(){readVersion++;operation++;overview.value=null;selected.value=[];loading.value=false;busy.value=false;error.value=''}
 watch([()=>state.user?.id,sessionRevision],()=>{clear();if(visible)void load()},{flush:'sync'})
+useNativePageRefresh({refresh:load,context:()=>[state.user?.id,state.user?.role,sessionRevision()],blocked:()=>busy.value})
 onShow(()=>{visible=true;void load()});onHide(()=>{visible=false;readVersion++;loading.value=false});onUnload(()=>{disposed=true;clear()})
 </script>
 <style scoped>

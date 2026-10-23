@@ -5,21 +5,22 @@
     <slot name="before"/>
     <view class="manage-search"><Icon name="search" :size="18"/><input class="manage-search-input" :value="query" :placeholder="placeholder" maxlength="100" confirm-type="search" :disabled="busy" @input="changeQuery" @confirm="emit('search')"/><button class="text-btn manage-search-button" :disabled="loading || busy" @click="emit('search')">搜索</button></view>
     <slot name="filters"/>
-    <view v-if="error" class="manage-error"><text class="manage-error-copy">{{ error }}</text><button class="text-btn" :disabled="loading || busy" @click="emit('search')">重试</button></view>
+    <view v-if="error" class="manage-error"><text class="manage-error-copy">{{ error }}</text><button class="text-btn" :disabled="loading || busy" @click="emit('retry')">重试</button></view>
     <view v-if="loading && empty" class="loading-line">正在读取管理数据…</view>
     <slot/>
     <EmptyState v-if="!loading && empty && !error" title="没有匹配的数据" detail="可以更换关键词或筛选条件" icon="search"/>
-    <view v-if="!empty" class="manage-pagination"><text class="manage-count">已展示 {{ count }} 条</text><button v-if="hasMore" class="text-btn" :disabled="loading || busy" @click="emit('more')">{{ loading ? '正在加载…' : '加载更多' }}</button><text v-else class="manage-count">已全部加载</text></view>
+    <view v-if="!empty" class="manage-pagination"><text class="manage-count">已展示 {{ count }} 条</text><ListLoadState :loading="loading" :has-more="hasMore" :error="error" @retry="emit('retry')"/></view>
   </template>
   <view v-else class="identity-state"><template v-if="error"><text class="manage-error-copy">{{ error }}</text><button class="text-btn" @click="emit('prepare')">重新核验身份</button></template><text v-else class="identity-loading">正在核验管理员身份…</text></view>
 </template>
 <script setup lang="ts">
 import EmptyState from './EmptyState.vue'
 import Icon from './Icon.vue'
+import ListLoadState from './ListLoadState.vue'
 import { state } from '../lib/store'
 import { go } from '../lib/format'
 withDefaults(defineProps<{ query: string; placeholder?: string; loading: boolean; busy?: boolean; error: string; empty: boolean; hasMore: boolean; count: number }>(), { placeholder: '搜索管理数据', busy: false })
-const emit = defineEmits<{ 'update:query': [value: string]; search: []; more: []; prepare: [] }>()
+const emit = defineEmits<{ 'update:query': [value: string]; search: []; more: []; retry: []; prepare: [] }>()
 /** 原生输入只更新搜索草稿，确认后由具体页面重新读取服务端数据。 */
 function changeQuery(event: Event): void { const detail = (event as Event & { detail?: { value?: unknown } }).detail; if (typeof detail?.value === 'string') emit('update:query', detail.value) }
 </script>

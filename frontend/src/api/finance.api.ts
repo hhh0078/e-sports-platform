@@ -1,5 +1,6 @@
 /** 文件作用：封装交易规则、组织钱包、三类押金及提现来源核验，页面不直接拼接资金请求。 */
 import { request, queryString } from './client'
+import type { ListQuery } from '../types/models'
 import type { FinancialSettings, ClubDeposits, ClubWallet, WalletWithdrawal, WalletEntry, WithdrawalAudit } from '../types/wallet'
 /** 读取创建及下单前可公开告知的交易规则，不包含商户配置。 */
 export function getFinancialRules(): Promise<FinancialSettings> { return request('/financial-rules') }
@@ -14,7 +15,7 @@ export function getClubWallet(id: string): Promise<ClubWallet> { return request(
 /** 分页读取俱乐部佣金不可变账目。 */
 export function listClubWalletEntries(id: string, query: { limit?: number; offset?: number } = {}): Promise<WalletEntry[]> { return request('/clubs/' + encodeURIComponent(id) + '/entries' + queryString(query)) }
 /** 读取俱乐部提现历史，普通成员不能读取。 */
-export function listClubWithdrawals(id: string): Promise<WalletWithdrawal[]> { return request('/clubs/' + encodeURIComponent(id) + '/withdrawals') }
+export function listClubWithdrawals(id: string, query: ListQuery = {}): Promise<WalletWithdrawal[]> { return request('/clubs/' + encodeURIComponent(id) + '/withdrawals' + queryString(query)) }
 /** 冻结俱乐部佣金来源并申请向负责人实名微信转账。 */
 export function createClubWithdrawal(id: string, body: { amount_cents: number; request_id: string; user_name?: string }): Promise<WalletWithdrawal> { return request('/clubs/' + encodeURIComponent(id) + '/withdrawals', 'POST', body) }
 /** 平台管理员查看付款来源、订单及本次提现占用的逐笔核验结果。 */

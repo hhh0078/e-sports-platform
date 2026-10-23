@@ -2,20 +2,20 @@
 <template>
 	<view class="main-shell" :style="[themeStyle, safeStyle]">
 		<view class="main-viewport">
-			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'player' }">
-				<PlayerView :active="mainNavigation.tab === 'player'" />
+			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'player' }" :refresher-enabled="mainNavigation.tab==='player'" :refresher-triggered="refreshing.player" refresher-background="transparent" refresher-default-style="white" @refresherrefresh="runGesture('player','refresh')" @scrolltolower="runGesture('player','more')">
+				<PlayerView ref="playerView" :active="mainNavigation.tab === 'player'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
-			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll main-scroll-safe" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'worker' }">
-				<WorkerView :active="mainNavigation.tab === 'worker'" />
+			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll main-scroll-safe" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'worker' }" :refresher-enabled="mainNavigation.tab==='worker'" :refresher-triggered="refreshing.worker" refresher-background="transparent" refresher-default-style="white" @refresherrefresh="runGesture('worker','refresh')" @scrolltolower="runGesture('worker','more')">
+				<WorkerView ref="workerView" :active="mainNavigation.tab === 'worker'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
-			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll main-scroll-safe" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'orders' }">
-				<OrdersView :active="mainNavigation.tab === 'orders'" />
+			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll main-scroll-safe" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'orders' }" :refresher-enabled="mainNavigation.tab==='orders'" :refresher-triggered="refreshing.orders" refresher-background="transparent" refresher-default-style="white" @refresherrefresh="runGesture('orders','refresh')" @scrolltolower="runGesture('orders','more')">
+				<OrdersView ref="ordersView" :active="mainNavigation.tab === 'orders'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
-			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'me' }">
-				<MeView :active="mainNavigation.tab === 'me'" />
+			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'me' }" :refresher-enabled="mainNavigation.tab==='me'" :refresher-triggered="refreshing.me" refresher-background="transparent" refresher-default-style="white" @refresherrefresh="runGesture('me','refresh')" @scrolltolower="runGesture('me','more')">
+				<MeView ref="meView" :active="mainNavigation.tab === 'me'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
 		</view>
@@ -25,8 +25,8 @@
 	</view>
 </template>
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { onLoad, onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app'
+	import { ref, watch } from 'vue'
+	import { onLoad, onShareAppMessage, onShareTimeline, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 	import BottomNav from '../../components/BottomNav.vue'
 	import PhoneVerification from '../../components/PhoneVerification.vue'
 	import TechSupportFooter from '../../components/TechSupportFooter.vue'
@@ -35,11 +35,34 @@
 	import WorkerView from './worker/worker.vue'
 	import OrdersView from './orders/orders.vue'
 	import MeView from './me/me.vue'
-	import { themeStyle, game, state, init } from '../../lib/store'
+	import { themeStyle, game, state, init, sessionRevision } from '../../lib/store'
 	import { isTimelinePreview, enablePublicShareMenu } from '../../lib/sharing'
 	import { createPublicShareHandlers } from '../../lib/use-public-share'
 	import { readSafeArea } from '../../lib/safe-area'
 	import { applyMainQuery, mainNavigation, selectMainTab } from '../../lib/navigation'
+	import type { MainTab } from '../../lib/navigation'
+	import { notify } from '../../lib/format'
+
+	/** 主滚动容器只调用当前视图声明的读取动作，不参与业务请求和资金操作。 */
+	interface MainViewActions {refreshKey?:number;refresh:()=>Promise<void>;loadMore?:()=>Promise<void>}
+	const playerView=ref<MainViewActions|null>(null),workerView=ref<MainViewActions|null>(null),ordersView=ref<MainViewActions|null>(null),meView=ref<MainViewActions|null>(null)
+	const refreshing=ref<Record<MainTab,boolean>>({player:false,worker:false,orders:false,me:false})
+	const gestureLocks=new Map<MainTab,number>()
+	let pageVisible=false,gestureSequence=0
+	/** 清理原生刷新显示和旧请求锁，迟到finally不能关闭下一轮新刷新。 */
+	function clearGestures():void{gestureSequence++;gestureLocks.clear();for(const tab of ['player','worker','orders','me'] as const)refreshing.value[tab]=false}
+	/** 在原生事件处串行化当前容器动作，隐藏、换号、切主题后只允许最新finally恢复状态。 */
+	async function runGesture(tab:MainTab,kind:'refresh'|'more'):Promise<void>{
+		if(!pageVisible||mainNavigation.tab!==tab||gestureLocks.has(tab))return
+		const view={player:playerView.value,worker:workerView.value,orders:ordersView.value,me:meView.value}[tab],action=kind==='refresh'?view?.refresh:view?.loadMore
+		if(!action)return
+		const sequence=++gestureSequence;gestureLocks.set(tab,sequence);if(kind==='refresh')refreshing.value[tab]=true
+		try{await action()}catch(error){if(pageVisible&&mainNavigation.tab===tab&&gestureLocks.get(tab)===sequence)notify(error)}finally{if(gestureLocks.get(tab)===sequence){gestureLocks.delete(tab);refreshing.value[tab]=false}}
+	}
+	watch([()=>mainNavigation.tab,()=>state.user?.id,sessionRevision,()=>state.gameId,()=>playerView.value?.refreshKey,()=>workerView.value?.refreshKey,()=>ordersView.value?.refreshKey],clearGestures,{flush:'sync'})
+	onShow(()=>{enablePublicShareMenu();pageVisible=true})
+	onHide(()=>{pageVisible=false;clearGestures()})
+	onUnload(()=>{pageVisible=false;clearGestures()})
 
 	const timelinePreview = isTimelinePreview()
 	const safe = readSafeArea()
@@ -48,7 +71,6 @@
 	const publicShareHandlers = createPublicShareHandlers(() => ({ title: '集结 · ' + game.value.name + '好队友，即刻集结', path: '/pages/main/index?tab=player&game_id=' + encodeURIComponent(state.gameId), image: game.value.cover_url }))
 	onShareAppMessage(publicShareHandlers.friend)
 	onShareTimeline(publicShareHandlers.timeline)
-	onShow(enablePublicShareMenu)
 	onLoad(async query => { applyMainQuery(isTimelinePreview() ? { ...query, tab: 'player' } : query); if (query?.game_id) { await init(false, isTimelinePreview()); if (state.games.some(item => item.id === query.game_id)) state.gameId = query.game_id } })
 </script>
 <style scoped>

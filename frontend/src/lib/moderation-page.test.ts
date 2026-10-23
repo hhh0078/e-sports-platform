@@ -25,7 +25,7 @@ function harness(t:TestContext,role='admin'){
   })
   injectBusinessAPIs(context)
   vm.runInContext(executable(readFileSync(new URL('../api/moderation.api.ts',import.meta.url),'utf8')),context)
-  const scope=effectScope();scope.run(()=>vm.runInContext(executable(pageScript('manage/moderation.vue'))+'\nglobalThis.page={loadList,chooseStatus,openTask,closeDetail,decide,retryAI,tasks,status,authorized,selected,selectedId,detailOpened,detailError,reason,busy,canDecide,imagePath,decisionSource}',context));t.after(()=>scope.stop())
+  const scope=effectScope();scope.run(()=>vm.runInContext(executable(pageScript('manage/moderation.vue'))+'\nglobalThis.page={loadList,retryFailed,chooseStatus,openTask,closeDetail,decide,retryAI,tasks,status,authorized,selected,selectedId,detailOpened,detailError,reason,busy,canDecide,imagePath,decisionSource}',context));t.after(()=>scope.stop())
   return{page:context.page,state,revision,storage,requests,notices,dialogs,files,removed,hooks,
     /** 只取得确实由真实领域API发出的请求。 */
     take(path:string,method='GET'){const found=requests.find(item=>!item.taken&&item.path===path&&item.method===method);assert.ok(found,`缺少${method} ${path}`);found.taken=true;return found},
@@ -37,6 +37,15 @@ async function flush(){await new Promise(resolve=>setImmediate(resolve))}
 async function load(subject:ReturnType<typeof harness>){subject.hooks.show();await flush();await flush();subject.take('/admin/moderation?limit=20').resolve(inbox());await flush()}
 /** 完成一次真实任务详情读取。 */
 async function open(subject:ReturnType<typeof harness>,value=task()){const pending=subject.page.openTask(value.id);subject.take('/admin/moderation/'+value.id).resolve(value);await pending}
+
+test('审核队列错误重试恢复失败的首读或原游标追加，不依据残留游标猜测',async t=>{
+  const s=harness(t);s.hooks.show();await flush();s.take('/admin/moderation?limit=20').resolve({...inbox([task()]),next_cursor:'cursor-1'});await flush()
+  const refresh=s.page.loadList();await flush();s.take('/admin/moderation?limit=20').reject(new Error('首读失败'));await refresh
+  const firstRetry=s.page.retryFailed();await flush();s.take('/admin/moderation?limit=20').resolve({...inbox([task()]),next_cursor:'cursor-1'});await firstRetry
+  const more=s.page.loadList(true);await flush();s.take('/admin/moderation?cursor=cursor-1&limit=20').reject(new Error('追加失败'));await more
+  const secondRetry=s.page.retryFailed();await flush();s.take('/admin/moderation?cursor=cursor-1&limit=20').resolve(inbox([task('task-B')]));await secondRetry
+  assert.equal(s.page.tasks.value.length,2);assert.equal(s.requests.some(item=>item.method!=='GET'),false)
+})
 
 test('普通玩家和俱乐部负责人不能读取或处理平台图文原文',async t=>{for(const role of ['user','clubowner'])await t.test(role,async child=>{const subject=harness(child,role);subject.hooks.show();await flush();await subject.page.openTask('secret');await subject.page.decide('allow');assert.equal(subject.requests.length,0);assert.equal(subject.page.authorized.value,false)})})
 

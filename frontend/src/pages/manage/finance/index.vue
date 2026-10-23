@@ -1,7 +1,7 @@
 <!-- 文件作用：按先行设计分页查看个人及俱乐部提现，每笔申请进入独立资金来源审核页。 -->
 <template>
   <AppShell title="资金审核" back>
-    <view v-if="error" class="error-box" @click="load()">{{ error }} · 点击重试</view>
+    <view v-if="error" class="error-box" @click="retryFailed">{{ error }} · 点击重试</view>
     <EmptyState v-if="state.ready&&state.user?.role!=='admin'" title="仅平台管理员可访问" detail="提现来源及审核结果仅向平台管理员开放。" icon="shield"/>
     <template v-else-if="state.user?.role==='admin'">
       <view class="audit-intro"><text class="audit-title">资金来源审核</text><text class="audit-note">逐笔核验付款、订单和提现占用</text></view>
@@ -9,7 +9,7 @@
       <view v-if="loading&&!withdrawals.length" class="loading-line">正在读取提现申请…</view>
       <EmptyState v-else-if="!withdrawals.length&&!error" title="暂无提现申请" :detail="status==='all'?'个人和俱乐部的提现申请会显示在这里。':'当前状态下暂无提现申请。'" icon="wallet"/>
       <button v-for="item in withdrawals" :key="item.id" class="audit-card" @click="openDetail(item.id)"><view class="audit-card-copy"><text class="audit-account">{{ item.account_type==='club'||item.club_id?'俱乐部佣金提现':'个人提现' }}</text><text class="audit-amount">¥{{ fixed(item.amount_cents) }}</text><text class="audit-meta">{{ walletStatus(item.status) }} · 查看逐笔来源</text><text class="audit-reference">{{ item.club_id?'俱乐部 '+item.club_id:'用户 '+item.user_id }}</text><text class="audit-time">{{ time(item.created_at) }}</text></view><Icon name="arrow" :size="18"/></button>
-      <button v-if="hasMore" class="text-btn audit-more" :disabled="loading" @click="load(true)">{{ loading?'正在读取…':'加载更多' }}</button>
+      <ListLoadState :loading="loading" :has-more="hasMore" :error="error" @retry="retryFailed"/>
       <text class="audit-footnote">来源不足、已退款或重复占用将阻止转账。</text>
     </template>
     <view v-else-if="!error" class="loading-line">正在读取管理员身份…</view>
@@ -21,6 +21,8 @@ import { onShow,onHide,onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../../components/AppShell.vue'
 import EmptyState from '../../../components/EmptyState.vue'
 import Icon from '../../../components/Icon.vue'
+import ListLoadState from '../../../components/ListLoadState.vue'
+import { useNativePageRefresh } from '../../../lib/native-page-refresh'
 import { state,init,sessionRevision } from '../../../lib/store'
 import { token,errorMessage } from '../../../api/client'
 import { listAdminWithdrawals } from '../../../api/wallet.api'
@@ -32,7 +34,8 @@ import type { WalletWithdrawal } from '../../../types/wallet'
 type AuditStatus=WalletWithdrawal['status']|'all'
 const filters:Array<{value:AuditStatus;label:string}>=[{value:'pending_review',label:'待审核'},{value:'processing',label:'处理中'},{value:'wait_user_confirm',label:'待收款'},{value:'success',label:'已完成'},{value:'failed',label:'未成功'},{value:'rejected',label:'已拒绝'},{value:'all',label:'全部'}]
 const status=ref<AuditStatus>('pending_review'),withdrawals=ref<WalletWithdrawal[]>([]),loading=ref(false),error=ref(''),hasMore=ref(false)
-let visible=false,version=0,offset=0
+let visible=false,version=0,offset=0,lastFailedAppend=false
+useNativePageRefresh({refresh:()=>load(),more:()=>error.value?retryFailed():hasMore.value?load(true):Promise.resolve(),context:()=>[state.user?.id,state.user?.role,sessionRevision(),status.value]})
 /** 捕获管理员身份、令牌及认证版本，禁止跨账号回填资金数据。 */
 function currentSession(){return{id:state.user?.id,token:token(),revision:sessionRevision()}}
 /** 仅在页面可见且仍为同一管理员时接收响应。 */
@@ -45,16 +48,18 @@ async function load(append=false):Promise<void>{
   const current=++version,selected=status.value,start=append?offset:0
   let session:ReturnType<typeof currentSession>|null=null
   loading.value=true;error.value=''
-  try{await init();if(!visible||current!==version)return;if(state.user?.role!=='admin')return;session=currentSession();const result=await listAdminWithdrawals({status:selected,limit:20,offset:start});if(current!==version||!sameSession(session)||status.value!==selected)return;const known=new Set(append?withdrawals.value.map(item=>item.id):[]);withdrawals.value=append?[...withdrawals.value,...result.filter(item=>!known.has(item.id))]:result;offset=start+result.length;hasMore.value=result.length===20}
-  catch(err){if(visible&&current===version&&(!session||sameSession(session)))error.value=errorMessage(err)}
+  try{await init();if(!visible||current!==version)return;if(state.user?.role!=='admin')return;session=currentSession();const result=await listAdminWithdrawals({status:selected,limit:20,offset:start});if(current!==version||!sameSession(session)||status.value!==selected)return;const known=new Set(append?withdrawals.value.map(item=>item.id):[]);withdrawals.value=append?[...withdrawals.value,...result.filter(item=>!known.has(item.id))]:result;offset=start+result.length;hasMore.value=result.length===20;lastFailedAppend=false}
+  catch(err){if(visible&&current===version&&(!session||sameSession(session))){lastFailedAppend=append;error.value=errorMessage(err)}}
   finally{if(current===version)loading.value=false}
 }
+/** 重试最近失败的同类GET，不从旧hasMore判断刷新还是追加。 */
+async function retryFailed():Promise<void>{if(!loading.value)await load(lastFailedAppend)}
 /** 切换筛选作废旧请求并从第一页开始，不混合不同状态的结果。 */
 function chooseStatus(value:AuditStatus):void{if(value===status.value)return;status.value=value;version++;withdrawals.value=[];offset=0;hasMore.value=false;void load()}
 /** 仅当前管理员可进入指定原申请的来源审核。 */
 function openDetail(id:string):void{if(visible&&state.user?.role==='admin')go('/pages/manage/finance/detail?id='+encodeURIComponent(id))}
 /** 账号变化立即清空上一管理员的列表，页面可见时重新验证身份。 */
-function clear():void{version++;withdrawals.value=[];offset=0;hasMore.value=false;loading.value=false;error.value=''}
+function clear():void{version++;withdrawals.value=[];offset=0;hasMore.value=false;lastFailedAppend=false;loading.value=false;error.value=''}
 /** 返回列表时刷新当前筛选，及时展示详情页的真实处理结果。 */
 function showPage():void{visible=true;void load()}
 /** 隐藏作废未完成读取，旧响应不能覆盖返回后的列表。 */
