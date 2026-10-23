@@ -9,6 +9,8 @@ import type MiniProgram from '../frontend/node_modules/miniprogram-automator/out
 import type Page from '../frontend/node_modules/miniprogram-automator/out/Page'
 import type Element from '../frontend/node_modules/miniprogram-automator/out/Element'
 import type { ScrollViewElement } from '../frontend/node_modules/miniprogram-automator/out/Element'
+import type { Service } from '../frontend/src/types/models'
+import { normalizeLabelText } from '../frontend/src/lib/cover'
 
 /** 微信窗口的真实几何信息，不取令牌、OpenID 或页面内部状态。 */
 interface WindowInfo { windowWidth: number; windowHeight: number; statusBarHeight: number }
@@ -29,6 +31,7 @@ const outputRoot = path.resolve(process.env.UI_TEST_OUTPUT_ROOT || 'output/backg
 const endpoint = process.env.WX_AUTOMATOR_ENDPOINT || 'ws://127.0.0.1:9423'
 const cli = process.env.UI_WECHATIDE_CLI || '/Applications/wechatwebdevtools.app/Contents/MacOS/wechatide'
 const runFile = promisify(execFile)
+const responsive = process.env.UI_TEST_RESPONSIVE === '1'
 const automator = require('miniprogram-automator') as { connect(options: { wsEndpoint: string }): Promise<MiniProgram> }
 const SDK = (require('miniprogram-automator/out/MiniProgram') as { default: typeof MiniProgram }).default
 const png = require('pngjs') as { PNG: { sync: { read(bytes: Buffer): ScreenshotPixels } } }
@@ -37,6 +40,7 @@ const checks: string[] = [], exceptions: string[] = [], colorWarnings: string[] 
 const measurements: Measurement[] = [], versionChecks: Array<Record<string, unknown>> = []
 const scrollMeasurements: Array<{ label: string; viewport_height: number; content_height: number; scroll_top: number; scroll_width: number }> = []
 const pixels: Array<{ label: string; image: string; x: number; y: number; actual: number[]; expected: number[]; difference: number }> = []
+const responsiveMeasurements: Array<Record<string, unknown>> = []
 let mini: MiniProgram | undefined, viewport: WindowInfo | undefined, output = outputRoot, stage = '初始化', failure: unknown
 let originalGame: unknown, restored = false, preferenceRead = false, originalRoute = ''
 
@@ -77,6 +81,12 @@ async function child(scope: Scope, names: string[]): Promise<Element | null> { f
 async function find(scopes: Scope[], selector: string): Promise<Element | null> { for (const scope of scopes) { const item = await scope.$(selector); if (item) return item } return null }
 /** 查询真实节点矩形，不用 CSS 声明高度充当运行几何。 */
 async function rect(item: Element): Promise<Rectangle> { const [offset, size] = await Promise.all([item.offset(), item.size()]); return { left: Number(offset.left), top: Number(offset.top), width: Number(size.width), height: Number(size.height) } }
+/** 检查真实矩形处于另一个可见区域内，保留一像素渲染舍入容差。 */
+function inside(area: Rectangle, bounds: Rectangle, label: string): void { assert.ok(area.width > 0 && area.height > 0 && area.left >= bounds.left - 1 && area.top >= bounds.top - 1 && area.left + area.width <= bounds.left + bounds.width + 1 && area.top + area.height <= bounds.top + bounds.height + 1, label + '越界：' + JSON.stringify({ area, bounds })) }
+/** 两个独立内容层只允许边缘的一像素舍入，不允许互相遮盖。 */
+function separate(a: Rectangle, b: Rectangle): boolean { return a.left + a.width <= b.left + 1 || b.left + b.width <= a.left + 1 || a.top + a.height <= b.top + 1 || b.top + b.height <= a.top + 1 }
+/** 获取同名组件集合，兼容uni-app短标签及完整编译路径。 */
+async function children(scope: Scope, names: string[]): Promise<Element[]> { for (const name of names) { const items = await scope.$$(name) as Element[]; if (items.length) return items } return [] }
 /** 将已计算颜色缩窄为不透明 RGB；透明背景不能通过公共背景层验收。 */
 function rgb(value: string): number[] {
   const hex = value.trim().match(/^#([\da-f]{6})$/i)
@@ -133,12 +143,107 @@ function sample(source: { file: string; image: ScreenshotPixels }, label: string
   pixels.push({ label, image: source.file, x: cssX, y: cssY, actual, expected, difference })
   assert.ok(difference <= tolerance, label + '截图背景不连续：' + JSON.stringify({ actual, expected, difference, cssY }))
 }
+/** 实际点击全部游戏目录，检查受控滚动与网格边界，取消不能改变游戏偏好。 */
+async function responsiveCatalog(page: Page, picker: Element, nav: Element, game: string): Promise<void> {
+  assert.ok(viewport); stage = game + '响应式游戏目录与底栏图标'
+  const icons = await children(nav, ['icon', 'components\\/Icon']); assert.equal(icons.length, 4, '底栏必须有四个共享图标')
+  const expected = 23 * viewport.windowWidth / 390
+  for (const [index, icon] of icons.entries()) {
+    const box = await until(() => icon.$('.app-icon'), '底栏图标外框'), boxArea = await rect(box)
+    assert.ok(Math.abs(boxArea.width - expected) <= 1 && Math.abs(boxArea.height - expected) <= 1, '底栏图标未按rpx适配')
+    const mask = await icon.$('.gamepad-image')
+    if (index === 0) { assert.ok(mask, '玩家图标应使用统一遮罩'); const area = await rect(mask); assert.ok(Math.abs(area.width - boxArea.width) <= 1 && Math.abs(area.height - boxArea.height) <= 1, '玩家遮罩与图标外框不一致') }
+    else { const official = await until(() => child(icon, ['uni-icons', 'node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-icons\\/uni-icons']), '官方图标组件'), glyph = await until(() => official.$('.uni-icons'), '官方图标字形'), font = Number.parseFloat(await glyph.style('font-size')); assert.ok(Math.abs(font - expected) <= 1, '官方图标字号仍使用固定px'); responsiveMeasurements.push({ label: game + '底栏图标' + index, rect: boxArea, font_size: font, expected }) }
+  }
+  await (await until(() => picker.$('.catalog-trigger'), '全部游戏入口')).tap()
+  const selector = await until(() => child(picker, ['game-selector', 'components\\/GameSelector']), '共享游戏选择器'), native = await until(() => child(selector, ['uni-popup', 'node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-popup\\/uni-popup']), '游戏目录官方弹层')
+  const scopes: Scope[] = [selector, native, picker, page], sheet = await until(() => find(scopes, '.catalog-sheet'), '游戏目录内容'), scroll = await until(() => find(scopes, '.catalog-scroll'), '游戏目录滚动区域') as ScrollViewElement
+  await until(async () => { const area = await rect(sheet); return area.height > 0 && area.top >= -1 && area.top + area.height <= Number(viewport?.windowHeight) + 1 }, '游戏目录展开动画')
+  const sheetArea = await rect(sheet), scrollArea = await rect(scroll), grid = await until(() => find(scopes, '.catalog-grid'), '游戏网格'), gridArea = await rect(grid)
+  inside(sheetArea, { left: 0, top: 0, width: viewport.windowWidth, height: viewport.windowHeight }, '游戏目录弹层'); inside(scrollArea, sheetArea, '游戏目录滚动框')
+  assert.ok(gridArea.left >= scrollArea.left - 1 && gridArea.left + gridArea.width <= scrollArea.left + scrollArea.width + 1, '游戏网格横向溢出')
+  const options = await selector.$$('.catalog-game') as Element[]; assert.ok(options.length >= 3, '游戏目录未加载完整网格')
+  for (const option of options) { const area = await rect(option); assert.ok(area.width > 0 && area.left >= gridArea.left - 1 && area.left + area.width <= gridArea.left + gridArea.width + 1, '游戏选项挤窄或越出网格') }
+  await screenshot(game + '-responsive-catalog'); await scroll.scrollTo(0, 100000); await page.waitFor(160); await scrollEvidence(scroll, game + '游戏目录内部滚动')
+  await (await until(() => find(scopes, '.selector-close'), '关闭游戏目录')).tap(); await until(async () => !await native.$('.uni-popup'), '游戏目录已关闭')
+  assert.deepEqual(await sdk().evaluate(() => wx.getStorageSync('jijie_game')), originalGame, '关闭目录不得修改游戏偏好')
+  responsiveMeasurements.push({ label: game + '游戏选择器', sheet: sheetArea, scroll: scrollArea, grid: gridArea, game_count: options.length })
+  passed(game + '游戏弹层和网格无横溢、真实内部滚动；四图标外框与字形按23×屏宽/390适配')
+}
+/** 访客真实打开提现规则，检查根层固定浮层、内容滚动、触控下限和正文位置。 */
+async function responsiveRules(page: Page, shell: Element, game: string): Promise<void> {
+  assert.ok(viewport); stage = game + '响应式钱包规则'; await sdk().pageScrollTo(0); await page.waitFor(180)
+  const anchor = await until(() => find([page, shell], '.balance-section'), '钱包正文锚点'), before = await rect(anchor)
+  const rule = await until(() => child(page, ['withdrawal-rules', 'components\\/WithdrawalRules']), '提现规则组件')
+  await (await until(() => rule.$('.withdrawal-rules-link'), '提现规则入口')).tap()
+  const finance = await until(() => child(rule, ['finance-popup', 'components\\/FinancePopup']), '共享资金浮层'), native = await until(() => child(finance, ['uni-popup', 'node-modules\\/\\@dcloudio\\/uni-ui\\/lib\\/uni-popup\\/uni-popup']), '官方资金浮层')
+  const scopes: Scope[] = [rule, finance, native, page], sheet = await until(() => find(scopes, '.finance-popup-sheet'), '真实资金浮层内容')
+  await until(async () => { const area = await rect(sheet); return area.height > 0 && area.top >= -1 && area.top + area.height <= Number(viewport?.windowHeight) + 1 }, '资金浮层展开动画')
+  const sheetArea = await rect(sheet), windowArea = { left: 0, top: 0, width: viewport.windowWidth, height: viewport.windowHeight }
+  inside(sheetArea, windowArea, '资金浮层'); assert.ok(sheetArea.height <= viewport.windowHeight * .82 + 1, '资金浮层超过82vh')
+  const fixed = await until(() => native.$('.uni-popup'), '官方固定浮层根节点'); assert.equal(await fixed.style('position'), 'fixed', '资金浮层不能嵌入文档流')
+  const close = await until(() => find(scopes, '.finance-popup-close'), '资金浮层关闭按钮'); inside(await rect(close), sheetArea, '关闭按钮')
+  const after = await rect(anchor); assert.ok(Math.abs(after.top - before.top) <= 1 && Math.abs(after.height - before.height) <= 1, '资金浮层推移正文')
+  assert.match(await sheet.text(), /0元起提现/); assert.match(await sheet.text(), /每天可提现一次/)
+  await screenshot(game + '-responsive-wallet-rules-top')
+  const scroll = await until(() => find(scopes, '.finance-popup-scroll'), '资金浮层内部滚动') as ScrollViewElement, primary = await until(() => find(scopes, '.withdrawal-rules-close'), '规则确认按钮')
+  await scroll.scrollTo(0, 100000); await page.waitFor(180); await scrollEvidence(scroll, game + '钱包规则内部滚动')
+  const primaryArea = await rect(primary); inside(primaryArea, await rect(scroll), '滚动后确认按钮'); inside(primaryArea, windowArea, '窗口内确认按钮'); assert.ok(primaryArea.height >= 43.99, '主提交触控高度小于44px')
+  await screenshot(game + '-responsive-wallet-rules-bottom'); await close.tap(); await until(async () => !await native.$('.uni-popup'), '资金关闭按钮生效')
+  const closed = await rect(anchor); assert.ok(Math.abs(closed.top - before.top) <= 1 && Math.abs(closed.height - before.height) <= 1, '关闭浮层后正文位置改变')
+  responsiveMeasurements.push({ label: game + '钱包规则', sheet: sheetArea, primary: primaryArea, anchor_before: before, anchor_after: closed })
+  passed(game + '访客提现规则为窗口内真实浮层、内部可滚、关闭可用且主操作触控≥44px')
+}
+/** 只读取正式域名已有公开服务，不附身份、不创建数据；每个主题仅取一个真实样本。 */
+async function publicService(game: string): Promise<Service> {
+  const response = await fetch('https://game.ai.58it.cn/api/services?game_id=' + encodeURIComponent(game) + '&sort=recommended&limit=1', { method: 'GET', redirect: 'error', signal: AbortSignal.timeout(15000), headers: { Accept: 'application/json' } })
+  assert.equal(response.status, 200, '正式域名公开服务读取失败')
+  const result = await response.json() as { data?: Service[] }; assert.ok(Array.isArray(result.data) && result.data.length > 0, game + '没有可验证的真实公开服务')
+  const value = result.data[0]; assert.ok(value.id && value.title && Array.isArray(value.labels) && value.game_id === game, '公开服务样本结构错误'); return value
+}
+/** 按真实组件几何核对已有文案完整、系统标题标签与价格正常；不声称覆盖人工六文案矩阵。 */
+async function responsiveCover(scopes: Scope[], service: Service, detail: boolean): Promise<void> {
+  const host = await until(async () => { for (const scope of scopes) { const value = await child(scope, ['cover-art', 'components\\/CoverArt']); if (value) return value } return null }, '共享封面组件')
+  const cover = await until(() => host.$('.cover-art'), '真实封面'), bounds = await rect(cover), labels = await host.$$('.cover-label') as Element[]
+  const expected = service.labels.slice(0, 6).map(label => normalizeLabelText(label.text)).filter(Boolean); assert.equal(labels.length, expected.length, '真实服务文案被隐藏')
+  const areas: Rectangle[] = [], system: Rectangle[] = []
+  for (const [index, label] of labels.entries()) { const area = await rect(label); inside(area, bounds, '自定义文案'); assert.equal((await label.text()).trim(), expected[index], '自定义文案不完整'); assert.notEqual(await label.style('visibility'), 'hidden'); assert.ok(Number.parseFloat(await label.style('font-size')) >= (detail ? 13.9 : 9.9), '用户文案被缩成不可读字号'); areas.push(area) }
+  for (let first = 0; first < areas.length; first++) for (let second = first + 1; second < areas.length; second++) assert.ok(separate(areas[first], areas[second]), '自定义文案相互重叠')
+  const all: Scope[] = [...scopes, host], title = await until(() => find(all, detail ? '.detail-title' : '.service-title'), '服务标题'), tags = await until(() => find(all, detail ? '.detail-labels' : '.service-tags'), '服务分类标签')
+  assert.equal((await title.text()).trim(), service.title.trim(), '服务标题丢失')
+  for (const item of [title, tags]) { const area = await rect(item); inside(area, bounds, '系统标题或标签'); system.push(area) }
+  const deposits = await find(all, detail ? '.detail-deposits' : '.service-deposits'); if (deposits) { const area = await rect(deposits); inside(area, bounds, '押金角标'); system.push(area) }
+  for (const label of areas) for (const area of system) assert.ok(separate(label, area), '自定义文案与系统内容重叠')
+  for (let first = 0; first < system.length; first++) for (let second = first + 1; second < system.length; second++) assert.ok(separate(system[first], system[second]), '标题、标签或押金相互重叠')
+  const price = await until(() => find(all, detail ? '.price-row' : '.service-price'), '服务价格'), priceArea = await rect(price)
+  assert.ok(priceArea.top >= bounds.top + bounds.height - 1, '价格覆盖封面'); assert.ok(priceArea.left >= -1 && priceArea.left + priceArea.width <= Number(viewport?.windowWidth) + 1, '服务价格横向溢出')
+  assert.ok(system[0].top + system[0].height <= system[1].top + 1, '服务标题应位于标签上方')
+  responsiveMeasurements.push({ label: service.game_id + (detail ? '详情' : '列表') + '真实样本', service_id: service.id, source: '正式域名公开GET', cover: bounds, user_labels: areas, system, price: priceArea, existing_label_count: expected.length })
+}
+/** 通过真实列表卡片点击详情，并使用已有公开内容核验，不登录也不提交下单。 */
+async function responsiveService(game: string): Promise<void> {
+  stage = game + '访客真实服务样本'; const service = await publicService(game), page = await open('/pages/main/index?tab=player&game_id=' + encodeURIComponent(game))
+  const player = await until(() => child(page, ['player-view', 'pages\\/main\\/player\\/player']), '玩家列表视图')
+  const card = await until(async () => { for (const item of await children(player, ['service-card', 'components\\/ServiceCard'])) { const title = await item.$('.service-title'); if (title && (await title.text()).trim() === service.title.trim()) return item } return null }, '与公开GET匹配的真实服务卡片')
+  await responsiveCover([card], service, false)
+  const title = await until(() => card.$('.service-title'), '可点击服务标题'), scrolls = await page.$$('.main-scroll') as ScrollViewElement[], scroll = scrolls[0]
+  assert.ok(scroll); const titleArea = await rect(title), scrollArea = await rect(scroll), scrollTop = Number(await scroll.property('scrollTop'))
+  await scroll.scrollTo(0, Math.max(0, scrollTop + titleArea.top - scrollArea.top - 56)); await page.waitFor(180); await screenshot(game + '-responsive-service-card'); await title.tap()
+  const detail = await until(async () => { const value = await sdk().currentPage(); return value?.path === 'pages/services/detail' ? value : null }, '真实服务详情路由')
+  assert.equal(detail.query.id, service.id, '列表点击进入错误服务')
+  const shell = await until(() => child(detail, ['app-shell', 'components\\/AppShell']), '详情公共壳'); await until(() => find([detail, shell], '.detail-title'), '真实详情加载')
+  await responsiveCover([detail, shell], service, true); await screenshot(game + '-responsive-service-detail-top')
+  const price = await until(() => find([detail, shell], '.price-row'), '详情价格'), priceArea = await rect(price)
+  if (priceArea.top + priceArea.height > Number(viewport?.windowHeight) - 70) { await sdk().pageScrollTo(Math.max(0, priceArea.top - 100)); await detail.waitFor(160); await screenshot(game + '-responsive-service-detail-price') }
+  passed(game + '一个已有服务列表与详情：独立文案完整无重叠，标题/分类/价格边界正常（仅访客样本）')
+}
 /** 主页面连续真实点击四底栏，逐一检查保留同一 Page、显式背景及高度。 */
 async function mainTheme(game: string): Promise<void> {
   const page = await open('/pages/main/index?tab=player&game_id=' + encodeURIComponent(game))
   const player = await until(() => child(page, ['player-view', 'pages\\/main\\/player\\/player']), '玩家视图'), picker = await until(() => child(player, ['game-picker', 'components\\/GamePicker']), '真实游戏目录')
   await until(async () => { const chosen = await picker.$('.game-choice.chosen'); return chosen && await chosen.attribute('id') === 'game-option-' + game }, '路由指定主题已实际选中')
   const nav = await until(() => child(page, ['bottom-nav', 'components\\/BottomNav']), '唯一底栏组件')
+  if (responsive) await responsiveCatalog(page, picker, nav, game)
   const buttons = await nav.$$('.nav-item') as Element[]; assert.equal(buttons.length, 4)
   const tabs: MainTab[] = ['player', 'worker', 'orders', 'me']
   let base: number[] | undefined
@@ -200,12 +305,13 @@ async function secondary(game: string): Promise<void> {
     assert.ok(after.area.left + after.area.width <= Number(viewport?.windowWidth) + 1, '二级页滚动后水平溢出')
     const image = await screenshot(game + '-' + slug + '-bottom'); sample(image, game + ' ' + slug + '滚动后背景', 4, Number(viewport?.windowHeight) - 20, frame.color)
     passed(game + '访客' + slug + '二级页壳与正文显式同色，滚动后连续且无主底栏')
+    if (responsive && slug === 'wallet') await responsiveRules(page, shell, game)
   }
 }
 /** 将验收结果和真实能力边界写入独立证据目录，失败也保留当前步骤。 */
 function report(): void {
   fs.mkdirSync(output, { recursive: true })
-  fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && restored, stage, project, viewport, checks, measurements, scroll_measurements: scrollMeasurements, pixel_samples: pixels, screenshots, version_checks: versionChecks, runtime_exceptions: exceptions, color_warnings: colorWarnings, original_game_preference_restored: restored, original_route: originalRoute, boundaries: ['仅访客官方微信模拟器布局验收；未注入页面业务状态、令牌、登录、支付、转账、后台或缓存写入。', '截图由官方 simulator_screenshot --optimize false 产生，仅解码采样，未修改原图。', '不替代真实设备、微信支付、退款、提现或实际资金到账验收。'], ...(failure ? { error: redact(failure instanceof Error ? failure.stack || failure.message : failure) } : {}) }, null, 2) + '\n')
+  fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && restored, stage, project, viewport, checks, measurements, responsive_mode: responsive, responsive_measurements: responsiveMeasurements, scroll_measurements: scrollMeasurements, pixel_samples: pixels, screenshots, version_checks: versionChecks, runtime_exceptions: exceptions, color_warnings: colorWarnings, original_game_preference_restored: restored, original_route: originalRoute, boundaries: ['仅访客官方微信模拟器布局验收；未注入页面业务状态、令牌、登录、支付、转账、后台或缓存写入。', '响应式附加项仅UI_TEST_RESPONSIVE=1开启；已有服务仅两主题各一个公开GET样本，不代表六文案/全部字号/四身份或交易验收，可用UI_TEST_PUBLIC_SERVICES=0略过样本。', '截图由官方 simulator_screenshot --optimize false 产生，仅解码采样，未修改原图。', '不替代真实设备、微信支付、退款、提现或实际资金到账验收。'], ...(failure ? { error: redact(failure instanceof Error ? failure.stack || failure.message : failure) } : {}) }, null, 2) + '\n')
 }
 /** 运行两个主题及主次页面检查，finally 恢复原主题与 SDK 校验函数并断开连接。 */
 async function run(): Promise<void> {
@@ -220,7 +326,7 @@ async function run(): Promise<void> {
   assert.equal(await sdk().evaluate(() => Boolean(wx.getStorageSync('jijie_token'))), false, '必须由访客开始；脚本不擅自登录或退出他人会话')
   originalGame = await sdk().evaluate(() => wx.getStorageSync('jijie_game')); preferenceRead = true
   originalRoute = (await sdk().currentPage())?.path || ''
-  for (const game of ['delta', 'honor']) { await mainTheme(game); await secondary(game) }
+  for (const game of ['delta', 'honor']) { await mainTheme(game); await secondary(game); if (responsive && process.env.UI_TEST_PUBLIC_SERVICES !== '0') await responsiveService(game) }
   assert.deepEqual(exceptions, [], '微信运行时异常'); assert.deepEqual(colorWarnings, [], '微信颜色告警')
 }
 run().catch(async error => { failure = error; console.error(redact(error)); if (mini) try { await screenshot('failure') } catch { /* 原始失败优先保留，不伪造截图成功。 */ } }).finally(async () => {

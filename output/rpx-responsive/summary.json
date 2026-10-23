@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "unit_tests": {
+    "passed": 462,
+    "failed": 0,
+    "skipped": 0
+  },
+  "page_standards": 41,
+  "builds": [
+    "H5",
+    "mp-weixin production"
+  ],
+  "formal_api": "https://game.ai.58it.cn/api",
+  "native_project": "frontend/dist/dev/mp-weixin",
+  "themes": [
+    "delta",
+    "honor"
+  ],
+  "simulators": [
+    {
+      "width": 320,
+      "height": 568,
+      "checks": 24,
+      "screenshots": 42,
+      "pixel_samples": 24,
+      "maximum_color_difference": 1,
+      "responsive_measurements": 14,
+      "report": "mini-320/report.json"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "checks": 24,
+      "screenshots": 42,
+      "pixel_samples": 24,
+      "maximum_color_difference": 2,
+      "responsive_measurements": 14,
+      "report": "mini-390/report.json"
+    }
+  ],
+  "boundaries": [
+    "访客布局与公开服务样本；不等同于所有四类身份的实际登录联调。",
+    "六条长文案、双押金和动态尺寸有自动回归；本轮原生样本为每主题一个已有服务，未制造生产交易数据。",
+    "真实手机、支付、退款、提现及到账未验收；小程序未重新上传发布。"
+  ]
+}

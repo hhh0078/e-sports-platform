@@ -18,5 +18,5 @@ withDefaults(defineProps<{ club?: boolean; minimum?: number }>(), { club: false,
 const opened=ref(false)
 </script>
 <style scoped>
-.withdrawal-rules-link{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:28px;padding:0;background:transparent;color:var(--accent);font-size:13px}.withdrawal-rule{display:block;margin-top:12px;font-size:14px;line-height:24px;color:var(--muted,#9aada2);overflow-wrap:anywhere}.withdrawal-rules-close{width:100%;margin-top:24px}
+.withdrawal-rules-link{display:inline-flex;align-items:center;justify-content:center;gap:9.6154rpx;min-height:53.8462rpx;padding:0;background:transparent;color:var(--accent);font-size:25rpx}.withdrawal-rule{display:block;margin-top:23.0769rpx;font-size:26.9231rpx;line-height:46.1538rpx;color:var(--muted,#9aada2);overflow-wrap:anywhere}.withdrawal-rules-close{width:100%;margin-top:46.1538rpx}
 </style>

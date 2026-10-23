@@ -16,4 +16,4 @@ async function load(){loading.value=true;error.value='';try{const data=await get
 function applyRoute(options: Record<string,string | undefined> = {}){type.value=options.type==='privacy_policy'?'privacy_policy':'user_agreement';load()}
 onLoad(applyRoute)
 </script>
-<style scoped>.agreement-document{padding:8px 0}.document-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:11px;border-bottom:1px solid var(--line-subtle);padding-bottom:16px;margin-bottom:24px}.document-body{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.9;color:#cbd7cf}</style>
+<style scoped>.agreement-document{padding:15.3846rpx 0}.document-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15.3846rpx;color:var(--muted);font-size:21.1538rpx;border-bottom:1px solid var(--line-subtle);padding-bottom:30.7692rpx;margin-bottom:46.1538rpx}.document-body{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:28.8462rpx;line-height:1.9;color:#cbd7cf}</style>

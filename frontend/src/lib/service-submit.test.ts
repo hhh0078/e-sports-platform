@@ -8,6 +8,7 @@ import { executable, pageScript, injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest, PageLifecycle } from './sfc-test'
 import { readSafeArea } from './safe-area'
 import { normalizeLabelText, newLabel, POSITIONS, gameCovers, randomGameCover } from './cover'
+import { designPixels } from './design-units'
 
 const storeSource=readFileSync(new URL('./store.ts',import.meta.url),'utf8')
 const phoneSource=readFileSync(new URL('./phone.ts',import.meta.url),'utf8')
@@ -20,26 +21,30 @@ const accountB={id:'B',nickname:'另一位用户',phone_verified:true,provider_e
 function harness(kind:PageKind,providerEnabled=true){
   const storage=new Map<string,string>([['jijie_token','token-A']]),requests:DeferredRequest[]=[],notices:unknown[]=[],navigations:string[]=[]
   const lifecycle:PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
+  const resizeCallbacks:Array<()=>void>=[]
+  let viewportWidth=390
   const context=vm.createContext({
-    reactive,ref,computed,watch,readSafeArea,normalizeLabelText,newLabel,POSITIONS,gameCovers,randomGameCover,
-    uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},
+    reactive,ref,computed,watch,readSafeArea,normalizeLabelText,newLabel,POSITIONS,gameCovers,randomGameCover,designPixels,
+    uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key),getWindowInfo:()=>({windowWidth:viewportWidth})},
     token:()=>storage.get('jijie_token')||'',
     /** 每个网络调用由测试显式结束，重复写入不会被模拟层吞掉。 */
     api(path:string,method='GET',body:Record<string,unknown>={}){return new Promise<unknown>((resolve,reject)=>requests.push({path,method,body,resolve,reject,taken:false}))},
     notify:(value:unknown)=>notices.push(value),go:(value:string)=>navigations.push(value),
-    onLoad:(callback:PageLifecycle['load'])=>{lifecycle.load=callback},onShow:(callback:()=>void)=>{lifecycle.show=callback},onHide:(callback:()=>void)=>{lifecycle.hide=callback},onUnload:(callback:()=>void)=>{lifecycle.unload=callback},
+    onLoad:(callback:PageLifecycle['load'])=>{lifecycle.load=callback},onShow:(callback:()=>void)=>{const previous=lifecycle.show;lifecycle.show=()=>{previous();callback()}},onResize:(callback:()=>void)=>resizeCallbacks.push(callback),onHide:(callback:()=>void)=>{lifecycle.hide=callback},onUnload:(callback:()=>void)=>{lifecycle.unload=callback},
   })
   injectBusinessAPIs(context)
   vm.runInContext(executable(storeSource)+'\nglobalThis.store={state,login,refreshMe,sessionRevision}',context)
   context.store.state.ready=true;context.store.state.user={...accountA,provider_enabled:providerEnabled}
   vm.runInContext('(function(){'+executable(phoneSource)+';globalThis.requirePhone=requirePhone;globalThis.phone={phoneGate,finishPhone}})()',context)
   if(kind==='purchase')vm.runInContext('const submitServiceOrder=createOrder',context)
-  const exposed=kind==='purchase'?'submit:createOrder,busy:submitting,requirements,quantity,error,service,coverReserveTop,coverMinLabelArea,providerDepositCents':'submit:save,load,clubs,clubOptions,busy,form,serviceId,error,previewService,changeGame'
+  const exposed=kind==='purchase'?'submit:createOrder,busy:submitting,requirements,quantity,error,service,coverReserveTop,coverReserveBottom,coverMinLabelArea,providerDepositCents':'submit:save,load,clubs,clubOptions,busy,form,serviceId,error,previewService,changeGame,sliderBlockSize'
   vm.runInContext(executable(sources[kind])+'\nglobalThis.page={'+exposed+'}',context)
   if(kind==='purchase'){vm.runInContext("id='service-A'",context);context.page.requirements.value=' 晚上八点陪练一小时 ';context.page.quantity.value=2}
   else Object.assign(context.page.form,{game_id:'delta',title:' 三角洲陪练 ',description:'按约定时段双排教学，耐心沟通。',category:'陪练教学',price:'39.90',unit:'小时',cover_url:'/static/covers/official/delta-3.jpg',labels:[],tagsText:'耐心,教学',club_id:''})
   return{
     store:context.store,page:context.page,phone:context.phone,requests,notices,navigations,lifecycle,storage,creationPath:kind==='purchase'?'/orders':'/services',
+    /** 使用官方注册的窗口生命周期同步实际宽度，不直接修改页面内部ref。 */
+    resizeWindow(width:number){viewportWidth=width;resizeCallbacks.forEach(callback=>callback())},
     /** 比较取消、失败和旧会话后仍保留的原始表单内容。 */
     draft(){return JSON.stringify(kind==='purchase'?{requirements:context.page.requirements.value,quantity:context.page.quantity.value}:context.page.form)},
     /** 取得真实发出的请求，缺失调用直接失败。 */
@@ -138,7 +143,7 @@ test('AI拒绝或故障不会丢失服务发布和下单草稿，可修改后重
 
 test('服务详情按非空自定义标签数量保留24、48、72像素文字带',()=>{
   const subject=harness('purchase')
-  assert.equal(subject.page.coverReserveTop,56)
+  assert.equal(subject.page.coverReserveTop.value,56)
   for(const [count,area] of [[0,0],[1,24],[2,24],[3,48],[4,48],[5,72],[6,72]]){
     subject.page.service.value={labels:Array.from({length:count},(_,id)=>({id,text:'自定义服务文字'}))}
     assert.equal(subject.page.coverMinLabelArea.value,area)
@@ -149,6 +154,20 @@ test('服务详情按非空自定义标签数量保留24、48、72像素文字�
   assert.equal(subject.page.coverMinLabelArea.value,0)
   subject.page.service.value=null
   assert.equal(subject.page.coverMinLabelArea.value,0)
+})
+
+test('服务详情窗口变化同步文字带和押金预留，发布原生旋钮保持官方像素范围',()=>{
+  const detail=harness('purchase'),publish=harness('publish')
+  detail.page.service.value={provider_deposit_cents:100,provider_club_deposit_cents:100,labels:Array.from({length:6},()=>({text:'六条完整文案'}))}
+  for(const width of [320,390]){
+    detail.resizeWindow(width);publish.resizeWindow(width)
+    assert.equal(detail.page.coverReserveTop.value,designPixels(56,width))
+    assert.equal(detail.page.coverMinLabelArea.value,designPixels(72,width))
+    assert.equal(detail.page.coverReserveBottom.value,designPixels(188,width))
+    assert.equal(publish.page.sliderBlockSize.value,Math.round(designPixels(16,width)))
+  }
+  publish.resizeWindow(100);assert.equal(publish.page.sliderBlockSize.value,12)
+  publish.resizeWindow(1000);assert.equal(publish.page.sliderBlockSize.value,28)
 })
 
 /** 为真实发布加载配置当前游戏素材，不模拟页面的默认封面或分类实现。 */

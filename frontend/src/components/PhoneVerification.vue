@@ -29,11 +29,12 @@ import { phoneGate, finishPhone, isCurrentPhoneGate } from '../lib/phone'
 import { state, refreshMe, sessionRevision, pageTheme } from '../lib/store'
 import { errorMessage } from '../api/client'
 import { verifyDevPhone, verifyWechatPhone } from '../api/auth.api'
+import { designRpx } from '../lib/design-units'
 /** 官方弹层开放的实例方法。 */
 interface PopupController { open: (type?: string) => void; close: () => void; showPopup?: boolean }
 const popup = ref<PopupController | null>(null), active = ref(true), nativePending = ref(false)
 /** 原生根层不继承页面主题，显式补齐文字、边框与当前游戏色。 */
-const popupTheme=computed(()=>({'--control-height':'44px','--compact-height':'36px','--radius':'12px','--muted':'#9aada2','--line':'rgba(255,255,255,0.12)',...pageTheme()}))
+const popupTheme=computed(()=>({'--control-height':designRpx(44),'--compact-height':designRpx(36),'--radius':designRpx(12),'--muted':'#9aada2','--line':'rgba(255,255,255,0.12)',...pageTheme()}))
 let displayedEpoch = -1, nativeEpoch: number | null = null, disposed = false, closing = false
 /** 当前组件只处理自己实际展示的有效验证弹层。 */
 function ownsGate(epoch = displayedEpoch): boolean { return !disposed && active.value && epoch === displayedEpoch && isCurrentPhoneGate(epoch) }
@@ -69,5 +70,5 @@ onUnload(() => { hide(); disposed = true })
 </script>
 <style scoped>
 .phone-layer{position:relative;z-index:220;height:0;overflow:visible}
-.phone-sheet{display:flex;flex-direction:column;gap:16px;box-sizing:border-box;width:100vw;max-width:600px;margin:0 auto;padding:12px 20px calc(24px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;border:1px solid var(--line,rgba(255,255,255,0.12));background:var(--surface,#14201b);color:var(--text,#edf4ef)}.phone-heading{display:flex;align-items:center;justify-content:space-between;font-size:19px;font-weight:700}.phone-copy{font-size:13px;line-height:22px;color:var(--muted,#9aada2)}.phone-error{font-size:12px;line-height:20px;color:#f1b39d}
+.phone-sheet{display:flex;flex-direction:column;gap:30.7692rpx;box-sizing:border-box;width:100vw;max-width:600px;margin:0 auto;padding:23.0769rpx 38.4615rpx calc(46.1538rpx + env(safe-area-inset-bottom));border-radius:34.6154rpx 34.6154rpx 0 0;border:1px solid var(--line,rgba(255,255,255,0.12));background:var(--surface,#14201b);color:var(--text,#edf4ef)}.phone-heading{display:flex;align-items:center;justify-content:space-between;font-size:36.5385rpx;font-weight:700}.phone-copy{font-size:25rpx;line-height:42.3077rpx;color:var(--muted,#9aada2)}.phone-error{font-size:23.0769rpx;line-height:38.4615rpx;color:#f1b39d}
 </style>

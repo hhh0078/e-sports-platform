@@ -6,13 +6,14 @@ import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import { computed, effectScope, nextTick, reactive, ref, watch } from 'vue'
 import { executable } from './sfc-test'
+import { designRpx } from './design-units'
 
 /** 仅替代官方弹层实例和宿主生命周期，保留真实Vue侦听与生产显示意图。 */
 function harness(t:TestContext){
   const props=reactive({opened:false,title:'补缴平台押金',busy:false}),state=reactive({user:{id:'A'}}),calls:string[]=[]
   const hooks={show:()=>{},hide:()=>{},unload:()=>{},unmount:()=>{}}
   let revision=0,closed=0
-  const context=vm.createContext({ref,watch,computed,nextTick,state,sessionRevision:()=>revision,pageTheme:()=>({'--accent':'#8de8b6','--bg':'#0a1110','--surface':'#14201b','--text':'#edf4ef'}),defineProps:()=>props,withDefaults:(value:unknown)=>value,defineEmits:()=>()=>{closed++;if(!props.busy)props.opened=false},onShow:(value:()=>void)=>{hooks.show=value},onHide:(value:()=>void)=>{hooks.hide=value},onUnload:(value:()=>void)=>{hooks.unload=value},onBeforeUnmount:(value:()=>void)=>{hooks.unmount=value}})
+  const context=vm.createContext({ref,watch,computed,nextTick,designRpx,state,sessionRevision:()=>revision,pageTheme:()=>({'--accent':'#8de8b6','--bg':'#0a1110','--surface':'#14201b','--text':'#edf4ef'}),defineProps:()=>props,withDefaults:(value:unknown)=>value,defineEmits:()=>()=>{closed++;if(!props.busy)props.opened=false},onShow:(value:()=>void)=>{hooks.show=value},onHide:(value:()=>void)=>{hooks.hide=value},onUnload:(value:()=>void)=>{hooks.unload=value},onBeforeUnmount:(value:()=>void)=>{hooks.unmount=value}})
   const script=readFileSync(new URL('../components/FinancePopup.vue',import.meta.url),'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)?.[1];assert.ok(script)
   const scope=effectScope();scope.run(()=>vm.runInContext(executable(script)+'\nglobalThis.subject={popup,intent,requestClose,popupChanged,popupTheme}',context));t.after(()=>scope.stop())
   const instance=reactive({showPopup:false,open(){calls.push('open');instance.showPopup=true;context.subject.popupChanged({show:true})},close(){calls.push('close');context.subject.popupChanged({show:false})}})
@@ -26,7 +27,7 @@ test('资金弹框使用官方UniPopup与微信root-portal，主题和边框次�
   const source=readFileSync(new URL('../components/FinancePopup.vue',import.meta.url),'utf8'),s=harness(t)
   assert.match(source,/<!-- #ifdef MP-WEIXIN -->\s*<root-portal>/)
   assert.match(source,/<UniPopup[^>]*:is-mask-click="!busy"/)
-  assert.equal(s.subject.popupTheme.value['--bg'],'#0a1110');assert.ok(s.subject.popupTheme.value['--muted']);assert.ok(s.subject.popupTheme.value['--line']);assert.equal(s.subject.popupTheme.value['--control-height'],'44px');assert.equal(s.subject.popupTheme.value['--compact-height'],'36px')
+  assert.equal(s.subject.popupTheme.value['--bg'],'#0a1110');assert.ok(s.subject.popupTheme.value['--muted']);assert.ok(s.subject.popupTheme.value['--line']);assert.equal(s.subject.popupTheme.value['--control-height'],designRpx(44));assert.equal(s.subject.popupTheme.value['--compact-height'],designRpx(36))
   for(const file of ['FundsForm','WithdrawalRules']){const dependent=readFileSync(new URL('../components/'+file+'.vue',import.meta.url),'utf8');assert.match(dependent,/<FinancePopup/);assert.doesNotMatch(dependent,/class="modal-mask/)}
   const wallet=readFileSync(new URL('../pages/account/wallet.vue',import.meta.url),'utf8');assert.match(wallet,/<FundsForm/);assert.doesNotMatch(wallet,/class="modal-mask/)
 })

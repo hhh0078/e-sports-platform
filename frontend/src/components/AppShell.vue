@@ -17,5 +17,5 @@ const props = withDefaults(defineProps<{ title?: string; subtitle?: string; acti
 const themeStyle = computed(() => pageTheme(props.gameId))
 </script>
 <style scoped>
-.secondary-shell{min-height:100vh}.app-body{max-width:600px;margin:0 auto;padding:16px 16px calc(24px + env(safe-area-inset-bottom));min-width:0}.immersive .app-body{padding:0 0 calc(24px + env(safe-area-inset-bottom))}
+.secondary-shell{min-height:100vh}.app-body{max-width:600px;margin:0 auto;padding:30.7692rpx 30.7692rpx calc(46.1538rpx + env(safe-area-inset-bottom));min-width:0}.immersive .app-body{padding:0 0 calc(46.1538rpx + env(safe-area-inset-bottom))}
 </style>

@@ -1,0 +1,1488 @@
+{
+  "passed": true,
+  "stage": "打开 /pages/main/index?tab=me&game_id=narakam",
+  "project": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/dev/mp-weixin",
+  "viewport": {
+    "pixelRatio": 3,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "screenTop": 0,
+    "windowWidth": 390,
+    "windowHeight": 844,
+    "statusBarHeight": 47
+  },
+  "checks": [
+    "delta游戏弹层和网格无横溢、真实内部滚动；四图标外框与字形按23×屏宽/390适配",
+    "delta player保持主页面，公共层底色和高度连续，滚动后不横溢",
+    "delta worker保持主页面，公共层底色和高度连续，滚动后不横溢",
+    "delta orders保持主页面，公共层底色和高度连续，滚动后不横溢",
+    "delta个人封面末端100%过渡，头像上移，订单间距≤12px，钱包资金分区保留",
+    "delta me保持主页面，公共层底色和高度连续，滚动后不横溢",
+    "delta访客login二级页壳与正文显式同色，滚动后连续且无主底栏",
+    "delta访客agreement二级页壳与正文显式同色，滚动后连续且无主底栏",
+    "delta访客profile二级页壳与正文显式同色，滚动后连续且无主底栏",
+    "delta访客wallet二级页壳与正文显式同色，滚动后连续且无主底栏",
+    "delta访客提现规则为窗口内真实浮层、内部可滚、关闭可用且主操作触控≥44px",
+    "delta一个已有服务列表与详情：独立文案完整无重叠，标题/分类/价格边界正常（仅访客样本）",
+    "honor游戏弹层和网格无横溢、真实内部滚动；四图标外框与字形按23×屏宽/390适配",
+    "honor player保持主页面，公共层底色和高度连续，滚动后不横溢",
+    "honor worker保持主页面，公共层底色和高度连续，滚动后不横溢",
+    "honor orders保持主页面，公共层底色和高度连续，滚动后不横溢",
+    "honor个人封面末端100%过渡，头像上移，订单间距≤12px，钱包资金分区保留",
+    "honor me保持主页面，公共层底色和高度连续，滚动后不横溢",
+    "honor访客login二级页壳与正文显式同色，滚动后连续且无主底栏",
+    "honor访客agreement二级页壳与正文显式同色，滚动后连续且无主底栏",
+    "honor访客profile二级页壳与正文显式同色，滚动后连续且无主底栏",
+    "honor访客wallet二级页壳与正文显式同色，滚动后连续且无主底栏",
+    "honor访客提现规则为窗口内真实浮层、内部可滚、关闭可用且主操作触控≥44px",
+    "honor一个已有服务列表与详情：独立文案完整无重叠，标题/分类/价格边界正常（仅访客样本）"
+  ],
+  "measurements": [
+    {
+      "label": "delta player整页背景",
+      "selector": ".main-shell",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 844
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta player内容视口",
+      "selector": ".main-viewport",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 750
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta player底栏",
+      "selector": ".bottom-nav",
+      "rect": {
+        "left": 0,
+        "top": 750,
+        "width": 390,
+        "height": 94
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta worker整页背景",
+      "selector": ".main-shell",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 844
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta worker内容视口",
+      "selector": ".main-viewport",
+      "rect": {
+        "left": 0,
+        "top": 47,
+        "width": 390,
+        "height": 703
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta worker底栏",
+      "selector": ".bottom-nav",
+      "rect": {
+        "left": 0,
+        "top": 750,
+        "width": 390,
+        "height": 94
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta orders整页背景",
+      "selector": ".main-shell",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 844
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta orders内容视口",
+      "selector": ".main-viewport",
+      "rect": {
+        "left": 0,
+        "top": 47,
+        "width": 390,
+        "height": 703
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta orders底栏",
+      "selector": ".bottom-nav",
+      "rect": {
+        "left": 0,
+        "top": 750,
+        "width": 390,
+        "height": 94
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta me整页背景",
+      "selector": ".main-shell",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 844
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta me内容视口",
+      "selector": ".main-viewport",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 750
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta me底栏",
+      "selector": ".bottom-nav",
+      "rect": {
+        "left": 0,
+        "top": 750,
+        "width": 390,
+        "height": 94
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta login公共壳",
+      "selector": ".app-frame",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 889
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta login正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 92,
+        "width": 390,
+        "height": 797
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta login滚动后正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 47,
+        "width": 390,
+        "height": 797
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta agreement公共壳",
+      "selector": ".app-frame",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 1400.5
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta agreement正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 92,
+        "width": 390,
+        "height": 1308.5
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta agreement滚动后正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": -464.5,
+        "width": 390,
+        "height": 1308.5
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta profile公共壳",
+      "selector": ".app-frame",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 890.1953125
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta profile正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 92,
+        "width": 390,
+        "height": 798.1953125
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta profile滚动后正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 46,
+        "width": 390,
+        "height": 798.1953125
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta wallet公共壳",
+      "selector": ".app-frame",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 1026.5
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta wallet正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 92,
+        "width": 390,
+        "height": 934.5
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "delta wallet滚动后正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": -90.5,
+        "width": 390,
+        "height": 934.5
+      },
+      "background": "rgb(11, 15, 14)"
+    },
+    {
+      "label": "honor player整页背景",
+      "selector": ".main-shell",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 844
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor player内容视口",
+      "selector": ".main-viewport",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 750
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor player底栏",
+      "selector": ".bottom-nav",
+      "rect": {
+        "left": 0,
+        "top": 750,
+        "width": 390,
+        "height": 94
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor worker整页背景",
+      "selector": ".main-shell",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 844
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor worker内容视口",
+      "selector": ".main-viewport",
+      "rect": {
+        "left": 0,
+        "top": 47,
+        "width": 390,
+        "height": 703
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor worker底栏",
+      "selector": ".bottom-nav",
+      "rect": {
+        "left": 0,
+        "top": 750,
+        "width": 390,
+        "height": 94
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor orders整页背景",
+      "selector": ".main-shell",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 844
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor orders内容视口",
+      "selector": ".main-viewport",
+      "rect": {
+        "left": 0,
+        "top": 47,
+        "width": 390,
+        "height": 703
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor orders底栏",
+      "selector": ".bottom-nav",
+      "rect": {
+        "left": 0,
+        "top": 750,
+        "width": 390,
+        "height": 94
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor me整页背景",
+      "selector": ".main-shell",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 844
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor me内容视口",
+      "selector": ".main-viewport",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 750
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor me底栏",
+      "selector": ".bottom-nav",
+      "rect": {
+        "left": 0,
+        "top": 750,
+        "width": 390,
+        "height": 94
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor login公共壳",
+      "selector": ".app-frame",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 889
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor login正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 92,
+        "width": 390,
+        "height": 797
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor login滚动后正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 47,
+        "width": 390,
+        "height": 797
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor agreement公共壳",
+      "selector": ".app-frame",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 1400.5
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor agreement正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 92,
+        "width": 390,
+        "height": 1308.5
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor agreement滚动后正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": -464.5,
+        "width": 390,
+        "height": 1308.5
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor profile公共壳",
+      "selector": ".app-frame",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 890.1953125
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor profile正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 92,
+        "width": 390,
+        "height": 798.1953125
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor profile滚动后正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 46,
+        "width": 390,
+        "height": 798.1953125
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor wallet公共壳",
+      "selector": ".app-frame",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 1026.5
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor wallet正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": 92,
+        "width": 390,
+        "height": 934.5
+      },
+      "background": "rgb(21, 16, 11)"
+    },
+    {
+      "label": "honor wallet滚动后正文",
+      "selector": ".app-body",
+      "rect": {
+        "left": 0,
+        "top": -90.5,
+        "width": 390,
+        "height": 934.5
+      },
+      "background": "rgb(21, 16, 11)"
+    }
+  ],
+  "responsive_mode": true,
+  "responsive_measurements": [
+    {
+      "label": "delta底栏图标1",
+      "rect": {
+        "left": 137.5,
+        "top": 761.5,
+        "width": 23,
+        "height": 23
+      },
+      "font_size": 23,
+      "expected": 23
+    },
+    {
+      "label": "delta底栏图标2",
+      "rect": {
+        "left": 229.5,
+        "top": 761.5,
+        "width": 23,
+        "height": 23
+      },
+      "font_size": 23,
+      "expected": 23
+    },
+    {
+      "label": "delta底栏图标3",
+      "rect": {
+        "left": 321.5,
+        "top": 761.5,
+        "width": 23,
+        "height": 23
+      },
+      "font_size": 23,
+      "expected": 23
+    },
+    {
+      "label": "delta游戏选择器",
+      "sheet": {
+        "left": 0,
+        "top": 308,
+        "width": 390,
+        "height": 536
+      },
+      "scroll": {
+        "left": 16,
+        "top": 430,
+        "width": 358,
+        "height": 360
+      },
+      "grid": {
+        "left": 16,
+        "top": 430,
+        "width": 358,
+        "height": 573
+      },
+      "game_count": 13
+    },
+    {
+      "label": "delta钱包规则",
+      "sheet": {
+        "left": 16,
+        "top": 172,
+        "width": 358,
+        "height": 500
+      },
+      "primary": {
+        "left": 36,
+        "top": 608,
+        "width": 318,
+        "height": 44
+      },
+      "anchor_before": {
+        "left": 15,
+        "top": 107,
+        "width": 360,
+        "height": 345.5
+      },
+      "anchor_after": {
+        "left": 15,
+        "top": 107,
+        "width": 360,
+        "height": 345.5
+      }
+    },
+    {
+      "label": "delta列表真实样本",
+      "service_id": "demo_service_010",
+      "source": "正式域名公开GET",
+      "cover": {
+        "left": 16,
+        "top": 414,
+        "width": 172.5,
+        "height": 129.375
+      },
+      "user_labels": [
+        {
+          "left": 24,
+          "top": 464.375,
+          "width": 57,
+          "height": 19
+        },
+        {
+          "left": 24,
+          "top": 438,
+          "width": 57,
+          "height": 19
+        }
+      ],
+      "system": [
+        {
+          "left": 23,
+          "top": 497.375,
+          "width": 158.5,
+          "height": 18
+        },
+        {
+          "left": 23,
+          "top": 518.375,
+          "width": 158.5,
+          "height": 15
+        }
+      ],
+      "price": {
+        "left": 23,
+        "top": 543.375,
+        "width": 158.5,
+        "height": 24
+      },
+      "existing_label_count": 2
+    },
+    {
+      "label": "delta详情真实样本",
+      "service_id": "demo_service_010",
+      "source": "正式域名公开GET",
+      "cover": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 292.5
+      },
+      "user_labels": [
+        {
+          "left": 8,
+          "top": 132.5,
+          "width": 90,
+          "height": 28
+        },
+        {
+          "left": 8,
+          "top": 103,
+          "width": 75,
+          "height": 24
+        }
+      ],
+      "system": [
+        {
+          "left": 15,
+          "top": 219.5,
+          "width": 360,
+          "height": 29
+        },
+        {
+          "left": 15,
+          "top": 254.5,
+          "width": 360,
+          "height": 24
+        }
+      ],
+      "price": {
+        "left": 15,
+        "top": 292.5,
+        "width": 360,
+        "height": 63
+      },
+      "existing_label_count": 2
+    },
+    {
+      "label": "honor底栏图标1",
+      "rect": {
+        "left": 137.5,
+        "top": 761.5,
+        "width": 23,
+        "height": 23
+      },
+      "font_size": 23,
+      "expected": 23
+    },
+    {
+      "label": "honor底栏图标2",
+      "rect": {
+        "left": 229.5,
+        "top": 761.5,
+        "width": 23,
+        "height": 23
+      },
+      "font_size": 23,
+      "expected": 23
+    },
+    {
+      "label": "honor底栏图标3",
+      "rect": {
+        "left": 321.5,
+        "top": 761.5,
+        "width": 23,
+        "height": 23
+      },
+      "font_size": 23,
+      "expected": 23
+    },
+    {
+      "label": "honor游戏选择器",
+      "sheet": {
+        "left": 0,
+        "top": 308,
+        "width": 390,
+        "height": 536
+      },
+      "scroll": {
+        "left": 16,
+        "top": 430,
+        "width": 358,
+        "height": 360
+      },
+      "grid": {
+        "left": 16,
+        "top": 430,
+        "width": 358,
+        "height": 573
+      },
+      "game_count": 13
+    },
+    {
+      "label": "honor钱包规则",
+      "sheet": {
+        "left": 16,
+        "top": 172,
+        "width": 358,
+        "height": 500
+      },
+      "primary": {
+        "left": 36,
+        "top": 608,
+        "width": 318,
+        "height": 44
+      },
+      "anchor_before": {
+        "left": 15,
+        "top": 107,
+        "width": 360,
+        "height": 345.5
+      },
+      "anchor_after": {
+        "left": 15,
+        "top": 107,
+        "width": 360,
+        "height": 345.5
+      }
+    },
+    {
+      "label": "honor列表真实样本",
+      "service_id": "demo_service_020",
+      "source": "正式域名公开GET",
+      "cover": {
+        "left": 16,
+        "top": 414,
+        "width": 172.5,
+        "height": 129.375
+      },
+      "user_labels": [
+        {
+          "left": 24,
+          "top": 464.375,
+          "width": 57,
+          "height": 19
+        },
+        {
+          "left": 24,
+          "top": 438,
+          "width": 57,
+          "height": 19
+        }
+      ],
+      "system": [
+        {
+          "left": 23,
+          "top": 497.375,
+          "width": 158.5,
+          "height": 18
+        },
+        {
+          "left": 23,
+          "top": 518.375,
+          "width": 158.5,
+          "height": 15
+        }
+      ],
+      "price": {
+        "left": 23,
+        "top": 543.375,
+        "width": 158.5,
+        "height": 24
+      },
+      "existing_label_count": 2
+    },
+    {
+      "label": "honor详情真实样本",
+      "service_id": "demo_service_020",
+      "source": "正式域名公开GET",
+      "cover": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 292.5
+      },
+      "user_labels": [
+        {
+          "left": 8,
+          "top": 132.5,
+          "width": 90,
+          "height": 28
+        },
+        {
+          "left": 8,
+          "top": 103,
+          "width": 75,
+          "height": 24
+        }
+      ],
+      "system": [
+        {
+          "left": 15,
+          "top": 219.5,
+          "width": 360,
+          "height": 29
+        },
+        {
+          "left": 15,
+          "top": 254.5,
+          "width": 360,
+          "height": 24
+        }
+      ],
+      "price": {
+        "left": 15,
+        "top": 292.5,
+        "width": 360,
+        "height": 63
+      },
+      "existing_label_count": 2
+    }
+  ],
+  "scroll_measurements": [
+    {
+      "label": "delta游戏目录内部滚动",
+      "viewport_height": 360,
+      "content_height": 573,
+      "scroll_top": 213,
+      "scroll_width": 358
+    },
+    {
+      "label": "delta player",
+      "viewport_height": 750,
+      "content_height": 1451,
+      "scroll_top": 701,
+      "scroll_width": 390
+    },
+    {
+      "label": "delta worker",
+      "viewport_height": 703,
+      "content_height": 703,
+      "scroll_top": 0,
+      "scroll_width": 390
+    },
+    {
+      "label": "delta orders",
+      "viewport_height": 703,
+      "content_height": 771,
+      "scroll_top": 68,
+      "scroll_width": 390
+    },
+    {
+      "label": "delta me",
+      "viewport_height": 750,
+      "content_height": 883,
+      "scroll_top": 133,
+      "scroll_width": 390
+    },
+    {
+      "label": "delta钱包规则内部滚动",
+      "viewport_height": 440,
+      "content_height": 440,
+      "scroll_top": 0,
+      "scroll_width": 356
+    },
+    {
+      "label": "honor游戏目录内部滚动",
+      "viewport_height": 360,
+      "content_height": 573,
+      "scroll_top": 213,
+      "scroll_width": 358
+    },
+    {
+      "label": "honor player",
+      "viewport_height": 750,
+      "content_height": 1451,
+      "scroll_top": 701,
+      "scroll_width": 390
+    },
+    {
+      "label": "honor worker",
+      "viewport_height": 703,
+      "content_height": 703,
+      "scroll_top": 0,
+      "scroll_width": 390
+    },
+    {
+      "label": "honor orders",
+      "viewport_height": 703,
+      "content_height": 771,
+      "scroll_top": 68,
+      "scroll_width": 390
+    },
+    {
+      "label": "honor me",
+      "viewport_height": 750,
+      "content_height": 883,
+      "scroll_top": 133,
+      "scroll_width": 390
+    },
+    {
+      "label": "honor钱包规则内部滚动",
+      "viewport_height": 440,
+      "content_height": 440,
+      "scroll_top": 0,
+      "scroll_width": 356
+    }
+  ],
+  "pixel_samples": [
+    {
+      "label": "delta渐变底部",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-top.png",
+      "x": 4,
+      "y": 166,
+      "actual": [
+        13,
+        16,
+        15
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 2
+    },
+    {
+      "label": "delta订单上沿",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-top.png",
+      "x": 4,
+      "y": 171,
+      "actual": [
+        11,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 0
+    },
+    {
+      "label": "delta钱包旁边",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-top.png",
+      "x": 4,
+      "y": 335,
+      "actual": [
+        11,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 0
+    },
+    {
+      "label": "delta主滚动底部",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-top.png",
+      "x": 4,
+      "y": 745,
+      "actual": [
+        12,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 1
+    },
+    {
+      "label": "delta底栏侧边",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-top.png",
+      "x": 4,
+      "y": 766,
+      "actual": [
+        12,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 1
+    },
+    {
+      "label": "delta滚动后页面边缘",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-bottom.png",
+      "x": 4,
+      "y": 100,
+      "actual": [
+        11,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 0
+    },
+    {
+      "label": "delta滚动后页面边缘",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-bottom.png",
+      "x": 4,
+      "y": 422,
+      "actual": [
+        11,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 0
+    },
+    {
+      "label": "delta滚动后页面边缘",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-bottom.png",
+      "x": 4,
+      "y": 745,
+      "actual": [
+        12,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 1
+    },
+    {
+      "label": "delta login滚动后背景",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-login-bottom.png",
+      "x": 4,
+      "y": 824,
+      "actual": [
+        11,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 0
+    },
+    {
+      "label": "delta agreement滚动后背景",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-agreement-bottom.png",
+      "x": 4,
+      "y": 824,
+      "actual": [
+        11,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 0
+    },
+    {
+      "label": "delta profile滚动后背景",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-profile-bottom.png",
+      "x": 4,
+      "y": 824,
+      "actual": [
+        12,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 1
+    },
+    {
+      "label": "delta wallet滚动后背景",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-wallet-bottom.png",
+      "x": 4,
+      "y": 824,
+      "actual": [
+        12,
+        15,
+        14
+      ],
+      "expected": [
+        11,
+        15,
+        14
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor渐变底部",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-top.png",
+      "x": 4,
+      "y": 166,
+      "actual": [
+        21,
+        17,
+        12
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor订单上沿",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-top.png",
+      "x": 4,
+      "y": 171,
+      "actual": [
+        20,
+        16,
+        11
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor钱包旁边",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-top.png",
+      "x": 4,
+      "y": 335,
+      "actual": [
+        20,
+        16,
+        11
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor主滚动底部",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-top.png",
+      "x": 4,
+      "y": 745,
+      "actual": [
+        20,
+        16,
+        12
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor底栏侧边",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-top.png",
+      "x": 4,
+      "y": 766,
+      "actual": [
+        20,
+        16,
+        12
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor滚动后页面边缘",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-bottom.png",
+      "x": 4,
+      "y": 100,
+      "actual": [
+        20,
+        16,
+        11
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor滚动后页面边缘",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-bottom.png",
+      "x": 4,
+      "y": 422,
+      "actual": [
+        20,
+        16,
+        11
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor滚动后页面边缘",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-bottom.png",
+      "x": 4,
+      "y": 745,
+      "actual": [
+        20,
+        16,
+        12
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor login滚动后背景",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-login-bottom.png",
+      "x": 4,
+      "y": 824,
+      "actual": [
+        20,
+        16,
+        11
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor agreement滚动后背景",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-agreement-bottom.png",
+      "x": 4,
+      "y": 824,
+      "actual": [
+        20,
+        16,
+        11
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor profile滚动后背景",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-profile-bottom.png",
+      "x": 4,
+      "y": 824,
+      "actual": [
+        20,
+        16,
+        12
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    },
+    {
+      "label": "honor wallet滚动后背景",
+      "image": "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-wallet-bottom.png",
+      "x": 4,
+      "y": 824,
+      "actual": [
+        20,
+        16,
+        12
+      ],
+      "expected": [
+        21,
+        16,
+        11
+      ],
+      "difference": 1
+    }
+  ],
+  "screenshots": [
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-responsive-catalog.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-player-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-player-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-worker-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-worker-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-orders-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-orders-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-me-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-login-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-login-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-agreement-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-agreement-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-profile-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-profile-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-wallet-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-wallet-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-responsive-wallet-rules-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-responsive-wallet-rules-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-responsive-service-card.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/delta-responsive-service-detail-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-responsive-catalog.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-player-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-player-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-worker-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-worker-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-orders-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-orders-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-me-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-login-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-login-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-agreement-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-agreement-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-profile-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-profile-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-wallet-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-wallet-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-responsive-wallet-rules-top.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-responsive-wallet-rules-bottom.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-responsive-service-card.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/rpx-responsive/mini-390/honor-responsive-service-detail-top.png"
+  ],
+  "version_checks": [
+    {
+      "method": "Tool元数据缺失时读取真实getSystemInfoSync",
+      "SDKVersion": "3.17.4",
+      "minimum": "2.7.3",
+      "passed": true,
+      "original_error": "Cannot read properties of undefined (reading 'split')"
+    }
+  ],
+  "runtime_exceptions": [],
+  "color_warnings": [],
+  "original_game_preference_restored": true,
+  "original_route": "pages/main/index",
+  "boundaries": [
+    "仅访客官方微信模拟器布局验收；未注入页面业务状态、令牌、登录、支付、转账、后台或缓存写入。",
+    "响应式附加项仅UI_TEST_RESPONSIVE=1开启；已有服务仅两主题各一个公开GET样本，不代表六文案/全部字号/四身份或交易验收，可用UI_TEST_PUBLIC_SERVICES=0略过样本。",
+    "截图由官方 simulator_screenshot --optimize false 产生，仅解码采样，未修改原图。",
+    "不替代真实设备、微信支付、退款、提现或实际资金到账验收。"
+  ]
+}

@@ -44,8 +44,35 @@ onShow(enablePublicShareMenu)
 onLoad(async query => { applyMainQuery(isTimelinePreview()?{...query,tab:'player'}:query); if(query?.game_id){await init(false,isTimelinePreview()); if(state.games.some(item=>item.id===query.game_id))state.gameId=query.game_id} })
 </script>
 <style scoped>
-.main-shell{display:flex;flex-direction:column;height:100vh;height:100dvh;min-width:0;overflow:hidden;background:var(--bg);color:var(--text)}
-.main-viewport{position:relative;flex:1;min-height:0;min-width:0;width:100%;max-width:600px;margin:0 auto}
-.main-scroll{height:100%;width:100%;min-width:0}
-.main-status-space{height:var(--status-bar-height);flex-shrink:0}
+	.main-shell {
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+		height: 100dvh;
+		min-width: 0;
+		overflow: hidden;
+		background: var(--bg);
+		color: var(--text)
+	}
+
+	.main-viewport {
+		position: relative;
+		flex: 1;
+		min-height: 0;
+		min-width: 0;
+		width: 100%;
+		max-width: 600px;
+		margin: 0 auto
+	}
+
+	.main-scroll {
+		height: 100%;
+		width: 100%;
+		min-width: 0
+	}
+
+	.main-status-space {
+		height: var(--status-bar-height);
+		flex-shrink: 0
+	}
 </style>

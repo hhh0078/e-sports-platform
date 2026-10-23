@@ -3,6 +3,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, relative, dirname, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import assert from 'node:assert/strict'
+import { fixedVisualPixels } from '../frontend/src/lib/responsive-style-policy'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const sourceRoot = resolve(root, 'frontend/src')
@@ -93,6 +94,11 @@ let bottomNavMounts = 0
 for (const path of sourceFiles) {
   const extension = extname(path)
   if (['.js', '.jsx', '.mjs', '.cjs'].includes(extension)) issue(path, '前端业务与测试必须使用 TypeScript')
+  if (extension === '.css' || extension === '.vue') {
+    const content = readFileSync(path, 'utf8')
+    const styles = extension === '.css' ? [content] : [...content.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map(match => match[1])
+    for (const style of styles) for (const violation of fixedVisualPixels(style)) issue(path, `普通视觉尺寸必须使用rpx：${violation.property}:${violation.value}`)
+  }
   if (!['.ts', '.vue'].includes(extension)) continue
   const text = readFileSync(path, 'utf8')
   const script = businessScript(text, extension === '.vue')
@@ -144,4 +150,4 @@ if (existsSync(mainPage)) {
 if (issues.length) {
   console.error(`前端规范检查未通过（${issues.length} 项）：\n${issues.map(item => `- ${item}`).join('\n')}`)
   process.exitCode = 1
-} else console.log(`前端规范检查通过：${pages.length} 个页面/视图，TypeScript、接口分层、唯一底栏及设计目录一致。`)
+} else console.log(`前端规范检查通过：${pages.length} 个页面/视图，TypeScript、接口分层、唯一底栏、设计目录及rpx单位一致。`)

@@ -7,5 +7,5 @@ import { readSafeArea } from '../lib/safe-area'
 const safe = readSafeArea()
 </script>
 <style scoped>
-.floating-back{position:fixed;left:16px;z-index:45;display:flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;border:1px solid #ffffff70;border-radius:50%;background:#07100c80;color:#fff;line-height:1}
+.floating-back{position:fixed;left:30.7692rpx;z-index:45;display:flex;align-items:center;justify-content:center;width:69.2308rpx;height:69.2308rpx;padding:0;border:1px solid #ffffff70;border-radius:50%;background:#07100c80;color:#fff;line-height:1}
 </style>

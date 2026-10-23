@@ -16,5 +16,5 @@ withDefaults(defineProps<{payments:WalletTopup[];refunds:WalletDepositRefund[];w
 const emit=defineEmits<{resume:[record:WalletTopup];sync:[kind:'payment'|'refund'|'withdraw',id:string,confirm?:boolean]}>()
 </script>
 <style scoped>
-.funds-progress{min-width:0}.funds-progress-heading{margin:24px 0 8px}.funds-progress-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-bottom:1px solid var(--line-subtle);min-width:0}.funds-progress-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;font-size:14px;line-height:22px;overflow-wrap:anywhere}.funds-progress-note{font-size:12px;color:var(--muted);line-height:20px}.funds-progress-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.funds-progress{min-width:0}.funds-progress-heading{margin:46.1538rpx 0 15.3846rpx}.funds-progress-row{display:flex;align-items:center;justify-content:space-between;gap:23.0769rpx;padding:30.7692rpx 0;border-bottom:1px solid var(--line-subtle);min-width:0}.funds-progress-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:9.6154rpx;font-size:26.9231rpx;line-height:42.3077rpx;overflow-wrap:anywhere}.funds-progress-note{font-size:23.0769rpx;color:var(--muted);line-height:38.4615rpx}.funds-progress-actions{display:flex;flex-direction:column;gap:15.3846rpx;flex-shrink:0}
 </style>

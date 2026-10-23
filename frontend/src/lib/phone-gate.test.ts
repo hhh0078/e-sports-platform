@@ -8,12 +8,13 @@ import { computed,effectScope,nextTick,reactive,ref,watch } from 'vue'
 import { executable,injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest } from './sfc-test'
 import { parseWalletAmount } from './wallet'
+import { designRpx } from './design-units'
 
 /** 只模拟原生窗口和网络完成次序，身份、手机号门槛与组件行为均运行生产代码。 */
 function harness(t:TestContext){
   const requests:DeferredRequest[]=[],storage=new Map<string,string>([['jijie_token','token-A']]),popupEvents:string[]=[]
   const hooks={show:()=>{},hide:()=>{},unload:()=>{}}
-  const context=vm.createContext({reactive,ref,computed,watch,nextTick,
+  const context=vm.createContext({reactive,ref,computed,watch,nextTick,designRpx,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},token:()=>storage.get('jijie_token')||'',go:()=>{},
     onShow:(callback:()=>void)=>{hooks.show=callback},onHide:(callback:()=>void)=>{hooks.hide=callback},onUnload:(callback:()=>void)=>{hooks.unload=callback},
     /** 每个鉴权和手机号请求由用例显式完成，迟到结果不会被测试框架提前丢弃。 */
@@ -150,6 +151,6 @@ test('真实钱包忙碌等待手机号时官方授权层位于资金弹框之�
   const phone=readFileSync(new URL('../components/PhoneVerification.vue',import.meta.url),'utf8'),funds=readFileSync(new URL('../components/FinancePopup.vue',import.meta.url),'utf8')
   assert.match(phone,/<!-- #ifdef MP-WEIXIN -->\s*<root-portal>/);assert.match(phone,/:style="popupTheme"/)
   const phoneLevel=Number(phone.match(/\.phone-layer\{[^}]*z-index:(\d+)/)?.[1]),fundsLevel=Number(funds.match(/\.finance-popup-layer\{[^}]*z-index:(\d+)/)?.[1]);assert.ok(phoneLevel>fundsLevel)
-  assert.ok(s.component.popupTheme.value['--muted']);assert.ok(s.component.popupTheme.value['--line']);assert.equal(s.component.popupTheme.value['--control-height'],'44px')
+  assert.ok(s.component.popupTheme.value['--muted']);assert.ok(s.component.popupTheme.value['--line']);assert.equal(s.component.popupTheme.value['--control-height'],designRpx(44))
   s.component.close();await submitting;assert.equal(wallet.busy.value,false);assert.equal(wallet.operation.value,'deposit');assert.equal(s.requests.filter(item=>item.method==='POST'&&item.path==='/wallet/topups').length,0)
 })

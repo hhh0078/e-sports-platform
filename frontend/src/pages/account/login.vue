@@ -138,43 +138,43 @@
 </script>
 <style scoped>
 	.login-page {
-		min-height: calc(100vh - 120px);
+		min-height: calc(100vh - 230.7692rpx);
 		display: flex;
 		flex-direction: column;
-		padding-bottom: 12px
+		padding-bottom: 23.0769rpx
 	}
 
 	.login-top {
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
-		min-height: 28px
+		min-height: 53.8462rpx
 	}
 
 	.skip-login {
 		color: var(--muted);
-		font-size: 11px
+		font-size: 21.1538rpx
 	}
 
 	.login-copy {
-		padding: 12px 8px 16px
+		padding: 23.0769rpx 15.3846rpx 30.7692rpx
 	}
 
 	.login-brand {
 		display: flex;
 		align-items: center;
-		gap: 7px;
-		margin-bottom: 12px;
+		gap: 13.4615rpx;
+		margin-bottom: 23.0769rpx;
 		color: #bdd0c3;
-		font-size: 14px;
+		font-size: 26.9231rpx;
 		font-weight: 650
 	}
 
 	.login-headline {
-		font-size: 32px;
-		line-height: 40px;
+		font-size: 61.5385rpx;
+		line-height: 76.9231rpx;
 		font-weight: 800;
-		letter-spacing: -.8px
+		letter-spacing: -1.5385rpx
 	}
 
 	.login-headline-accent {
@@ -183,18 +183,18 @@
 
 	.login-subtitle {
 		display: block;
-		font-size: 12px;
-		line-height: 20px;
+		font-size: 23.0769rpx;
+		line-height: 38.4615rpx;
 		color: var(--muted);
-		margin-top: 8px
+		margin-top: 15.3846rpx
 	}
 
 	.game-montage {
 		position: relative;
 		display: flex;
 		flex-shrink: 0;
-		height: 190px;
-		margin: 0 -16px 20px;
+		height: 365.3846rpx;
+		margin: 0 -30.7692rpx 38.4615rpx;
 		overflow: hidden
 	}
 
@@ -203,7 +203,7 @@
 		min-width: 0;
 		overflow: hidden;
 		transform: skew(-8deg);
-		border-right: 3px solid var(--bg)
+		border-right: 5.7692rpx solid var(--bg)
 	}
 
 	.montage-image {
@@ -222,8 +222,8 @@
 
 	.login-benefits {
 		display: flex;
-		gap: 12px;
-		margin: 0 0 24px;
+		gap: 23.0769rpx;
+		margin: 0 0 46.1538rpx;
 		color: var(--accent)
 	}
 
@@ -233,9 +233,9 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
+		gap: 15.3846rpx;
 		min-width: 0;
-		font-size: 11px;
+		font-size: 21.1538rpx;
 		color: var(--accent)
 	}
 
@@ -245,7 +245,7 @@
 
 	.login-primary {
 		width: 100%;
-		gap: 8px
+		gap: 15.3846rpx
 	}
 
 	.consent-line {
@@ -253,9 +253,9 @@
 		align-items: flex-start;
 		justify-content: center;
 		gap: 0;
-		margin-top: 16px;
-		font-size: 10px;
-		line-height: 22px;
+		margin-top: 30.7692rpx;
+		font-size: 19.2308rpx;
+		line-height: 42.3077rpx;
 		color: var(--muted)
 	}
 
@@ -263,8 +263,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px
+		width: 46.1538rpx;
+		height: 46.1538rpx
 	}
 
 	.consent-checkbox {
@@ -274,7 +274,7 @@
 
 	.consent-copy {
 		min-width: 0;
-		max-width: calc(100% - 24px)
+		max-width: calc(100% - 46.1538rpx)
 	}
 
 	.agreement-link {
@@ -285,26 +285,26 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 4px;
-		min-height: 28px;
-		margin: 16px auto 0;
-		padding: 0 8px;
+		gap: 7.6923rpx;
+		min-height: 53.8462rpx;
+		margin: 30.7692rpx auto 0;
+		padding: 0 15.3846rpx;
 		border: 0;
 		border-radius: 0;
 		background: transparent;
 		color: var(--muted);
-		font-size: 11px
+		font-size: 21.1538rpx
 	}
 
 	.login-error {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 12px;
+		gap: 23.0769rpx;
 		color: #efb299;
-		font-size: 12px;
-		line-height: 20px;
-		margin-bottom: 16px
+		font-size: 23.0769rpx;
+		line-height: 38.4615rpx;
+		margin-bottom: 30.7692rpx
 	}
 
 	.login-error-copy {
@@ -316,11 +316,11 @@
 
 	.retry-login {
 		flex-shrink: 0;
-		min-height: 28px;
+		min-height: 53.8462rpx;
 		padding: 0;
 		color: var(--accent);
 		background: transparent;
-		font-size: 11px
+		font-size: 21.1538rpx
 	}
 
 	.login-mask {
@@ -338,8 +338,8 @@
 		margin: 0 auto;
 		background: var(--surface);
 		border: 1px solid var(--line);
-		border-radius: 18px 18px 0 0;
-		padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+		border-radius: 34.6154rpx 34.6154rpx 0 0;
+		padding: 38.4615rpx 30.7692rpx calc(46.1538rpx + env(safe-area-inset-bottom));
 		box-sizing: border-box
 	}
 
@@ -347,8 +347,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 12px;
-		font-size: 18px;
+		gap: 23.0769rpx;
+		font-size: 34.6154rpx;
 		font-weight: 650
 	}
 
@@ -356,8 +356,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 36px;
-		height: 36px;
+		width: 69.2308rpx;
+		height: 69.2308rpx;
 		padding: 0;
 		background: transparent;
 		color: var(--muted)
@@ -365,23 +365,23 @@
 
 	.sheet-hint {
 		display: block;
-		font-size: 12px;
+		font-size: 23.0769rpx;
 		color: var(--muted);
-		line-height: 20px;
-		margin: 8px 0 16px
+		line-height: 38.4615rpx;
+		margin: 15.3846rpx 0 30.7692rpx
 	}
 
 	.accounts-scroll {
 		height: 44vh;
-		max-height: 400px
+		max-height: 769.2308rpx
 	}
 
 	.account-card {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: 23.0769rpx;
 		width: 100%;
-		padding: 12px 0;
+		padding: 23.0769rpx 0;
 		background: transparent;
 		border: 0;
 		border-bottom: 1px solid var(--line-subtle);
@@ -399,12 +399,12 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		width: 36px;
-		height: 36px;
+		width: 69.2308rpx;
+		height: 69.2308rpx;
 		border-radius: 50%;
 		background: #ffffff08;
 		color: var(--accent);
-		font-size: 18px
+		font-size: 34.6154rpx
 	}
 
 	.account-name {
@@ -413,7 +413,7 @@
 		max-width: 100%;
 		overflow-wrap: anywhere;
 		word-break: break-word;
-		font-size: 14px;
+		font-size: 26.9231rpx;
 		font-weight: 650
 	}
 
@@ -423,23 +423,24 @@
 		max-width: 100%;
 		overflow-wrap: anywhere;
 		word-break: break-word;
-		font-size: 11px;
+		font-size: 21.1538rpx;
 		color: var(--muted);
-		margin-top: 4px
+		margin-top: 7.6923rpx
 	}
 
 	.offer-avatar {
 		display: flex;
+		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		width: 64px;
-		height: 64px;
+		width: 123.0769rpx;
+		height: 123.0769rpx;
 		padding: 0;
 		border: 1px solid var(--line);
 		border-radius: 50%;
 		background: #ffffff04;
 		color: var(--accent);
-		margin: 20px auto;
+		margin: 38.4615rpx auto;
 		overflow: hidden
 	}
 
@@ -450,8 +451,8 @@
 	}
 
 	.offer-field {
-		padding: 8px 0 20px;
-		margin-bottom: 20px
+		padding: 15.3846rpx 0 38.4615rpx;
+		margin-bottom: 38.4615rpx
 	}
 
 	.finish-later {
@@ -459,39 +460,148 @@
 		align-items: center;
 		justify-content: center;
 		width: 100%;
-		min-height: 36px;
-		margin-top: 8px;
+		min-height: 69.2308rpx;
+		margin-top: 15.3846rpx;
 		background: transparent;
 		color: var(--muted);
-		font-size: 12px
+		font-size: 23.0769rpx
 	}
 
-    .profile-offer{padding:12px 20px calc(20px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;background:var(--bg)}.offer-handle{width:30px;height:4px;border-radius:4px;background:var(--muted);opacity:.5;margin:0 auto 18px}.offer-identity{display:flex;align-items:center;gap:16px;margin:22px 0}.offer-avatar{position:relative;width:68px;height:68px;margin:0;overflow:visible;border:1px solid var(--line)}.offer-avatar-image{display:block;width:100%;height:100%;border-radius:50%}.offer-camera{position:absolute;right:-2px;bottom:-2px;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:2px solid var(--bg);border-radius:50%;background:var(--accent);color:var(--bg)}.offer-avatar-copy{display:flex;flex-direction:column;gap:6px;min-width:0}.offer-wechat-avatar,.offer-image-choice{display:flex;align-items:center;justify-content:flex-start;gap:5px;min-height:28px;padding:0;background:transparent;font-size:14px;color:var(--text)}.offer-image-choice{font-size:12px;color:var(--muted)}.offer-nickname{display:flex;align-items:center;gap:16px;min-height:48px;border-bottom:1px solid var(--line)}.offer-field-label{flex-shrink:0;font-size:14px;line-height:22px;color:var(--text)}.offer-name-input{flex:1;min-width:0;height:44px;padding:0;background:transparent;font-size:15px;color:var(--text)}.offer-public-note{display:block;margin:12px 0 24px;color:var(--muted);font-size:11px;line-height:18px}
+	.profile-offer {
+		padding: 23.0769rpx 38.4615rpx calc(38.4615rpx + env(safe-area-inset-bottom));
+		border-radius: 46.1538rpx 46.1538rpx 0 0;
+		background: var(--bg)
+	}
+
+	.offer-handle {
+		width: 57.6923rpx;
+		height: 7.6923rpx;
+		border-radius: 7.6923rpx;
+		background: var(--muted);
+		opacity: .5;
+		margin: 0 auto 34.6154rpx
+	}
+
+	.offer-identity {
+		display: flex;
+		align-items: center;
+		gap: 30.7692rpx;
+		margin: 42.3077rpx 0
+	}
+
+	.offer-avatar {
+		position: relative;
+		width: 130.7692rpx;
+		height: 130.7692rpx;
+		margin: 0;
+		overflow: visible;
+		border: 1px solid var(--line)
+	}
+
+	.offer-avatar-image {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%
+	}
+
+	.offer-camera {
+		position: absolute;
+		right: -3.8462rpx;
+		bottom: -3.8462rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 46.1538rpx;
+		height: 46.1538rpx;
+		border: 3.8462rpx solid var(--bg);
+		border-radius: 50%;
+		background: var(--accent);
+		color: var(--bg)
+	}
+
+	.offer-avatar-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 11.5385rpx;
+		min-width: 0
+	}
+
+	.offer-wechat-avatar,
+	.offer-image-choice {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 9.6154rpx;
+		min-height: 53.8462rpx;
+		padding: 0;
+		background: transparent;
+		font-size: 26.9231rpx;
+		color: var(--text)
+	}
+
+	.offer-image-choice {
+		font-size: 23.0769rpx;
+		color: var(--muted)
+	}
+
+	.offer-nickname {
+		display: flex;
+		align-items: center;
+		gap: 30.7692rpx;
+		min-height: 92.3077rpx;
+		border-bottom: 1px solid var(--line)
+	}
+
+	.offer-field-label {
+		flex-shrink: 0;
+		font-size: 26.9231rpx;
+		line-height: 42.3077rpx;
+		color: var(--text)
+	}
+
+	.offer-name-input {
+		flex: 1;
+		min-width: 0;
+		height: 84.6154rpx;
+		padding: 0;
+		background: transparent;
+		font-size: 28.8462rpx;
+		color: var(--text)
+	}
+
+	.offer-public-note {
+		display: block;
+		margin: 23.0769rpx 0 46.1538rpx;
+		color: var(--muted);
+		font-size: 21.1538rpx;
+		line-height: 34.6154rpx
+	}
 
 	@media(max-width:350px) {
 		.login-headline {
-			font-size: 29px;
-			line-height: 37px
+			font-size: 55.7692rpx;
+			line-height: 71.1538rpx
 		}
 
 		.game-montage {
-			height: 170px
+			height: 326.9231rpx
 		}
 
 		.login-copy {
-			padding-top: 8px
+			padding-top: 15.3846rpx
 		}
 
 		.login-benefits {
-			gap: 8px
+			gap: 15.3846rpx
 		}
 
 		.consent-line {
-			font-size: 10px
+			font-size: 19.2308rpx
 		}
 
 		.login-brand {
-			margin-bottom: 8px
+			margin-bottom: 15.3846rpx
 		}
 	}
 </style>

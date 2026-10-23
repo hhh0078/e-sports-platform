@@ -192,22 +192,22 @@
 </script>
 <style scoped>
 	.worker-content {
-		padding: 8px 16px 24px;
+		padding: 15.3846rpx 30.7692rpx 46.1538rpx;
 		min-width: 0
 	}
 
 	.worker-identity {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 15.3846rpx;
 		min-height: 44px;
 		padding-right: var(--capsule-right-inset, 100px);
 		min-width: 0
 	}
 
 	.avatar {
-		width: 32px;
-		height: 32px
+		width: 61.5385rpx;
+		height: 61.5385rpx
 	}
 
 	.worker-avatar-image {
@@ -216,10 +216,10 @@
 	}
 
 	.worker-name {
-		font-size: 14px;
+		font-size: 26.9231rpx;
 		font-weight: 650;
 		min-width: 0;
-		max-width: 84px;
+		max-width: 161.5385rpx;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap
@@ -227,11 +227,11 @@
 
 	.provider-status {
 		flex-shrink: 0;
-		padding: 2px 6px;
+		padding: 3.8462rpx 11.5385rpx;
 		border: 1px solid #83e7b733;
-		border-radius: 12px;
-		font-size: 9px;
-		line-height: 16px;
+		border-radius: 23.0769rpx;
+		font-size: 17.3077rpx;
+		line-height: 30.7692rpx;
 		color: var(--accent);
 		white-space: nowrap
 	}
@@ -241,8 +241,8 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		width: 28px;
-		height: 28px;
+		width: 53.8462rpx;
+		height: 53.8462rpx;
 		padding: 0;
 		margin-left: auto;
 		background: transparent;
@@ -251,7 +251,7 @@
 
 	.worker-stats {
 		display: flex;
-		padding: 16px 0 20px;
+		padding: 30.7692rpx 0 38.4615rpx;
 		border-bottom: 1px solid var(--line-subtle)
 	}
 
@@ -260,7 +260,7 @@
 		flex: 1;
 		flex-direction: column;
 		align-items: center;
-		gap: 3px;
+		gap: 5.7692rpx;
 		min-width: 0;
 		border-right: 1px solid var(--line-subtle)
 	}
@@ -270,15 +270,15 @@
 	}
 
 	.worker-stat-value {
-		font-size: 20px;
-		line-height: 27px;
+		font-size: 38.4615rpx;
+		line-height: 51.9231rpx;
 		font-weight: 650;
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap
 	}
 
 	.worker-stat-label {
-		font-size: 10px;
+		font-size: 19.2308rpx;
 		color: var(--muted)
 	}
 
@@ -294,15 +294,15 @@
 	.intro-copy {
 		position: relative;
 		z-index: 1;
-		width: calc(100% - 144px);
+		width: calc(100% - 276.9231rpx);
 		min-width: 0
 	}
 
 	.intro-title {
-		font-size: 21px;
+		font-size: 40.3846rpx;
 		font-weight: 750;
-		line-height: 30px;
-		letter-spacing: -.7px;
+		line-height: 57.6923rpx;
+		letter-spacing: -1.3462rpx;
 		white-space: nowrap
 	}
 
@@ -312,9 +312,9 @@
 
 	.intro-detail {
 		display: block;
-		margin-top: 6px;
-		font-size: 10px;
-		line-height: 18px;
+		margin-top: 11.5385rpx;
+		font-size: 19.2308rpx;
+		line-height: 34.6154rpx;
 		color: var(--muted)
 	}
 
@@ -322,22 +322,22 @@
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: 8px 12px;
-		margin-top: 12px
+		gap: 15.3846rpx 23.0769rpx;
+		margin-top: 23.0769rpx
 	}
 
 	.publish-entry {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 5px;
-		height: 36px;
-		padding: 0 10px;
+		gap: 9.6154rpx;
+		height: 69.2308rpx;
+		padding: 0 19.2308rpx;
 		border: 1px solid var(--accent);
-		border-radius: 7px;
+		border-radius: 13.4615rpx;
 		background: transparent;
 		color: var(--accent);
-		font-size: 11px;
+		font-size: 21.1538rpx;
 		font-weight: 650;
 		white-space: nowrap
 	}
@@ -346,42 +346,42 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 3px;
-		min-height: 28px;
+		gap: 5.7692rpx;
+		min-height: 53.8462rpx;
 		padding: 0;
 		background: transparent;
 		color: var(--muted);
-		font-size: 10px;
+		font-size: 19.2308rpx;
 		white-space: nowrap
 	}
 
 	.workbench-art {
 		position: absolute;
-		right: -8px;
-		top: 26px;
-		width: 164px;
-		height: 110px;
+		right: -15.3846rpx;
+		top: 50rpx;
+		width: 315.3846rpx;
+		height: 211.5385rpx;
 		pointer-events: none
 	}
 
 	.worker-tabs {
 		display: flex;
-		gap: 24px;
+		gap: 46.1538rpx;
 		border-bottom: 1px solid var(--line-subtle);
-		margin-bottom: 12px
+		margin-bottom: 23.0769rpx
 	}
 
 	.worker-tab {
 		display: flex;
 		align-items: center;
-		gap: 5px;
-		height: 40px;
-		padding: 0 4px;
+		gap: 9.6154rpx;
+		height: 76.9231rpx;
+		padding: 0 7.6923rpx;
 		background: transparent;
 		color: var(--muted);
-		font-size: 13px;
+		font-size: 25rpx;
 		border-radius: 0;
-		border-bottom: 2px solid transparent
+		border-bottom: 3.8462rpx solid transparent
 	}
 
 	.worker-tab.selected {
@@ -391,14 +391,14 @@
 	}
 
 	.worker-tab-count {
-		font-size: 10px;
+		font-size: 19.2308rpx;
 		color: var(--muted)
 	}
 
 	.service-controls {
 		display: flex;
 		align-items: center;
-		gap: 4px;
+		gap: 7.6923rpx;
 		width: 100%;
 		min-width: 0
 	}
@@ -407,16 +407,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 3px;
-		min-height: 28px;
+		gap: 5.7692rpx;
+		min-height: 53.8462rpx;
 		flex: 1;
 		min-width: 0;
-		padding: 0 3px;
+		padding: 0 5.7692rpx;
 		border: 0;
 		border-radius: 0;
 		background: transparent;
 		color: #c0d2c6;
-		font-size: 10px;
+		font-size: 19.2308rpx;
 		white-space: nowrap
 	}
 
@@ -429,7 +429,7 @@
 		align-items: center;
 		justify-content: center;
 		flex: 1;
-		font-size: 10px;
+		font-size: 19.2308rpx;
 		color: var(--muted)
 	}
 
@@ -437,13 +437,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 5px;
-		min-height: 28px;
-		margin-top: 4px;
+		gap: 9.6154rpx;
+		min-height: 53.8462rpx;
+		margin-top: 7.6923rpx;
 		padding: 0;
 		background: transparent;
 		color: var(--accent);
-		font-size: 12px
+		font-size: 23.0769rpx
 	}
 
 	.jobs-list {
@@ -455,8 +455,8 @@
 	.job-card {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
-		padding: 16px 0;
+		gap: 19.2308rpx;
+		padding: 30.7692rpx 0;
 		border-bottom: 1px solid var(--line-subtle);
 		min-width: 0
 	}
@@ -464,20 +464,20 @@
 	.job-heading {
 		display: flex;
 		justify-content: space-between;
-		gap: 8px;
-		font-size: 10px;
+		gap: 15.3846rpx;
+		font-size: 19.2308rpx;
 		color: var(--muted)
 	}
 
 	.job-title {
-		font-size: 15px;
+		font-size: 28.8462rpx;
 		font-weight: 650;
-		line-height: 22px
+		line-height: 42.3077rpx
 	}
 
 	.job-description {
-		font-size: 12px;
-		line-height: 20px;
+		font-size: 23.0769rpx;
+		line-height: 38.4615rpx;
 		color: var(--muted);
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -489,11 +489,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 12px
+		gap: 23.0769rpx
 	}
 
 	.job-price {
-		font-size: 23px;
+		font-size: 44.2308rpx;
 		font-weight: 700;
 		color: var(--accent)
 	}
@@ -502,37 +502,37 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 88px;
-		height: 36px;
-		padding: 0 12px;
+		min-width: 169.2308rpx;
+		height: 69.2308rpx;
+		padding: 0 23.0769rpx;
 		border: 1px solid var(--accent);
-		border-radius: 7px;
+		border-radius: 13.4615rpx;
 		background: transparent;
 		color: var(--accent);
-		font-size: 12px
+		font-size: 23.0769rpx
 	}
 
 	.load-more {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 5px;
+		gap: 9.6154rpx;
 		width: 100%;
-		min-height: 36px;
-		margin-top: 12px;
+		min-height: 69.2308rpx;
+		margin-top: 23.0769rpx;
 		background: transparent;
 		color: var(--muted);
-		font-size: 12px
+		font-size: 23.0769rpx
 	}
 
 	.club-banner {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 19.2308rpx;
 		width: 100%;
-		min-height: 64px;
-		padding: 12px 0;
-		margin-top: 16px;
+		min-height: 123.0769rpx;
+		padding: 23.0769rpx 0;
+		margin-top: 30.7692rpx;
 		border: 0;
 		border-top: 1px solid var(--line-subtle);
 		border-radius: 0;
@@ -545,71 +545,71 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		gap: 3px;
+		gap: 5.7692rpx;
 		min-width: 0
 	}
 
 	.club-banner-title {
-		font-size: 13px;
+		font-size: 25rpx;
 		font-weight: 650;
 		color: var(--text)
 	}
 
 	.club-banner-detail {
-		font-size: 10px;
+		font-size: 19.2308rpx;
 		color: var(--muted)
 	}
 
 	@media(max-width:350px) {
 		.worker-identity {
-			gap: 6px
+			gap: 11.5385rpx
 		}
 
 		.worker-name {
-			max-width: 52px;
-			font-size: 12px
+			max-width: 100rpx;
+			font-size: 23.0769rpx
 		}
 
 		.provider-status {
-			font-size: 8px;
-			padding: 1px 4px
+			font-size: 15.3846rpx;
+			padding: 1.9231rpx 7.6923rpx
 		}
 
 		.worker-settings {
-			width: 24px
+			width: 46.1538rpx
 		}
 
 		.intro-copy {
-			width: calc(100% - 112px)
+			width: calc(100% - 215.3846rpx)
 		}
 
 		.intro-title {
-			font-size: 19px;
-			letter-spacing: -.8px
+			font-size: 36.5385rpx;
+			letter-spacing: -1.5385rpx
 		}
 
 		.workbench-art {
-			width: 134px;
-			height: 90px;
-			right: -10px;
-			top: 30px
+			width: 257.6923rpx;
+			height: 173.0769rpx;
+			right: -19.2308rpx;
+			top: 57.6923rpx
 		}
 
 		.intro-actions {
-			gap: 8px
+			gap: 15.3846rpx
 		}
 
 		.publish-entry {
-			padding: 0 8px
+			padding: 0 15.3846rpx
 		}
 
 		.orders-entry {
-			font-size: 9px
+			font-size: 17.3077rpx
 		}
 
 		.worker-stat-value {
-			font-size: 18px
+			font-size: 34.6154rpx
 		}
 	}
-.join-club-list{min-width:0}.join-club-row{display:flex;align-items:center;gap:14px;min-width:0;width:100%;padding:18px 0;border-radius:0;border-bottom:1px solid var(--line-subtle);background:transparent;text-align:left;color:var(--muted)}.join-club-avatar{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:56px;height:56px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--accent);overflow:hidden}.join-club-image{display:block;width:100%;height:100%}.join-club-copy{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}.join-club-name{font-size:16px;line-height:23px;font-weight:650;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.join-club-count{display:flex;align-items:center;gap:4px;font-size:11px;line-height:18px;color:var(--muted)}.join-club-description{display:block;font-size:12px;line-height:20px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.join-club-list{min-width:0}.join-club-row{display:flex;align-items:center;gap:26.9231rpx;min-width:0;width:100%;padding:34.6154rpx 0;border-radius:0;border-bottom:1px solid var(--line-subtle);background:transparent;text-align:left;color:var(--muted)}.join-club-avatar{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:107.6923rpx;height:107.6923rpx;border:1px solid var(--line);border-radius:23.0769rpx;background:var(--surface);color:var(--accent);overflow:hidden}.join-club-image{display:block;width:100%;height:100%}.join-club-copy{display:flex;flex:1;flex-direction:column;gap:7.6923rpx;min-width:0}.join-club-name{font-size:30.7692rpx;line-height:44.2308rpx;font-weight:650;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.join-club-count{display:flex;align-items:center;gap:7.6923rpx;font-size:21.1538rpx;line-height:34.6154rpx;color:var(--muted)}.join-club-description{display:block;font-size:23.0769rpx;line-height:38.4615rpx;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>

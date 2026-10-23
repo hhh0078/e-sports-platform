@@ -14,8 +14,8 @@ function axisAmount(cents:number):string{const yuan=cents/100;return yuan>=10000
 async function draw(){
   const revision=++version;await nextTick();if(disposed||!instance?.proxy)return
   uni.createSelectorQuery().in(instance.proxy as ComponentPublicInstance).select('.trade-canvas').boundingClientRect(rect=>{
-    if(disposed||revision!==version||!rect||Array.isArray(rect)||typeof rect.width!=='number'||!rect.width)return
-    const width=rect.width,height=196,geometry=tradeChartGeometry(props.days,width,height),context=uni.createCanvasContext(canvasID,instance.proxy as ComponentPublicInstance)
+    if(disposed||revision!==version||!rect||Array.isArray(rect)||typeof rect.width!=='number'||!rect.width||typeof rect.height!=='number'||!rect.height)return
+    const width=rect.width,height=rect.height,geometry=tradeChartGeometry(props.days,width,height),context=uni.createCanvasContext(canvasID,instance.proxy as ComponentPublicInstance)
     context.clearRect(0,0,width,height);context.setFontSize(11);context.setTextBaseline('middle')
     for(let tick=0;tick<=2;tick++){const y=geometry.bottom-tick/2*(geometry.bottom-geometry.top);context.setStrokeStyle(legacyCanvasColor('#ffffff12'));context.setLineWidth(1);context.beginPath();context.moveTo(geometry.left,y);context.lineTo(geometry.right,y);context.stroke();context.setFillStyle('#91a299');context.setTextAlign('right');context.fillText(axisAmount(geometry.ceiling*tick/2),geometry.left-8,y)}
     /** 每个系列使用同一纵轴，退款不能叠加到成交额。 */
@@ -31,5 +31,5 @@ onMounted(()=>{void draw();uni.onWindowResize(draw)})
 onBeforeUnmount(()=>{disposed=true;version++;uni.offWindowResize(draw)})
 </script>
 <style scoped>
-.trade-chart{width:100%;min-width:0}.trade-canvas{display:block;width:100%;height:196px}.chart-legend{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:8px}.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.legend-dot{width:8px;height:8px;border-radius:50%}.paid{background:var(--accent)}.refund{background:#d7b276}
+.trade-chart{width:100%;min-width:0}.trade-canvas{display:block;width:100%;height:376.9231rpx}.chart-legend{display:flex;align-items:center;justify-content:center;gap:46.1538rpx;margin-top:15.3846rpx}.legend-item{display:flex;align-items:center;gap:11.5385rpx;font-size:23.0769rpx;color:var(--muted)}.legend-dot{width:15.3846rpx;height:15.3846rpx;border-radius:50%}.paid{background:var(--accent)}.refund{background:#d7b276}
 </style>

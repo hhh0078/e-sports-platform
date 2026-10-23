@@ -44,5 +44,5 @@ onLoad(async()=>{try{await init();gameId.value=state.gameId}catch(e){error.value
 onUnload(()=>{disposed=true})
 </script>
 <style scoped>
-.request-fields{padding-top:8px;padding-bottom:16px}.field-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.field-count{font-size:10px;color:var(--muted);white-space:nowrap}.request-requirements{height:140px}.request-note{display:flex;align-items:flex-start;gap:10px;padding:12px 0;color:var(--muted)}.request-note-copy{flex:1;min-width:0;padding:0;font-size:11px;line-height:20px}.note-icon{margin-top:2px}.rules-note{border-top:1px solid var(--line-subtle)}.request-submit{width:100%}
+.request-fields{padding-top:15.3846rpx;padding-bottom:30.7692rpx}.field-heading{display:flex;align-items:center;justify-content:space-between;gap:23.0769rpx;min-width:0}.field-count{font-size:19.2308rpx;color:var(--muted);white-space:nowrap}.request-requirements{height:269.2308rpx}.request-note{display:flex;align-items:flex-start;gap:19.2308rpx;padding:23.0769rpx 0;color:var(--muted)}.request-note-copy{flex:1;min-width:0;padding:0;font-size:21.1538rpx;line-height:38.4615rpx}.note-icon{margin-top:3.8462rpx}.rules-note{border-top:1px solid var(--line-subtle)}.request-submit{width:100%}
 </style>

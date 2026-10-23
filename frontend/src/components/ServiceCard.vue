@@ -1,7 +1,7 @@
 <!-- 文件作用：统一服务卡片，封面内按标题在上标签在下展示并为角标预留自定义文案空间，价格和操作保持图下正常流。 -->
 <template>
   <view class="service-card" :style="pageTheme(service.game_id)" @click="openDetail">
-    <CoverArt :src="service.cover_url" :labels="service.labels" :aspect-ratio="4 / 3" :reserve-bottom-pixels="52" :reserve-top-pixels="hasDeposit&&hasClubDeposit?44:hasDeposit||hasClubDeposit?23:0" readable :min-font-pixels="10">
+    <CoverArt :src="service.cover_url" :labels="service.labels" :aspect-ratio="4 / 3" :reserve-bottom-pixels="bottomReservation" :reserve-top-pixels="topReservation" readable :min-font-pixels="10">
       <view v-if="hasDeposit||hasClubDeposit" class="service-deposits"><DepositBadge v-if="hasDeposit" :amount-cents="service.provider_deposit_cents"/><DepositBadge v-if="hasClubDeposit" kind="user_club" :amount-cents="service.provider_club_deposit_cents"/></view>
       <view class="service-overlay"><text class="service-title">{{ service.title }}</text><view class="service-tags"><view v-if="service.club_verified" class="service-cert"><Icon name="shield" :size="9"/><text>俱乐部认证</text></view><text v-if="gameLabel" class="service-tag">{{ gameLabel }}</text><text v-if="service.category" class="service-category">{{ service.category }}</text></view></view>
     </CoverArt>
@@ -12,32 +12,42 @@
   </view>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import CoverArt from './CoverArt.vue'
 import DepositBadge from './DepositBadge.vue'
 import Icon from './Icon.vue'
 import { money, go } from '../lib/format'
 import { state, pageTheme } from '../lib/store'
 import type { Service } from '../types/models'
+import { designPixels } from '../lib/design-units'
 const props = withDefaults(defineProps<{ service: Service; interactive?: boolean; coverOnly?: boolean }>(), { interactive: true, coverOnly: false })
+const viewportWidth = ref(390)
+/** 根据真实视口换算rpx文字带的实际像素，传入封面引擎前只缩放一次。 */
+function readViewport(): void { try { const width = uni.getWindowInfo().windowWidth; if (Number.isFinite(width) && width > 0) viewportWidth.value = width } catch { /* 原生接口暂不可用时保留390设计基线，后续显示与窗口变化时重测。 */ } }
 /** 仅对后端当前有效的正整数平台押金显示角标，布局同步预留顶部安全带。 */
 const hasDeposit = computed(() => Number.isSafeInteger(props.service.provider_deposit_cents) && (props.service.provider_deposit_cents || 0) > 0)
 /** 只展示服务当前挂靠俱乐部内已实缴的押金，不使用俱乐部规则金额。 */
 const hasClubDeposit = computed(() => Number.isSafeInteger(props.service.provider_club_deposit_cents) && (props.service.provider_club_deposit_cents || 0) > 0)
+const bottomReservation = computed(() => designPixels(52, viewportWidth.value))
+const topReservation = computed(() => designPixels(hasDeposit.value && hasClubDeposit.value ? 44 : hasDeposit.value || hasClubDeposit.value ? 23 : 0, viewportWidth.value))
 const gameLabel = computed(() => { const game = state.games.find(item => item.id === props.service.game_id); return game?.short_name || game?.name || '' })
 /** 通过当前业务路由打开服务，发布预览可关闭跳转。 */
 function openDetail(): void { if (props.interactive) go('/pages/services/detail?id=' + encodeURIComponent(props.service.id)) }
+onMounted(() => { readViewport(); uni.onWindowResize(readViewport) })
+onShow(readViewport)
+onBeforeUnmount(() => uni.offWindowResize(readViewport))
 </script>
 <style scoped>
-.service-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid var(--line-subtle);background:var(--surface);border-radius:10px}
-.service-deposits{position:absolute;top:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:2px;max-width:100%;line-height:0;pointer-events:none}
-.service-overlay{position:absolute;z-index:3;right:8px;bottom:0;left:8px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;height:52px;padding-bottom:10px;box-sizing:border-box;min-width:0;pointer-events:none}
-.service-body{display:flex;flex-direction:column;gap:6px;min-width:0;padding:0 8px 6px}
-.service-title{display:block;flex-shrink:0;min-width:0;font-size:13px;line-height:18px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.service-tags{display:flex;align-items:center;gap:4px;flex-shrink:0;height:16px;min-width:0;overflow:hidden;color:var(--muted);font-size:8px;line-height:12px}
-.service-category,.service-tag{display:block;flex-shrink:1;min-width:0;max-width:45%;padding:1px 4px;border:1px solid #ffffff0d;background:#ffffff08;border-radius:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.service-cert{display:inline-flex;flex-shrink:0;align-items:center;gap:2px;padding:1px 3px;border:1px solid #dfbb7133;border-radius:3px;background:#a17d191a;color:#dfc27f;white-space:nowrap}
-.service-price{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 4px;min-width:0}
-.price-value{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 1px;min-width:0;max-width:100%}.currency{font-size:12px;color:var(--accent);font-weight:700}.amount{font-size:21px;line-height:25px;color:var(--accent);font-weight:750;white-space:nowrap}.unit{max-width:100%;font-size:10px;color:var(--muted);overflow-wrap:anywhere}.count{max-width:100%;font-size:9px;color:var(--muted);white-space:nowrap}.service-actions{display:block;border-top:1px solid var(--line-subtle);padding-top:8px}
-@media(max-width:350px){.service-title{font-size:12px}.amount{font-size:19px}.count{font-size:8px}}
+.service-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid var(--line-subtle);background:var(--surface);border-radius:19.2308rpx}
+.service-deposits{position:absolute;top:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:3.8462rpx;max-width:100%;line-height:0;pointer-events:none}
+.service-overlay{position:absolute;z-index:3;right:15.3846rpx;bottom:0;left:15.3846rpx;display:flex;flex-direction:column;justify-content:flex-end;gap:7.6923rpx;height:100rpx;padding-bottom:19.2308rpx;box-sizing:border-box;min-width:0;pointer-events:none}
+.service-body{display:flex;flex-direction:column;gap:11.5385rpx;min-width:0;padding:0 15.3846rpx 11.5385rpx}
+.service-title{display:block;flex-shrink:0;min-width:0;font-size:25rpx;line-height:34.6154rpx;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.service-tags{display:flex;align-items:center;gap:7.6923rpx;flex-shrink:0;height:30.7692rpx;min-width:0;overflow:hidden;color:var(--muted);font-size:15.3846rpx;line-height:23.0769rpx}
+.service-category,.service-tag{display:block;flex-shrink:1;min-width:0;max-width:45%;padding:1.9231rpx 7.6923rpx;border:1px solid #ffffff0d;background:#ffffff08;border-radius:5.7692rpx;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.service-cert{display:inline-flex;flex-shrink:0;align-items:center;gap:3.8462rpx;padding:1.9231rpx 5.7692rpx;border:1px solid #dfbb7133;border-radius:5.7692rpx;background:#a17d191a;color:#dfc27f;white-space:nowrap}
+.service-price{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:3.8462rpx 7.6923rpx;min-width:0}
+.price-value{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 1.9231rpx;min-width:0;max-width:100%}.currency{font-size:23.0769rpx;color:var(--accent);font-weight:700}.amount{font-size:40.3846rpx;line-height:48.0769rpx;color:var(--accent);font-weight:750;white-space:nowrap}.unit{max-width:100%;font-size:19.2308rpx;color:var(--muted);overflow-wrap:anywhere}.count{max-width:100%;font-size:17.3077rpx;color:var(--muted);white-space:nowrap}.service-actions{display:block;border-top:1px solid var(--line-subtle);padding-top:15.3846rpx}
+@media(max-width:350px){.service-title{font-size:23.0769rpx}.amount{font-size:36.5385rpx}.count{font-size:15.3846rpx}}
 </style>

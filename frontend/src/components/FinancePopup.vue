@@ -14,12 +14,13 @@ import { onHide, onShow, onUnload } from '@dcloudio/uni-app'
 import UniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue'
 import Icon from './Icon.vue'
 import { pageTheme, sessionRevision, state } from '../lib/store'
+import { designRpx } from '../lib/design-units'
 /** 官方弹层的公开方法与显示状态。 */
 interface Popup { open:(type?:string)=>void;close:()=>void;showPopup?:boolean }
 const props=withDefaults(defineProps<{opened:boolean;title:string;busy?:boolean}>(),{busy:false})
 const emit=defineEmits<{close:[]}>()
 const popup=ref<Popup|null>(null),intent=ref(props.opened)
-const popupTheme=computed(()=>({'--control-height':'44px','--compact-height':'36px','--radius':'12px','--muted':'#9aada2','--line':'rgba(255,255,255,0.12)','--line-subtle':'rgba(255,255,255,0.07)',...pageTheme()}))
+const popupTheme=computed(()=>({'--control-height':designRpx(44),'--compact-height':designRpx(36),'--radius':designRpx(12),'--muted':'#9aada2','--line':'rgba(255,255,255,0.12)','--line-subtle':'rgba(255,255,255,0.07)',...pageTheme()}))
 let visible=true,disposed=false,closing=false
 /** 仅同步当前显示意图；延迟绑定和关闭动画结束不能复活已撤销的弹框。 */
 async function syncPopup():Promise<void>{await nextTick();const instance=popup.value;if(!instance)return;if(!instance.showPopup)closing=false;const show=intent.value&&visible&&!disposed;if(show){if(!instance.showPopup&&!closing)instance.open('center')}else if(instance.showPopup&&!closing){closing=true;instance.close()}}
@@ -38,5 +39,5 @@ onUnload(()=>{disposed=true;hide()})
 onBeforeUnmount(()=>{disposed=true;hide()})
 </script>
 <style scoped>
-.finance-popup-layer{position:relative;z-index:190}.finance-popup-sheet{width:calc(100vw - 32px);max-width:440px;max-height:82vh;box-sizing:border-box;overflow:hidden;border:1px solid var(--line,rgba(255,255,255,0.12));border-radius:16px;background:var(--surface,#14201b);color:var(--text,#edf4ef)}.finance-popup-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 20px 12px}.finance-popup-title{flex:1;min-width:0;font-size:19px;line-height:28px;font-weight:700;overflow-wrap:anywhere}.finance-popup-close{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:28px;height:28px;padding:0;background:transparent;color:var(--muted,#9aada2)}.finance-popup-scroll{max-height:calc(82vh - 64px)}.finance-popup-content{padding:0 20px 20px;min-width:0;box-sizing:border-box}
+.finance-popup-layer{position:relative;z-index:190}.finance-popup-sheet{width:calc(100vw - 61.5385rpx);max-width:440px;max-height:82vh;box-sizing:border-box;overflow:hidden;border:1px solid var(--line,rgba(255,255,255,0.12));border-radius:30.7692rpx;background:var(--surface,#14201b);color:var(--text,#edf4ef)}.finance-popup-heading{display:flex;align-items:center;justify-content:space-between;gap:23.0769rpx;padding:38.4615rpx 38.4615rpx 23.0769rpx}.finance-popup-title{flex:1;min-width:0;font-size:36.5385rpx;line-height:53.8462rpx;font-weight:700;overflow-wrap:anywhere}.finance-popup-close{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:53.8462rpx;height:53.8462rpx;padding:0;background:transparent;color:var(--muted,#9aada2)}.finance-popup-scroll{max-height:calc(82vh - 123.0769rpx)}.finance-popup-content{padding:0 38.4615rpx 38.4615rpx;min-width:0;box-sizing:border-box}
 </style>

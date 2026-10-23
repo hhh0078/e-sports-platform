@@ -130,12 +130,12 @@
 		padding: 0 1.3%;
 		line-height: 1.1;
 		font-weight: 750;
-		border-radius: 3px;
+		border-radius: 5.7692rpx;
 		box-sizing: border-box;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		pointer-events: none
 	}
-	.cover-label-readable{padding:3px 6px;white-space:normal;word-break:break-all;overflow:visible;text-overflow:clip;line-height:1.25}
+	.cover-label-readable{padding:5.7692rpx 11.5385rpx;white-space:normal;word-break:break-all;overflow:visible;text-overflow:clip;line-height:1.25}
 </style>
