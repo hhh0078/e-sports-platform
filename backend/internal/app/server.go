@@ -22,14 +22,17 @@ type Config struct {
 	DevMode                                                                                  bool
 }
 type App struct {
-	paymentConfigMu sync.RWMutex
-	paymentConfig   *paymentConfigState
-	DB              *pgxpool.Pool
-	Redis           *redis.Client
-	Config          Config
-	HTTPClient      *http.Client
-	AIHTTPClient    *http.Client
-	EvidenceKey     []byte
+	reviewWorkerMu     sync.Mutex
+	reviewWorkerCancel context.CancelFunc
+	reviewWorkerWG     sync.WaitGroup
+	paymentConfigMu    sync.RWMutex
+	paymentConfig      *paymentConfigState
+	DB                 *pgxpool.Pool
+	Redis              *redis.Client
+	Config             Config
+	HTTPClient         *http.Client
+	AIHTTPClient       *http.Client
+	EvidenceKey        []byte
 }
 type apiError struct {
 	Status  int
@@ -100,7 +103,7 @@ func New(ctx context.Context, cfg Config) (*App, error) {
 }
 
 // Close 释放数据库与会话连接。
-func (a *App) Close() { a.DB.Close(); a.Redis.Close() }
+func (a *App) Close() { a.stopModerationWorker(); a.DB.Close(); a.Redis.Close() }
 
 // decode 限制请求体大小并拒绝未知字段与多份 JSON。
 func decode(r *http.Request, out any) error {
@@ -153,6 +156,7 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 				}
 			}
 		}
+		r = a.reviewContext(r)
 		out, err := fn(w, r)
 		if err != nil {
 			var ae *apiError
@@ -171,7 +175,16 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 			respond(w, ae.Status, payload)
 			return
 		}
-		respond(w, 200, map[string]any{"data": publicValue(out)})
+		safe, projectionErr := a.projectReviewedValue(r.Context(), publicValue(out))
+		if projectionErr != nil {
+			respond(w, 503, map[string]any{"error": "内容显示暂不可用，请稍后重试"})
+			return
+		}
+		payload := map[string]any{"data": safe}
+		if meta := reviewResponseMeta(r.Context()); meta != nil {
+			payload["moderation"] = meta
+		}
+		respond(w, 200, payload)
 	}
 }
 
@@ -184,6 +197,7 @@ func (a *App) Handler() http.Handler {
 	a.registerPaymentSettingsRoutes(mux)
 	a.registerWalletRoutes(mux)
 	a.registerAIRoutes(mux)
+	a.registerModerationRoutes(mux)
 	a.registerInboxRoutes(mux)
 	a.registerAdjustmentRoutes(mux)
 	a.registerShareRoutes(mux)

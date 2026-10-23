@@ -60,10 +60,10 @@ func TestIntegrationExpandedGameCatalog(t *testing.T) {
 			payload := map[string]any{"game_id": g.ID, "title": "独立封面文字的测试服务", "description": "双方确认范围后共同组队，结束后进行本局复盘。", "category": g.Categories[0], "price_cents": 1200, "unit": "小时", "cover_url": g.Covers[1], "labels": labels, "tags": []string{"耐心"}, "club_id": "shanhai"}
 			var s Service
 			api.call("worker", "POST", "/services", payload, 200, &s)
-			if !reflect.DeepEqual(s.Labels, labels) || s.CoverURL != g.Covers[1] || s.Status != "pending" {
+			if !reflect.DeepEqual(s.Labels, labels) || s.CoverURL != g.Covers[1] || s.Status != "active" {
 				t.Fatalf("图片与文字必须独立保留：%+v", s)
 			}
-			api.call("", "GET", "/services/"+s.ID, nil, 404, nil)
+			api.call("", "GET", "/services/"+s.ID, nil, 200, nil)
 			api.call("admin", "PATCH", "/admin/services/"+s.ID, map[string]string{"status": "active"}, 200, nil)
 			var o Order
 			api.call("player", "POST", "/orders", map[string]any{"service_id": s.ID, "quantity": 2}, 200, &o)

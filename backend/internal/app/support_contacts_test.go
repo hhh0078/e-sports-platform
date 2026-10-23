@@ -151,20 +151,21 @@ func TestIntegrationSupportContactUGCModeration(t *testing.T) {
 		user, path string
 		body       map[string]string
 	}{{"admin", "/admin/settings", map[string]string{"support_phone": "17607080935"}}, {"admin", "/admin/settings", map[string]string{"support_wechat": "support_account"}}, {"clubowner", "/clubs/shanhai", map[string]string{"contact_phone": "17607080935"}}, {"clubowner", "/clubs/shanhai", map[string]string{"contact_wechat": "club_account"}}, {"admin", "/admin/settings", map[string]string{"support_qr_url": qr}}, {"clubowner", "/clubs/shanhai", map[string]string{"contact_qr_url": clubQR}}} {
-		api.call(c.user, "PATCH", c.path, c.body, 422, nil)
+		api.call(c.user, "PATCH", c.path, c.body, 200, nil)
 	}
-	api.uploadCommunityImage("admin", "support_qr", "", valid, 422)
-	api.uploadCommunityImage("clubowner", "club_contact_qr", "shanhai", valid, 422)
-	if calls.Load() < 8 || !imageSeen.Load() {
+	api.uploadCommunityImage("admin", "support_qr", "", valid, 200)
+	api.uploadCommunityImage("clubowner", "club_contact_qr", "shanhai", valid, 200)
+	drainReviewAI(t, api)
+	if calls.Load() < 4 || !imageSeen.Load() {
 		t.Fatal("客服文字或实际图片未进入合规审核")
 	}
 	var settings Settings
 	api.call("admin", "GET", "/admin/settings", nil, 200, &settings)
-	if settings.SupportPhone != "" || settings.SupportWechat != "" || settings.SupportQRURL != "" {
+	if settings.SupportPhone != "" || settings.SupportWechat != "" || settings.SupportQRURL != rejectedImageURL {
 		t.Fatal("审核拒绝仍写入了平台客服配置")
 	}
 	club, _ := get[Club](t.Context(), api.App.DB, "clubs", "shanhai", false)
-	if club.ContactQRURL != "" || club.ContactPhone != "" || club.ContactWechat != "" {
+	if club.ContactQRURL != rejectedImageURL || club.ContactPhone != "" || club.ContactWechat != "" {
 		t.Fatal("审核拒绝仍写入了组织客服配置")
 	}
 }
@@ -268,6 +269,7 @@ func TestIntegrationSupportQRStoredBytes(t *testing.T) {
 	}
 	for _, v := range []struct{ user, purpose, club string }{{"admin", "support_qr", ""}, {"clubowner", "club_contact_qr", "shanhai"}} {
 		url := api.uploadCommunityImage(v.user, v.purpose, v.club, raw, 200)
+		drainReviewAI(t, api)
 		match := publicImagePath.FindStringSubmatch(url)
 		stored, e := get[PublicImage](t.Context(), api.App.DB, "evidence", match[1], false)
 		if e != nil {

@@ -9,7 +9,7 @@ import type { DeferredRequest, DeferredUpload, PageLifecycle } from './sfc-test'
 import type { CommunityBlock } from '../types/models'
 
 const storeSource = readFileSync(new URL('./store.ts', import.meta.url), 'utf8')
-const sources = { 'club-edit': pageScript('community/clubs/edit.vue'), 'admin-settings': pageScript('manage/settings.vue'), profile: pageScript('account/profile.vue') }
+const sources = { 'club-detail': pageScript('community/clubs/detail.vue'), 'club-edit': pageScript('community/clubs/edit.vue'), 'admin-settings': pageScript('manage/settings.vue'), profile: pageScript('account/profile.vue') }
 const accountA = { id: 'A', role: 'admin', nickname: '原始昵称', bio: '原始个人介绍', avatar: '/avatar-A.png', profile_cover: '/cover-A.png' }
 const accountB = { id: 'B', role: 'admin', nickname: '另一位用户', bio: '另一位用户介绍', avatar: '/avatar-B.png', profile_cover: '/cover-B.png' }
 
@@ -18,7 +18,7 @@ function harness(pageName: keyof typeof sources) {
   const storage = new Map<string, string>([['jijie_token', 'token-A']]), requests: DeferredRequest[] = [], uploads: DeferredUpload[] = [], notices: unknown[] = [], navigations: string[] = []
   const lifecycle: PageLifecycle = { load: () => {}, show: () => {}, hide: () => {}, unload: () => {} }
   const context = vm.createContext({
-    reactive, ref, computed,
+    reactive, ref, computed, requirePhone:async()=>true,
     uni: { getStorageSync: (key: string) => storage.get(key), setStorageSync: (key: string, value: string) => storage.set(key, value), removeStorageSync: (key: string) => storage.delete(key) },
     token: () => storage.get('jijie_token') || '',
     /** 网络完成顺序由测试明确控制。 */
@@ -32,7 +32,7 @@ function harness(pageName: keyof typeof sources) {
   vm.runInContext(executable(storeSource) + '\nglobalThis.store = { state, login, sessionRevision }', context)
   context.store.state.user = { ...accountA }
   context.store.state.ready = true
-  const exposed = { 'club-edit': 'load, save, form, depositCents, canManage', 'admin-settings': 'load, savePayment, saveAgreements, payment, secrets, paymentStatus, agreements, loaded', profile: 'load, upload, form, uploading' }[pageName]
+  const exposed = { 'club-detail': 'id,club,requirementsAccepted,applicationNote,submitJoin,reviewNote,reviewing,reviewStatus,submitReview,busy', 'club-edit': 'load, save, form, depositCents, canManage', 'admin-settings': 'load, savePayment, saveAgreements, payment, secrets, paymentStatus, agreements, loaded', profile: 'load, upload, form, uploading' }[pageName]
   vm.runInContext(executable(sources[pageName]) + '\nglobalThis.page = { ' + exposed + ' }', context)
   return {
     store: context.store, page: context.page, storage, requests, uploads, notices, navigations, lifecycle,
@@ -215,4 +215,19 @@ test('原生选图迟到响应不能回填另一身份的资料草稿', async ()
   assert.equal(subject.page.form.profile_cover, accountB.profile_cover)
   assert.equal(subject.store.state.user.id, 'B')
   assert.equal(subject.notices.length, 0)
+})
+
+
+test('俱乐部微信号先去首尾空白再验证和提交，不因粘贴空格拒绝有效号码',async()=>{
+  const subject=harness('club-edit');subject.lifecycle.load({id:'club-A'});const loading=subject.page.load();await flush();subject.take('/clubs/club-A').resolve({can_manage:true,club:{name:'开机电竞俱乐部',description:'这是完整的俱乐部介绍文字',game_ids:['delta'],detail_blocks:[]}});await loading
+  subject.page.form.contact_wechat='  valid_wechat-01  ';const saving=subject.page.save(),write=subject.take('/clubs/club-A','PATCH');assert.equal(write.body.contact_wechat,'valid_wechat-01');write.resolve({});await saving
+})
+
+test('成员申请和审核说明按trim后码点限制500字，扩展字符不被UTF16长度误伤',async t=>{
+  for(const kind of ['application','review'])await t.test(kind,async()=>{
+    const subject=harness('club-detail');subject.page.id.value='club-A';subject.page.club.value={id:'club-A',game_ids:['delta']};subject.page.requirementsAccepted.value=true;subject.page.reviewing.value={user_id:'worker-A'};subject.page.reviewStatus.value='rejected'
+    const note=kind==='application'?subject.page.applicationNote:subject.page.reviewNote,submit=kind==='application'?subject.page.submitJoin:subject.page.submitReview
+    note.value='😀'.repeat(501);await submit();assert.equal(subject.requests.filter(item=>item.method==='POST').length,0);assert.match(String(subject.notices.at(-1)),/最多500字/);assert.equal(subject.page.busy.value,false)
+    note.value='  '+'😀'.repeat(500)+'  ';const saving=submit();await flush();const write=subject.take(kind==='application'?'/clubs/club-A/join':'/clubs/club-A/members/worker-A','POST');assert.equal(write.body[kind==='application'?'application_note':'review_note'],'😀'.repeat(500));write.resolve({ok:true});await flush();subject.take('/clubs/club-A').resolve({club:{id:'club-A',game_ids:['delta']},members:[],services:[],can_manage:true});await saving
+  })
 })

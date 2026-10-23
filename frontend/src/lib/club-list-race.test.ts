@@ -144,3 +144,23 @@ test('创建草稿响应丢失时复用请求号，待缴状态进入组织资�
   assert.equal(subject.navigations.at(-1),'/pages/community/clubs/funds?id=draft-A')
   assert.equal(subject.page.creating.value,false)
 })
+
+
+test('创建俱乐部明确检查名称和介绍码点下限，失败不请求、不丢草稿',async t=>{
+  for(const example of [{name:'山',description:'完整的团队介绍至少十个字',message:/名称需要2/},{name:'山海电竞',description:'太短',message:/介绍需要10/}])await t.test(example.name,async child=>{
+    const subject=harness(child);prepareDraft(subject);Object.assign(subject.page.form,example)
+    await subject.page.create()
+    assert.equal(subject.requests.some(item=>item.method==='POST'),false)
+    assert.match(String(subject.notices.at(-1)),example.message)
+    assert.equal(subject.page.creating.value,true)
+    assert.equal(subject.page.form.name,example.name)
+  })
+})
+
+test('创建介绍与编辑一致支持1000码点，扩展字符按单个码点计数',async t=>{
+  const subject=harness(t);prepareDraft(subject)
+  Object.assign(subject.page.form,{name:'😀😀',description:'游'.repeat(1000)})
+  const creating=subject.page.create();await flush()
+  const write=subject.take('/clubs','POST');assert.equal(write.body.description,'游'.repeat(1000));assert.equal(write.body.name,'😀😀')
+  write.resolve({id:'unicode-club'});await creating
+})

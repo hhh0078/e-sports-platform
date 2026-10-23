@@ -94,17 +94,20 @@ func TestIntegrationInboxPaginationAndModerationDedup(t *testing.T) {
 		t.Fatal("后续分页漏数据")
 	}
 	for i := 0; i < 2; i++ {
-		api.call("worker", "PATCH", "/me/profile", map[string]string{"bio": "[审核拒绝测试] 需要修改的简介"}, 422, nil)
+		if err := sendModerationNotice(t.Context(), api.App.DB, "worker", "测试入口", "同一原因"); err != nil {
+			t.Fatal(err)
+		}
 	}
 	api.call("worker", "GET", "/messages", nil, 200, &page)
-	if page.Total != 1 || page.Items[0].Title != "内容审核未通过" {
-		t.Fatal("相同拒绝应只发一次系统消息")
+	if page.Total != 1 {
+		t.Fatal("旧通知幂等失效")
 	}
 	api.call("worker", "DELETE", "/messages/"+page.Items[0].ID, nil, 200, nil)
-	api.call("worker", "PATCH", "/me/profile", map[string]string{"bio": "[审核拒绝测试] 需要修改的简介"}, 422, nil)
+	if err := sendModerationNotice(t.Context(), api.App.DB, "worker", "测试入口", "同一原因"); err != nil {
+		t.Fatal(err)
+	}
 	api.call("worker", "GET", "/messages", nil, 200, &page)
 	if page.Total != 0 {
-		t.Fatal("已读后相同拒绝重新刷屏")
+		t.Fatal("已读后重复通知刷屏")
 	}
-	api.call("worker", "PATCH", "/me/profile", map[string]string{"bio": "[审核故障测试] 保留资料"}, 503, nil)
 }

@@ -8,6 +8,7 @@ import { executable, injectBusinessAPIs, pageScript } from './sfc-test'
 import type { DeferredRequest, PageLifecycle } from './sfc-test'
 import type { CachedMessage, SystemMessage } from '../types/messages'
 
+const actionSource=readFileSync(new URL('./message-actions.ts',import.meta.url),'utf8')
 const sources = ['store.ts', 'messages-cache.ts', 'use-messages.ts'].map(name => readFileSync(new URL('./' + name, import.meta.url), 'utf8'))
 const message: SystemMessage = { id: 'message-1', title: '订单进度更新', body: '完整通知第一段\n\n完整通知第二段', created_at: '2026-10-22T08:00:00Z', user_id: 'A' }
 /** 以实际SFC、缓存、store和领域API搭建环境，只替换网络及官方同步存储边界。 */
@@ -24,8 +25,8 @@ function harness(kind: 'list' | 'detail' = 'list', loggedIn = true) {
   injectBusinessAPIs(context)
   vm.runInContext(executable(sources[0]) + '\nglobalThis.store={state,login,clearSession}', context)
   context.store.state.user = loggedIn ? { id: 'A', nickname: '用户A', role: 'user' } : null; context.store.state.ready = true
-  const exposed = kind === 'list' ? 'items,loading,error,pendingCount,showPage,retryPending,openMessage' : 'selected,cacheOwner,loading,error,showPage,retryPending,id'
-  scope.run(() => vm.runInContext(executable(sources[1]) + '\n' + executable(sources[2]) + '\n' + executable(pageScript('account/messages/' + (kind === 'list' ? 'index' : 'detail') + '.vue')) + '\nglobalThis.page={' + exposed + '};globalThis.cache={readMessageCache,writeMessageCache,mergeMessageCache,messageCacheKey}', context))
+  const exposed = kind === 'list' ? 'items,loading,error,pendingCount,showPage,retryPending,openMessage' : 'selected,cacheOwner,loading,error,showPage,retryPending,id,action,openAction'
+  scope.run(() => vm.runInContext(executable(sources[1]) + '\n' + executable(sources[2]) + '\n' + executable(actionSource) + '\n' + executable(pageScript('account/messages/' + (kind === 'list' ? 'index' : 'detail') + '.vue')) + '\nglobalThis.page={' + exposed + '};globalThis.cache={readMessageCache,writeMessageCache,mergeMessageCache,messageCacheKey}', context))
   if (kind === 'detail') lifecycle.load({ id: message.id })
   return { page: context.page, store: context.store, context, cache: context.cache, storage, requests, navigations, control, lifecycle, scope,
     /** 查找最新未消费的目标请求，账号轮换时更早请求仍可单独验证。 */
@@ -143,4 +144,24 @@ test('连续刷新让旧operation失效，迟到成功不能覆盖最新本机�
   const second = subject.page.showPage(); await flush(); subject.take('/messages?limit=100&offset=0').resolve({ items: [{ ...message, id: 'latest' }], total: 1 }); await second
   old.resolve({ items: [{ ...message, id: 'stale' }], total: 1 }); await first
   assert.deepEqual(Array.from(subject.page.items.value, (item: CachedMessage) => item.id), ['latest']); assert.equal(subject.cache.readMessageCache('A').some((item: CachedMessage) => item.id === 'stale'), false); subject.scope.stop()
+})
+
+
+test('审核结果先完整持久行动字段再删远端，本机已读继续可进入修正页面',async()=>{
+  const subject=harness('detail'),related={...message,action_path:'/pages/services/publish?id=service-A',action_label:'修改服务',target_type:'services',target_id:'service-A',field_label:'服务标题'}
+  subject.seed('A',[{...related,read:false,ack_pending:false}]);const showing=subject.page.showPage();await flush()
+  const write=subject.take('/messages/message-1','DELETE'),before=subject.cache.readMessageCache('A')[0]
+  assert.equal(before.read,true);assert.equal(before.action_path,related.action_path);assert.equal(before.field_label,'服务标题')
+  write.resolve({ok:true});await showing;assert.equal(subject.cache.readMessageCache('A')[0].action_path,related.action_path)
+  subject.page.openAction();assert.equal(subject.navigations.at(-1),related.action_path)
+  subject.lifecycle.hide();subject.page.openAction();assert.equal(subject.navigations.length,1,'隐藏后不能使用已清除的行动')
+  subject.scope.stop()
+})
+
+test('恶意行动仅作为本机文本字段保存，详情不执行；换号不能沿用旧行动',async()=>{
+  const subject=harness('detail');subject.seed('A',[{...message,action_path:'javascript:alert(1)',action_label:'点击',read:true,ack_pending:false}]);await subject.page.showPage()
+  assert.equal(subject.page.action.value,null);subject.page.openAction();assert.deepEqual(subject.navigations,[])
+  subject.seed('A',[{...message,action_path:'/pages/community/clubs/detail?id=club-A',read:true,ack_pending:false}]);await subject.page.showPage();assert.ok(subject.page.action.value)
+  await loginB(subject);subject.page.openAction();assert.deepEqual(subject.navigations,[]);assert.equal(subject.page.action.value,null)
+  subject.scope.stop()
 })

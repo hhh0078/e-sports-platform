@@ -1,7 +1,7 @@
 /** 文件作用：定义站内系统消息、按账号本机缓存、已读删除确认及管理员发送的数据契约。 */
 
 /** 服务端待接收消息；正文始终为纯文本。 */
-export interface SystemMessage { id: string; title: string; body: string; created_at: string; user_id?: string }
+export interface SystemMessage { id: string; title: string; body: string; created_at: string; user_id?: string; action_path?: string; action_label?: string; target_type?: string; target_id?: string; field_label?: string }
 /** 本机持久消息；只有已读落盘后才允许确认删除远端。 */
 export interface CachedMessage extends SystemMessage { read: boolean; ack_pending: boolean }
 /** 服务端待接收列表，支持在删除前完整分页获取。 */

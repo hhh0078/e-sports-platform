@@ -43,6 +43,14 @@ func migrateDefaultBrandAgreements(ctx context.Context, q querier) error {
 	if _, err := q.Exec(ctx, "SELECT pg_advisory_xact_lock(8173020)"); err != nil {
 		return err
 	}
+	// 已由运营者正式保存的协议属于配置，不随默认品牌或审核流程自动改写。
+	var operatorPublished bool
+	if err := q.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM audit WHERE data->>'action'='agreements.save')").Scan(&operatorPublished); err != nil {
+		return err
+	}
+	if operatorPublished {
+		return nil
+	}
 	legacy, next := legacyDefaultAgreements(), defaultAgreements()
 	current, err := get[agreementSet](ctx, q, "settings", "agreements", true)
 	if missing(err) {

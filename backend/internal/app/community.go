@@ -9,9 +9,11 @@ import (
 
 // CommunityBlock 只允许纯文本或已托管图片，客户端无需渲染用户提供的 HTML。
 type CommunityBlock struct {
-	Type     string `json:"type"`
-	Text     string `json:"text,omitempty"`
-	ImageURL string `json:"image_url,omitempty"`
+	ImageWidth  int    `json:"image_width,omitempty"`
+	ImageHeight int    `json:"image_height,omitempty"`
+	Type        string `json:"type"`
+	Text        string `json:"text,omitempty"`
+	ImageURL    string `json:"image_url,omitempty"`
 }
 
 // saveProfile 在行锁内更新本人公开资料，不接受角色、手机号或认证等权限字段。
@@ -151,6 +153,8 @@ func validateClubDecoration(ctx context.Context, q querier, c *Club, actor User)
 	imageCount, textCount := 0, 0
 	for i := range c.DetailBlocks {
 		block := &c.DetailBlocks[i]
+		// 清除客户端自填尺寸；仅当前合法媒体记录可提供可信比例。
+		block.ImageWidth, block.ImageHeight = 0, 0
 		switch block.Type {
 		case "text":
 			if !length(block.Text, 1, 2000) || block.ImageURL != "" {
@@ -164,6 +168,14 @@ func validateClubDecoration(ctx context.Context, q querier, c *Club, actor User)
 			}
 			if err := validateOwnedImage(ctx, q, block.ImageURL, "club_detail", c.OwnerID, c.ID, actor); err != nil {
 				return err
+			}
+			match := publicImagePath.FindStringSubmatch(block.ImageURL)
+			if match != nil {
+				image, e := get[PublicImage](ctx, q, "evidence", match[1], false)
+				if e != nil {
+					return e
+				}
+				block.ImageWidth, block.ImageHeight = image.Width, image.Height
 			}
 			imageCount++
 		default:

@@ -20,10 +20,12 @@ export const themeStyle = computed(() => pageTheme())
 let pending: Promise<void> | null = null
 let publicPending: Promise<void> | null = null
 const sessionVersion = ref(0)
+/** 当前最近一次成功登录是否为服务端新注册；不按头像昵称猜测身份。 */
+export const lastLoginWasNew = ref(false)
 /** 返回会话修订号，供页面丢弃旧身份的异步结果。 */
 export function sessionRevision(): number { return sessionVersion.value }
 /** 清除会话并使旧请求失效。 */
-export function clearSession(): void { sessionVersion.value++; uni.removeStorageSync('jijie_token'); state.user = null }
+export function clearSession(): void { sessionVersion.value++; uni.removeStorageSync('jijie_token'); state.user = null; lastLoginWasNew.value = false }
 /** 仅加载公开平台配置；朋友圈单页不准备登录或读取本人资料，同类请求合并。 */
 export async function initPublic(force = false): Promise<void> {
   if (publicPending) return publicPending
@@ -54,11 +56,11 @@ export async function refreshMe(): Promise<User | null> {
   catch (error) { if (version !== sessionVersion.value || requestToken !== token()) return state.user; if (errorStatus(error) === 401) clearSession(); throw error }
 }
 /** 登录仅限本地的体验身份并处理并发身份切换。 */
-export async function login(userID: string, consent: Consent = {}): Promise<User | null> { const version = ++sessionVersion.value; const data = await loginDev(userID, consent); if (version !== sessionVersion.value) return state.user; uni.setStorageSync('jijie_token', data.token); state.user = data.user; return data.user }
+export async function login(userID: string, consent: Consent = {}): Promise<User | null> { const version = ++sessionVersion.value; const data = await loginDev(userID, consent); if (version !== sessionVersion.value) return state.user; uni.setStorageSync('jijie_token', data.token); state.user = data.user; lastLoginWasNew.value = data.first_login === true; return data.user }
 /** 只准备微信票据，不写入用户身份。 */
 export function prepareWechatLogin(code: string): Promise<WechatPreparation> { return prepareWechat(code) }
 /** 主动同意协议后建立官方身份。 */
-export async function wechatLogin(ticket: string, consent: Consent): Promise<User | null> { const version = ++sessionVersion.value; const data = await signInWechat(ticket, consent); if (version !== sessionVersion.value) return state.user; uni.setStorageSync('jijie_token', data.token); state.user = data.user; return data.user }
+export async function wechatLogin(ticket: string, consent: Consent): Promise<User | null> { const version = ++sessionVersion.value; const data = await signInWechat(ticket, consent); if (version !== sessionVersion.value) return state.user; uni.setStorageSync('jijie_token', data.token); state.user = data.user; lastLoginWasNew.value = data.first_login === true; return data.user }
 /** 撤销会话，迟到的退出响应不能退出新账号。 */
 export async function logout(): Promise<void> { const version = ++sessionVersion.value, requestToken = token(); try { await revokeSession() } catch (error) { if (version !== sessionVersion.value || requestToken !== token()) return; if (errorStatus(error) !== 401) throw error } if (version === sessionVersion.value && requestToken === token()) clearSession() }
 /** 保存玩家当前选择的游戏。 */

@@ -39,6 +39,7 @@ const originalCheckVersion = SDK.prototype.checkVersion
 const checks: string[] = [], exceptions: string[] = [], colorWarnings: string[] = [], screenshots: string[] = []
 const measurements: Measurement[] = [], versionChecks: Array<Record<string, unknown>> = []
 const scrollMeasurements: Array<{ label: string; viewport_height: number; content_height: number; scroll_top: number; scroll_width: number }> = []
+const scrollRetentionMeasurements: Array<{ label: string; kind: 'tab_roundtrip' | 'detail_return'; tab: MainTab; scrollable_range: number; before?: number; after?: number; difference?: number; status: 'passed' | 'failed' | 'not_scrollable' }> = []
 const pixels: Array<{ label: string; image: string; x: number; y: number; actual: number[]; expected: number[]; difference: number }> = []
 const responsiveMeasurements: Array<Record<string, unknown>> = []
 let mini: MiniProgram | undefined, viewport: WindowInfo | undefined, output = outputRoot, stage = '初始化', failure: unknown
@@ -113,6 +114,40 @@ async function scrollEvidence(scroll: ScrollViewElement, label: string): Promise
   if (content > area.height + 2) assert.ok(top > 0, label + '长内容未发生实际滚动')
   assert.ok(width <= Number(viewport?.windowWidth) + 1, label + '滚动内容横向溢出')
   scrollMeasurements.push({ label, viewport_height: area.height, content_height: content, scroll_top: top, scroll_width: width })
+}
+/** 在非零浏览位置离开并返回同一常驻标签，期间不重新发滚动命令；短空态明确记录不可滚动。 */
+async function mainScrollRetention(page: Page, buttons: Element[], game: string): Promise<void> {
+  let checked = 0
+  const tabs: MainTab[] = ['player', 'worker', 'orders', 'me']
+  for (const [index, tab] of tabs.entries()) {
+    stage = game + '非零滚动保留 ' + tab
+    await buttons[index].tap()
+    await until(async () => (await buttons[index].attribute('class')).split(/\s+/).includes('selected'), tab + '保留测试激活')
+    await page.waitFor(250)
+    const scrolls = await page.$$('.main-scroll') as ScrollViewElement[], scroll = scrolls[index]
+    assert.ok(scroll)
+    const area = await rect(scroll), contentHeight = Number(await scroll.scrollHeight()), range = Math.max(0, contentHeight - area.height)
+    assert.ok(Number.isFinite(range), tab + '滚动范围无效')
+    if (range <= 4) { scrollRetentionMeasurements.push({ label: game + ' ' + tab, kind: 'tab_roundtrip', tab, scrollable_range: range, status: 'not_scrollable' }); continue }
+    await scroll.scrollTo(0, Math.min(range, Math.max(8, Math.min(180, area.height / 2))))
+    await page.waitFor(180)
+    const before = Number(await scroll.property('scrollTop'))
+    assert.ok(Number.isFinite(before) && before > 2, tab + '测试必须从真实非零位置开始')
+    const other = (index + 1) % tabs.length
+    await buttons[other].tap()
+    await until(async () => (await buttons[other].attribute('class')).split(/\s+/).includes('selected'), tab + '离开到相邻标签')
+    await buttons[index].tap()
+    await until(async () => (await buttons[index].attribute('class')).split(/\s+/).includes('selected'), tab + '返回原标签')
+    assert.equal(await sdk().currentPage(), page, '切标签往返不能重建主页面')
+    await page.waitFor(350)
+    const restored = (await page.$$('.main-scroll') as ScrollViewElement[])[index], after = Number(await restored.property('scrollTop')), difference = Math.abs(after - before)
+    scrollRetentionMeasurements.push({ label: game + ' ' + tab, kind: 'tab_roundtrip', tab, scrollable_range: range, before, after, difference, status: Number.isFinite(after) && difference <= 1 ? 'passed' : 'failed' })
+    assert.ok(Number.isFinite(after) && difference <= 1, tab + '切标签往返丢失非零位置：' + JSON.stringify({ before, after }))
+    await screenshot(game + '-' + tab + '-scroll-retained')
+    checked++
+  }
+  assert.ok(checked > 0, game + '没有可滚动主视图，不能将零位置当作保留测试通过')
+  passed(game + '非零滚动切标签往返保留：' + checked + '个长视图；短空态单独记录（仅程序几何）')
 }
 /** 通过官方 reLaunch 初始化路由，主导航连续切换时不使用此方法。 */
 async function open(url: string): Promise<Page> { stage = '打开 ' + url; console.log(stage); const page = await sdk().reLaunch(url); assert.ok(page); assert.equal(page.path, url.split('?')[0].replace(/^\//, '')); return page }
@@ -228,7 +263,10 @@ async function responsiveService(game: string): Promise<void> {
   await responsiveCover([card], service, false)
   const title = await until(() => card.$('.service-title'), '可点击服务标题'), scrolls = await page.$$('.main-scroll') as ScrollViewElement[], scroll = scrolls[0]
   assert.ok(scroll); const titleArea = await rect(title), scrollArea = await rect(scroll), scrollTop = Number(await scroll.property('scrollTop'))
-  await scroll.scrollTo(0, Math.max(0, scrollTop + titleArea.top - scrollArea.top - 56)); await page.waitFor(180); await screenshot(game + '-responsive-service-card'); await title.tap()
+  await scroll.scrollTo(0, Math.max(0, scrollTop + titleArea.top - scrollArea.top - 56)); await page.waitFor(180); await screenshot(game + '-responsive-service-card')
+  const beforeDetail = Number(await scroll.property('scrollTop')), scrollRange = Math.max(0, Number(await scroll.scrollHeight()) - scrollArea.height)
+  assert.ok(Number.isFinite(beforeDetail) && beforeDetail > 2, '详情返回测试必须从真实非零列表位置开始')
+  await title.tap()
   const detail = await until(async () => { const value = await sdk().currentPage(); return value?.path === 'pages/services/detail' ? value : null }, '真实服务详情路由')
   assert.equal(detail.query.id, service.id, '列表点击进入错误服务')
   const shell = await until(() => child(detail, ['app-shell', 'components\\/AppShell']), '详情公共壳'); await until(() => find([detail, shell], '.detail-title'), '真实详情加载')
@@ -236,6 +274,16 @@ async function responsiveService(game: string): Promise<void> {
   const price = await until(() => find([detail, shell], '.price-row'), '详情价格'), priceArea = await rect(price)
   if (priceArea.top + priceArea.height > Number(viewport?.windowHeight) - 70) { await sdk().pageScrollTo(Math.max(0, priceArea.top - 100)); await detail.waitFor(160); await screenshot(game + '-responsive-service-detail-price') }
   passed(game + '一个已有服务列表与详情：独立文案完整无重叠，标题/分类/价格边界正常（仅访客样本）')
+  stage = game + '详情返回非零列表位置'
+  await sdk().navigateBack()
+  const returned = await until(async () => { const current = await sdk().currentPage(); return current?.path === 'pages/main/index' ? current : null }, '从详情返回主页面')
+  assert.equal(returned, page, '详情返回不能重建列表Page')
+  await returned.waitFor(350)
+  const restored = (await returned.$$('.main-scroll') as ScrollViewElement[])[0], afterDetail = Number(await restored.property('scrollTop')), difference = Math.abs(afterDetail - beforeDetail)
+  scrollRetentionMeasurements.push({ label: game + '服务详情返回', kind: 'detail_return', tab: 'player', scrollable_range: scrollRange, before: beforeDetail, after: afterDetail, difference, status: Number.isFinite(afterDetail) && difference <= 1 ? 'passed' : 'failed' })
+  assert.ok(Number.isFinite(afterDetail) && difference <= 1, '详情返回丢失非零列表位置：' + JSON.stringify({ before: beforeDetail, after: afterDetail }))
+  await screenshot(game + '-service-return-scroll-retained')
+  passed(game + '服务详情返回保留非零列表位置（仅程序几何）')
 }
 /** 主页面连续真实点击四底栏，逐一检查保留同一 Page、显式背景及高度。 */
 async function mainTheme(game: string): Promise<void> {
@@ -265,6 +313,7 @@ async function mainTheme(game: string): Promise<void> {
     await scrollEvidence(scroll, game + ' ' + tab)
     passed(game + ' ' + tab + '保持主页面，公共层底色和高度连续，滚动后不横溢')
   }
+  await mainScrollRetention(page, buttons, game)
   assert.deepEqual(await sdk().evaluate(() => wx.getStorageSync('jijie_game')), originalGame, '只浏览主题不能写入游戏偏好')
 }
 /** 核验个人中心封面真实渐变、上移身份与紧凑订单间距，保留充值和收入独立文案。 */
@@ -311,7 +360,7 @@ async function secondary(game: string): Promise<void> {
 /** 将验收结果和真实能力边界写入独立证据目录，失败也保留当前步骤。 */
 function report(): void {
   fs.mkdirSync(output, { recursive: true })
-  fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && restored, stage, project, viewport, checks, measurements, responsive_mode: responsive, responsive_measurements: responsiveMeasurements, scroll_measurements: scrollMeasurements, pixel_samples: pixels, screenshots, version_checks: versionChecks, runtime_exceptions: exceptions, color_warnings: colorWarnings, original_game_preference_restored: restored, original_route: originalRoute, boundaries: ['仅访客官方微信模拟器布局验收；未注入页面业务状态、令牌、登录、支付、转账、后台或缓存写入。', '响应式附加项仅UI_TEST_RESPONSIVE=1开启；已有服务仅两主题各一个公开GET样本，不代表六文案/全部字号/四身份或交易验收，可用UI_TEST_PUBLIC_SERVICES=0略过样本。', '截图由官方 simulator_screenshot --optimize false 产生，仅解码采样，未修改原图。', '不替代真实设备、微信支付、退款、提现或实际资金到账验收。'], ...(failure ? { error: redact(failure instanceof Error ? failure.stack || failure.message : failure) } : {}) }, null, 2) + '\n')
+  fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify({ passed: !failure && restored, stage, project, viewport, checks, measurements, responsive_mode: responsive, responsive_measurements: responsiveMeasurements, scroll_measurements: scrollMeasurements, scroll_retention_measurements: scrollRetentionMeasurements, pixel_samples: pixels, screenshots, version_checks: versionChecks, runtime_exceptions: exceptions, color_warnings: colorWarnings, original_game_preference_restored: restored, original_route: originalRoute, boundaries: ['仅访客官方微信模拟器布局验收；未注入页面业务状态、令牌、登录、支付、转账、后台或缓存写入。', '响应式附加项仅UI_TEST_RESPONSIVE=1开启；已有服务仅两主题各一个公开GET样本，不代表六文案/全部字号/四身份或交易验收，可用UI_TEST_PUBLIC_SERVICES=0略过样本。', '非零滚动保留使用官方SDK程序滚动、真实切标签及navigateBack；不代表手势惯性、帧率或真机流畅度。', '截图由官方 simulator_screenshot --optimize false 产生，仅解码采样，未修改原图。', '不替代真实设备、微信支付、退款、提现或实际资金到账验收。'], ...(failure ? { error: redact(failure instanceof Error ? failure.stack || failure.message : failure) } : {}) }, null, 2) + '\n')
 }
 /** 运行两个主题及主次页面检查，finally 恢复原主题与 SDK 校验函数并断开连接。 */
 async function run(): Promise<void> {

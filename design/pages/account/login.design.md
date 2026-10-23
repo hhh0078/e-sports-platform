@@ -21,3 +21,7 @@ Use case: ui-mockup. PRECISE LOCAL EDIT of the attached existing Chinese390x844 
 统一顶部标题为登录开机电竞，保留三联官方游戏图、登录按钮、主动协议勾选与原有留白。 本次只局部替换品牌文字，不新增界面、控件、图片或视觉规则。历史图保留原名称。
 
 编辑提示词：Use case: text-localization. Edit only the product brand text in the attached existing 390x844 design. Use exact Chinese brand 开机电竞. 统一顶部标题为登录开机电竞，保留三联官方游戏图、登录按钮、主动协议勾选与原有留白。 Keep all unrelated layout, artwork, colors, type sizes, fields, amounts, safe areas and dimensions unchanged. No redesign, stretching, added height or new decorations.
+
+## 2026-10-23 重复登录修正
+
+仅服务端first_login明确为true的新注册账号显示可跳过资料弹层。老用户保留已有头像昵称直接回到目标页，不能因默认头像或历史资料被当作新用户。保留用户已修改的模板、文案和排版。

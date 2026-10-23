@@ -145,6 +145,7 @@ func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	hash := sha256.Sum256([]byte(identity.AppID + ":" + identity.OpenID))
 	id := "wx_" + hex.EncodeToString(hash[:16])
+	firstLogin := false
 	u, err := get[User](r.Context(), tx, "users", id, false)
 	if missing(err) {
 		avatar, avatarErr := randomDefaultAvatar()
@@ -153,7 +154,11 @@ func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 		u = User{ID: id, Nickname: "新队友", Avatar: avatar, Role: "user", Status: "active", ProviderEnabled: true, CreatedAt: now()}
 		userRaw, _ := json.Marshal(u)
-		_, err = tx.Exec(r.Context(), "INSERT INTO users(id,data) VALUES($1,$2) ON CONFLICT(id) DO NOTHING", id, userRaw)
+		inserted, insertErr := tx.Exec(r.Context(), "INSERT INTO users(id,data) VALUES($1,$2) ON CONFLICT(id) DO NOTHING", id, userRaw)
+		err = insertErr
+		if err == nil {
+			firstLogin = inserted.RowsAffected() == 1
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -177,7 +182,11 @@ func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err = tx.Commit(r.Context()); err != nil {
 		return nil, err
 	}
-	return a.session(r.Context(), u)
+	session, err := a.session(r.Context(), u)
+	if err == nil {
+		session.(map[string]any)["first_login"] = firstLogin
+	}
+	return session, err
 }
 
 // registerIdentityRoutes 显式注册公开协议、受限身份与管理员协议接口。

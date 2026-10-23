@@ -101,14 +101,14 @@ func validateAISettings(v aiSettings) error {
 
 // aiSettingsView 只公开密钥是否已设置；ready表示格式完整，不代表模型支持图片或网络已验证。
 func (a *App) aiSettingsView(v aiSettings) map[string]any {
-	mode := "unconfigured"
-	notice := "请配置API密钥；未配置时正式环境暂停用户内容提交。"
+	mode := "manual"
+	notice := "未配置AI，图文保存后进入人工审核；配置AI后可自动审核。"
 	if v.APIKey != "" {
 		mode = "ai"
 		notice = "已配置AI审核；请测试连接并验证所选模型的图片理解能力。"
 	} else if a.Config.DevMode {
-		mode = "local_simulation"
-		notice = "当前为本地模拟审核，仅用于开发；正式环境未配置AI密钥会暂停提交。"
+		mode = "manual"
+		notice = "当前未配置AI，图文正常保存并等待管理员人工审核。"
 	}
 	return map[string]any{"base_url": v.BaseURL, "model": v.Model, "prompt": v.Prompt, "has_api_key": v.APIKey != "", "ready": v.APIKey != "" && validateAISettings(v) == nil, "mode": mode, "configuration_notice": notice}
 }
@@ -183,6 +183,11 @@ func (a *App) saveAISettings(w http.ResponseWriter, r *http.Request) (any, error
 	}
 	if err = audit(r.Context(), tx, u.ID, "ai.settings.save", "ai-private", "更新加密审核配置"); err != nil {
 		return nil, err
+	}
+	if v.APIKey != "" {
+		if _, err = tx.Exec(r.Context(), `UPDATE moderation_tasks SET data=jsonb_set(jsonb_set(data,'{status}','"ai_pending"'::jsonb,true),'{last_error}','""'::jsonb,true) WHERE data->>'status'='manual_pending'`); err != nil {
+			return nil, err
+		}
 	}
 	if err = tx.Commit(r.Context()); err != nil {
 		return nil, err

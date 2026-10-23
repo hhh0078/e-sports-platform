@@ -2,24 +2,29 @@
 <template>
   <AppShell title="消息详情" back>
     <view v-if="error" class="message-error"><text class="message-error-copy">{{ error }}</text><button class="text-btn" :disabled="loading" @click="showPage">重试</button></view>
-    <template v-if="selected && cacheOwner === state.user?.id"><view class="message-article"><text class="message-title">{{ selected.title }}</text><view class="message-meta"><text>{{ time(selected.created_at) }}</text><text>平台通知</text></view><text class="message-body" selectable>{{ selected.body }}</text></view><button v-if="selected.ack_pending" class="text-btn pending-retry" :disabled="loading" @click="retryPending">{{ loading ? '正在同步已读状态…' : '重新同步已读状态' }}</button></template>
+    <template v-if="selected && cacheOwner === state.user?.id"><view class="message-article"><text class="message-title">{{ selected.title }}</text><view class="message-meta"><text>{{ time(selected.created_at) }}</text><text>平台通知</text></view><text class="message-body" selectable>{{ selected.body }}</text><text v-if="selected.field_label" class="message-field">关联位置：{{ selected.field_label }}</text><button v-if="action" class="text-btn message-action" @click="openAction">{{ action.label }}<Icon name="arrow" :size="14"/></button></view><button v-if="selected.ack_pending" class="text-btn pending-retry" :disabled="loading" @click="retryPending">{{ loading ? '正在同步已读状态…' : '重新同步已读状态' }}</button></template>
     <view v-else-if="loading" class="loading-line">正在读取消息…</view>
     <EmptyState v-else-if="!state.user && !error" title="暂无消息" detail="请登录后查看" icon="bell"><button class="text-btn" @click="go('/pages/account/login?next=' + encodeURIComponent('/pages/account/messages/detail?id=' + id))">登录</button></EmptyState>
     <EmptyState v-else-if="!error" title="该消息暂不可用" detail="请返回消息中心查看" icon="bell"><button class="text-btn" @click="go('/pages/account/messages/index')">返回消息中心</button></EmptyState>
   </AppShell>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import AppShell from '../../../components/AppShell.vue'
 import EmptyState from '../../../components/EmptyState.vue'
+import Icon from '../../../components/Icon.vue'
 import { state } from '../../../lib/store'
 import { go, time } from '../../../lib/format'
 import { useMessages } from '../../../lib/use-messages'
+import { safeMessageAction } from '../../../lib/message-actions'
 const id = ref('')
 const { selected, cacheOwner, loading, error, showPage, retryPending } = useMessages({ detailId: () => id.value })
+const action=computed(()=>cacheOwner.value===state.user?.id?safeMessageAction(selected.value,state.user?.role):null)
+/** 点击时再次校验消息归属和精确路由，旧账号的行动不能跨身份执行。 */
+function openAction():void{if(cacheOwner.value!==state.user?.id||!state.user)return;const latest=safeMessageAction(selected.value,state.user.role);if(latest)go(latest.path)}
 onLoad((options: Record<string, string | undefined> = {}) => { id.value = typeof options.id === 'string' ? options.id : '' })
 </script>
 <style scoped>
-.message-article{min-width:0;padding-top:15.3846rpx}.message-title{display:block;font-size:42.3077rpx;line-height:61.5385rpx;font-weight:700;overflow-wrap:anywhere}.message-meta{display:flex;align-items:center;flex-wrap:wrap;gap:15.3846rpx 23.0769rpx;padding:15.3846rpx 0 38.4615rpx;border-bottom:1px solid var(--line-subtle);font-size:25rpx;line-height:42.3077rpx;color:var(--muted)}.message-body{display:block;padding-top:46.1538rpx;font-size:30.7692rpx;line-height:55.7692rpx;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}.message-error{display:flex;align-items:flex-start;justify-content:space-between;gap:23.0769rpx;padding:23.0769rpx 0 38.4615rpx;color:#e9b69d}.message-error-copy{flex:1;min-width:0;font-size:25rpx;line-height:42.3077rpx;overflow-wrap:anywhere}.pending-retry{margin-top:46.1538rpx;font-size:25rpx}
+.message-field{display:block;margin-top:30.7692rpx;color:var(--muted);font-size:23.0769rpx;line-height:42.3077rpx;overflow-wrap:anywhere}.message-action{justify-content:flex-start;gap:15.3846rpx;margin-top:23.0769rpx;font-size:26.9231rpx;max-width:100%;text-align:left;overflow-wrap:anywhere}.message-article{min-width:0;padding-top:15.3846rpx}.message-title{display:block;font-size:42.3077rpx;line-height:61.5385rpx;font-weight:700;overflow-wrap:anywhere}.message-meta{display:flex;align-items:center;flex-wrap:wrap;gap:15.3846rpx 23.0769rpx;padding:15.3846rpx 0 38.4615rpx;border-bottom:1px solid var(--line-subtle);font-size:25rpx;line-height:42.3077rpx;color:var(--muted)}.message-body{display:block;padding-top:46.1538rpx;font-size:30.7692rpx;line-height:55.7692rpx;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}.message-error{display:flex;align-items:flex-start;justify-content:space-between;gap:23.0769rpx;padding:23.0769rpx 0 38.4615rpx;color:#e9b69d}.message-error-copy{flex:1;min-width:0;font-size:25rpx;line-height:42.3077rpx;overflow-wrap:anywhere}.pending-retry{margin-top:46.1538rpx;font-size:25rpx}
 </style>

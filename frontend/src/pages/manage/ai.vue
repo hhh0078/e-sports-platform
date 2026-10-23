@@ -40,7 +40,7 @@ type AIForm=Pick<AISettings,'base_url'|'model'|'prompt'>
 const defaults:AIForm={base_url:'https://maas.qianwenaiapi.com/compatible-mode/v1',model:'qwen3.8-flash',prompt:''}
 const form=reactive<AIForm>({...defaults}),apiKey=ref(''),loading=ref(false),loaded=ref(false),busy=ref(false),testing=ref(false),error=ref(''),testError=ref(''),connection=ref<AIConnectionResult|null>(null)
 const status=reactive<Pick<AISettings,'has_api_key'|'ready'|'mode'|'configuration_notice'>>({has_api_key:false,ready:false,mode:'unconfigured',configuration_notice:''})
-const modeLabel=computed(()=>status.mode==='local_simulation'?'本地模拟':status.mode==='ai'?'已配置AI':'未配置密钥')
+const modeLabel=computed(()=>status.mode==='manual'?'人工审核':status.mode==='local_simulation'?'本地模拟':status.mode==='ai'?'已配置AI':'未配置密钥')
 let visible=false,version=0,saved:AIForm|null=null,loadedSession:ReturnType<typeof currentSession>|null=null
 /** 捕获管理员账号、令牌及认证修订，所有异步操作绑定本次会话。 */
 function currentSession(){return{id:state.user?.id,token:token(),revision:sessionRevision()}}

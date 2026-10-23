@@ -223,7 +223,7 @@ func (a *App) saveGame(w http.ResponseWriter, r *http.Request) (any, error) {
 	for _, cover := range append(append([]string{}, g.Covers...), g.CoverURL, g.IconURL) {
 		if strings.HasPrefix(cover, "/api/media/") {
 			v, e := get[Evidence](r.Context(), a.DB, "evidence", strings.TrimPrefix(cover, "/api/media/"), false)
-			if e != nil || !v.Public {
+			if e != nil || !v.Public || v.OrderID != "" || v.Moderation == "rejected" || len(v.Data) == 0 {
 				return nil, fail(400, "封面不存在或未通过管理员上传")
 			}
 		}

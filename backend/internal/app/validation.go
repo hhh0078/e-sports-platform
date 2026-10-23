@@ -3,7 +3,6 @@ package app
 
 import (
 	"net/http"
-	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -30,14 +29,8 @@ func contains(items []string, value string) bool {
 	return false
 }
 
-// validCover 只允许本站静态封面或 HTTPS 公共图片地址。
-func validCover(s string) bool {
-	if localCover.MatchString(s) || regexp.MustCompile(`^/api/media/[a-f0-9]{32}$`).MatchString(s) {
-		return true
-	}
-	u, err := url.Parse(s)
-	return err == nil && u.Scheme == "https" && u.Hostname() != "" && u.User == nil && len(s) <= 500 && !strings.ContainsAny(s, "\r\n")
-}
+// validCover 只允许稳定的本站静态素材和托管媒体；外链必须先上传，AI不抓取任意URL。
+func validCover(s string) bool { return localCover.MatchString(s) || publicImagePath.MatchString(s) }
 
 // validateGame 校验管理员可配置的完整游戏主题。
 func validateGame(g *Game) error {
@@ -50,15 +43,15 @@ func validateGame(g *Game) error {
 		}
 	}
 	if !validCover(g.CoverURL) || len(g.Covers) < 1 || len(g.Covers) > 12 {
-		return fail(400, "请配置 1 至 12 张合法封面")
+		return fail(400, "请配置1至12张内置或平台上传的封面，外部图片请先上传")
 	}
 	for _, c := range g.Covers {
 		if !validCover(c) {
-			return fail(400, "封面地址不合法")
+			return fail(400, "封面仅支持内置素材或平台上传图片，外部图片请先上传")
 		}
 	}
 	if g.IconURL != "" && !validCover(g.IconURL) {
-		return fail(400, "游戏图标地址不合法")
+		return fail(400, "游戏图标仅支持内置素材或平台上传图片，外部图片请先上传")
 	}
 	if len(g.Categories) < 1 || len(g.Categories) > 12 {
 		return fail(400, "请配置 1 至 12 个服务分类")
@@ -86,6 +79,9 @@ func validateService(s *Service, g Game) error {
 	}
 	if !contains(g.Categories, s.Category) {
 		return fail(400, "请选择当前游戏的服务分类")
+	}
+	if !validCover(s.CoverURL) {
+		return fail(400, "请选择平台托管的游戏封面，外部图片需由管理员先上传")
 	}
 	if !contains(g.Covers, s.CoverURL) {
 		return fail(400, "请选择当前游戏配置的封面")

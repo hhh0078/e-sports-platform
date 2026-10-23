@@ -9,7 +9,7 @@ export function listDevAccounts(): Promise<User[]> { return request('/dev/accoun
 export function loginDev(userID: string, consent: Consent = {}): Promise<AuthSession> { return request('/auth/dev', 'POST', { user_id: userID, ...consent }) }
 /** 仅换取一次性票据，不建立会话。 */
 export function prepareWechat(code: string): Promise<WechatPreparation> { return request('/auth/wechat/prepare', 'POST', { code }) }
-/** 用户主动同意协议后创建正式会话。 */
+/** 用户主动同意协议后创建正式会话，返回服务端新注册标记而非按头像推测。 */
 export function signInWechat(ticket: string, consent: Consent): Promise<AuthSession> { return request('/auth/wechat', 'POST', { ticket, ...consent }) }
 /** 撤销当前服务端会话。 */
 export function signOut(): Promise<void> { return request('/auth/logout', 'POST', {}) }

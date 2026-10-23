@@ -1,4 +1,4 @@
-// Package app 在数据库写入前审查用户图文，失败关闭并隔离用户指令与审核规则。
+// Package app 提供安全的图文AI协议和提交限流，业务数据保存后由持久队列调用审核。
 package app
 
 import (
@@ -29,7 +29,7 @@ type moderationDecision struct {
 
 // moderationUnavailable 构造不会透露上游响应或请求密钥的审核故障。
 func moderationUnavailable(reason string) error {
-	return &apiError{Status: 503, Code: "moderation_unavailable", Message: "内容审核暂不可用：" + reason + "。已填写内容不会被提交，请稍后重试"}
+	return &apiError{Status: 503, Code: "moderation_unavailable", Message: "内容审核暂不可用：" + reason + "。已保存内容继续等待人工审核"}
 }
 
 // publicAIIP 拒绝私有、回环、保留及云元数据网络，包括IPv4映射地址。
@@ -152,49 +152,22 @@ func (a *App) callAI(ctx context.Context, v aiSettings, text string, images []mo
 	return parseModerationDecision(envelope.Choices[0].Message.Content)
 }
 
-// moderateContent 对提交内容执行一次明确审核，本地无密钥仅模拟且正式环境关闭该分支。
+// moderateContent 仅保留旧接口文字体积校验；内容写入后由持久队列审核，不调用外部模型。
 func (a *App) moderateContent(r *http.Request, u User, scope string, parts []string, images []moderationImage) error {
-	text := strings.TrimSpace(strings.Join(parts, "\n"))
-	if text == "" && len(images) == 0 {
-		return nil
-	}
-	if len(text) > 60000 {
+	if len(strings.Join(parts, "\n")) > 60000 {
 		return fail(400, "待审核文字过长")
 	}
-	v, err := a.readAISettings(r.Context(), a.DB)
-	if err != nil {
-		return moderationUnavailable("无法读取审核配置")
-	}
-	if v.APIKey == "" && a.Config.DevMode {
-		if strings.Contains(text, "[审核故障测试]") {
-			return moderationUnavailable("本地模拟审核服务故障")
+	if strings.TrimSpace(strings.Join(parts, "\n")) != "" || len(images) > 0 {
+		limited := !a.Config.DevMode
+		if !limited {
+			cfg, err := a.readAISettings(r.Context(), a.DB)
+			limited = err == nil && cfg.APIKey != ""
 		}
-		if strings.Contains(text, "[审核拒绝测试]") {
-			reason := "本地模拟拒绝：请修改含测试标记的内容"
-			if err = sendModerationNotice(r.Context(), a.DB, u.ID, scope, reason); err != nil {
-				return moderationUnavailable("审核通知保存失败")
-			}
-			return &apiError{Status: 422, Code: "moderation_rejected", Message: "内容审核未通过：" + reason}
+		if limited {
+			return a.throttle(r.Context(), "moderation", u.ID, 90)
 		}
-		return nil
 	}
-	if err = a.throttle(r.Context(), "moderation", u.ID, 90); err != nil {
-		return err
-	}
-	encoded, _ := json.Marshal(map[string]string{"context": scope, "text": text})
-	result, err := a.callAI(r.Context(), v, string(encoded), images)
-	if err != nil {
-		return err
-	}
-	if result.Decision == "allow" {
-		return nil
-	}
-	reason := "内容审核未通过：" + result.Reason
-	// 拒绝通知只存原因，不存原始违规文本或图片，重复提交同原因不会重复刷屏。
-	if err = sendModerationNotice(r.Context(), a.DB, u.ID, scope, result.Reason); err != nil {
-		return moderationUnavailable("审核通知保存失败")
-	}
-	return &apiError{Status: 422, Code: "moderation_rejected", Message: reason}
+	return nil
 }
 
 // moderateText 复用图文审查入口，仅传递明确选择的公开/沟通文字，不发送认证支付字段。

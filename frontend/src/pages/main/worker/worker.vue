@@ -47,7 +47,7 @@
 			正在同步{{ tab==='services'?'服务':tab==='jobs'?'需求':'俱乐部' }}…</view>
 		<template v-else-if="tab==='services'">
 			<view v-if="mine.length" class="card-grid">
-				<ServiceCard v-for="service in mine" :key="service.id" :service="service"><template #actions>
+				<ServiceCard v-for="service in mine" :key="service.id" :service="service" :active="props.active"><template #actions>
 						<view class="service-controls"><button class="service-control"
 								@click="go('/pages/services/publish?id='+service.id)">
 								<Icon name="edit" :size="13" />编辑服务
@@ -77,7 +77,7 @@
 			<EmptyState v-else title="暂时没有待接需求" detail="试试其他游戏，下一位队友也许正在路上。"
 				illustration="/static/illustrations/empty-orders-light.png" compact />
 		</template>
-        <template v-else-if="tab==='clubs'"><view v-if="publicClubs.length" class="join-club-list"><button v-for="club in publicClubs" :key="club.id" class="join-club-row" @click="go('/pages/community/clubs/detail?id='+club.id)"><view class="join-club-avatar"><image v-if="club.avatar_url" class="join-club-image" :src="assetUrl(club.avatar_url)" mode="aspectFill"/><Icon v-else name="club" :size="26"/></view><view class="join-club-copy"><text class="join-club-name">{{ club.name }}</text><view class="join-club-count"><Icon name="club" :size="12"/><text>{{ club.member_count||0 }}位成员</text></view><text class="join-club-description">{{ club.description||'一起认真游戏，寻找合拍的队友。' }}</text></view><Icon name="arrow" :size="15"/></button></view><EmptyState v-else title="暂时没有俱乐部" detail="新的团队正在集结，稍后再来看看。" icon="club"/></template>
+        <template v-else-if="tab==='clubs'"><view v-if="publicClubs.length" class="join-club-list"><button v-for="club in publicClubs" :key="club.id" class="join-club-row" @click="go('/pages/community/clubs/detail?id='+club.id)"><view class="join-club-avatar"><image v-if="club.avatar_url" class="join-club-image" lazy-load :src="assetUrl(club.avatar_url)" mode="aspectFill"/><Icon v-else name="club" :size="26"/></view><view class="join-club-copy"><text class="join-club-name">{{ club.name }}</text><view class="join-club-count"><Icon name="club" :size="12"/><text>{{ club.member_count||0 }}位成员</text></view><text class="join-club-description">{{ club.description||'一起认真游戏，寻找合拍的队友。' }}</text></view><Icon name="arrow" :size="15"/></button></view><EmptyState v-else title="暂时没有俱乐部" detail="新的团队正在集结，稍后再来看看。" icon="club"/></template>
 		<view v-if="moreError" class="hint danger">{{ moreError }}</view><button v-if="hasMore&&!loading&&!error"
 			class="load-more" :disabled="loadingMore"
 			@click="load(true)">{{ loadingMore?'正在加载…':moreError?'重试加载':'加载更多' }}

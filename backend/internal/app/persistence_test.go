@@ -59,14 +59,14 @@ func TestIntegrationRestartPreservesData(t *testing.T) {
 // TestIntegrationServiceReauditAndSensitiveFields 验证服务修改重新审核，支付字段不能通过接口外泄。
 func TestIntegrationServiceReauditAndSensitiveFields(t *testing.T) {
 	api := newTestAPI(t)
-	payload := map[string]any{"game_id": "delta", "title": "调整后的服务方案", "description": "修改价格后必须重新审核才允许继续向买家展示。", "category": "任务协作", "price_cents": 2300, "unit": "局", "cover_url": "/static/covers/official/delta-2.jpg", "labels": []CoverLabel{}, "tags": []string{}, "club_id": "shanhai"}
+	payload := map[string]any{"game_id": "delta", "title": "调整后的服务方案", "description": "修改服务后正常展示，文字交由后置审核。", "category": "任务协作", "price_cents": 2300, "unit": "局", "cover_url": "/static/covers/official/delta-2.jpg", "labels": []CoverLabel{}, "tags": []string{}, "club_id": "shanhai"}
 	var edited Service
 	api.call("worker", "PATCH", "/services/delta-service-1", payload, 200, &edited)
-	if edited.Status != "pending" {
-		t.Fatal("修改服务必须重新审核")
+	if edited.Status != "active" {
+		t.Fatal("内容后置审核不应下架正常服务")
 	}
-	api.call("", "GET", "/services/delta-service-1", nil, 404, nil)
-	api.call("player", "POST", "/orders", map[string]any{"service_id": "delta-service-1", "quantity": 1}, 409, nil)
+	api.call("", "GET", "/services/delta-service-1", nil, 200, nil)
+	api.call("player", "POST", "/orders", map[string]any{"service_id": "delta-service-1", "quantity": 1}, 200, nil)
 	api.call("admin", "PATCH", "/admin/services/delta-service-1", map[string]string{"status": "active"}, 200, nil)
 	o := api.newOrder()
 	stored, err := get[Order](t.Context(), api.App.DB, "orders", o.ID, false)

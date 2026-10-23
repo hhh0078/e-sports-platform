@@ -371,10 +371,10 @@ func TestIntegrationPublicationAndProduction(t *testing.T) {
 	api := newTestAPI(t)
 	var s Service
 	api.call("worker", "POST", "/services", map[string]any{"game_id": "delta", "title": "测试自定义服务", "description": "明确提供陪练和任务协作服务，不索取游戏密码。", "category": "任务协作", "price_cents": 1900, "unit": "小时", "cover_url": "/static/covers/official/delta-1.jpg", "labels": []CoverLabel{{Text: "认真陪练", Color: "#FFFFFF", Background: "transparent", FontSize: 16}}, "tags": []string{"耐心"}, "club_id": "shanhai"}, 200, &s)
-	if s.Status != "pending" {
-		t.Fatal("发布必须待审核")
+	if s.Status != "active" {
+		t.Fatal("后置审核应先正常发布")
 	}
-	api.call("", "GET", "/services/"+s.ID, nil, 404, nil)
+	api.call("", "GET", "/services/"+s.ID, nil, 200, nil)
 	api.call("outsider", "PATCH", "/services/"+s.ID, map[string]any{"game_id": "delta"}, 403, nil)
 	api.call("admin", "PATCH", "/admin/services/"+s.ID, map[string]string{"status": "active"}, 200, nil)
 	api.call("", "GET", "/services/"+s.ID, nil, 200, nil)

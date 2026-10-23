@@ -149,7 +149,7 @@ func (a *App) uploadImage(w http.ResponseWriter, r *http.Request) (any, error) {
 
 // validateOwnedImage 只接收本用途、本用户或本俱乐部的托管图片，拒绝跨订单与跨俱乐部引用。
 func validateOwnedImage(ctx context.Context, q querier, raw, purpose, ownerID, clubID string, actor User) error {
-	if raw == "" {
+	if raw == "" || raw == rejectedImageURL {
 		return nil
 	}
 	if trustedDefaultAvatar(raw, purpose) {
@@ -160,7 +160,7 @@ func validateOwnedImage(ctx context.Context, q querier, raw, purpose, ownerID, c
 		return fail(400, "请使用本平台上传的图片")
 	}
 	v, err := get[PublicImage](ctx, q, "evidence", match[1], false)
-	if err != nil || !v.Public || v.OrderID != "" || v.Purpose != purpose {
+	if err != nil || !v.Public || v.OrderID != "" || v.Purpose != purpose || v.Moderation == "rejected" || len(v.Data) == 0 {
 		return fail(400, "图片不存在或用途不匹配")
 	}
 	if purpose == "support_qr" {

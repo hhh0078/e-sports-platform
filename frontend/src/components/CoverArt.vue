@@ -1,7 +1,7 @@
 <!-- 文件作用：按共享布局算法渲染游戏封面和互不重叠的文字标签。 -->
 <template>
 	<view class="cover-art" :style="coverStyle">
-		<image v-if="src" class="cover-image" :src="assetUrl(src)" mode="aspectFill" />
+		<image v-if="src" class="cover-image" :src="assetUrl(src)" mode="aspectFill" :lazy-load="lazyLoad" />
 		<view v-if="shade" class="cover-shade" />
 		<view v-for="label in arranged" :key="label.id" :class="['cover-label',{'cover-label-readable':readable}]" :style="labelStyle(label)">{{ label.text }}
 		</view>
@@ -19,7 +19,8 @@
 		ref
 	} from 'vue'
 	import {
-		onShow
+		onShow,
+		onHide
 	} from '@dcloudio/uni-app'
 	import {
 		assetUrl
@@ -31,8 +32,9 @@
 	import type { CoverLabel } from '../types/models'
 	import type { PlacedLabel } from '../lib/cover'
 	import {layoutReadableCover} from '../lib/cover-readable'
-	import { mainNavigation } from '../lib/navigation'
-	const props = withDefaults(defineProps<{ src?: string; labels?: CoverLabel[]; shade?: boolean; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number; aspectRatio?: number;readable?:boolean;minFontPixels?:number }>(), { labels: () => [], shade: true, reserveBottom: 0, reserveBottomPixels: 0, reserveTopPixels: 0, minLabelAreaPixels: 0, aspectRatio: 16 / 9,readable:false,minFontPixels:10 })
+	import { useViewportWidth } from '../lib/viewport'
+	const props = withDefaults(defineProps<{ src?: string; labels?: CoverLabel[]; shade?: boolean; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number; aspectRatio?: number;readable?:boolean;minFontPixels?:number; active?: boolean; lazyLoad?: boolean }>(), { labels: () => [], shade: true, reserveBottom: 0, reserveBottomPixels: 0, reserveTopPixels: 0, minLabelAreaPixels: 0, aspectRatio: 16 / 9,readable:false,minFontPixels:10, active: true, lazyLoad: false })
+	const viewportWidth = useViewportWidth()
 	const width = ref(0)
 	const instance = getCurrentInstance()
 	const ratio = computed(() => Number.isFinite(props.aspectRatio) && props.aspectRatio >= .5 && props.aspectRatio <= 4 ? props.aspectRatio : 16 / 9)
@@ -47,7 +49,7 @@
 	const canvasHeight=computed(()=>props.readable&&width.value>0?readableLayout.value.height*360/width.value:baseCanvasHeight.value)
 	const coverStyle = computed<CSSProperties>(() => ({ paddingTop: canvasHeight.value / 360 * 100 + '%' }))
 	const arranged = computed(() =>props.readable?readableLayout.value.labels:layoutLabels(props.labels || [], reserved.value, canvasHeight.value, reservedTop.value))
-	let active = false
+	let mounted = false, pageVisible = true, measureQueued = false, measurementVersion = 0
 	let resizeObserver: ResizeObserver | undefined
 	/** 将画布坐标转换为当前卡片的相对位置与字号。 */
 	function labelStyle(label: PlacedLabel): CSSProperties {
@@ -63,36 +65,46 @@
 			visibility: width.value ? 'visible' : 'hidden'
 		}
 	}
-	/** 测量实际宽度以保持封面预览与卡片文字位置一致。 */
+	/** 仅可见且已挂载的封面允许测量，隐藏标签页不会跨层读取布局。 */
+	function canMeasure(): boolean { return mounted && pageVisible && props.active }
+	/** 同一轮尺寸变化合并为一次测量，隐藏和卸载后的迟到结果不能改变已有布局。 */
 	function measure() {
-		nextTick(() => {
-			if (active && instance?.proxy) uni.createSelectorQuery().in(instance.proxy).select('.cover-art').boundingClientRect(
+		if (!canMeasure()) return
+		measurementVersion++
+		if (measureQueued) return
+		measureQueued = true
+		void nextTick(() => {
+			measureQueued = false
+			const version = measurementVersion
+			if (canMeasure() && instance?.proxy) uni.createSelectorQuery().in(instance.proxy).select('.cover-art').boundingClientRect(
 				rect => {
-					if (!Array.isArray(rect) && active && rect?.width) width.value = rect.width
+					if (!Array.isArray(rect) && canMeasure() && version === measurementVersion && rect?.width) width.value = rect.width
 				}).exec()
 		})
 	}
-	/** 监听页面及容器尺寸变化，避免旋转屏幕后文字字号与坐标失配。 */
-	function startMeasuring() {
-		active = true
-		measure()
-		uni.onWindowResize?.(measure)
+	/** 显示时恢复容器监听并重测，隐藏时立即停止，不监听无关标签页修订号。 */
+	function synchronizeMeasuring() {
+		measurementVersion++
+		if (!canMeasure()) { resizeObserver?.disconnect(); resizeObserver = undefined; return }
 		// #ifdef H5
-		if (typeof ResizeObserver !== 'undefined' && instance?.proxy?.$el?.nodeType === 1) {
+		if (!resizeObserver && typeof ResizeObserver !== 'undefined' && instance?.proxy?.$el?.nodeType === 1) {
 			resizeObserver = new ResizeObserver(measure)
 			resizeObserver.observe(instance.proxy.$el)
 		}
 		// #endif
+		measure()
 	}
 	/** 卸载时清理尺寸监听，防止隐藏旧组件继续更新。 */
 	function stopMeasuring() {
-		active = false;
-		uni.offWindowResize?.(measure);
+		mounted = false
+		measurementVersion++
 		resizeObserver?.disconnect()
 	}
-	onMounted(startMeasuring)
-	watch(() => mainNavigation.revision, measure)
-	onShow(measure)
+	onMounted(() => { mounted = true; synchronizeMeasuring() })
+	watch(() => props.active, synchronizeMeasuring)
+	watch(viewportWidth, measure)
+	onShow(() => { pageVisible = true; synchronizeMeasuring() })
+	onHide(() => { pageVisible = false; synchronizeMeasuring() })
 	onBeforeUnmount(stopMeasuring)
 </script>
 <style scoped>

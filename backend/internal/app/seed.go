@@ -111,5 +111,8 @@ func (a *App) seed(ctx context.Context) error {
 	if err = migrateDefaultBrand(ctx, tx, a.Config.DevMode); err != nil {
 		return err
 	}
+	if err = migratePostReviewDefaultAgreements(ctx, tx); err != nil {
+		return err
+	}
 	return tx.Commit(ctx)
 }

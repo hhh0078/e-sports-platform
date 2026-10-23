@@ -39,55 +39,50 @@ func uploadModerationEvidence(t *testing.T, api *testAPI, orderID string, expect
 	}
 }
 
-// TestIntegrationImagesRejectedAndLegacyRechecked 验证图片违规/模型故障拒绝及历史素材真实字节补审。
-func TestIntegrationImagesRejectedAndLegacyRechecked(t *testing.T) {
+// TestIntegrationImagesPostReviewAndEvidenceRetention 验证图片先上传，公开拒绝删除字节，交易证据拒绝仅隔离。
+func TestIntegrationImagesPostReviewAndEvidenceRetention(t *testing.T) {
 	api := newTestAPI(t)
 	o := api.newOrder()
-	legacyAvatar := api.uploadCommunityImage("player", "avatar", "", communityPNG(t, 256, 256), 200)
-	legacyEvidence := api.uploadTestImage("player", o.ID)
-	var count int
-	if err := api.App.DB.QueryRow(t.Context(), "SELECT count(*) FROM evidence").Scan(&count); err != nil {
-		t.Fatal(err)
-	}
+	avatar := api.uploadCommunityImage("player", "avatar", "", communityPNG(t, 256, 256), 200)
+	evidence := api.uploadTestImage("player", o.ID)
+	api.call("player", "PATCH", "/me/profile", map[string]string{"avatar": avatar}, 200, nil)
+	api.call("player", "POST", "/orders/"+o.ID+"/messages", map[string]string{"image_url": evidence}, 200, nil)
 	var calls atomic.Int32
 	installMockAI(t, api, func(r *http.Request) (*http.Response, error) {
 		calls.Add(1)
 		raw, _ := io.ReadAll(r.Body)
-		if !strings.Contains(string(raw), "data:image/png;base64,") {
-			t.Error("历史图片没有发送实际字节")
+		if strings.Contains(string(raw), "data:image/png;base64,") {
+			return aiMockResponse(`{"decision":"reject","reason":"图片包含违规信息"}`), nil
 		}
-		return aiMockResponse(`{"decision":"reject","reason":"图片包含违规信息"}`), nil
+		return aiMockResponse(`{"decision":"allow","reason":""}`), nil
 	})
 	api.App.Config.DevMode = false
-	api.call("outsider", "PATCH", "/me/profile", map[string]string{"avatar": legacyAvatar}, 403, nil)
+	api.call("outsider", "PATCH", "/me/profile", map[string]string{"avatar": avatar}, 403, nil)
 	if calls.Load() != 0 {
-		t.Fatal("越权读取的图片进入AI服务")
+		t.Fatal("越权读取图进入模型")
 	}
-	api.call("player", "PATCH", "/me/profile", map[string]string{"avatar": legacyAvatar}, 422, nil)
-	api.call("player", "POST", "/orders/"+o.ID+"/messages", map[string]string{"image_url": legacyEvidence}, 422, nil)
-	api.uploadCommunityImage("player", "avatar", "", communityPNG(t, 256, 256), 422)
-	uploadModerationEvidence(t, api, o.ID, 422)
-	var after int
-	api.App.DB.QueryRow(t.Context(), "SELECT count(*) FROM evidence").Scan(&after)
-	if after != count {
-		t.Fatal("被拒绝图片仍然持久化")
+	drainReviewAI(t, api)
+	image, err := get[PublicImage](t.Context(), api.App.DB, "evidence", reviewMediaID(avatar), false)
+	if err != nil || len(image.Data) != 0 || image.Moderation != "rejected" || image.Purpose != "avatar" {
+		t.Fatal("公开违规图片未删字节或丢失元数据")
 	}
+	original, err := get[Evidence](t.Context(), api.App.DB, "evidence", reviewMediaID(evidence), false)
+	if err != nil || len(original.Data) == 0 || original.Moderation != "rejected" {
+		t.Fatal("交易原证据丢失或未隔离")
+	}
+	saved, _ := get[User](t.Context(), api.App.DB, "users", "player", false)
+	if saved.Avatar != rejectedImageURL {
+		t.Fatal("头像引用未替换")
+	}
+	res, err := api.Server.Client().Get(api.Server.URL + avatar)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 || res.Header.Get("Content-Type") != "image/png" || res.Header.Get("Cache-Control") != "private, no-store" {
+		t.Fatal("旧图片ID仍可取原图")
+	}
+	api.uploadCommunityImage("player", "avatar", "", communityPNG(t, 256, 256), 200)
 	api.App.AIHTTPClient = &http.Client{Transport: paymentTransport(func(*http.Request) (*http.Response, error) { return nil, context.DeadlineExceeded })}
-	api.uploadCommunityImage("player", "avatar", "", communityPNG(t, 256, 256), 503)
-	uploadModerationEvidence(t, api, o.ID, 503)
-	api.App.AIHTTPClient = &http.Client{Transport: paymentTransport(func(*http.Request) (*http.Response, error) {
-		calls.Add(1)
-		return aiMockResponse(`{"decision":"allow","reason":""}`), nil
-	})}
-	api.call("player", "PATCH", "/me/profile", map[string]string{"avatar": legacyAvatar}, 200, nil)
-	match := publicImagePath.FindStringSubmatch(legacyAvatar)
-	image, err := get[Evidence](t.Context(), api.App.DB, "evidence", match[1], false)
-	if err != nil || image.Moderation != "ai" {
-		t.Fatal("正式图片补审结果没有持久化")
-	}
-	before := calls.Load()
-	api.call("player", "PATCH", "/me/profile", map[string]string{"avatar": legacyAvatar}, 200, nil)
-	if calls.Load() != before {
-		t.Fatal("已审不可变图片不应重复调用模型")
-	}
+	drainReviewAI(t, api)
 }

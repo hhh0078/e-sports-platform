@@ -134,7 +134,7 @@ func validateClub(ctx context.Context, q querier, c Club) error {
 	return nil
 }
 
-// saveClub 创建或编辑组织，修改资料将重新审核并暂时撤销认证。
+// saveClub 创建组织走押金及认证流程；既有组织的资料编辑只加入独立后置审核。
 func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	u, err := a.actor(r)
 	if err != nil {
@@ -325,11 +325,14 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 		c.CreationDepositVersion = 1
 		c.CreationDepositRequiredCents = settings.ClubCreationDepositCents
 	}
-	c.Status = "pending"
-	if r.PathValue("id") == "" && settings.ClubCreationDepositCents > 0 {
-		c.Status = "pending_deposit"
+	// 图文编辑与组织认证独立；仅创建时进入押金及组织审核流程。
+	if r.PathValue("id") == "" {
+		c.Status = "pending"
+		c.Verified = false
+		if settings.ClubCreationDepositCents > 0 {
+			c.Status = "pending_deposit"
+		}
 	}
-	c.Verified = false
 	if err = validateClub(r.Context(), tx, c); err != nil {
 		return nil, err
 	}

@@ -11,10 +11,10 @@ export function messageCacheKey(userID: string): string { if (!userID.trim()) th
 export function isSystemMessage(value: unknown): value is SystemMessage {
   if (typeof value !== 'object' || value === null) return false
   const item = value as Record<string, unknown>
-  return typeof item.id === 'string' && !!item.id.trim() && typeof item.title === 'string' && typeof item.body === 'string' && typeof item.created_at === 'string' && Number.isFinite(Date.parse(item.created_at)) && (item.user_id === undefined || typeof item.user_id === 'string')
+  return typeof item.id === 'string' && !!item.id.trim() && typeof item.title === 'string' && typeof item.body === 'string' && typeof item.created_at === 'string' && Number.isFinite(Date.parse(item.created_at)) && (item.user_id === undefined || typeof item.user_id === 'string') && ['action_path','action_label','target_type','target_id','field_label'].every(key=>item[key]===undefined||typeof item[key]==='string')
 }
 /** 复制声明字段，避免服务端或存储中的额外字段进入本机历史。 */
-function messageFields(item: SystemMessage): SystemMessage { return { id: item.id, title: item.title, body: item.body, created_at: item.created_at, ...(item.user_id ? { user_id: item.user_id } : {}) } }
+function messageFields(item: SystemMessage): SystemMessage { return { id: item.id, title: item.title, body: item.body, created_at: item.created_at, ...(item.user_id ? { user_id: item.user_id } : {}), ...(item.action_path !== undefined ? { action_path: item.action_path } : {}), ...(item.action_label !== undefined ? { action_label: item.action_label } : {}), ...(item.target_type !== undefined ? { target_type: item.target_type } : {}), ...(item.target_id !== undefined ? { target_id: item.target_id } : {}), ...(item.field_label !== undefined ? { field_label: item.field_label } : {}) } }
 /** 校验账号归属和已读确认关系，禁止未读消息携带待删除标记。 */
 function checkedItems(userID: string, value: unknown): CachedMessage[] {
   if (!Array.isArray(value)) throw new Error('本机消息缓存格式异常，未删除服务器消息')

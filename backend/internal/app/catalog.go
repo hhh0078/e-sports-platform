@@ -18,12 +18,12 @@ func (a *App) bootstrap(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	mode := "unconfigured"
+	mode := "manual"
 	if cfg, e := a.readAISettings(r.Context(), a.DB); e == nil {
 		if cfg.APIKey != "" {
 			mode = "ai"
 		} else if a.Config.DevMode {
-			mode = "local_simulation"
+			mode = "manual"
 		}
 	}
 	return map[string]any{"games": games, "moderation_mode": mode, "dev_mode": a.Config.DevMode, "site_name": s.SiteName, "announcement": s.Announcement, "support_qr_url": s.SupportQRURL, "support_phone": s.SupportPhone, "support_wechat": s.SupportWechat}, nil
@@ -183,7 +183,9 @@ func (a *App) saveService(w http.ResponseWriter, r *http.Request) (any, error) {
 	s.Labels = in.Labels
 	s.Tags = in.Tags
 	s.ClubID = in.ClubID
-	s.Status = "pending"
+	if s.Status == "" || s.Status == "pending" {
+		s.Status = "active"
+	}
 	if err = validateService(&s, g); err != nil {
 		return nil, err
 	}

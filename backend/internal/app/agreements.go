@@ -33,14 +33,26 @@ func legacyDefaultAgreements() agreementSet {
 	}
 }
 
-// defaultAgreements 以独立新版本发布开机电竞默认条款，不修改旧版本正文与同意证据。
-func defaultAgreements() agreementSet {
+// legacyBrandAgreements 保存更名时已发布的默认协议，供精确升级和旧同意追溯。
+func legacyBrandAgreements() agreementSet {
 	v := legacyDefaultAgreements()
 	for _, doc := range []*agreementDocument{&v.UserAgreement, &v.PrivacyPolicy} {
 		doc.Version = "2026-10-22.3"
 		doc.Title = strings.ReplaceAll(doc.Title, "集结", "开机电竞")
 		doc.Content = strings.ReplaceAll(doc.Content, "集结", "开机电竞")
 	}
+	return v
+}
+
+// defaultAgreements 以独立版本说明先保存后审核、人工兜底及交易违规原件受限隔离，不修改旧版本。
+func defaultAgreements() agreementSet {
+	v := legacyBrandAgreements()
+	for _, doc := range []*agreementDocument{&v.UserAgreement, &v.PrivacyPolicy} {
+		doc.Version = "2026-10-23.2"
+		doc.UpdatedAt = "2026-10-23T00:00:00Z"
+	}
+	v.UserAgreement.Content = strings.Replace(v.UserAgreement.Content, "用户提交的文字和图片需通过内容审核；审核拒绝会说明原因，审核服务故障时暂停提交。", "用户提交的文字和图片在格式、归属与业务权限校验后先保存或发布，再进入后置图文审核。平台管理员可人工审核；配置AI后可由AI辅助审核，未配置、超时或AI故障时继续等待人工处理，不阻断已保存业务。审核拒绝会说明原因并通知提交人；对应公开文字将被替换，公开违规图片将移除。订单、聊天、调价及售后原始材料不因此改写资金事实；违规交易原件从普通展示中屏蔽并隔离保留，仅供平台管理员处理争议和合规查证。", 1)
+	v.PrivacyPolicy.Content = strings.Replace(v.PrivacyPolicy.Content, "会发送给运营者在后台配置的AI服务。", "在提交成功后进入人工或AI图文审核。仅在运营者配置可用AI时，必要的待审文字和实际图片字节才发送给相应AI服务；未配置或服务故障时等待人工审核，不阻断已保存业务。公开违规图片会移除，违规文字会替换；交易原始材料隔离保留，仅限平台管理员按职责查证，普通参与者不再看到违规原文或原图。", 1)
 	return v
 }
 

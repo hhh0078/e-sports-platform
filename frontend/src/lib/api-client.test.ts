@@ -1,22 +1,26 @@
 /** 文件作用：验证真实统一请求工具的认证头、HTTP错误、上传解析及业务查询编码。 */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { request, requestPublic, upload, queryString, errorMessage, errorStatus, errorCode } from '../api/client'
+import { API_BASE, request, requestPublic, upload, download, queryString, errorMessage, errorStatus, errorCode } from '../api/client'
 import { performOrderAction, listMessages } from '../api/orders.api'
 import { verifyDevPhone } from '../api/auth.api'
 
 /** 创建可控的 uni 平台传输接口，测试实际 API 层而不替代业务方法。 */
 function setup() {
-  const requests: UniApp.RequestOptions[] = [], uploads: UniApp.UploadFileOption[] = []
+  const requests: UniApp.RequestOptions[] = [], uploads: UniApp.UploadFileOption[] = [], downloads: UniApp.DownloadFileOption[] = [], notices: UniApp.ShowToastOptions[] = [], removed: string[] = []
+  let currentToken = 'token-current'
   const runtime = {
-    getStorageSync: () => 'token-current',
+    getStorageSync: () => currentToken,
+    showToast: (options: UniApp.ShowToastOptions) => { notices.push(options) },
+    downloadFile: (options: UniApp.DownloadFileOption) => { downloads.push(options) },
+    getFileSystemManager: () => ({ unlink: ({ filePath }: { filePath: string }) => { removed.push(filePath) } }),
     request: (options: UniApp.RequestOptions) => { requests.push(options) },
     uploadFile: (options: UniApp.UploadFileOption) => { uploads.push(options) },
   }
   const platform = globalThis as unknown as { uni: Partial<typeof uni> }
   const original = platform.uni
   platform.uni = runtime as unknown as Partial<typeof uni>
-  return { requests, uploads, restore() { platform.uni = original } }
+  return { requests, uploads, downloads, notices, removed, setToken(value: string) { currentToken = value }, restore() { platform.uni = original } }
 }
 
 test('请求统一附带当前令牌并只解包业务data', async () => {
@@ -104,5 +108,94 @@ test('文字及图片审核拒绝保留稳定错误码和完整理由', async ()
     subject.uploads[0].success?.({ statusCode: 503, data: JSON.stringify({ error: '内容审核暂不可用，请保留草稿后重试', code: 'moderation_unavailable' }) })
     await assert.rejects(image, (error: unknown) => errorCode(error) === 'moderation_unavailable' && errorStatus(error) === 503)
     assert.equal(errorCode({ code: 42 }), undefined)
+  } finally { subject.restore() }
+})
+
+
+/** 等待当前队列的零延时轻提示执行完毕后才归还全局uni接口。 */
+async function drainNotices(): Promise<void> { await new Promise(resolve => setTimeout(resolve, 0)) }
+
+test('写入保留原data，AI和人工回执分别提示，图片使用上传文案', async () => {
+  const subject = setup()
+  try {
+    const data = { id: 'service-A', state: 'active' }
+    const writing = request<typeof data>('/services', 'POST', { title: '服务' })
+    subject.requests[0].success?.({ statusCode: 201, data: { data, moderation: { status: 'ai_pending', pending_count: 3, estimated_seconds: 20 } }, header: {}, cookies: [] })
+    assert.equal(await writing, data)
+    assert.equal(subject.notices.length, 0, '审核轻提示不阻塞成功回调')
+    await drainNotices()
+    assert.match(String(subject.notices[0].title), /已保存.*图文审核中.*20秒/)
+    const editing = request('/me/profile', 'PATCH', { nickname: '队友' })
+    subject.requests[1].success?.({ statusCode: 200, data: { data: { id: 'user-A' }, moderation: { status: 'manual_pending', pending_count: 1 } }, header: {}, cookies: [] })
+    await editing; await drainNotices()
+    assert.equal(subject.notices[1].title, '已保存，等待人工审核')
+    assert.equal(String(subject.notices[1].title).includes('20秒'), false)
+    const uploading = upload<{ url: string }>('/media/images', '/tmp/avatar.jpg')
+    subject.uploads[0].success?.({ statusCode: 200, data: JSON.stringify({ data: { url: '/api/media/image-A' }, moderation: { status: 'ai_pending', pending_count: 1 } }) })
+    assert.deepEqual(await uploading, { url: '/api/media/image-A' }); await drainNotices()
+    assert.match(String(subject.notices[2].title), /^图片已上传.*图文审核中/)
+  } finally { await drainNotices(); subject.restore() }
+})
+
+test('GET、无回执、无任务、匿名和失败响应不产生审核提示', async () => {
+  const subject = setup(), receipt = { status: 'ai_pending', pending_count: 1 }
+  try {
+    const reading = request('/services'); subject.requests[0].success?.({ statusCode: 200, data: { data: [], moderation: receipt }, header: {}, cookies: [] }); await reading
+    const ordinary = request('/services', 'POST', {}); subject.requests[1].success?.({ statusCode: 200, data: { data: {} }, header: {}, cookies: [] }); await ordinary
+    const empty = request('/services', 'PATCH', {}); subject.requests[2].success?.({ statusCode: 200, data: { data: {}, moderation: { ...receipt, pending_count: 0 } }, header: {}, cookies: [] }); await empty
+    const failed = request('/services', 'POST', {}); subject.requests[3].success?.({ statusCode: 400, data: { error: '格式无效', moderation: receipt }, header: {}, cookies: [] }); await assert.rejects(failed)
+    const anonymous = requestPublic('/bootstrap'); subject.requests[4].success?.({ statusCode: 200, data: { data: {}, moderation: receipt }, header: {}, cookies: [] }); await anonymous
+    subject.setToken('')
+    const unauthenticated = request('/services', 'POST', {}); subject.requests[5].success?.({ statusCode: 200, data: { data: {}, moderation: receipt }, header: {}, cookies: [] }); await unauthenticated
+    const badUpload = upload('/media/images', '/tmp/avatar.png'); subject.uploads[0].success?.({ statusCode: 503, data: JSON.stringify({ error: '保存失败', moderation: receipt }) }); await assert.rejects(badUpload)
+    await drainNotices(); assert.equal(subject.notices.length, 0)
+  } finally { await drainNotices(); subject.restore() }
+})
+
+test('响应前换号与已排队提示展示前换号均丢弃旧身份的审核提示', async () => {
+  const subject = setup(), receipt = { status: 'manual_pending', pending_count: 1 }
+  try {
+    const old = request('/me/profile', 'PATCH', {}); subject.setToken('token-new')
+    subject.requests[0].success?.({ statusCode: 200, data: { data: { id: 'old-user' }, moderation: receipt }, header: {}, cookies: [] }); await old; await drainNotices(); assert.equal(subject.notices.length, 0)
+    const queued = request('/me/profile', 'PATCH', {}); subject.requests[1].success?.({ statusCode: 200, data: { data: {}, moderation: receipt }, header: {}, cookies: [] }); await queued
+    subject.setToken('token-third'); await drainNotices(); assert.equal(subject.notices.length, 0)
+    const image = upload('/media/images', '/tmp/avatar.png', 'token-third'); subject.setToken('token-fourth')
+    subject.uploads[0].success?.({ statusCode: 200, data: JSON.stringify({ data: { url: '/api/media/old' }, moderation: receipt }) }); await image; await drainNotices(); assert.equal(subject.notices.length, 0)
+  } finally { await drainNotices(); subject.restore() }
+})
+
+test('受限图片下载只向固定同源路径发送Bearer请求头并返回200临时文件', async () => {
+  const subject = setup()
+  try {
+    const pending = download('/admin/moderation/task-A/image')
+    assert.equal(subject.downloads[0].url, API_BASE + '/admin/moderation/task-A/image')
+    assert.equal(subject.downloads[0].header?.Authorization, 'Bearer token-current')
+    assert.equal(subject.downloads[0].timeout, 15000)
+    assert.equal(subject.downloads[0].url.includes('token-current'), false)
+    subject.downloads[0].success?.({ statusCode: 200, tempFilePath: '/tmp/protected.png' })
+    assert.equal(await pending, '/tmp/protected.png'); assert.deepEqual(subject.removed, [])
+    for (const invalid of ['https://external.invalid/image', '//external.invalid/image', '/image\r\nInjected: value']) await assert.rejects(download(invalid), /接口地址无效/)
+    assert.equal(subject.downloads.length, 1)
+  } finally { subject.restore() }
+})
+
+test('未登录、HTTP失败、空路径和网络失败均不冒充有效审核图片', async () => {
+  const subject = setup()
+  try {
+    subject.setToken(''); await assert.rejects(download('/admin/moderation/task-A/image'), error => errorStatus(error) === 401); assert.equal(subject.downloads.length, 0)
+    subject.setToken('token-current')
+    const forbidden = download('/admin/moderation/task-A/image'); subject.downloads[0].success?.({ statusCode: 403, tempFilePath: '/tmp/forbidden-response' }); await assert.rejects(forbidden, error => errorStatus(error) === 403); assert.deepEqual(subject.removed, ['/tmp/forbidden-response'])
+    const empty = download('/admin/moderation/task-A/image'); subject.downloads[1].success?.({ statusCode: 200, tempFilePath: '' }); await assert.rejects(empty, /暂时无法读取审核图片/)
+    const offline = download('/admin/moderation/task-A/image'); subject.downloads[2].fail?.({ errMsg: 'downloadFile:fail timeout' }); await assert.rejects(offline, /下载失败/)
+  } finally { subject.restore() }
+})
+
+test('下载期间换号会删除旧临时文件并以取消错误拒绝交付', async () => {
+  const subject = setup()
+  try {
+    const pending = download('/admin/moderation/task-A/image'); subject.setToken('token-another')
+    subject.downloads[0].success?.({ statusCode: 200, tempFilePath: '/tmp/old-account.png' })
+    await assert.rejects(pending, error => typeof error === 'object' && error !== null && 'cancelled' in error && error.cancelled === true)
+    assert.deepEqual(subject.removed, ['/tmp/old-account.png'])
   } finally { subject.restore() }
 })

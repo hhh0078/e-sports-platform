@@ -30,7 +30,7 @@
 				<view v-if="error" class="login-error"><text class="login-error-copy">{{error}}</text><button
 						v-if="!agreements" class="retry-login" @click="load">重新加载</button></view>
 				<button class="btn login-primary" :disabled="!!submitting||loading" @click="realLogin">
-					<Icon name="weixin" :size="23" /><text>{{submitting?'正在登录…':loading?'正在准备…':'微信一键登录'}}</text>
+					<Icon name="weixin" :size="23" /><text>{{submitting?'正在登录…':loading?'正在准备…':'一键登录'}}</text>
 				</button>
 				<view class="consent-line"><checkbox-group @change="changeConsent"><label
 							class="consent-checkbox-label">
@@ -60,7 +60,39 @@
 					</button></scroll-view>
 			</view>
 		</view>
-        <view v-if="profileOffer" class="login-mask" @click="finishLogin"><view class="login-sheet profile-offer" @click.stop><view class="offer-handle"/><view class="sheet-heading"><text>完善游戏名片</text><button class="sheet-close" :disabled="profileBusy" aria-label="稍后完善" @click="finishLogin"><Icon name="close" :size="21"/></button></view><text class="sheet-hint">让队友更快认识你，也可稍后填写。</text><view class="offer-identity"><button class="offer-avatar" open-type="chooseAvatar" :disabled="profileBusy" @chooseavatar="chooseWechatAvatar" @click="pickAvatarForWeb"><image v-if="draft.avatar" class="offer-avatar-image" :src="assetUrl(draft.avatar)" mode="aspectFill"/><Icon v-else name="user" :size="28"/><view class="offer-camera"><Icon name="photo" :size="12"/></view></button><view class="offer-avatar-copy"><button class="offer-wechat-avatar" open-type="chooseAvatar" :disabled="profileBusy" @chooseavatar="chooseWechatAvatar" @click="pickAvatarForWeb">微信头像<Icon name="arrow" :size="13"/></button><button class="offer-image-choice" :disabled="profileBusy" @click="pickAvatar()">或选择图片<Icon name="arrow" :size="12"/></button></view></view><view class="offer-nickname"><text class="offer-field-label">昵称</text><input v-model="draft.nickname" type="nickname" class="offer-name-input" maxlength="24" placeholder="2—24个字的昵称" :disabled="profileBusy"/></view><text class="offer-public-note">头像与昵称将展示在个人主页</text><button class="btn login-primary" :disabled="profileBusy" @click="saveOptionalProfile">{{profileBusy?'正在保存…':'保存并进入'}}</button><button class="finish-later" :disabled="profileBusy" @click="finishLogin">稍后完善</button></view></view>
+		<view v-if="profileOffer" class="login-mask" @click="finishLogin">
+			<view class="login-sheet profile-offer" @click.stop>
+				<view class="offer-handle" />
+				<view class="sheet-heading"><text>完善游戏名片</text><button class="sheet-close" :disabled="profileBusy"
+						aria-label="稍后完善" @click="finishLogin">
+						<Icon name="close" :size="21" />
+					</button></view><text class="sheet-hint">让队友更快认识你，也可稍后填写。</text>
+				<view class="offer-identity"><button class="offer-avatar" open-type="chooseAvatar"
+						:disabled="profileBusy" @chooseavatar="chooseWechatAvatar" @click="pickAvatarForWeb">
+						<image v-if="draft.avatar" class="offer-avatar-image" :src="assetUrl(draft.avatar)"
+							mode="aspectFill" />
+						<Icon v-else name="user" :size="28" />
+						<view class="offer-camera">
+							<Icon name="photo" :size="12" />
+						</view>
+					</button>
+					<!-- <view class="offer-avatar-copy"><button class="offer-wechat-avatar" open-type="chooseAvatar"
+							:disabled="profileBusy" @chooseavatar="chooseWechatAvatar" @click="pickAvatarForWeb">微信头像
+							<Icon name="arrow" :size="13" />
+						</button><button class="offer-image-choice" :disabled="profileBusy" @click="pickAvatar()">或选择图片
+							<Icon name="arrow" :size="12" />
+						</button>
+
+					</view> -->
+				</view>
+				<view class="offer-nickname"><text class="offer-field-label">昵称</text><input v-model="draft.nickname"
+						type="nickname" class="offer-name-input" maxlength="24" placeholder="2—24个字的昵称"
+						:disabled="profileBusy" /></view><text class="offer-public-note">头像与昵称将展示在个人主页</text><button
+					class="btn login-primary" :disabled="profileBusy"
+					@click="saveOptionalProfile">{{profileBusy?'正在保存…':'保存并进入'}}</button><button class="finish-later"
+					:disabled="profileBusy" @click="finishLogin">稍后完善</button>
+			</view>
+		</view>
 	</AppShell>
 </template>
 <script setup lang="ts">
@@ -68,7 +100,7 @@
 	import { onLoad, onHide, onUnload } from '@dcloudio/uni-app'
 	import AppShell from '../../components/AppShell.vue'
 	import Icon from '../../components/Icon.vue'
-	import { state, init, login, prepareWechatLogin, wechatLogin, sessionRevision } from '../../lib/store'
+	import { state, init, login, prepareWechatLogin, wechatLogin, sessionRevision, lastLoginWasNew } from '../../lib/store'
 	import { getAgreements, listDevAccounts } from '../../api/auth.api'
 	import { updateProfile } from '../../api/users.api'
 	import type { User, Agreements, Consent } from '../../types/models'
@@ -92,7 +124,7 @@
 	/** 处理协议过期，将新版内容交给用户重新阅读并勾选。 */
 	async function loginFailed(err : unknown) { if (errorStatus(err) === 409) { await load(); error.value = '协议已更新，请阅读后重新勾选。' } else { const detail = errorMessage(err); error.value = /INVALID_LOGIN.*access_token expired/.test(detail) ? '微信开发者工具登录态已过期，请重新登录开发者工具后重试' : detail || '暂时无法登录，请重试'; notify(error.value) } }
 	/** 登录成功后展示可关闭的头像昵称弹层，不强制提供额外资料。 */
-	function offerProfile(user : User | null) { if (!user) return; devOpen.value = false; draft.nickname = user.nickname || ''; draft.avatar = user.avatar || ''; profileOffer.value = true }
+	function offerProfile(user : User | null) { if (!user) return; devOpen.value = false; if (!lastLoginWasNew.value) { profileOffer.value = false; go(next); return } draft.nickname = user.nickname || ''; draft.avatar = user.avatar || ''; profileOffer.value = true }
 	/** 本地账号也提交用户主动同意的协议版本，保持正式流程一致。 */
 	async function selectAccount(account : User) { if (submitting.value) return; const agreed = consent(); if (!agreed) { devOpen.value = false; return } const current = ++operation; submitting.value = account.id; error.value = ''; try { const user = await login(account.id, agreed); if (current === operation) offerProfile(user) } catch (err) { if (current === operation) await loginFailed(err) } finally { if (current === operation) submitting.value = '' } }
 	/** 先用微信 code 换取短期票据，核对协议后才显式提交登录。 */
@@ -117,15 +149,15 @@
 		// #endif
 	}
 	/** 通过统一裁剪压缩上传流程选择头像，取消时保持现有草稿。 */
-	async function pickAvatar(filePath?: string) { if (profileBusy.value) return; const revision = sessionRevision(), savedToken = token(); profileBusy.value = true; try { const url = await chooseUploadImage('avatar',{filePath}); if (!disposed && revision === sessionRevision() && savedToken === token() && url) draft.avatar = url } catch (err) { if (!disposed && revision === sessionRevision() && !isCancelled(err)) notify(err) } finally { profileBusy.value = false } }
-    /** 微信头像回调只接收临时路径，仍执行统一裁剪压缩与服务端审核。 */
-    async function chooseWechatAvatar(event:{detail:{avatarUrl?:string}}):Promise<void>{const filePath=event.detail?.avatarUrl;if(filePath)await pickAvatar(filePath)}
-    /** H5预览使用相册，微信端由原生chooseAvatar处理，不同时弹两次选择。 */
-    function pickAvatarForWeb():void{
-      // #ifdef H5
-      void pickAvatar()
-      // #endif
-    }
+	async function pickAvatar(filePath ?: string) { if (profileBusy.value) return; const revision = sessionRevision(), savedToken = token(); profileBusy.value = true; try { const url = await chooseUploadImage('avatar', { filePath }); if (!disposed && revision === sessionRevision() && savedToken === token() && url) draft.avatar = url } catch (err) { if (!disposed && revision === sessionRevision() && !isCancelled(err)) notify(err) } finally { profileBusy.value = false } }
+	/** 微信头像回调只接收临时路径，仍执行统一裁剪压缩与服务端审核。 */
+	async function chooseWechatAvatar(event : { detail : { avatarUrl ?: string } }) : Promise<void> { const filePath = event.detail?.avatarUrl; if (filePath) await pickAvatar(filePath) }
+	/** H5预览使用相册，微信端由原生chooseAvatar处理，不同时弹两次选择。 */
+	function pickAvatarForWeb() : void {
+		// #ifdef H5
+		void pickAvatar()
+		// #endif
+	}
 	/** 保存可选资料前检查长度，并丢弃切换会话后的返回结果。 */
 	async function saveOptionalProfile() { if (profileBusy.value || !state.user) return; const nickname = draft.nickname.trim(); if (Array.from(nickname).length < 2 || Array.from(nickname).length > 24) return notify('昵称需要 2—24 个字'); const revision = sessionRevision(), savedToken = token(); profileBusy.value = true; try { const user = await updateProfile({ nickname, avatar: draft.avatar }); if (!disposed && revision === sessionRevision() && savedToken === token()) { state.user = user; profileOffer.value = false; go(next) } } catch (err) { if (revision === sessionRevision()) notify(err) } finally { profileBusy.value = false } }
 	/** 关闭可选资料弹层并返回原本想访问的页面。 */
@@ -484,6 +516,7 @@
 
 	.offer-identity {
 		display: flex;
+		justify-content: center;
 		align-items: center;
 		gap: 30.7692rpx;
 		margin: 42.3077rpx 0

@@ -61,10 +61,11 @@ func (a *App) moderateClubDraft(r *http.Request, u User, name, description, asse
 	for _, f := range []struct {
 		value    *string
 		min, max int
-	}{{name, 2, 30}, {description, 10, 1000}, {assessment, 0, 1000}} {
+		label    string
+	}{{name, 2, 30, "俱乐部名称需为2至30字"}, {description, 10, 1000, "俱乐部介绍需为10至1000字"}, {assessment, 0, 1000, "考核说明最多1000字"}} {
 		if f.value != nil {
 			if !length(*f.value, f.min, f.max) {
-				return fail(400, "俱乐部文字长度不符合要求")
+				return fail(400, f.label)
 			}
 			parts = append(parts, *f.value)
 		}
@@ -108,33 +109,20 @@ func (a *App) moderateOrderNote(r *http.Request, u User, action, note string) er
 	return a.moderateText(r, u, "订单说明", note)
 }
 
-// imageModerationStamp 把开发图片与正式AI通过图片分开，开发图片不能充当正式审查证明。
+// imageModerationStamp 将所有新上传标为待审，开发环境也不伪造正式通过证明。
 func (a *App) imageModerationStamp() string {
-	if a.Config.DevMode {
-		return "local_simulation"
-	}
-	return "ai"
+	return "pending"
 }
 
-// moderateStoredImage 对合法引用的历史图片补审；数据库仅原子更新审核标记，不覆盖不可变原始证据。
+// moderateStoredImage 兼容历史调用，仅确认图片存在；新引用由业务写入钩子统一入队。
 func (a *App) moderateStoredImage(r *http.Request, u User, id, scope string) error {
-	v, err := get[Evidence](r.Context(), a.DB, "evidence", id, false)
-	if err != nil {
-		return err
-	}
-	if v.Moderation == "ai" || v.Moderation == "trusted_platform" || a.Config.DevMode && v.Moderation == "local_simulation" {
-		return nil
-	}
-	if err = a.moderateContent(r, u, scope, nil, []moderationImage{{MIME: v.MIME, Data: v.Data}}); err != nil {
-		return err
-	}
-	_, err = a.DB.Exec(r.Context(), `UPDATE evidence SET data=jsonb_set(data,'{moderation}',to_jsonb($2::text),true) WHERE id=$1 AND data->>'sha256'=$3`, id, a.imageModerationStamp(), v.SHA256)
+	_, err := get[Evidence](r.Context(), a.DB, "evidence", id, false)
 	return err
 }
 
 // moderateOwnedImage 先校验图片用途与归属，避免未经授权的图片被发送给外部审核服务。
 func (a *App) moderateOwnedImage(r *http.Request, u User, raw, purpose, ownerID, clubID string) error {
-	if raw == "" {
+	if raw == "" || raw == rejectedImageURL {
 		return nil
 	}
 	if trustedDefaultAvatar(raw, purpose) {

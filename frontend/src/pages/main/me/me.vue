@@ -1,64 +1,150 @@
 <!-- 文件作用：按个人中心设计图呈现身份、真实统计、订单与账户入口，访客完整显示零数据。 -->
 <template>
-  <view class="me-content">
-    <view class="profile-hero"><image v-if="game.cover_url" class="profile-hero-image" :src="assetUrl(game.cover_url)" mode="aspectFill"/><view class="profile-hero-shade"/><view class="identity-row"><view class="identity-main" @click="openIdentity"><view class="profile-avatar"><image class="profile-avatar-image" v-if="state.user?.avatar" :src="assetUrl(state.user.avatar)" mode="aspectFill"/><Icon v-else name="user" :size="32"/></view><view class="identity-copy"><view class="profile-name-row"><text class="profile-name">{{ state.user?.nickname||'登录后查看' }}</text><Icon name="arrow" :size="12"/></view><text class="profile-bio">{{ state.user?.bio||(state.user?'认真游戏，快乐同行':'登录后管理服务与订单') }}</text></view></view></view></view>
-    <view class="orders-section"><view class="panel-heading"><text>我的订单</text><button class="all-orders-entry" @click="protectedGo('/pages/main/index?tab=orders&role=buyer')">全部<Icon name="arrow" :size="12"/></button></view><view class="order-shortcuts"><button class="order-shortcut" v-for="item in orderLinks" :key="item.status" @click="protectedGo('/pages/main/index?tab=orders&role=buyer&status='+item.status)"><view class="order-icon-wrap"><Icon :name="item.icon" :size="25"/><text v-if="orderCount(item.countKey)" class="order-count">{{ orderCount(item.countKey) }}</text></view><text>{{ item.label }}</text></button></view></view>
-    <view class="me-wallet" @click="protectedGo('/pages/account/wallet')"><view class="wallet-heading"><Icon name="wallet" :size="21"/><text class="wallet-heading-title">我的钱包</text><view class="wallet-available"><text class="wallet-caption">可提现</text><text class="wallet-main-value">{{ walletAmount('available_cents') }}</text></view><Icon name="arrow" :size="13"/></view><view class="wallet-amounts"><view class="wallet-item"><text>进行中</text><text class="wallet-item-value">{{ walletAmount('ongoing_cents') }}</text></view><view class="wallet-item"><text>结算中</text><text class="wallet-item-value">{{ walletAmount('settling_cents') }}</text></view><view class="wallet-item"><text>提现中</text><text class="wallet-item-value">{{ walletAmount('withdrawal_frozen_cents') }}</text></view></view><view class="wallet-recharge"><text class="wallet-recharge-label">充值余额（仅消费）</text><text class="wallet-recharge-value">{{ walletAmount('recharge_cents') }}</text><Icon name="arrow" :size="12"/></view><text v-if="walletError" class="wallet-error">{{ walletError }}</text></view>
-    <view class="space-grid"><button class="space-entry" @click="openIdentity"><Icon name="user" :size="25"/><view class="space-copy"><text class="space-title">我的主页</text><text class="space-detail">展示你的游戏生涯</text></view><Icon class="space-arrow" name="arrow" :size="13"/></button><button class="space-entry space-club" @click="protectedGo('/pages/community/clubs/index?mine=1')"><Icon name="club" :size="25"/><view class="space-copy"><text class="space-title">我的俱乐部</text><text class="space-detail">管理专属俱乐部</text></view><Icon class="space-arrow" name="arrow" :size="13"/></button></view>
+	<view class="me-content">
+		<view class="profile-hero">
+			<image v-if="game.cover_url" class="profile-hero-image" :src="assetUrl(game.cover_url)" mode="aspectFill" />
+			<view class="profile-hero-shade" />
+			<view class="identity-row">
+				<view class="identity-main" @click="openIdentity">
+					<view class="profile-avatar">
+						<image class="profile-avatar-image" v-if="state.user?.avatar" :src="assetUrl(state.user.avatar)"
+							mode="aspectFill" />
+						<Icon v-else name="user" :size="32" />
+					</view>
+					<view class="identity-copy">
+						<view class="profile-name-row"><text
+								class="profile-name">{{ state.user?.nickname||'登录后查看' }}</text>
+							<Icon name="arrow" :size="12" />
+						</view><text
+							class="profile-bio">{{ state.user?.bio||(state.user?'认真游戏，快乐同行':'登录后管理服务与订单') }}</text>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="orders-section">
+			<view class="panel-heading"><text>我的订单</text><button class="all-orders-entry"
+					@click="protectedGo('/pages/main/index?tab=orders&role=buyer')">全部
+					<Icon name="arrow" :size="12" />
+				</button></view>
+			<view class="order-shortcuts"><button class="order-shortcut" v-for="item in orderLinks" :key="item.status"
+					@click="protectedGo('/pages/main/index?tab=orders&role=buyer&status='+item.status)">
+					<view class="order-icon-wrap">
+						<Icon :name="item.icon" :size="25" /><text v-if="orderCount(item.countKey)"
+							class="order-count">{{ orderCount(item.countKey) }}</text>
+					</view><text>{{ item.label }}</text>
+				</button></view>
+		</view>
+		<view class="me-wallet" @click="protectedGo('/pages/account/wallet')">
+			<view class="wallet-heading">
+				<Icon name="wallet" :size="21" /><text class="wallet-heading-title">我的钱包</text>
+				<view class="wallet-available"><text class="wallet-caption">可提现</text><text
+						class="wallet-main-value">{{ walletAmount('available_cents') }}</text></view>
+				<Icon name="arrow" :size="13" />
+			</view>
+			<view class="wallet-amounts">
+				<view class="wallet-item"><text>进行中</text><text
+						class="wallet-item-value">{{ walletAmount('ongoing_cents') }}</text></view>
+				<view class="wallet-item"><text>结算中</text><text
+						class="wallet-item-value">{{ walletAmount('settling_cents') }}</text></view>
+				<view class="wallet-item"><text>提现中</text><text
+						class="wallet-item-value">{{ walletAmount('withdrawal_frozen_cents') }}</text></view>
+			</view>
+			<view class="wallet-recharge"><text class="wallet-recharge-label">充值余额（仅消费）</text><text
+					class="wallet-recharge-value">{{ walletAmount('recharge_cents') }}</text>
+				<Icon name="arrow" :size="12" />
+			</view><text v-if="walletError" class="wallet-error">{{ walletError }}</text>
+		</view>
+		<view class="space-grid"><button class="space-entry" @click="openIdentity">
+				<Icon name="user" :size="25" />
+				<view class="space-copy"><text class="space-title">我的主页</text><text class="space-detail">展示你的游戏生涯</text>
+				</view>
+				<Icon class="space-arrow" name="arrow" :size="13" />
+			</button><button class="space-entry space-club" @click="protectedGo('/pages/community/clubs/index?mine=1')">
+				<Icon name="club" :size="25" />
+				<view class="space-copy"><text class="space-title">我的俱乐部</text><text class="space-detail">管理专属俱乐部</text>
+				</view>
+				<Icon class="space-arrow" name="arrow" :size="13" />
+			</button></view>
 
-    <view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn" @click="load">重新加载</button></view>
-    <view class="menu-list"><ContactSupport :active="props.active"/><button class="menu-item messages-entry" @click="go('/pages/account/messages/index')"><Icon name="bell" :size="22"/><text class="menu-label">消息中心</text><Icon name="arrow" :size="14"/></button><button class="menu-item" @click="protectedGo('/pages/account/profile')"><Icon name="user" :size="22"/><text class="menu-label">个人资料</text><Icon name="arrow" :size="14"/></button><button class="menu-item" @click="verifyPhone"><Icon name="phone" :size="22"/><text class="menu-label">手机号验证</text><text class="menu-value">{{ state.user?.phone_verified?state.user.phone_masked||'已验证':'未验证' }}</text><Icon name="arrow" :size="14"/></button><button class="menu-item" @click="go('/pages/account/agreements?type=user_agreement')"><Icon name="orders" :size="22"/><text class="menu-label">用户协议</text><Icon name="arrow" :size="14"/></button><button class="menu-item" @click="go('/pages/account/agreements?type=privacy_policy')"><Icon name="shield" :size="22"/><text class="menu-label">隐私政策</text><Icon name="arrow" :size="14"/></button><button v-if="state.user?.role==='admin'" class="menu-item" @click="go('/pages/manage/index')"><Icon name="settings" :size="22"/><text class="menu-label">平台管理中心</text><Icon name="arrow" :size="14"/></button><button v-if="state.devMode" class="menu-item" @click="go('/pages/account/login')"><Icon name="refresh" :size="22"/><text class="menu-label">切换体验身份</text><Icon name="arrow" :size="14"/></button></view>
-  </view>
+		<view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn"
+				@click="load">重新加载</button></view>
+		<view class="menu-list">
+			<ContactSupport :active="props.active" /><button class="menu-item messages-entry"
+				@click="go('/pages/account/messages/index')">
+				<Icon name="bell" :size="22" /><text class="menu-label">消息中心</text>
+				<Icon name="arrow" :size="14" />
+			</button><button class="menu-item" @click="protectedGo('/pages/account/profile')">
+				<Icon name="user" :size="22" /><text class="menu-label">个人资料</text>
+				<Icon name="arrow" :size="14" />
+			</button><button class="menu-item" @click="verifyPhone">
+				<Icon name="phone" :size="22" /><text class="menu-label">手机号验证</text><text
+					class="menu-value">{{ state.user?.phone_verified?state.user.phone_masked||'已验证':'未验证' }}</text>
+				<Icon name="arrow" :size="14" />
+			</button><button class="menu-item" @click="go('/pages/account/agreements?type=user_agreement')">
+				<Icon name="orders" :size="22" /><text class="menu-label">用户协议</text>
+				<Icon name="arrow" :size="14" />
+			</button><button class="menu-item" @click="go('/pages/account/agreements?type=privacy_policy')">
+				<Icon name="shield" :size="22" /><text class="menu-label">隐私政策</text>
+				<Icon name="arrow" :size="14" />
+			</button><button v-if="state.user?.role==='admin'" class="menu-item" @click="go('/pages/manage/index')">
+				<Icon name="settings" :size="22" /><text class="menu-label">平台管理中心</text>
+				<Icon name="arrow" :size="14" />
+			</button><button v-if="state.devMode" class="menu-item" @click="go('/pages/account/login')">
+				<Icon name="refresh" :size="22" /><text class="menu-label">切换体验身份</text>
+				<Icon name="arrow" :size="14" />
+			</button>
+		</view>
+	</view>
 </template>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import Icon from '../../../components/Icon.vue'
-import ContactSupport from '../../../components/ContactSupport.vue'
-import { state, game, init, clearSession, sessionRevision } from '../../../lib/store'
-import { token, errorMessage, errorStatus } from '../../../api/client'
-import { getMe, getMyStats } from '../../../api/users.api'
-import { getWallet } from '../../../api/wallet.api'
-import type { Wallet } from '../../../types/wallet'
-import { requirePhone } from '../../../lib/phone'
-import { go, notify, assetUrl } from '../../../lib/format'
-import { useMainVisibility } from '../../../lib/navigation'
-import type { UserStats } from '../../../types/models'
-const props = defineProps<{ active: boolean }>()
-const stats = ref<Partial<UserStats>>({}), error = ref(''),wallet=ref<Wallet|null>(null),walletError=ref('')
-const orderLinks = [{ status: 'pending_payment', label: '待付款', icon: 'wallet',countKey:'buyer_pending_payment_count' }, { status: 'working', label: '进行中', icon: 'clock',countKey:'buyer_working_count' }, { status: 'delivered', label: '待验收', icon: 'checkbox',countKey:'buyer_delivered_count' }, { status: 'refund', label: '售后', icon: 'headphones',countKey:'buyer_refund_count' }] satisfies Array<{status:string;label:string;icon:string;countKey:keyof UserStats}>
-/** 仅显示真实订单数量，最多展示99+，访客及未知数据不显示角标。 */
-function orderCount(key:keyof UserStats):string {const value=state.user?Number(stats.value[key]||0):0;return Number.isSafeInteger(value)&&value>0?(value>99?'99+':String(value)):''}
-/** 钱包分区只取服务端金额，读取中及故障不伪造零余额。 */
-function walletAmount(key:keyof Wallet):string {if(!state.user)return '¥0.00';const value=wallet.value?.[key];return typeof value==='number'&&Number.isSafeInteger(value)?'¥'+(value/100).toFixed(2):'—'}
+	import { ref, watch } from 'vue'
+	import Icon from '../../../components/Icon.vue'
+	import ContactSupport from '../../../components/ContactSupport.vue'
+	import { state, game, init, clearSession, sessionRevision } from '../../../lib/store'
+	import { token, errorMessage, errorStatus } from '../../../api/client'
+	import { getMe, getMyStats } from '../../../api/users.api'
+	import { getWallet } from '../../../api/wallet.api'
+	import type { Wallet } from '../../../types/wallet'
+	import { requirePhone } from '../../../lib/phone'
+	import { go, notify, assetUrl } from '../../../lib/format'
+	import { useMainVisibility } from '../../../lib/navigation'
+	import type { UserStats } from '../../../types/models'
+	const props = defineProps<{ active : boolean }>()
+	const stats = ref<Partial<UserStats>>({}), error = ref(''), wallet = ref<Wallet | null>(null), walletError = ref('')
+	const orderLinks = [{ status: 'pending_payment', label: '待付款', icon: 'wallet', countKey: 'buyer_pending_payment_count' }, { status: 'working', label: '进行中', icon: 'clock', countKey: 'buyer_working_count' }, { status: 'delivered', label: '待验收', icon: 'checkbox', countKey: 'buyer_delivered_count' }, { status: 'refund', label: '售后', icon: 'headphones', countKey: 'buyer_refund_count' }] satisfies Array<{ status : string; label : string; icon : string; countKey : keyof UserStats }>
+	/** 仅显示真实订单数量，最多展示99+，访客及未知数据不显示角标。 */
+	function orderCount(key : keyof UserStats) : string { const value = state.user ? Number(stats.value[key] || 0) : 0; return Number.isSafeInteger(value) && value > 0 ? (value > 99 ? '99+' : String(value)) : '' }
+	/** 钱包分区只取服务端金额，读取中及故障不伪造零余额。 */
+	function walletAmount(key : keyof Wallet) : string { if (!state.user) return '¥0.00'; const value = wallet.value?.[key]; return typeof value === 'number' && Number.isSafeInteger(value) ? '¥' + (value / 100).toFixed(2) : '—' }
 
-let loadVersion = 0, visible = false
-/** 记录身份及版本，阻止迟到请求覆盖其他会话。 */
-function currentSession() { return { token: token(), userId: state.user?.id, revision: sessionRevision() } }
-/** 比较会话是否仍属于当前账号。 */
-function sameSession(session: ReturnType<typeof currentSession>): boolean { return session.token === token() && session.userId === state.user?.id && session.revision === sessionRevision() }
-/** 使旧统计读取失效。 */
-function invalidateLoad(): number { stats.value = {};wallet.value=null;walletError.value=''; return ++loadVersion }
-/** 检查视图可见且请求仍有效。 */
-function currentRequest(version: number, session: ReturnType<typeof currentSession>): boolean { return visible && version === loadVersion && sameSession(session) }
-/** 需要身份的操作保留登录后目标。 */
-function protectedGo(target: string): boolean { if (!state.user) { go('/pages/account/login?next=' + encodeURIComponent(target)); return false } go(target); return true }
-/** 点击头像查看本人公开名片。 */
-function openIdentity(): void { protectedGo(state.user ? '/pages/community/players/detail?id=' + encodeURIComponent(state.user.id) : '/pages/main/index?tab=me') }
-/** 主动验证手机号，授权拒绝不绕过交易门槛。 */
-async function verifyPhone(): Promise<void> { if (!state.user) { protectedGo('/pages/main/index?tab=me'); return } if (state.user.phone_verified) { notify('已验证 ' + (state.user.phone_masked || '手机号')); return } const session=currentSession();try { await requirePhone() } catch (err) { if (visible&&sameSession(session)) notify(err) } }
-/** 刷新个人资料和真实统计，保留隐藏及跨账号竞态保护。 */
-async function load(): Promise<void> {
-  const version = invalidateLoad(); let session: ReturnType<typeof currentSession> | undefined; error.value = ''
-  try { await init(); if (!visible || version !== loadVersion || !state.user) return; session = currentSession(); const user = await getMe(); if (!currentRequest(version, session)) return; state.user = user; const [summary,funds] = await Promise.allSettled([getMyStats(),getWallet()]);if(!currentRequest(version,session))return;if(summary.status==='rejected'&&errorStatus(summary.reason)===401||funds.status==='rejected'&&errorStatus(funds.reason)===401){clearSession();return}if(summary.status==='fulfilled')stats.value=summary.value||{};else error.value=errorMessage(summary.reason);if(funds.status==='fulfilled')wallet.value=funds.value;else walletError.value='钱包暂未同步，点击进入重试'  }
-  catch (err) { if (!visible || version !== loadVersion || (session && !sameSession(session))) return; if (errorStatus(err) === 401) { clearSession(); return } error.value = errorMessage(err) }
-}
-/** 激活视图时读取数据。 */
-function showPage(): void { visible = true; void load() }
-/** 隐藏视图时丢弃所有未完成的数据读取。 */
-function hidePage(): void { visible = false; invalidateLoad() }
-useMainVisibility(() => props.active, showPage, hidePage)
-/** 隐藏时也清除旧身份统计，并在同账号会话轮换后拒绝迟到回调。 */
-watch([() => state.user?.id, sessionRevision], () => { invalidateLoad(); error.value = ''; if (visible) void load() }, { flush: 'sync' })
+	let loadVersion = 0, visible = false
+	/** 记录身份及版本，阻止迟到请求覆盖其他会话。 */
+	function currentSession() { return { token: token(), userId: state.user?.id, revision: sessionRevision() } }
+	/** 比较会话是否仍属于当前账号。 */
+	function sameSession(session : ReturnType<typeof currentSession>) : boolean { return session.token === token() && session.userId === state.user?.id && session.revision === sessionRevision() }
+	/** 使旧统计读取失效。 */
+	function invalidateLoad() : number { stats.value = {}; wallet.value = null; walletError.value = ''; return ++loadVersion }
+	/** 检查视图可见且请求仍有效。 */
+	function currentRequest(version : number, session : ReturnType<typeof currentSession>) : boolean { return visible && version === loadVersion && sameSession(session) }
+	/** 需要身份的操作保留登录后目标。 */
+	function protectedGo(target : string) : boolean { if (!state.user) { go('/pages/account/login?next=' + encodeURIComponent(target)); return false } go(target); return true }
+	/** 点击头像查看本人公开名片。 */
+	function openIdentity() : void { protectedGo(state.user ? '/pages/community/players/detail?id=' + encodeURIComponent(state.user.id) : '/pages/main/index?tab=me') }
+	/** 主动验证手机号，授权拒绝不绕过交易门槛。 */
+	async function verifyPhone() : Promise<void> { if (!state.user) { protectedGo('/pages/main/index?tab=me'); return } if (state.user.phone_verified) { notify('已验证 ' + (state.user.phone_masked || '手机号')); return } const session = currentSession(); try { await requirePhone() } catch (err) { if (visible && sameSession(session)) notify(err) } }
+	/** 刷新个人资料和真实统计，保留隐藏及跨账号竞态保护。 */
+	async function load() : Promise<void> {
+		const version = invalidateLoad(); let session : ReturnType<typeof currentSession> | undefined; error.value = ''
+		try { await init(); if (!visible || version !== loadVersion || !state.user) return; session = currentSession(); const user = await getMe(); if (!currentRequest(version, session)) return; state.user = user; const [summary, funds] = await Promise.allSettled([getMyStats(), getWallet()]); if (!currentRequest(version, session)) return; if (summary.status === 'rejected' && errorStatus(summary.reason) === 401 || funds.status === 'rejected' && errorStatus(funds.reason) === 401) { clearSession(); return } if (summary.status === 'fulfilled') stats.value = summary.value || {}; else error.value = errorMessage(summary.reason); if (funds.status === 'fulfilled') wallet.value = funds.value; else walletError.value = '钱包暂未同步，点击进入重试' }
+		catch (err) { if (!visible || version !== loadVersion || (session && !sameSession(session))) return; if (errorStatus(err) === 401) { clearSession(); return } error.value = errorMessage(err) }
+	}
+	/** 激活视图时读取数据。 */
+	function showPage() : void { visible = true; void load() }
+	/** 隐藏视图时丢弃所有未完成的数据读取。 */
+	function hidePage() : void { visible = false; invalidateLoad() }
+	useMainVisibility(() => props.active, showPage, hidePage)
+	/** 隐藏时也清除旧身份统计，并在同账号会话轮换后拒绝迟到回调。 */
+	watch([() => state.user?.id, sessionRevision], () => { invalidateLoad(); error.value = ''; if (visible) void load() }, { flush: 'sync' })
 </script>
 <style scoped>
 	.me-content {
@@ -88,7 +174,7 @@ watch([() => state.user?.id, sessionRevision], () => { invalidateLoad(); error.v
 		position: absolute;
 		inset: 0;
 		z-index: 1;
-		background: linear-gradient(180deg, rgba(32, 35, 33, 0.5) 0%, rgba(25, 28, 27, 0.84) 55%, var(--bg) 100%)
+		background: linear-gradient(180deg, rgba(32, 35, 33, 0.5) 0%, rgba(25, 28, 27, 0.54) 55%, var(--bg) 100%)
 	}
 
 	.identity-row {

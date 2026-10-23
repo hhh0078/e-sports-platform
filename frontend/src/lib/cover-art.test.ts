@@ -14,24 +14,30 @@ import type { CoverLabel } from '../types/models'
 interface TestQuery { in: () => TestQuery; select: () => TestQuery; boundingClientRect: (callback: (rect: { width: number }) => void) => TestQuery; exec: () => void }
 
 /** 只控制原生测量结果，实际布局与生命周期仍使用生产组件脚本。 */
-function harness(t: TestContext, initialWidth: number, options: { aspectRatio?: number; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number;readable?:boolean;minFontPixels?:number } = {}) {
+function harness(t: TestContext, initialWidth: number, options: { aspectRatio?: number; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number;readable?:boolean;minFontPixels?:number;active?:boolean } = {}) {
   const source = readFileSync(new URL('../components/CoverArt.vue',import.meta.url),'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)?.[1]
   assert.ok(source)
   const labels: CoverLabel[] = Array.from({length:6},(_,id)=>({id,text:'六条最长独立文字标签护航',font_size:24,position:'bottom-left'}))
-  const props = reactive({ labels, aspectRatio:16/9, reserveBottom:0, reserveBottomPixels:0, reserveTopPixels:0, minLabelAreaPixels:0, ...options })
-  const mounted: Array<()=>void> = [], unmounted: Array<()=>void> = [], shown: Array<()=>void> = [], resized: Array<()=>void> = []
-  let actualWidth = initialWidth, callback: ((rect: {width:number})=>void) | undefined, measureCount = 0
-  const query: TestQuery = { in:()=>query,select:()=>query,boundingClientRect:read=>{callback=read;return query},exec:()=>{measureCount++;callback?.({width:actualWidth})} }
+  const props = reactive({ labels, aspectRatio:16/9, reserveBottom:0, reserveBottomPixels:0, reserveTopPixels:0, minLabelAreaPixels:0, active:true, ...options })
+  const mounted: Array<()=>void> = [], unmounted: Array<()=>void> = [], shown: Array<()=>void> = [], hidden: Array<()=>void> = []
+  const viewportWidth = ref(390)
+  let actualWidth = initialWidth, callback: ((rect: {width:number})=>void) | undefined, measureCount = 0, delayed = false
+  const pending: Array<()=>void> = []
+  const query: TestQuery = { in:()=>query,select:()=>query,boundingClientRect:read=>{callback=read;return query},exec:()=>{measureCount++;const read=callback,rect={width:actualWidth};if(delayed)pending.push(()=>read?.(rect));else read?.(rect)} }
   const context = vm.createContext({ computed,ref,watch,nextTick,layoutLabels,layoutReadableCover,defineProps:()=>props,withDefaults:(value:object)=>value,getCurrentInstance:()=>({proxy:{}}),
-    mainNavigation:reactive({revision:0}),onMounted:(hook:()=>void)=>mounted.push(hook),onShow:(hook:()=>void)=>shown.push(hook),onBeforeUnmount:(hook:()=>void)=>unmounted.push(hook),
-    uni:{createSelectorQuery:()=>query,onWindowResize:(hook:()=>void)=>resized.push(hook),offWindowResize:(hook:()=>void)=>{const index=resized.indexOf(hook);if(index>=0)resized.splice(index,1)}},
+    useViewportWidth:()=>viewportWidth,onMounted:(hook:()=>void)=>mounted.push(hook),onShow:(hook:()=>void)=>shown.push(hook),onHide:(hook:()=>void)=>hidden.push(hook),onBeforeUnmount:(hook:()=>void)=>unmounted.push(hook),
+    uni:{createSelectorQuery:()=>query},
   })
   const scope = effectScope()
   scope.run(()=>vm.runInContext(executable(source.replace(/^[\t ]+(?=import\b)/gm,''))+'\nglobalThis.subject={arranged,reserved,reservedTop,canvasHeight,width,ratio,coverStyle,labelStyle}',context))
   t.after(()=>{unmounted.forEach(hook=>hook());scope.stop()})
-  return { subject:context.subject,props,mounted,unmounted,shown,resized,
-    /** 通过已注册的原生窗口监听触发真实测量。 */
-    resize(width:number){actualWidth=width;resized.forEach(hook=>hook())},
+  return { subject:context.subject,props,mounted,unmounted,shown,hidden,
+    /** 改变共享窗口状态触发真实测量，卡片本身不再各自注册原生监听。 */
+    resize(width:number){actualWidth=width;viewportWidth.value++},
+    /** 保留原生异步回调，验证隐藏或新尺寸使旧测量失效。 */
+    holdMeasurements(){delayed=true},
+    /** 按真实发起顺序投递已经排队的原生结果。 */
+    finishMeasurements(){delayed=false;pending.splice(0).forEach(finish=>finish())},
     /** 查询停止测量后是否仍有已排队的回调污染旧组件。 */
     measureCount:()=>measureCount,
   }
@@ -39,6 +45,32 @@ function harness(t: TestContext, initialWidth: number, options: { aspectRatio?: 
 
 /** 排空真实nextTick测量与Vue侦听。 */
 async function flush():Promise<void>{await new Promise<void>(resolve=>setImmediate(resolve))}
+
+test('隐藏常驻封面不测量，显示和同轮窗口变化只合并测量一次',async t=>{
+  const subject=harness(t,171,{active:false})
+  subject.mounted.forEach(hook=>hook());subject.shown.forEach(hook=>hook());subject.resize(136);await flush()
+  assert.equal(subject.measureCount(),0)
+  subject.props.active=true;subject.shown.forEach(hook=>hook());subject.resize(171);await flush()
+  assert.equal(subject.measureCount(),1)
+  assert.equal(subject.subject.width.value,171)
+  subject.hidden.forEach(hook=>hook());subject.resize(136);await flush()
+  assert.equal(subject.measureCount(),1)
+  subject.shown.forEach(hook=>hook());await flush()
+  assert.equal(subject.measureCount(),2)
+  assert.equal(subject.subject.width.value,136)
+})
+
+test('隐藏及更新尺寸后旧测量不能覆盖可见封面已有布局',async t=>{
+  const subject=harness(t,171)
+  subject.mounted.forEach(hook=>hook());await flush()
+  subject.holdMeasurements();subject.resize(136);await flush()
+  subject.props.active=false;await flush();subject.finishMeasurements()
+  assert.equal(subject.subject.width.value,171)
+  subject.props.active=true;await flush()
+  assert.equal(subject.subject.width.value,136)
+  subject.holdMeasurements();subject.resize(173);await flush();subject.resize(200);await flush();subject.finishMeasurements()
+  assert.equal(subject.subject.width.value,200)
+})
 
 test('可读封面按实际宽度换行增高，九宫格六文案与双角标预留均生效',async t=>{
   const subject=harness(t,136,{aspectRatio:4/3,reserveBottomPixels:52,reserveTopPixels:44,readable:true,minFontPixels:10})
@@ -64,7 +96,6 @@ test('CoverArt按测量宽度动态转换48像素预留，4:3和尺寸变化后�
   }
   const before=subject.measureCount()
   subject.unmounted.forEach(hook=>hook());subject.shown.forEach(hook=>hook());await flush()
-  assert.equal(subject.resized.length,0)
   assert.equal(subject.measureCount(),before)
 })
 

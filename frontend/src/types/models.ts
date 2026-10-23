@@ -13,7 +13,7 @@ export interface CoverLabel { id?: string | number; text: string; color?: string
 /** 已发布服务与公开卡片。 */
 export interface Service { /** 服务端返回打手当前有效平台押金，退款处理中不展示。 */ provider_deposit_cents?: number; provider_club_deposit_cents?: number; id: string; game_id: string; provider_id: string; provider_name: string; provider_avatar: string; club_id: string; club_name: string; club_verified: boolean; title: string; description: string; category: string; price_cents: number; unit: string; cover_url: string; labels: CoverLabel[]; tags: string[]; status: string; rating: number; completed_count: number; created_at: string; reviews?: Review[]; is_demo?: boolean }
 /** 图文详情块。 */
-export interface CommunityBlock { type: 'text' | 'image'; text?: string; image_url?: string }
+export interface CommunityBlock { type: 'text' | 'image'; text?: string; image_url?: string; image_width?: number; image_height?: number }
 /** 俱乐部及加入规则。 */
 export interface Club { contact_qr_url?: string; contact_phone?: string; contact_wechat?: string; avatar_url?: string; commission_rate_bps?: number; join_note?: string; platform_deposit_cents?: number; platform_deposit_refunding_cents?: number; platform_deposit_required_cents?: number; platform_deposit_shortfall_cents?: number; deposit_ready?: boolean; id: string; name: string; description: string; owner_id: string; owner_name: string; game_ids: string[]; status: string; verified: boolean; member_count: number; created_at: string; membership_status?: string; cover_url: string; detail_blocks: CommunityBlock[]; deposit_cents: number; assessment: string }
 /** 已公开或允许管理的俱乐部成员。 */
@@ -39,7 +39,7 @@ export interface Consent { agreed?: boolean; user_agreement_version?: string; pr
 /** 一次性微信登录准备票据。 */
 export interface WechatPreparation { ticket: string; expires_in: number; agreements: Agreements }
 /** 身份建立响应。 */
-export interface AuthSession { token: string; user: User }
+export interface AuthSession { token: string; user: User; first_login?: boolean }
 /** 首次页面加载配置。 */
 export interface Bootstrap extends Settings { games: Game[]; dev_mode: boolean }
 /** 当前用户订单与收入统计。 */

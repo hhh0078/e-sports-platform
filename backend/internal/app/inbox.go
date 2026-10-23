@@ -12,11 +12,16 @@ import (
 
 // InboxMessage 是服务器未读通知，本机已读历史由客户端按账号持久化。
 type InboxMessage struct {
-	ID        string `json:"id"`
-	UserID    string `json:"user_id"`
-	Title     string `json:"title"`
-	Body      string `json:"body"`
-	CreatedAt string `json:"created_at"`
+	ID          string `json:"id"`
+	UserID      string `json:"user_id"`
+	Title       string `json:"title"`
+	Body        string `json:"body"`
+	CreatedAt   string `json:"created_at"`
+	TargetType  string `json:"target_type,omitempty"`
+	TargetID    string `json:"target_id,omitempty"`
+	FieldLabel  string `json:"field_label,omitempty"`
+	ActionPath  string `json:"action_path,omitempty"`
+	ActionLabel string `json:"action_label,omitempty"`
 }
 
 // inbox 返回本人未读通知及总数，稳定排序便于分页同步后再确认删除。
@@ -88,9 +93,15 @@ func (a *App) sendAdminInbox(w http.ResponseWriter, r *http.Request) (any, error
 	}
 	defer tx.Rollback(r.Context())
 	prefix, stamp := newID()+"_", now()
-	result, err := tx.Exec(r.Context(), `INSERT INTO inbox(id,data) SELECT $1||id,jsonb_build_object('id',$1||id,'user_id',id,'title',$2::text,'body',$3::text,'created_at',$4::text) FROM users WHERE data->>'status'='active' AND id NOT LIKE 'demo\_%' ESCAPE '\' AND ($5='' OR id=$5)`, prefix, in.Title, in.Body, stamp, in.RecipientID)
+	recipients, err := list[User](r.Context(), tx, "users", `WHERE data->>'status'='active' AND id NOT LIKE 'demo\_%' ESCAPE '\' AND ($1='' OR id=$1)`, in.RecipientID)
 	if err != nil {
 		return nil, err
+	}
+	for _, recipient := range recipients {
+		notice := InboxMessage{ID: prefix + recipient.ID, UserID: recipient.ID, Title: in.Title, Body: in.Body, CreatedAt: stamp}
+		if err = put(r.Context(), tx, "inbox", notice.ID, notice); err != nil {
+			return nil, err
+		}
 	}
 	if err = audit(r.Context(), tx, u.ID, "inbox.send", in.RecipientID, "发送平台系统通知"); err != nil {
 		return nil, err
@@ -98,7 +109,7 @@ func (a *App) sendAdminInbox(w http.ResponseWriter, r *http.Request) (any, error
 	if err = tx.Commit(r.Context()); err != nil {
 		return nil, err
 	}
-	return map[string]int64{"recipient_count": result.RowsAffected()}, nil
+	return map[string]int64{"recipient_count": int64(len(recipients))}, nil
 }
 
 // sendModerationNotice 使用原因摘要作为幂等标识，确认删除后同日重复拒绝也不会无限生成通知。

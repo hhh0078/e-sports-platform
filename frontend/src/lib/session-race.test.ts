@@ -28,7 +28,7 @@ function harness(pageName: 'me' | 'profile' | 'orders' = 'me') {
     notify: (value: unknown) => notices.push(value), go: (value: string) => navigations.push(value), onShow: () => {}, onHide: () => {}, onLoad: () => {}, onUnload: () => {}, onMounted: () => {}, onBeforeUnmount: () => {},
   })
   injectBusinessAPIs(context)
-  vm.runInContext(executable(storeSource) + '\nglobalThis.store = { state, refreshMe, login, prepareWechatLogin, wechatLogin, logout, sessionRevision }', context)
+  vm.runInContext(executable(storeSource) + '\nglobalThis.store = { state, refreshMe, login, prepareWechatLogin, wechatLogin, logout, sessionRevision, lastLoginWasNew, clearSession }', context)
   context.store.state.user = { ...accountA }
   context.store.state.ready = true
   if(pageName==='me')vm.runInContext('(function(){'+executable(phoneSource)+';globalThis.requirePhone=requirePhone;globalThis.phone={phoneGate,finishPhone}})()',context)
@@ -282,4 +282,16 @@ test('订单当前401切回可登录空态，旧账号响应不影响新账号',
       assert.equal(subject.page.error.value, '')
     })
   }
+})
+
+
+test('首次资料弹层依据服务端注册标记，旧响应和退出不会复活标记',async()=>{
+  const subject=harness()
+  const old=subject.store.wechatLogin('old-ticket',{agreed:true}),oldRequest=subject.take('/auth/wechat','POST')
+  const newer=subject.store.wechatLogin('new-ticket',{agreed:true});subject.take('/auth/wechat','POST').resolve({token:'token-new',user:{...accountB},first_login:false});await newer
+  oldRequest.resolve({token:'old-token',user:{...accountA},first_login:true});await old
+  assert.equal(subject.store.lastLoginWasNew.value,false)
+  const registering=subject.store.wechatLogin('register-ticket',{agreed:true});subject.take('/auth/wechat','POST').resolve({token:'register-token',user:{...accountA},first_login:true});await registering
+  assert.equal(subject.store.lastLoginWasNew.value,true)
+  subject.store.clearSession();assert.equal(subject.store.lastLoginWasNew.value,false)
 })

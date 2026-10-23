@@ -30,6 +30,9 @@ func (a *App) actor(r *http.Request) (User, error) {
 	if u.Status != "active" {
 		return User{}, fail(403, "账号已被停用")
 	}
+	if state, _ := r.Context().Value(reviewContextKey{}).(*reviewRequest); state != nil {
+		state.ActorID = u.ID
+	}
 	return u, nil
 }
 
@@ -54,7 +57,7 @@ func (a *App) session(ctx context.Context, u User) (any, error) {
 	if err := a.Redis.Set(ctx, a.redisKey("session:"+token), u.ID, 30*24*time.Hour).Err(); err != nil {
 		return nil, fail(503, "登录服务暂时不可用")
 	}
-	return map[string]any{"token": token, "user": u}, nil
+	return map[string]any{"token": token, "user": u, "first_login": false}, nil
 }
 
 // loginRate 通过 Redis 固定窗口限制身份入口滥用。

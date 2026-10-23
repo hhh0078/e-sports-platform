@@ -84,10 +84,14 @@ func TestIntegrationWechatTicketAndAgreementVersions(t *testing.T) {
 	api.call("admin", "PATCH", "/admin/agreements", updated, 200, &updated)
 	api.call("", "POST", "/auth/wechat", loginConsent(prepared.Ticket, prepared.Agreements), 409, nil)
 	var login struct {
-		Token string `json:"token"`
-		User  User   `json:"user"`
+		Token      string `json:"token"`
+		FirstLogin bool   `json:"first_login"`
+		User       User   `json:"user"`
 	}
 	api.call("", "POST", "/auth/wechat", loginConsent(prepared.Ticket, updated), 200, &login)
+	if !login.FirstLogin {
+		t.Fatal("首次新建用户应返回first_login")
+	}
 	var providerEnabled bool
 	if err := api.App.DB.QueryRow(t.Context(), "SELECT (data->>'provider_enabled')::boolean FROM users WHERE id=$1", login.User.ID).Scan(&providerEnabled); err != nil || !providerEnabled {
 		t.Fatal("新微信用户必须持久化默认开启的接单身份")
@@ -103,6 +107,14 @@ func TestIntegrationWechatTicketAndAgreementVersions(t *testing.T) {
 	code, raw, err := api.request("", "POST", "/auth/wechat", loginConsent(prepared.Ticket, updated))
 	if err != nil || code != 200 {
 		t.Fatalf("再次登录失败: %d %s %v", code, raw, err)
+	}
+	var relogin struct {
+		Data struct {
+			FirstLogin bool `json:"first_login"`
+		} `json:"data"`
+	}
+	if err = json.Unmarshal(raw, &relogin); err != nil || relogin.Data.FirstLogin {
+		t.Fatal("已有用户不应再次要求更新资料")
 	}
 	for _, secret := range []string{"private-openid-user", "private-session-key", "test-secret-never-public", "13800138000"} {
 		if strings.Contains(string(raw), secret) {

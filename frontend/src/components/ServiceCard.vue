@@ -1,7 +1,7 @@
 <!-- 文件作用：统一服务卡片，封面内按标题在上标签在下展示并为角标预留自定义文案空间，价格和操作保持图下正常流。 -->
 <template>
   <view class="service-card" :style="pageTheme(service.game_id)" @click="openDetail">
-    <CoverArt :src="service.cover_url" :labels="service.labels" :aspect-ratio="4 / 3" :reserve-bottom-pixels="bottomReservation" :reserve-top-pixels="topReservation" readable :min-font-pixels="10">
+    <CoverArt :src="service.cover_url" :labels="service.labels" :active="active" lazy-load :aspect-ratio="4 / 3" :reserve-bottom-pixels="bottomReservation" :reserve-top-pixels="topReservation" readable :min-font-pixels="10">
       <view v-if="hasDeposit||hasClubDeposit" class="service-deposits"><DepositBadge v-if="hasDeposit" :amount-cents="service.provider_deposit_cents"/><DepositBadge v-if="hasClubDeposit" kind="user_club" :amount-cents="service.provider_club_deposit_cents"/></view>
       <view class="service-overlay"><text class="service-title">{{ service.title }}</text><view class="service-tags"><view v-if="service.club_verified" class="service-cert"><Icon name="shield" :size="9"/><text>俱乐部认证</text></view><text v-if="gameLabel" class="service-tag">{{ gameLabel }}</text><text v-if="service.category" class="service-category">{{ service.category }}</text></view></view>
     </CoverArt>
@@ -12,8 +12,7 @@
   </view>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { computed } from 'vue'
 import CoverArt from './CoverArt.vue'
 import DepositBadge from './DepositBadge.vue'
 import Icon from './Icon.vue'
@@ -21,10 +20,9 @@ import { money, go } from '../lib/format'
 import { state, pageTheme } from '../lib/store'
 import type { Service } from '../types/models'
 import { designPixels } from '../lib/design-units'
-const props = withDefaults(defineProps<{ service: Service; interactive?: boolean; coverOnly?: boolean }>(), { interactive: true, coverOnly: false })
-const viewportWidth = ref(390)
-/** 根据真实视口换算rpx文字带的实际像素，传入封面引擎前只缩放一次。 */
-function readViewport(): void { try { const width = uni.getWindowInfo().windowWidth; if (Number.isFinite(width) && width > 0) viewportWidth.value = width } catch { /* 原生接口暂不可用时保留390设计基线，后续显示与窗口变化时重测。 */ } }
+import { useViewportWidth } from '../lib/viewport'
+const props = withDefaults(defineProps<{ service: Service; interactive?: boolean; coverOnly?: boolean; active?: boolean }>(), { interactive: true, coverOnly: false, active: true })
+const viewportWidth = useViewportWidth()
 /** 仅对后端当前有效的正整数平台押金显示角标，布局同步预留顶部安全带。 */
 const hasDeposit = computed(() => Number.isSafeInteger(props.service.provider_deposit_cents) && (props.service.provider_deposit_cents || 0) > 0)
 /** 只展示服务当前挂靠俱乐部内已实缴的押金，不使用俱乐部规则金额。 */
@@ -34,9 +32,6 @@ const topReservation = computed(() => designPixels(hasDeposit.value && hasClubDe
 const gameLabel = computed(() => { const game = state.games.find(item => item.id === props.service.game_id); return game?.short_name || game?.name || '' })
 /** 通过当前业务路由打开服务，发布预览可关闭跳转。 */
 function openDetail(): void { if (props.interactive) go('/pages/services/detail?id=' + encodeURIComponent(props.service.id)) }
-onMounted(() => { readViewport(); uni.onWindowResize(readViewport) })
-onShow(readViewport)
-onBeforeUnmount(() => uni.offWindowResize(readViewport))
 </script>
 <style scoped>
 .service-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid var(--line-subtle);background:var(--surface);border-radius:19.2308rpx}

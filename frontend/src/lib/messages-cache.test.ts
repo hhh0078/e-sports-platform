@@ -52,3 +52,13 @@ test('缓存只保存声明消息字段，不把外部额外配置复制进本�
   writeMessageCache('A', mergeMessageCache('A', [], [incoming]), subject.storage)
   assert.equal('unexpected' in readMessageCache('A', subject.storage)[0], false)
 })
+
+
+test('审核消息的可选行动和字段关联经已读落盘保留，旧消息不强制新增字段',()=>{
+  const subject=storageHarness(),related={...message,action_path:'/pages/services/publish?id=service-A',action_label:'修改服务',target_type:'services',target_id:'service-A',field_label:'服务标题'}
+  const unread=mergeMessageCache('A',[],[related]);writeMessageCache('A',markCachedMessageRead(unread,message.id),subject.storage)
+  const local=readMessageCache('A',subject.storage)[0]
+  assert.equal(local.read,true);assert.equal(local.ack_pending,true);assert.equal(local.action_path,related.action_path);assert.equal(local.action_label,related.action_label);assert.equal(local.target_type,'services');assert.equal(local.target_id,'service-A');assert.equal(local.field_label,'服务标题');assert.equal(local.body,message.body)
+  const resent=mergeMessageCache('A',[local],[{...message,action_path:'/pages/orders/detail?id=old'}]);assert.equal(resent[0].action_path,related.action_path,'旧重送不能覆盖本机行动和全文')
+  writeMessageCache('B',mergeMessageCache('B',[],[message]),subject.storage);assert.equal(readMessageCache('B',subject.storage)[0].action_path,undefined)
+})

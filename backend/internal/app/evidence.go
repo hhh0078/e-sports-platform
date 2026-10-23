@@ -88,7 +88,7 @@ func (a *App) validateEvidence(r *http.Request, orderID, raw string) (string, er
 	}
 	id := strings.TrimPrefix(u.Path, "/api/evidence/")
 	v, err := get[Evidence](r.Context(), a.DB, "evidence", id, false)
-	if err != nil || v.OrderID != orderID {
+	if err != nil || v.OrderID != orderID || v.Moderation == "rejected" {
 		return "", fail(403, "图片不属于此订单")
 	}
 	return "/api/evidence/" + id, nil
@@ -116,6 +116,10 @@ func (a *App) viewEvidence(w http.ResponseWriter, r *http.Request) {
 			respond(w, 403, map[string]string{"error": "无权访问图片"})
 			return
 		}
+	}
+	if v.Moderation == "rejected" {
+		a.rejectedMedia(w, r)
+		return
 	}
 	w.Header().Set("Content-Type", v.MIME)
 	w.Header().Set("Content-Length", strconv.Itoa(len(v.Data)))

@@ -22,7 +22,7 @@ func (a *App) uploadCover(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	sum := sha256.Sum256(raw)
-	v := Evidence{ID: newID(), OwnerID: u.ID, SHA256: hex.EncodeToString(sum[:]), MIME: mime, Data: raw, CreatedAt: now(), Public: true, Moderation: "trusted_platform"}
+	v := Evidence{ID: newID(), OwnerID: u.ID, SHA256: hex.EncodeToString(sum[:]), MIME: mime, Data: raw, CreatedAt: now(), Public: true, Moderation: "pending"}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
 		return nil, err
@@ -47,9 +47,13 @@ func (a *App) viewCover(w http.ResponseWriter, r *http.Request) {
 		respond(w, 404, map[string]string{"error": "封面不存在"})
 		return
 	}
+	if v.Moderation == "rejected" {
+		a.rejectedMedia(w, r)
+		return
+	}
 	w.Header().Set("Content-Type", v.MIME)
 	w.Header().Set("Content-Length", strconv.Itoa(len(v.Data)))
 	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.Header().Set("Cache-Control", "public, max-age=86400, immutable")
+	w.Header().Set("Cache-Control", "private, no-store")
 	w.Write(v.Data)
 }

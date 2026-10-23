@@ -21,15 +21,13 @@ test('数字与字符串数字图标共用rpx占位和官方字号，显式单�
   assert.match(source, /<UniIcons[^>]*:size="edge"/)
 })
 
-test('服务卡片在320及390窗口用实际像素预留rpx文字与双角标，卸载移除监听', t => {
+test('服务卡片在320及390共享窗口用实际像素预留rpx文字与双角标', () => {
   const props = reactive({ service: { game_id: 'delta', provider_deposit_cents: 100, provider_club_deposit_cents: 100 }, interactive: false })
-  const hooks: Record<string, () => void> = {}, resize = new Set<() => void>()
-  let width = 390
-  const context = vm.createContext({ computed, ref, designPixels, defineProps: () => props, withDefaults: (value: unknown) => value, onMounted: (hook: () => void) => { hooks.mounted = hook }, onShow: (hook: () => void) => { hooks.show = hook }, onBeforeUnmount: (hook: () => void) => { hooks.unmount = hook }, state: { games: [] }, uni: { getWindowInfo: () => ({ windowWidth: width }), onWindowResize: (hook: () => void) => resize.add(hook), offWindowResize: (hook: () => void) => resize.delete(hook) } })
+  const viewportWidth = ref(390)
+  const context = vm.createContext({ computed, designPixels, useViewportWidth: () => viewportWidth, defineProps: () => props, withDefaults: (value: unknown) => value, state: { games: [] } })
   vm.runInContext(script('ServiceCard') + '\nglobalThis.subject={bottomReservation,topReservation}', context)
-  hooks.mounted(); t.after(() => hooks.unmount())
-  for (width of [320, 390]) {
-    resize.forEach(hook => hook())
+  for (const width of [320, 390]) {
+    viewportWidth.value = width
     assert.equal(context.subject.bottomReservation.value, 52 * width / 390)
     assert.equal(context.subject.topReservation.value, 44 * width / 390)
     props.service.provider_club_deposit_cents = 0
@@ -38,7 +36,6 @@ test('服务卡片在320及390窗口用实际像素预留rpx文字与双角标�
     assert.equal(context.subject.topReservation.value, 0)
     props.service.provider_deposit_cents = 100; props.service.provider_club_deposit_cents = 100
   }
-  hooks.unmount(); assert.equal(resize.size, 0)
 })
 
 test('交易图表使用真实rpx画布高度清理与计算，缺少测量或卸载后不绘制', async t => {

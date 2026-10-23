@@ -151,6 +151,12 @@
       }
     },
     {
+      "path": "pages/manage/moderation",
+      "style": {
+        "navigationBarTitleText": "图文审核"
+      }
+    },
+    {
       "path": "pages/manage/ai",
       "style": {
         "navigationBarTitleText": "AI配置"

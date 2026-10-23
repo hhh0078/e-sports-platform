@@ -71,10 +71,10 @@ func TestIntegrationCommunityClubLifecycle(t *testing.T) {
 	api.uploadCommunityImage("outsider", "club_cover", "shanhai", communityPNG(t, 640, 360), 403)
 	var club Club
 	api.call("clubowner", "PATCH", "/clubs/shanhai", map[string]any{"cover_url": cover, "detail_blocks": []CommunityBlock{{Type: "text", Text: "团队规则与服务介绍"}, {Type: "image", ImageURL: detail}}, "deposit_cents": 50000, "assessment": "完成一次语音与游戏配合考核"}, 200, &club)
-	if club.Status != "pending" || club.Verified || club.Name != "山海电竞" || club.DepositCents != 50000 || len(club.DetailBlocks) != 2 {
-		t.Fatalf("装修应保留基本资料并重新审核：%+v", club)
+	if club.Status != "active" || !club.Verified || club.Name != "山海电竞" || club.DepositCents != 50000 || len(club.DetailBlocks) != 2 {
+		t.Fatalf("装修应保留组织认证并独立审核图文：%+v", club)
 	}
-	api.call("", "GET", "/clubs/shanhai", nil, 404, nil)
+	api.call("", "GET", "/clubs/shanhai", nil, 200, nil)
 	api.call("clubowner", "GET", "/clubs/shanhai", nil, 200, nil)
 	api.call("outsider", "PATCH", "/clubs/shanhai", map[string]any{"description": "尝试覆盖其他俱乐部的公开资料"}, 403, nil)
 	api.call("outsider", "PATCH", "/clubs/wild", map[string]any{"cover_url": cover}, 403, nil)

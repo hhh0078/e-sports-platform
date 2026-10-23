@@ -19,3 +19,7 @@ Use case: ui-mockup. Precise local edit of approved Chinese 集结 WeChat mini-p
 ## 实缴预览刷新
 
 新建和同账号返回页面时刷新getWallet，平台押金仅取deposit_cents；挂靠选择后getClubDeposits仅取membership.amount_cents，不取platform或required_cents。两类金额为只读服务端状态，不属于表单保存内容。切号/切俱乐部/隐藏的迟到响应不得恢复旧徽标；支付或押金更新后返回不重置用户草稿。预览包含价格与成交区，不能只显示封面。
+
+## 2026-10-23后置审核
+
+沿用现有布局，主提交文案为“发布服务”。正常发布后才进入AI或人工图文审核，无AI不阻塞发布；拒绝原因通过消息告知。原订单约定不受修改影响。

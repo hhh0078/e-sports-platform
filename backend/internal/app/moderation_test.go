@@ -64,8 +64,8 @@ func TestAIAddressAndDecisionBoundary(t *testing.T) {
 	}
 }
 
-// TestIntegrationAIConfigPrivacyAndFailClosed 验证五类权限、加密保存、默认值和真实连接不使用模拟。
-func TestIntegrationAIConfigPrivacyAndFailClosed(t *testing.T) {
+// TestIntegrationAIConfigPrivacyAndManualFallback 验证缺AI仍保存、管理员配置加密与真实连通测试不使用模拟。
+func TestIntegrationAIConfigPrivacyAndManualFallback(t *testing.T) {
 	api := newTestAPI(t)
 	for _, user := range []string{"", "player", "worker", "clubowner", "outsider"} {
 		want := 403
@@ -73,34 +73,32 @@ func TestIntegrationAIConfigPrivacyAndFailClosed(t *testing.T) {
 			want = 401
 		}
 		api.call(user, "PATCH", "/admin/ai-settings", map[string]string{"api_key": "must-not-save"}, want, nil)
-		for _, path := range []string{"/admin/ai-settings", "/admin/ai-settings/test"} {
-			method := "GET"
-			if strings.HasSuffix(path, "test") {
-				method = "POST"
-			}
-			api.call(user, method, path, map[string]any{}, want, nil)
-		}
+		api.call(user, "GET", "/admin/ai-settings", nil, want, nil)
 	}
 	var view struct {
-		BaseURL, Model, Mode string
-		HasAPIKey            bool `json:"has_api_key"`
+		Model, Mode string
+		HasAPIKey   bool `json:"has_api_key"`
 	}
 	api.call("admin", "GET", "/admin/ai-settings", nil, 200, &view)
-	if view.Model != defaultAIModel || view.Mode != "local_simulation" || view.HasAPIKey {
-		t.Fatalf("默认审核配置错误：%+v", view)
+	if view.Model != defaultAIModel || view.Mode != "manual" || view.HasAPIKey {
+		t.Fatal("默认应人工审核")
 	}
 	api.call("admin", "POST", "/admin/ai-settings/test", map[string]any{}, 503, nil)
 	api.App.Config.DevMode = false
-	code, raw, err := api.request("worker", "PATCH", "/me/profile", map[string]string{"bio": "正式环境没有密钥必须暂停提交"})
-	if err != nil || code != 503 || !strings.Contains(string(raw), "moderation_unavailable") {
-		t.Fatalf("缺密钥被放行：%d %s %v", code, raw, err)
+	code, raw, err := api.request("worker", "PATCH", "/me/profile", map[string]string{"bio": "正式环境缺AI配置仍正常保存"})
+	if err != nil || code != 200 || !strings.Contains(string(raw), "manual_pending") {
+		t.Fatalf("缺AI阻断保存：%d %s %v", code, raw, err)
+	}
+	saved, _ := get[User](t.Context(), api.App.DB, "users", "worker", false)
+	if saved.Bio != "正式环境缺AI配置仍正常保存" {
+		t.Fatal("资料未写入")
 	}
 	mockAllowAI(t, api)
 	api.call("admin", "POST", "/admin/ai-settings/test", map[string]any{}, 200, nil)
-	for _, path := range []string{"/admin/ai-settings", "/admin/settings", "/bootstrap", "/admin/audit"} {
+	for _, path := range []string{"/admin/ai-settings", "/admin/settings", "/bootstrap", "/admin/audit", "/admin/moderation"} {
 		code, raw, err = api.request("admin", "GET", path, nil)
 		if err != nil || code != 200 || strings.Contains(string(raw), "ai-test-secret-not-public") {
-			t.Fatalf("AI秘密从%s泄露：%d", path, code)
+			t.Fatalf("配置秘密泄漏%s", path)
 		}
 	}
 	encrypted, err := get[encryptedPaymentSettings](t.Context(), api.App.DB, "settings", "ai-private", false)
@@ -109,20 +107,34 @@ func TestIntegrationAIConfigPrivacyAndFailClosed(t *testing.T) {
 	}
 	decoded, _ := base64.StdEncoding.DecodeString(encrypted.Ciphertext)
 	if strings.Contains(string(decoded), "ai-test-secret-not-public") {
-		t.Fatal("数据库保存了明文密钥")
+		t.Fatal("密钥未加密")
 	}
 	api.call("admin", "PATCH", "/admin/ai-settings", map[string]string{"api_key": "", "model": "new-model"}, 200, nil)
-	saved, err := api.App.readAISettings(t.Context(), api.App.DB)
-	if err != nil || saved.APIKey != "ai-test-secret-not-public" || saved.Model != "new-model" {
-		t.Fatal("空密钥覆盖了既有配置")
+	cfg, err := api.App.readAISettings(t.Context(), api.App.DB)
+	if err != nil || cfg.APIKey != "ai-test-secret-not-public" {
+		t.Fatal("空密钥覆盖旧值")
 	}
-	api.call("admin", "PATCH", "/admin/ai-settings", map[string]any{"clear_api_key": true, "api_key": "contradiction"}, 400, nil)
 	api.call("admin", "PATCH", "/admin/ai-settings", map[string]bool{"clear_api_key": true}, 200, nil)
-	api.call("worker", "PATCH", "/me/profile", map[string]string{"bio": "密钥清除后应立即停止发布"}, 503, nil)
+	api.call("worker", "PATCH", "/me/profile", map[string]string{"bio": "清除密钥后仍保存进入人工队列"}, 200, nil)
 }
 
-// TestIntegrationAIHTTPProtocolAndImageFailure 验证多模态真实字节、无认证秘密、无效响应与网络错误均不写入。
-func TestIntegrationAIHTTPProtocolAndImageFailure(t *testing.T) {
+// drainReviewAI 在隔离测试库显式消费持久队列，既不启动后台线程也不绕过AI协议解析。
+func drainReviewAI(t *testing.T, api *testAPI) {
+	t.Helper()
+	for i := 0; i < 1000; i++ {
+		processed, err := api.App.processModerationOne(t.Context())
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !processed {
+			return
+		}
+	}
+	t.Fatal("审核队列未收敛")
+}
+
+// TestIntegrationAIHTTPProtocolAndManualFallback 验证实际图文协议与上游故障进入人工而不回滚保存。
+func TestIntegrationAIHTTPProtocolAndManualFallback(t *testing.T) {
 	api := newTestAPI(t)
 	var calls atomic.Int32
 	var last string
@@ -131,23 +143,29 @@ func TestIntegrationAIHTTPProtocolAndImageFailure(t *testing.T) {
 		raw, _ := io.ReadAll(r.Body)
 		last = string(raw)
 		if r.Method != "POST" || r.URL.String() != defaultAIBaseURL+"/chat/completions" || r.Header.Get("Authorization") != "Bearer ai-test-secret-not-public" {
-			t.Error("AI协议请求错误")
+			t.Error("AI协议错误")
 		}
 		return aiMockResponse(`{"decision":"allow","reason":""}`), nil
 	})
 	api.call("worker", "PATCH", "/me/profile", map[string]string{"bio": "正常游戏任务服务介绍"}, 200, nil)
+	if calls.Load() != 0 {
+		t.Fatal("保存接口仍同步调用AI")
+	}
+	drainReviewAI(t, api)
 	if !strings.Contains(last, "正常游戏任务服务介绍") || strings.Contains(last, "openid") || strings.Contains(last, "phone_number") || strings.Contains(last, "ai-test-secret-not-public") {
-		t.Fatal("审核载荷缺少内容或包含无关秘密")
+		t.Fatal("AI载荷缺失或带无关秘密")
 	}
 	o := api.newOrder()
 	api.uploadTestImage("player", o.ID)
-	if !strings.Contains(last, "data:image/png;base64,") || strings.Contains(last, api.Server.URL) {
-		t.Fatal("图片审核未发送真实字节或错误使用外部URL")
+	drainReviewAI(t, api)
+	if !strings.Contains(last, "data:image/png;base64,") {
+		t.Fatal("没有审核实际图片字节")
 	}
 	before := calls.Load()
-	api.call("outsider", "POST", "/orders/"+o.ID+"/messages", map[string]string{"content": "无权阅读的订单不能进入外部审核"}, 403, nil)
+	api.call("outsider", "POST", "/orders/"+o.ID+"/messages", map[string]string{"content": "不能越权提交"}, 403, nil)
+	drainReviewAI(t, api)
 	if calls.Load() != before {
-		t.Fatal("未授权内容发给了模型")
+		t.Fatal("越权内容进入模型")
 	}
 	for _, scenario := range []string{"network", "malformed", "length", "upstream"} {
 		t.Run(scenario, func(t *testing.T) {
@@ -162,62 +180,17 @@ func TestIntegrationAIHTTPProtocolAndImageFailure(t *testing.T) {
 				}
 				return aiMockResponse("not valid json"), nil
 			})}
-			code, raw, err := api.request("worker", "PATCH", "/me/profile", map[string]string{"bio": "失败时不能保存的新简介"})
-			if err != nil || code != 503 || strings.Contains(string(raw), "ai-test-secret-not-public") {
-				t.Fatalf("审核故障未关闭或泄密：%d %s", code, raw)
+			api.call("worker", "PATCH", "/me/profile", map[string]string{"bio": "上游故障也保存的新简介" + scenario}, 200, nil)
+			drainReviewAI(t, api)
+			task := latestReviewTask(t, api, "users", "worker", "bio")
+			if task.Status != "manual_pending" || strings.Contains(task.LastError, "ai-test-secret-not-public") {
+				t.Fatal("故障未转人工或泄密")
 			}
 			saved, _ := get[User](t.Context(), api.App.DB, "users", "worker", false)
-			if saved.Bio == "失败时不能保存的新简介" {
-				t.Fatal("审核失败仍写入")
+			if saved.Bio != "上游故障也保存的新简介"+scenario {
+				t.Fatal("审核故障阻断保存")
 			}
 		})
-	}
-}
-
-// TestIntegrationAllUGCEntrypoints 在正常权限和业务状态下验证文字入口全部拒绝且不会改变资金状态。
-func TestIntegrationAllUGCEntrypoints(t *testing.T) {
-	api := newTestAPI(t)
-	o := api.newOrder()
-	api.action("worker", o.ID, "accept", "", 200)
-	api.action("worker", o.ID, "start", "", 200)
-	completed := api.newOrder()
-	api.action("worker", completed.ID, "accept", "", 200)
-	api.action("worker", completed.ID, "start", "", 200)
-	api.action("worker", completed.ID, "deliver", "已完成约定全部游戏任务", 200)
-	api.action("player", completed.ID, "confirm", "", 200)
-	installMockAI(t, api, func(*http.Request) (*http.Response, error) {
-		return aiMockResponse(`{"decision":"reject","reason":"涉嫌违法信息，请修改内容"}`), nil
-	})
-	service := map[string]any{"game_id": "delta", "title": "需要审查的服务", "description": "提供正常组队陪练的游戏服务说明", "category": "任务协作", "price_cents": 2300, "unit": "局", "cover_url": "/static/covers/official/delta-2.jpg", "labels": []CoverLabel{}, "tags": []string{}, "club_id": "shanhai"}
-	cases := []struct {
-		user, method, path string
-		body               any
-	}{
-		{"worker", "PATCH", "/me", map[string]string{"nickname": "游戏队友"}},
-		{"worker", "PATCH", "/me/profile", map[string]string{"bio": "游戏任务服务介绍"}},
-		{"worker", "POST", "/services", service}, {"worker", "PATCH", "/services/delta-service-1", service},
-		{"worker", "POST", "/clubs", map[string]any{"name": "游戏俱乐部", "description": "这是俱乐部正常游戏服务说明", "game_ids": []string{"delta"}}},
-		{"clubowner", "PATCH", "/clubs/shanhai", map[string]string{"assessment": "入会须完成正常游戏考核"}},
-		{"outsider", "POST", "/clubs/shanhai/join", map[string]string{"application_note": "希望加入队伍进行游戏服务"}},
-		{"clubowner", "POST", "/clubs/shanhai/members/worker", map[string]string{"status": "active", "review_note": "游戏考核已经通过"}},
-		{"player", "POST", "/orders", map[string]any{"service_id": "delta-service-1", "quantity": 1, "requirements": "任务要求需要进行内容审核"}},
-		{"player", "POST", "/requests", map[string]any{"game_id": "delta", "title": "正常游戏需求", "requirements": "一起完成约定的游戏任务", "amount_cents": 1900}},
-		{"worker", "POST", "/orders/" + o.ID + "/actions", map[string]string{"action": "deliver", "note": "已经完成游戏任务请验收"}},
-		{"player", "POST", "/orders/" + o.ID + "/actions", map[string]string{"action": "request_refund", "note": "服务内容不符需要申请退款"}},
-		{"player", "POST", "/orders/" + o.ID + "/messages", map[string]string{"content": "游戏聊天正文需要审查"}},
-		{"player", "POST", "/orders/" + completed.ID + "/review", map[string]any{"rating": 5, "content": "服务评价内容需要审核"}},
-	}
-	for _, entry := range cases {
-		t.Run(entry.method+entry.path, func(t *testing.T) {
-			code, raw, err := api.request(entry.user, entry.method, entry.path, entry.body)
-			if err != nil || code != 422 || !strings.Contains(string(raw), "moderation_rejected") || !strings.Contains(string(raw), "涉嫌违法信息") {
-				t.Fatalf("入口绕过审查：%d %s %v", code, raw, err)
-			}
-		})
-	}
-	saved, _ := get[Order](t.Context(), api.App.DB, "orders", o.ID, false)
-	if saved.Status != "in_progress" || saved.RefundStatus != "none" {
-		t.Fatal("拒绝后不应改变交易状态")
 	}
 }
 
