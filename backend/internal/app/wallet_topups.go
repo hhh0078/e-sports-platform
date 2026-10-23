@@ -15,7 +15,12 @@ func (a *App) walletTopups(w http.ResponseWriter, r *http.Request) (any, error) 
 		return nil, err
 	}
 	limit, offset := pageLimit(r)
-	return list[WalletTopup](r.Context(), a.DB, "wallet_topups", "WHERE data->>'user_id'=$1 ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $2 OFFSET $3", u.ID, limit, offset)
+	clubID, purpose := strings.TrimSpace(r.URL.Query().Get("club_id")), r.URL.Query().Get("purpose")
+	if !length(clubID, 0, 128) || purpose != "" && !contains([]string{"balance", "deposit", "member_club", "club_platform"}, purpose) {
+		return nil, fail(400, "资金记录筛选条件无效")
+	}
+	// 组织筛选始终叠加本人归属，不开放其他成员的付款单或凭据。
+	return list[WalletTopup](r.Context(), a.DB, "wallet_topups", "WHERE data->>'user_id'=$1 AND ($4='' OR data->>'club_id'=$4) AND ($5='' OR data->>'purpose'=$5) ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $2 OFFSET $3", u.ID, limit, offset, clubID, purpose)
 }
 
 // createWalletTopup 同一账号和幂等号只能对应相同用途、相同金额，微信超时仍保留付款意图。

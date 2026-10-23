@@ -110,7 +110,8 @@ func (a *App) service(w http.ResponseWriter, r *http.Request) (any, error) {
 			return nil, fail(404, "服务不存在或尚未上架")
 		}
 	}
-	s.Reviews, err = list[Review](r.Context(), a.DB, "reviews", "WHERE EXISTS(SELECT 1 FROM orders o WHERE o.id=reviews.data->>'order_id' AND o.data->>'service_id'=$1 AND o.data->>'status'='completed' AND o.data->>'refund_status' NOT IN ('requested','escalated','processing')) ORDER BY data->>'created_at' DESC LIMIT 100", s.ID)
+	limit, offset := pageLimit(r)
+	s.Reviews, err = list[Review](r.Context(), a.DB, "reviews", "WHERE EXISTS(SELECT 1 FROM orders o WHERE o.id=reviews.data->>'order_id' AND o.data->>'service_id'=$1 AND o.data->>'status'='completed' AND o.data->>'refund_status' NOT IN ('requested','escalated','processing')) ORDER BY data->>'created_at' DESC, id DESC LIMIT $2 OFFSET $3", s.ID, limit, offset)
 	if err != nil {
 		return nil, err
 	}

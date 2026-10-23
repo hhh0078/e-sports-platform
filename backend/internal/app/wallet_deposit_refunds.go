@@ -17,7 +17,12 @@ func (a *App) walletDepositRefunds(w http.ResponseWriter, r *http.Request) (any,
 		return nil, err
 	}
 	limit, offset := pageLimit(r)
-	return list[WalletDepositRefund](r.Context(), a.DB, "wallet_deposit_refunds", "WHERE data->>'user_id'=$1 ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $2 OFFSET $3", u.ID, limit, offset)
+	clubID, scope := strings.TrimSpace(r.URL.Query().Get("club_id")), r.URL.Query().Get("scope")
+	if !length(clubID, 0, 128) || scope != "" && !contains([]string{"personal", "member_club", "club_platform"}, scope) {
+		return nil, fail(400, "押金退款记录筛选条件无效")
+	}
+	// 历史个人押金没有scope字段，按personal兼容；任何筛选都不能越过本人归属。
+	return list[WalletDepositRefund](r.Context(), a.DB, "wallet_deposit_refunds", "WHERE data->>'user_id'=$1 AND ($4='' OR data->>'club_id'=$4) AND ($5='' OR COALESCE(NULLIF(data->>'scope',''),'personal')=$5) ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $2 OFFSET $3", u.ID, limit, offset, clubID, scope)
 }
 
 // guardDepositOrders 在用户事务锁下检查买卖双方关联交易，待付款、履约及售后期间均不得退押金。

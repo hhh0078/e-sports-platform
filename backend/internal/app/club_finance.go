@@ -206,7 +206,8 @@ func (a *App) clubWalletWithdrawals(w http.ResponseWriter, r *http.Request) (any
 	if r.Method == "POST" {
 		return a.createWithdrawalFor(w, r, u, clubWalletID(c.ID), c.ID)
 	}
-	items, e := list[WalletWithdrawal](r.Context(), a.DB, "wallet_withdrawals", "WHERE data->>'club_id'=$1 ORDER BY data->>'created_at' DESC LIMIT 100", c.ID)
+	limit, offset := pageLimit(r)
+	items, e := list[WalletWithdrawal](r.Context(), a.DB, "wallet_withdrawals", "WHERE data->>'club_id'=$1 ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $2 OFFSET $3", c.ID, limit, offset)
 	out := []any{}
 	for _, v := range items {
 		out = append(out, a.withdrawalResponse(v, true))
