@@ -21,7 +21,10 @@
     "../scripts/check-share-runtime-hooks.ts",
     "../scripts/mini-sharing-smoke.ts",
     "../scripts/mini-refresh.ts",
-    "../scripts/mini-input-focus.ts"
+    "../scripts/mini-input-focus.ts",
+    "../scripts/mini-public-operations.ts",
+    "../scripts/mini-carousel-matrix.ts",
+    "../scripts/mini-security-marker-smoke.ts"
   ],
   "exclude": [
     "node_modules",

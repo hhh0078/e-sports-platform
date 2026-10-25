@@ -4,17 +4,19 @@ package app
 import "encoding/json"
 
 type User struct {
-	ProfileCover    string `json:"profile_cover"`
-	PhoneVerified   bool   `json:"phone_verified"`
-	PhoneMasked     string `json:"phone_masked"`
-	ID              string `json:"id"`
-	Nickname        string `json:"nickname"`
-	Avatar          string `json:"avatar"`
-	Bio             string `json:"bio"`
-	Role            string `json:"role"`
-	Status          string `json:"status"`
-	ProviderEnabled bool   `json:"provider_enabled"`
-	CreatedAt       string `json:"created_at"`
+	ProfileCover  string `json:"profile_cover"`
+	PhoneVerified bool   `json:"phone_verified"`
+	PhoneMasked   string `json:"phone_masked"`
+	ID            string `json:"id"`
+	Nickname      string `json:"nickname"`
+	Avatar        string `json:"avatar"`
+	Bio           string `json:"bio"`
+	Role          string `json:"role"`
+	// PlatformAdminRole 区分平台根管理员和受托副管理员，普通用户为空。
+	PlatformAdminRole string `json:"platform_admin_role"`
+	Status            string `json:"status"`
+	ProviderEnabled   bool   `json:"provider_enabled"`
+	CreatedAt         string `json:"created_at"`
 }
 
 // UnmarshalJSON 兼容历史关闭或缺失的接单字段，读取时始终默认开启；冻结与手机号状态保持原值。
@@ -26,6 +28,15 @@ func (u *User) UnmarshalJSON(data []byte) error {
 	}
 	*u = User(value)
 	u.ProviderEnabled = true
+	if u.Role == "admin" {
+		if u.PlatformAdminRole == "" || u.PlatformAdminRole == "root" {
+			u.PlatformAdminRole = "root"
+		} else {
+			u.PlatformAdminRole = "deputy"
+		}
+	} else if u.Role != "admin" {
+		u.PlatformAdminRole = ""
+	}
 	return nil
 }
 
@@ -110,6 +121,8 @@ type Club struct {
 	MemberCount                   int              `json:"member_count"`
 	CreatedAt                     string           `json:"created_at"`
 	MembershipStatus              string           `json:"membership_status,omitempty"`
+	ManagementRole                string           `json:"management_role,omitempty"`
+	CanManageAdmins               bool             `json:"can_manage_admins,omitempty"`
 }
 type ClubMember struct {
 	AppliedCommissionRateBPS int64  `json:"applied_commission_rate_bps"`

@@ -21,7 +21,13 @@ func (a *App) walletDepositRefunds(w http.ResponseWriter, r *http.Request) (any,
 	if !length(clubID, 0, 128) || scope != "" && !contains([]string{"personal", "member_club", "club_platform"}, scope) {
 		return nil, fail(400, "押金退款记录筛选条件无效")
 	}
-	// 历史个人押金没有scope字段，按personal兼容；任何筛选都不能越过本人归属。
+	if scope == "club_platform" && clubID != "" {
+		if _, err = a.clubManager(r, u, clubID); err != nil {
+			return nil, err
+		}
+		return list[WalletDepositRefund](r.Context(), a.DB, "wallet_deposit_refunds", "WHERE data->>'club_id'=$1 AND data->>'scope'='club_platform' AND (data->>'account_id'=$2 OR COALESCE(data->>'account_id','')='' AND data->>'user_id'=$3) ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $4 OFFSET $5", clubID, clubDepositAccount(clubID), u.ID, limit, offset)
+	}
+	// 历史个人押金没有scope字段，按personal兼容；其它筛选仍只读取本人记录。
 	return list[WalletDepositRefund](r.Context(), a.DB, "wallet_deposit_refunds", "WHERE data->>'user_id'=$1 AND ($4='' OR data->>'club_id'=$4) AND ($5='' OR COALESCE(NULLIF(data->>'scope',''),'personal')=$5) ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $2 OFFSET $3", u.ID, limit, offset, clubID, scope)
 }
 
@@ -131,7 +137,8 @@ func (a *App) createWalletDepositRefund(w http.ResponseWriter, r *http.Request) 
 	if amount < minimum || amount > wallet.DepositCents {
 		return nil, fail(409, "有效押金不足最低退款金额或申请金额超过可退余额")
 	}
-	topups, err := list[WalletTopup](ctx, tx, "wallet_topups", "WHERE data->>'user_id'=$1 AND data->>'purpose'=$2 AND COALESCE(data->>'club_id','')=$3 AND data->>'status'='paid' ORDER BY (data->>'created_at')::timestamptz,id", u.ID, purpose, in.ClubID)
+	// 组织押金由多个授权人代缴时，按已绑定专户查原付款；个人及成员押金仍严格匹配本人。
+	topups, err := list[WalletTopup](ctx, tx, "wallet_topups", "WHERE COALESCE(NULLIF(data->>'account_id',''),data->>'user_id')=$1 AND data->>'purpose'=$2 AND COALESCE(data->>'club_id','')=$3 AND data->>'status'='paid' AND ($2='club_platform' OR data->>'user_id'=$4) ORDER BY (data->>'created_at')::timestamptz,id", accountID, purpose, in.ClubID, u.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -305,7 +312,12 @@ func (a *App) applyDepositRefund(ctx context.Context, c wxPayConfig, result wxRe
 	if err != nil {
 		return err
 	}
-	if p.Purpose == "balance" || p.UserID != v.UserID || topupAccount(p) != refundAccount(v) {
+	clubSource := v.Scope == "club_platform" && p.Purpose == "club_platform" && v.ClubID != "" && p.ClubID == v.ClubID && refundAccount(v) == clubDepositAccount(v.ClubID)
+	expectedPurpose := v.Scope
+	if expectedPurpose == "" || expectedPurpose == "personal" {
+		expectedPurpose = "deposit"
+	}
+	if p.Purpose != expectedPurpose || v.Scope == "club_platform" && !clubSource || !clubSource && p.UserID != v.UserID || topupAccount(p) != refundAccount(v) || v.Scope == "member_club" && p.ClubID != v.ClubID {
 		return fail(409, "押金退款来源与申请用户不一致，请平台核账")
 	}
 	if result.OrderNo != p.OrderNo || result.TransactionID != p.TransactionID || p.TransactionID == "" || result.Amount.Total != p.AmountCents || result.Amount.Refund != part.AmountCents || (result.Amount.Currency != "" && result.Amount.Currency != "CNY") {
@@ -361,7 +373,12 @@ func (a *App) syncWalletDepositRefund(w http.ResponseWriter, r *http.Request) (a
 		return nil, err
 	}
 	if v.UserID != u.ID {
-		return nil, fail(403, "无权同步他人押金退款")
+		if v.Scope != "club_platform" || v.ClubID == "" {
+			return nil, fail(403, "无权同步他人押金退款")
+		}
+		if _, err = a.clubManager(r, u, v.ClubID); err != nil {
+			return nil, err
+		}
 	}
 	if v.Status != "success" {
 		if err = a.processDepositRefund(r.Context(), v); err != nil {

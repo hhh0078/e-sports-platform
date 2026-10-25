@@ -1,5 +1,6 @@
 /** 文件作用：唯一 HTTP/上传传输层，统一超时、令牌、业务解包及可读错误。 */
 import { queueModerationNotice } from '../lib/moderation-notice'
+import { beginFinancialActivity, isFinancialRequest } from '../lib/update-manager'
 // 地址在 Vite 配置阶段校验并注入，正式包不携带开发地址回退分支。
 export const API_BASE: string = import.meta.env?.VITE_API_BASE || 'http://127.0.0.1:8090/api'
 /** 支持的请求方法。 */
@@ -27,15 +28,16 @@ function envelope(value: unknown): { data?: unknown; error?: string; code?: stri
 function sendRequest<T>(path: string, method: HttpMethod, data: unknown, authenticated: boolean): Promise<T> {
   return new Promise((resolve, reject) => {
     const authToken = authenticated ? token() : ''
+    const finishFinancial=isFinancialRequest(path,method)?beginFinancialActivity():()=>{}
     // uni-app 的类型枚举遗漏了微信与 H5 实际支持的 PATCH，仅在传输边界补全该方法。
     const send = uni.request as (options: Omit<UniApp.RequestOptions, 'method'> & { method: HttpMethod }) => unknown
-    send({ url: API_BASE + path, method, data: data as UniApp.RequestOptions['data'], timeout: 15000,
+    try { send({ url: API_BASE + path, method, data: data as UniApp.RequestOptions['data'], timeout: 15000,
       header: { 'Content-Type': 'application/json', ...(authToken ? { Authorization: 'Bearer ' + authToken } : {}) },
       /** 检查 HTTP 状态后解包业务数据。 */
-      success(response) { try { const body = envelope(response.data); if (response.statusCode >= 200 && response.statusCode < 300) { if (authenticated && authToken && method !== 'GET') queueModerationNotice(body.moderation, () => token() === authToken); resolve(body.data as T) } else { const error = new ApiError(body.error || '请求失败，请稍后重试'); error.status = response.statusCode; error.code = body.code; reject(error) } } catch (error) { reject(error) } },
+      success(response) { try { const body = envelope(response.data); if (response.statusCode >= 200 && response.statusCode < 300) { if (authenticated && authToken && method !== 'GET') queueModerationNotice(body.moderation, () => token() === authToken); resolve(body.data as T) } else { const error = new ApiError(body.error || '请求失败，请稍后重试'); error.status = response.statusCode; error.code = body.code; reject(error) } } catch (error) { reject(error) } finally { finishFinancial() } },
       /** 网络错误不应清理用户会话。 */
-      fail() { reject(new ApiError('暂时连接不上服务，请确认服务已启动后重试')) },
-    })
+      fail() { finishFinancial(); reject(new ApiError('暂时连接不上服务，请确认服务已启动后重试')) },
+    }) } catch(error) { finishFinancial(); reject(error) }
   })
 }
 /** 向服务端发送正常业务请求，由领域API约束模型与权限。 */

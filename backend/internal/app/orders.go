@@ -265,8 +265,14 @@ func (a *App) authorizedOrder(r *http.Request, u User, id string, lock bool) (Or
 	}
 	if o.ClubID != "" {
 		c, e := get[Club](r.Context(), a.DB, "clubs", o.ClubID, false)
-		if e == nil && c.OwnerID == u.ID {
-			return o, nil
+		if e == nil {
+			allowed, permissionErr := canManageClub(r.Context(), a.DB, u, c)
+			if permissionErr != nil {
+				return o, permissionErr
+			}
+			if allowed {
+				return o, nil
+			}
 		}
 	}
 	return o, fail(403, "无权查看此订单")

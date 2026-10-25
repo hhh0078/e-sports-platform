@@ -79,8 +79,12 @@ func (a *App) depositAccount(ctx context.Context, q querier, u User, purpose, cl
 		return "", e
 	}
 	if purpose == "club_platform" {
-		if c.OwnerID != u.ID {
-			return "", fail(403, "仅俱乐部负责人可缴退本组织的平台押金")
+		role, err := clubManagementRole(ctx, q, u, c)
+		if err != nil {
+			return "", err
+		}
+		if role == "" {
+			return "", fail(403, "仅负责人或本组织副管理员可管理平台押金")
 		}
 		return clubDepositAccount(clubID), nil
 	}
@@ -167,7 +171,11 @@ func (a *App) clubDeposits(w http.ResponseWriter, r *http.Request) (any, error) 
 	}
 	m, e := accountBalance(r.Context(), a.DB, memberDepositAccount(c.ID, u.ID))
 	required := clubRequiredDeposit(c, s)
-	return map[string]any{"platform": map[string]any{"amount_cents": p.DepositCents, "refunding_cents": p.DepositRefundingCents, "required_cents": required, "shortfall_cents": depositShortfall(p.DepositCents, required), "qualified": qualifiedPlatformDeposit(p, required) > 0, "can_manage": u.ID == c.OwnerID}, "membership": map[string]any{"amount_cents": m.DepositCents, "refunding_cents": m.DepositRefundingCents, "required_cents": c.DepositCents}}, e
+	role, permissionErr := clubManagementRole(r.Context(), a.DB, u, c)
+	if permissionErr != nil {
+		return nil, permissionErr
+	}
+	return map[string]any{"platform": map[string]any{"amount_cents": p.DepositCents, "refunding_cents": p.DepositRefundingCents, "required_cents": required, "shortfall_cents": depositShortfall(p.DepositCents, required), "qualified": qualifiedPlatformDeposit(p, required) > 0, "can_manage": role != ""}, "membership": map[string]any{"amount_cents": m.DepositCents, "refunding_cents": m.DepositRefundingCents, "required_cents": c.DepositCents}}, e
 }
 
 // clubWalletSummary 仅负责人或平台管理可读取组织佣金账户，会员押金不会进入其中。
@@ -200,17 +208,25 @@ func (a *App) clubWalletWithdrawals(w http.ResponseWriter, r *http.Request) (any
 	if e != nil {
 		return nil, e
 	}
-	if c.OwnerID != u.ID {
-		return nil, fail(403, "仅当前负责人可向本人实名微信申请俱乐部提现")
-	}
 	if r.Method == "POST" {
-		return a.createWithdrawalFor(w, r, u, clubWalletID(c.ID), c.ID)
+		role, permissionErr := clubManagementRole(r.Context(), a.DB, u, c)
+		if permissionErr != nil {
+			return nil, permissionErr
+		}
+		if role == "" {
+			return nil, fail(403, "仅负责人或本组织副管理员可申请俱乐部提现")
+		}
+		owner, permissionErr := get[User](r.Context(), a.DB, "users", c.OwnerID, false)
+		if permissionErr != nil || owner.Status != "active" {
+			return nil, fail(409, "负责人账号不可用")
+		}
+		return a.createWithdrawalFor(w, r, owner, clubWalletID(c.ID), c.ID, u.ID)
 	}
 	limit, offset := pageLimit(r)
 	items, e := list[WalletWithdrawal](r.Context(), a.DB, "wallet_withdrawals", "WHERE data->>'club_id'=$1 ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $2 OFFSET $3", c.ID, limit, offset)
 	out := []any{}
 	for _, v := range items {
-		out = append(out, a.withdrawalResponse(v, true))
+		out = append(out, a.withdrawalResponse(v, v.UserID == u.ID))
 	}
 	return out, e
 }
@@ -231,8 +247,12 @@ func (a *App) depositRefundAccount(ctx context.Context, q querier, u User, purpo
 		return "", e
 	}
 	if purpose == "club_platform" {
-		if c.OwnerID != u.ID {
-			return "", fail(403, "仅负责人可退还组织平台押金")
+		role, err := clubManagementRole(ctx, q, u, c)
+		if err != nil {
+			return "", err
+		}
+		if role == "" {
+			return "", fail(403, "仅负责人或本组织副管理员可退还平台押金")
 		}
 		return clubDepositAccount(club), nil
 	}

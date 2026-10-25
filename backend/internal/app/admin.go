@@ -53,7 +53,12 @@ func (a *App) adminList(w http.ResponseWriter, r *http.Request) (any, error) {
 	case "settings":
 		return get[Settings](r.Context(), a.DB, "settings", "platform", false)
 	case "users":
-		return list[User](r.Context(), a.DB, "users", where, args...)
+		users, e := list[User](r.Context(), a.DB, "users", where, args...)
+		out := []ManagedUserSummary{}
+		for _, user := range users {
+			out = append(out, managementUserSummary(user))
+		}
+		return out, e
 	case "services":
 		items, e := list[Service](r.Context(), a.DB, "services", where, args...)
 		for i := range items {
@@ -99,9 +104,19 @@ func (a *App) moderateUser(w http.ResponseWriter, r *http.Request) (any, error) 
 		return nil, err
 	}
 	defer tx.Rollback(r.Context())
+	admin, err = lockManagementWriteActor(r.Context(), tx, admin.ID, r.PathValue("id"))
+	if err != nil {
+		return nil, err
+	}
+	if admin.Role != "admin" {
+		return nil, fail(403, "平台管理权限已失效")
+	}
 	u, err := get[User](r.Context(), tx, "users", r.PathValue("id"), true)
 	if err != nil {
 		return nil, err
+	}
+	if !isPlatformRoot(admin) && u.Role == "admin" {
+		return nil, fail(403, "副管理员不能停用或修改管理员身份")
 	}
 	u.Status = in.Status
 	if err = put(r.Context(), tx, "users", u.ID, u); err != nil {

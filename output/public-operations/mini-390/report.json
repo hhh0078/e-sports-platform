@@ -1,0 +1,158 @@
+{
+  "file_purpose": "本地官方SDK公共运营验收；不代表真机、真实微信登录/支付/订阅送达",
+  "passed": true,
+  "prepared": true,
+  "stage": "/pages/account/login",
+  "width": 390,
+  "phases": "all",
+  "checks": [
+    {
+      "label": "首页保留原布局、四常驻容器与单行游戏入口",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/home-layout.png"
+    },
+    {
+      "label": "原生图片swiper按3000ms自动轮播，独立文字swiper随后同步",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/home-swipers.png"
+    },
+    {
+      "label": "图片与文字通过公开change事件验证分层跟随，不读取页面data"
+    },
+    {
+      "label": "轮播点击实际进入配置文章目标",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/carousel-target.png"
+    },
+    {
+      "label": "每次公告使用真实浮层且支持多行",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/announcement-always.png"
+    },
+    {
+      "label": "仅一次公告真正展示后记已读，再次进入不重弹"
+    },
+    {
+      "label": "图片公告原比例展示，文字和图片不被烘焙，关闭入口清楚",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/announcement-image.png"
+    },
+    {
+      "label": "图片公告点击实际进入选择的文章"
+    },
+    {
+      "label": "切换账号重新读取本人公告状态且关闭可用",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/announcement-account-isolation.png"
+    },
+    {
+      "label": "公共信息按轮播、公告、顶部提示三栏展示",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/content-three-tabs.png"
+    },
+    {
+      "label": "排序松手或辅助操作后仅保存新顺序，配置与服务器一致",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/content-order-saved.png"
+    },
+    {
+      "label": "轮播独立文字编辑与封面预览可见",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/banner-editor.png"
+    },
+    {
+      "label": "文章列表进入真实详情，中文换行、封面和绝对托管正文图正常",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/article-reader.png"
+    },
+    {
+      "label": "文章源/预览切换保留换行，界面保存草稿且访客不可读",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/article-editor-draft.png"
+    },
+    {
+      "label": "平台根管理员真实搜索进入详情，授权入口按权限显示",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/users-admin.png"
+    },
+    {
+      "label": "平台副管理员真实搜索进入详情，授权入口按权限显示",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/users-outsider.png"
+    },
+    {
+      "label": "平台副管理员继续授予权限由后端明确403拒绝"
+    },
+    {
+      "label": "俱乐部副管理员仅见本组织成员资金，无个人充值/可提现面板且不能继续授权",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/club-deputy-scope.png"
+    },
+    {
+      "label": "个人中心简化ID、四订单入口、紧凑钱包与菜单正常",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/me-menu.png"
+    },
+    {
+      "label": "原订单详情重排且聊天独立进入，未发送消息或执行资金操作",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/existing-order-chat.png"
+    },
+    {
+      "label": "服务详情最多前三条评价，全部页与已有真实评价条数一致",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/service-reviews.png"
+    }
+  ],
+  "measurements": [
+    {
+      "scene": "actual-window",
+      "pixelRatio": 3,
+      "safeArea": {
+        "top": 47,
+        "left": 0,
+        "right": 390,
+        "bottom": 810,
+        "width": 390,
+        "height": 763
+      },
+      "screenWidth": 390,
+      "screenHeight": 844,
+      "screenTop": 0,
+      "windowWidth": 390,
+      "windowHeight": 844,
+      "statusBarHeight": 47
+    },
+    {
+      "scene": "home-original-layout",
+      "nodes": {
+        "hero-brand": {
+          "left": 15,
+          "top": 98.5,
+          "width": 92,
+          "height": 23
+        },
+        "hero-publish": {
+          "left": 274,
+          "top": 118.5,
+          "width": 101,
+          "height": 36
+        },
+        "game-section": {
+          "left": 11,
+          "top": 323,
+          "width": 368,
+          "height": 81
+        },
+        "service-toolbar": {
+          "left": 15,
+          "top": 466,
+          "width": 360,
+          "height": 28
+        }
+      }
+    },
+    {
+      "scene": "text-delay-public-event",
+      "configured_delay_ms": 300,
+      "early_elapsed_ms": 7,
+      "early_index": 2,
+      "previous_index": 2,
+      "target_index": 0
+    }
+  ],
+  "exceptions": [],
+  "compatibility_warnings": [],
+  "cleanup_errors": [],
+  "boundaries": [
+    "当前官方SDK公开touch未形成原生movable位移；只验证上移/下移辅助入口，物理长按拖动需真机。",
+    "已有服务最多1条评价：已核对详情最多3条/全部页首屏，未伪造20条以上分页数据。",
+    "SDK公开touch/change事件与原生节点结果不等同手机物理手势；未调用页面data、私有方法或注入令牌。",
+    "运营字段与角色按快照恢复；原本没有的游戏分组以空数组清空自定义轮播，配置修订、公告版本及审计记录保持单调。临时文章下架保留审计。",
+    "未付款、未造订单、未退款、未发聊天、未操作生产；本地一张文章测试图保留上传审计，临时文章下架。"
+  ],
+  "completed_at": "2026-10-25T21:03:37.997Z"
+}

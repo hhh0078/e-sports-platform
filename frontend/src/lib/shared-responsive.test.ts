@@ -22,18 +22,21 @@ test('数字与字符串数字图标共用rpx占位和官方字号，显式单�
 })
 
 test('服务卡片在320及390共享窗口用实际像素预留rpx文字与双角标', () => {
-  const props = reactive({ service: { game_id: 'delta', provider_deposit_cents: 100, provider_club_deposit_cents: 100 }, interactive: false })
+  const props = reactive({ service: { game_id: 'delta', provider_deposit_cents: 100, provider_club_deposit_cents: 100,club_verified:false }, interactive: false })
   const viewportWidth = ref(390)
   const context = vm.createContext({ computed, designPixels, useViewportWidth: () => viewportWidth, defineProps: () => props, withDefaults: (value: unknown) => value, state: { games: [] } })
   vm.runInContext(script('ServiceCard') + '\nglobalThis.subject={bottomReservation,topReservation}', context)
   for (const width of [320, 390]) {
     viewportWidth.value = width
     assert.equal(context.subject.bottomReservation.value, 52 * width / 390)
-    assert.equal(context.subject.topReservation.value, 44 * width / 390)
+    assert.equal(context.subject.topReservation.value, 36 * width / 390)
     props.service.provider_club_deposit_cents = 0
-    assert.equal(context.subject.topReservation.value, 23 * width / 390)
+    assert.equal(context.subject.topReservation.value, 36 * width / 390)
     props.service.provider_deposit_cents = 0
     assert.equal(context.subject.topReservation.value, 0)
+    props.service.club_verified=true
+    assert.equal(context.subject.topReservation.value,36*width/390,'只有认证仍需保留小盾牌安全带')
+    props.service.club_verified=false
     props.service.provider_deposit_cents = 100; props.service.provider_club_deposit_cents = 100
   }
 })

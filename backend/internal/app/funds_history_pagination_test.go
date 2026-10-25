@@ -35,8 +35,18 @@ func TestIntegrationClubWithdrawalHistoryPagination(t *testing.T) {
 	if len(seen) != 115 {
 		t.Fatalf("历史被100条上限截断: %d", len(seen))
 	}
-	for _, user := range []string{"worker", "outsider", "admin"} {
+	for _, user := range []string{"worker", "outsider"} {
 		api.call(user, "GET", "/clubs/shanhai/withdrawals?limit=30&offset=100", nil, 403, nil)
+	}
+	var managed []map[string]any
+	api.call("admin", "GET", "/clubs/shanhai/withdrawals?limit=30&offset=100", nil, 200, &managed)
+	if len(managed) != 15 {
+		t.Fatal("平台管理员未能只读查看组织资金历史")
+	}
+	for _, row := range managed {
+		if row["confirmation"] != nil {
+			t.Fatal("平台读取不得得到负责人收款确认参数")
+		}
 	}
 	api.call("", "GET", "/clubs/shanhai/withdrawals?limit=30", nil, 401, nil)
 }
@@ -87,11 +97,7 @@ func TestIntegrationOwnClubFundingHistoryFilters(t *testing.T) {
 			}
 		}
 	}
-	var other []WalletTopup
-	api.call("outsider", "GET", "/wallet/topups?club_id=shanhai&purpose=club_platform", nil, 200, &other)
-	if len(other) != 0 {
-		t.Fatal("组织筛选泄露他人的付款记录")
-	}
+	api.call("outsider", "GET", "/wallet/topups?club_id=shanhai&purpose=club_platform", nil, 403, nil)
 	legacy := WalletDepositRefund{ID: "history-legacy-personal", UserID: "clubowner", RequestID: "history-legacy-personal", CreatedAt: stamp, UpdatedAt: stamp}
 	if err := putRaw(t.Context(), api.App.DB, "wallet_deposit_refunds", legacy.ID, legacy); err != nil {
 		t.Fatal(err)

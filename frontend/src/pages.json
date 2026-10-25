@@ -287,6 +287,79 @@
         "enablePullDownRefresh": true,
         "onReachBottomDistance": 120
       }
+    },
+    {
+      "path": "pages/content/articles/index",
+      "style": {
+        "navigationBarTitleText": "文章中心",
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 120
+      }
+    },
+    {
+      "path": "pages/content/articles/detail",
+      "style": {
+        "navigationBarTitleText": "文章详情",
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 120
+      }
+    },
+    {
+      "path": "pages/manage/articles/index",
+      "style": {
+        "navigationBarTitleText": "文章管理",
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 120
+      }
+    },
+    {
+      "path": "pages/manage/articles/edit",
+      "style": {
+        "navigationBarTitleText": "编辑文章"
+      }
+    },
+    {
+      "path": "pages/manage/content/index",
+      "style": {
+        "navigationBarTitleText": "公共信息"
+      }
+    },
+    {
+      "path": "pages/manage/content/banner",
+      "style": {
+        "navigationBarTitleText": "编辑轮播"
+      }
+    },
+    {
+      "path": "pages/orders/chat",
+      "style": {
+        "navigationBarTitleText": "订单聊天",
+        "disableScroll": true
+      }
+    },
+    {
+      "path": "pages/services/reviews",
+      "style": {
+        "navigationBarTitleText": "全部评价",
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 120
+      }
+    },
+    {
+      "path": "pages/manage/users/detail",
+      "style": {
+        "navigationBarTitleText": "用户管理详情",
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 120
+      }
+    },
+    {
+      "path": "pages/community/clubs/members/detail",
+      "style": {
+        "navigationBarTitleText": "成员管理详情",
+        "enablePullDownRefresh": true,
+        "onReachBottomDistance": 120
+      }
     }
   ],
   "globalStyle": {

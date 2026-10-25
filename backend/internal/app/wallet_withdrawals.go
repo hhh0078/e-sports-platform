@@ -186,6 +186,13 @@ func (a *App) rejectWalletWithdrawal(w http.ResponseWriter, r *http.Request) (an
 	if err = lockWalletUsers(ctx, tx, before.UserID, withdrawalAccount(before)); err != nil {
 		return nil, err
 	}
+	admin, err = lockManagementWriteActor(ctx, tx, admin.ID)
+	if err != nil {
+		return nil, err
+	}
+	if admin.Role != "admin" {
+		return nil, fail(403, "提现审核权限已失效")
+	}
 	v, err := get[WalletWithdrawal](ctx, tx, "wallet_withdrawals", before.ID, true)
 	if err != nil {
 		return nil, err
@@ -263,6 +270,13 @@ func (a *App) executeWalletWithdrawal(w http.ResponseWriter, r *http.Request) (a
 	}
 	if err = lockWalletUsers(ctx, tx, before.UserID, withdrawalAccount(before)); err != nil {
 		return nil, err
+	}
+	admin, err = lockManagementWriteActor(ctx, tx, admin.ID)
+	if err != nil {
+		return nil, err
+	}
+	if admin.Role != "admin" {
+		return nil, fail(403, "提现审核权限已失效")
 	}
 	v, err := get[WalletWithdrawal](ctx, tx, "wallet_withdrawals", before.ID, true)
 	if err != nil {
@@ -391,8 +405,22 @@ func (a *App) syncWalletWithdrawal(w http.ResponseWriter, r *http.Request) (any,
 	if err != nil {
 		return nil, err
 	}
-	if v.UserID != u.ID {
-		return nil, fail(403, "无权查询他人提现")
+	own := v.UserID == u.ID
+	if !own {
+		if v.ClubID == "" {
+			return nil, fail(403, "无权查询他人提现")
+		}
+		club, e := get[Club](r.Context(), a.DB, "clubs", v.ClubID, false)
+		if e != nil {
+			return nil, e
+		}
+		role, e := clubManagementRole(r.Context(), a.DB, u, club)
+		if e != nil {
+			return nil, e
+		}
+		if role != "deputy" {
+			return nil, fail(403, "无权查询他人提现")
+		}
 	}
 	if !a.Config.DevMode && contains([]string{"processing", "wait_user_confirm"}, v.Status) {
 		c, e := a.loadWXPay()
@@ -404,7 +432,7 @@ func (a *App) syncWalletWithdrawal(w http.ResponseWriter, r *http.Request) (any,
 		}
 		v, err = get[WalletWithdrawal](r.Context(), a.DB, "wallet_withdrawals", v.ID, false)
 	}
-	return a.withdrawalResponse(v, true), err
+	return a.withdrawalResponse(v, own), err
 }
 
 // transferCallback 先验签解密微信商家转账通知，再用相同账户锁验证并处理官方终态。

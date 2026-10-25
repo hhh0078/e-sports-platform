@@ -172,7 +172,10 @@ func subscriptionRecipientAllowed(ctx context.Context, q querier, d subscription
 		if missing(e) {
 			return false, nil
 		}
-		return e == nil && c.OwnerID == d.UserID, e
+		if e != nil {
+			return false, e
+		}
+		return isClubManagementRecipient(ctx, q, d.UserID, c)
 	}
 	o, e := get[Order](ctx, q, "orders", id, false)
 	if missing(e) {
@@ -191,7 +194,10 @@ func subscriptionRecipientAllowed(ctx context.Context, q querier, d subscription
 		if missing(e) {
 			return false, nil
 		}
-		return e == nil && c.OwnerID == d.UserID, e
+		if e != nil {
+			return false, e
+		}
+		return isClubManagementRecipient(ctx, q, d.UserID, c)
 	}
 	return false, nil
 }

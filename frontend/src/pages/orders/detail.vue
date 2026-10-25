@@ -1,42 +1,30 @@
-<!-- 文件作用：订单履约、四方证据聊天室、退款协商及平台裁决的完整操作界面。 -->
+<!-- 文件作用：按交易阶段展示订单、服务约定和费用协商，独立聊天从底部入口进入，原资金及售后操作保持。 -->
 <template>
   <AppShell title="订单详情" :game-id="order?.game_id" back>
     <view class="detail-content">
       <view v-if="error" class="error-panel" @click="load()">{{ error }} · 点击重试</view>
-      <view v-if="!order && !error" class="muted loading">正在加载订单…</view>
+      <view v-if="!order&&!error" class="muted loading">正在加载订单…</view>
       <template v-if="order">
-        <view class="order-heading">
-          <view class="status-icon"><Icon :name="order.status === 'completed' ? 'check-circle' : 'shield-check'" :size="28"/></view>
-          <view class="status-copy"><text class="status-title">{{ statusLabel(order.status) }}</text><text class="order-number">订单编号 {{ order.order_no }}</text><text class="stage-description">{{ stageDescription }}</text></view>
-        </view>
-        <view class="summary">
-          <view class="summary-row"><text class="order-title">{{ order.title }}</text><text class="price">¥{{ money(order.amount_cents) }}</text></view>
-          <view class="people"><view class="person-line"><Icon name="user" :size="13"/><text>老板 · {{ order.buyer_name }}</text></view><view class="person-line"><Icon name="work" :size="13"/><text>打手 · {{ order.provider_name || '等待接单' }}</text></view></view>
-          <view v-if="order.service_description" class="agreement"><text class="agreement-title">下单时的服务约定</text><text class="agreement-body">{{ order.service_description }}</text><text class="agreement-price">¥{{ money(order.unit_price_cents) }} / {{ order.unit }} × {{ order.quantity }}</text></view>
-          <view class="requirements"><text class="agreement-title">额外要求</text><text class="agreement-body">{{ order.requirements || '无额外要求，以服务详情约定为准。' }}</text></view>
-          <view v-if="order.delivery_note" class="delivery"><text class="agreement-title">交付说明</text><text class="agreement-body">{{ order.delivery_note }}</text></view>
-        </view>
-        <SubscribeReminder v-if="isBuyer||isProvider" ref="subscriptionReminder" :scenes="isBuyer?['buyer_accepted']:['provider_order','provider_refund']" label="接收订单微信提醒"/><OrderAdjustments ref="adjustmentsView" :order="order" @changed="load()" @processing="adjustmentProcessing=$event"/><OrderSettlement v-if="isProvider||state.user?.role==='admin'||(!isBuyer&&!!order.club_id)" :order="order"/><view v-if="refundActive" class="refund-panel"><view class="refund-heading"><Icon name="shield-alert" :size="18"/><text>{{ refundTitle }}</text></view><text>申请理由：{{ order.refund_reason }}</text><text v-if="order.refund_reply">处理说明：{{ order.refund_reply }}</text><text v-if="['requested','escalated','processing'].includes(order.refund_status)" class="muted">协商期间暂停验收与结算，订单证据会完整保留。</text></view>
-        <view v-if="actions.length" class="actions"><button v-for="item in actions" :key="item.id" :disabled="busy||adjustmentProcessing" :class="item.primary ? 'btn order-primary' : 'btn-secondary btn-small order-secondary'" @click="prepare(item)">{{ item.label }}</button></view>
-        <view v-if="state.user?.role === 'admin' && order.refund_status === 'escalated'" class="admin-resolution"><text class="section-title">平台裁决</text><text class="muted">先审阅下方聊天、交付与图片证据，再填写裁决原因。</text><button class="btn" @click="prepare({id:'resolve_refund',label:'裁决退款',note:true,tip:'请说明事实依据与退款原因'})">支持买方 · 原路退款</button><button class="btn-secondary btn-small" @click="prepare({id:'resolve_resume',label:'驳回退款',note:true,tip:'请说明驳回原因及后续履约要求'})">驳回申请 · 继续履约</button><button v-if="order.status === 'delivered'" class="btn-secondary btn-small" @click="prepare({id:'resolve_complete',label:'裁决完成',note:true,tip:'确认服务已按约定交付，并说明支持卖方的证据依据'})">支持卖方 · 确认完成</button></view>
-        <view v-if="isBuyer && order.status === 'completed' && !reviews.length" class="form-section review-panel"><text class="section-title">这次并肩体验如何？</text><view class="stars"><button v-for="star in 5" :key="star" class="rating-button" @click="rating = star"><Icon name="star" :size="26" :class="{ lit: star <= rating }"/></button></view><textarea v-model="reviewText" class="input review-input" maxlength="300" placeholder="留下一点真实反馈，帮助下一个老板找到好队友"/><button class="btn-secondary btn-small review-button" :disabled="busy" @click="submitReview">发布评价</button></view>
-        <view v-if="reviews.length" class="review-result"><text>买家评价 · {{ reviews[0].rating }} / 5</text><text class="muted">{{ reviews[0].content || '用户未填写文字评价' }}</text></view>
-        <view class="chat-heading"><view><text class="section-title">订单聊天室</text><text class="chat-sub">老板 · 打手 · 俱乐部 · 平台</text></view><view class="evidence-badge"><Icon name="shield-check" :size="13"/>证据留存</view></view>
-        <view class="chat-panel"><text class="chat-notice">仅订单相关成员可见。请把要求、进度与协商留在这里，避免线下付款或提供游戏账号密码。</text><scroll-view scroll-y class="chat-scroll" :scroll-into-view="scrollTarget" scroll-with-animation @scrolltoupper="loadEarlier" @scrolltolower="followChatBottom=true" @scroll="chatScrolled">
-          <button v-if="hasEarlier" class="history-button" :disabled="loadingEarlier" @click="loadEarlier">{{ loadingEarlier ? '加载中…' : historyError || '上滑加载更早的沟通记录' }}</button><text v-if="messages.length&&!hasEarlier" class="chat-history-end">已显示全部沟通记录</text><view v-if="!messages.length" class="chat-empty">说清需求，合作从这里开始。</view>
-          <view v-for="message in messages" :key="message.id" :id="'msg-' + message.id" :class="['message', { mine: message.sender_id === state.user?.id, system: message.kind === 'system' || message.sender_role === 'system' }]">
-            <text v-if="message.kind === 'system' || message.sender_role === 'system'" class="system-message">{{ message.content }} · {{ time(message.created_at) }}</text>
-            <template v-else><view class="message-meta"><text>{{ message.sender_name }}<text class="role-badge">{{ roleName(message.sender_role) }}</text></text><text>{{ time(message.created_at) }}</text></view><view class="bubble"><text v-if="message.content">{{ message.content }}</text><image v-if="message.image_url" class="evidence-image" :src="evidenceUrl(message.image_url)" mode="widthFix" @click="previewImage(message)" @error="refreshEvidence(message)"/></view></template>
-          </view><view id="chat-bottom" class="chat-bottom"/>
-        </scroll-view><view class="composer"><button class="image-button" :disabled="sending" aria-label="上传图片证据" @click="sendImage"><Icon name="image" :size="21"/></button><input v-model="draft" class="composer-input" maxlength="1000" confirm-type="send" placeholder="发送消息，或上传图片证据" @confirm="sendMessage"/><button class="send-button" :disabled="sending || !draft.trim()" @click="sendMessage">发送</button></view></view>
-        <text class="updated">订单更新于 {{ time(order.updated_at) }} · {{ state.devMode ? '本地测试交易，不产生真实扣费' : '所有金额以订单约定为准' }}</text>
+        <view class="order-heading"><text class="status-title">{{ statusLabel(order.status) }}</text><view class="order-number-row"><text class="order-number">订单编号 {{ order.order_no }}</text><button class="copy-number" aria-label="复制订单编号" @click="copyOrderNumber"><Icon name="copy" :size="13"/></button></view><text class="stage-description">{{ stageDescription }}</text></view>
+        <view v-if="!['cancelled','refunded'].includes(order.status)" class="order-progress"><view v-for="(step,index) in progressSteps" :key="step.label" :class="['progress-step',{'progress-done':step.done,'progress-active':step.active}]"><view class="progress-icon"><Icon :name="step.done?'check-circle':'circle'" :size="18"/></view><view v-if="index<2" :class="['progress-line',{'progress-line-done':step.done}]"/><text class="progress-label">{{ step.label }}</text><text v-if="step.detail" class="progress-detail">{{ step.detail }}</text></view></view>
+        <view class="summary-card"><image v-if="orderCover" class="summary-cover" :src="assetUrl(orderCover)" mode="aspectFill"/><view class="summary-copy"><view class="summary-row"><text class="order-title">{{ order.title }}</text><text class="price">¥{{ money(order.amount_cents) }}</text></view><text class="summary-game">{{ order.game_name }}</text><text class="summary-unit">{{ order.quantity }} {{ order.unit||'单' }}<text v-if="order.unit_price_cents"> · ¥{{ money(order.unit_price_cents) }}/{{ order.unit||'单' }}</text></text></view></view>
+        <view class="people-card"><view class="person"><Icon name="user" :size="19"/><view class="person-copy"><text class="person-role">买家</text><text class="person-name">{{ order.buyer_name }}</text></view></view><view class="person"><Icon name="work" :size="19"/><view class="person-copy"><text class="person-role">服务方</text><text class="person-name">{{ order.provider_name||'等待接单' }}</text></view></view></view>
+        <view class="detail-section"><button class="section-toggle" @click="agreementOpen=!agreementOpen"><Icon name="receipt" :size="18"/><text class="detail-section-title">服务约定</text><Icon :name="agreementOpen?'up':'arrow'" :size="14"/></button><view v-show="agreementOpen" class="section-body"><view v-if="order.service_description" class="agreement"><text class="agreement-title">下单时的服务说明</text><text class="agreement-body">{{ order.service_description }}</text></view><view class="requirements"><text class="agreement-title">需求与验收标准</text><text class="agreement-body">{{ order.requirements||'无额外要求，以服务详情约定为准。' }}</text></view><view v-if="order.delivery_note" class="delivery"><text class="agreement-title">交付说明</text><text class="agreement-body">{{ order.delivery_note }}</text></view></view></view>
+        <view class="detail-section"><button class="section-toggle" :disabled="adjustmentProcessing" @click="feesOpen=!feesOpen"><Icon name="wallet" :size="18"/><text class="detail-section-title">费用与调价</text><Icon :name="feesOpen?'up':'arrow'" :size="14"/></button><view v-show="feesOpen" class="section-body fee-body"><OrderSettlement v-if="isProvider||state.user?.role==='admin'||(!isBuyer&&!!order.club_id)" :order="order"/><view v-else class="paid-row"><text>订单金额</text><text>¥{{ money(order.amount_cents) }}</text></view><OrderAdjustments ref="adjustmentsView" :order="order" @changed="load()" @processing="adjustmentProcessing=$event"/></view></view>
+        <view class="detail-section"><button class="section-toggle" @click="afterSaleOpen=!afterSaleOpen"><Icon name="shield-check" :size="18"/><view class="after-sale-heading"><text class="detail-section-title">售后与协商</text><text class="after-sale-hint">{{ refundActive?refundTitle:'如有问题，可在订单内协商处理' }}</text></view><Icon :name="afterSaleOpen?'up':'arrow'" :size="14"/></button><view v-if="refundActive&&afterSaleOpen" class="refund-panel"><text>申请理由：{{ order.refund_reason }}</text><text v-if="order.refund_reply">处理说明：{{ order.refund_reply }}</text><text v-if="['requested','escalated','processing'].includes(order.refund_status)" class="muted">协商期间暂停验收与结算，订单证据完整保留。</text></view><view v-if="secondaryActions.length" class="actions"><button v-for="item in secondaryActions" :key="item.id" class="text-btn order-secondary" :disabled="busy||adjustmentProcessing" @click="prepare(item)">{{ item.label }}</button></view></view>
+        <view v-if="state.user?.role==='admin'&&order.refund_status==='escalated'" class="admin-resolution"><text class="section-title">平台裁决</text><text class="muted">请先进入订单聊天，审阅交付及图片证据，再填写裁决依据。</text><button class="btn" @click="prepare({id:'resolve_refund',label:'裁决退款',note:true,tip:'请说明事实依据与退款原因'})">支持买方 · 原路退款</button><button class="btn-secondary btn-small" @click="prepare({id:'resolve_resume',label:'驳回退款',note:true,tip:'请说明驳回原因及后续履约要求'})">驳回申请 · 继续履约</button><button v-if="order.status==='delivered'" class="btn-secondary btn-small" @click="prepare({id:'resolve_complete',label:'裁决完成',note:true,tip:'确认服务已按约定交付，并说明证据依据'})">支持卖方 · 确认完成</button></view>
+        <view v-if="canReview" class="form-section review-panel"><text class="section-title">这次并肩体验如何？</text><view class="stars"><button v-for="star in 5" :key="star" class="rating-button" @click="rating=star"><Icon name="star" :size="26" :class="{lit:star<=rating}"/></button></view><textarea v-model="reviewText" class="input review-input" maxlength="500" placeholder="留下真实反馈，帮助下一位玩家找到好队友"/><text class="hint">{{ Array.from(reviewText).length }}/500</text><button class="btn-secondary btn-small review-button" :disabled="busy" @click="submitReview">发布评价</button></view>
+        <view v-if="reviews.length" class="review-result"><text>买家评价 · {{ reviews[0].rating }} / 5</text><text class="muted">{{ reviews[0].content||'用户未填写文字评价' }}</text></view>
+        <SubscribeReminder v-if="isBuyer||isProvider" ref="subscriptionReminder" :scenes="isBuyer?['buyer_accepted']:['provider_order','provider_refund']" label="接收订单微信提醒"/>
+        <text class="updated">订单更新于 {{ time(order.updated_at) }} · {{ state.devMode?'本地测试交易，不产生真实扣费':'所有金额以订单约定为准' }}</text>
       </template>
     </view>
+    <view v-if="order" class="order-dock"><button class="chat-entry" :disabled="busy||adjustmentProcessing" @click="openChat"><Icon name="chat" :size="21"/><text>订单聊天</text></button><button v-if="primaryAction" class="btn dock-primary" :disabled="busy||adjustmentProcessing" @click="prepare(primaryAction)">{{ primaryAction.label }}</button></view>
     <view v-if="pendingAction" class="modal-mask" @click="pendingAction = null"><view class="modal" @click.stop><text class="modal-title">{{ pendingAction.label }}</text><text class="muted">{{ pendingAction.tip || '确认后，系统会在聊天室记录这次操作。' }}</text><textarea v-if="pendingAction.note" v-model="actionNote" class="input modal-input" maxlength="1000" placeholder="请详细说明，作为双方协商与平台判断的依据"/><view v-if="pendingAction.id === 'pay'" class="payment-summary"><text>应付金额</text><text>¥{{ money(order?.amount_cents) }}</text></view><view v-if="pendingAction.id === 'pay'" class="payment-options"><button :class="['payment-option',{chosen:paymentChannel==='wechat'}]" :disabled="busy" @click="paymentChannel='wechat'"><Icon name="weixin" :size="21"/><text class="payment-option-copy">微信支付</text><Icon :name="paymentChannel==='wechat'?'checkbox-filled':'circle'" :size="20"/></button><button :class="['payment-option',{chosen:paymentChannel==='balance'}]" :disabled="busy||!paymentWallet||paymentWallet.spendable_cents<(order?.amount_cents||0)" @click="paymentChannel='balance'"><Icon name="wallet" :size="21"/><view class="payment-option-copy"><text>钱包余额</text><text class="payment-hint">{{ paymentWallet?'可用余额 ¥'+money(paymentWallet.spendable_cents):'正在读取余额…' }}{{ paymentWallet&&paymentWallet.spendable_cents<(order?.amount_cents||0)?' · 余额不足':'' }}</text></view><Icon :name="paymentChannel==='balance'?'checkbox-filled':'circle'" :size="20"/></button><text class="payment-hint">充值余额仅可消费，不能提现。</text><text v-if="walletError" class="payment-hint danger">{{ walletError }}</text></view><text v-if="pendingAction.id === 'pay' && state.devMode" class="dev-warning">当前为本地测试支付，不会真实扣款。</text><view class="action-footer modal-actions"><button class="text-btn" :disabled="busy" @click="pendingAction = null">再想想</button><button class="btn" :disabled="busy || (pendingAction.note && !actionNote.trim())" @click="execute">{{ busy ? '处理中…' : '确认' + pendingAction.label }}</button></view></view></view>
   </AppShell>
 </template>
 <script setup lang="ts">
-/** 文件作用：驱动订单状态操作、证据聊天和退款介入，所有权与状态最终由后端校验。 */
+/** 文件作用：驱动订单状态操作、服务评价和退款介入，所有权与状态最终由后端校验。 */
 import { ref, computed, nextTick, watch } from 'vue'
 import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
@@ -45,39 +33,38 @@ import SubscribeReminder from '../../components/SubscribeReminder.vue'
 import Icon from '../../components/Icon.vue'
 import OrderSettlement from '../../components/OrderSettlement.vue'
 import OrderAdjustments from '../../components/OrderAdjustments.vue'
-import { prepareImage } from '../../lib/media'
-import { getOrder, listMessages, listOrderReviews, payOrder, syncOrderPayment, performOrderAction, sendOrderMessage, submitOrderReview, uploadEvidence, refreshEvidenceLink } from '../../api/orders.api'
+import { getOrder, listOrderReviews, payOrder, syncOrderPayment, performOrderAction, submitOrderReview } from '../../api/orders.api'
 import { retryOrderRefund, resolveOrder } from '../../api/admin.api'
-import type { Order, Message, Review } from '../../types/models'
-import { token, errorMessage, errorStatus, isCancelled } from '../../api/client'
+import type { Order, Review } from '../../types/models'
+import { token, errorMessage, errorStatus } from '../../api/client'
 import { getWallet } from '../../api/wallet.api'
 import type { Wallet } from '../../types/wallet'
 import { requestWechatPayment } from '../../lib/payment'
+import { beginFinancialActivity } from '../../lib/update-manager'
 import { newWalletRequestID } from '../../lib/wallet'
 import { requirePhone } from '../../lib/phone'
 import { state, init, sessionRevision } from '../../lib/store'
-import { money, time, statusLabel, notify, assetUrl } from '../../lib/format'
+import { money, time, statusLabel, notify, assetUrl, go } from '../../lib/format'
 /** 订单状态操作及确认表单配置。 */
 interface OrderAction { id: string; label: string; primary?: boolean; note?: boolean; tip?: string }
 const adjustmentsView=ref<{refresh:()=>Promise<void>}|null>(null)
 const subscriptionReminder=ref<{offer:(next?:()=>void)=>void}|null>(null)
-const id = ref(''), order = ref<Order | null>(null), messages = ref<Message[]>([]), reviews = ref<Review[]>([]), error = ref(''), busy = ref(false), sending = ref(false), draft = ref(''), scrollTarget = ref(''), pendingAction = ref<OrderAction | null>(null), actionNote = ref(''), rating = ref(5), reviewText = ref('')
+const id = ref(''), order = ref<Order | null>(null), reviews = ref<Review[]>([]), error = ref(''), busy = ref(false), pendingAction = ref<OrderAction | null>(null), actionNote = ref(''), rating = ref(5), reviewText = ref('')
 const adjustmentProcessing=ref(false)
-const hasEarlier = ref(false), loadingEarlier = ref(false),historyError=ref(''),followChatBottom=ref(true)
-let lastChatScrollTop=0
-useNativePageRefresh({refresh:refreshOrder,blocked:()=>busy.value||sending.value||adjustmentProcessing.value||!!pendingAction.value,context:()=>[state.user?.id,state.user?.role,sessionRevision(),id.value]})
+const agreementOpen=ref(true),feesOpen=ref(true),afterSaleOpen=ref(true)
+useNativePageRefresh({refresh:refreshOrder,blocked:()=>busy.value||adjustmentProcessing.value||!!pendingAction.value,context:()=>[state.user?.id,state.user?.role,sessionRevision(),id.value]})
 const paymentChannel=ref<'wechat'|'balance'>('wechat'),paymentWallet=ref<Wallet|null>(null),walletError=ref('')
 let disposed=false,paymentPreparation=0
-let timer: ReturnType<typeof setInterval> | undefined, polling = false, visible = false, chatInitialized = false, viewerID = '', pageVersion = 0
+let timer: ReturnType<typeof setInterval> | undefined, polling = false, visible = false, viewerID = '', pageVersion = 0
 /** 捕获一次订单操作的账号和会话，防止迟到响应进入其他账号。 */
-function currentSession() { return { id:state.user?.id, token:token(), revision:sessionRevision() } }
+function currentSession() { return { id:state.user?.id, role:state.user?.role, adminRole:state.user?.platform_admin_role,status:state.user?.status,token:token(), revision:sessionRevision() } }
 /** 微信支付和原生选图可以临时隐藏页面，但只能由原账号继续请求。 */
-function sameSession(session: ReturnType<typeof currentSession>): boolean { return !disposed&&session.id===state.user?.id&&session.token===token()&&session.revision===sessionRevision() }
+function sameSession(session: ReturnType<typeof currentSession>): boolean { return !disposed&&session.id===state.user?.id&&session.role===state.user?.role&&session.adminRole===state.user?.platform_admin_role&&session.status===state.user?.status&&session.token===token()&&session.revision===sessionRevision() }
 /** 页面显示且版本、会话都一致时才回填私有订单和证据。 */
 function currentRequest(version: number, session: ReturnType<typeof currentSession>): boolean { return visible&&version===pageVersion&&sameSession(session) }
 /** 切换身份立即移除上一位参与者的私有内容和未发送草稿。 */
-function clearPrivateOrder(): void { adjustmentProcessing.value=false;order.value=null;messages.value=[];reviews.value=[];draft.value='';pendingAction.value=null;actionNote.value='';reviewText.value='';chatInitialized=false;paymentWallet.value=null;walletError.value='';hasEarlier.value=false;loadingEarlier.value=false;historyError.value='';followChatBottom.value=true;lastChatScrollTop=0;pageVersion++;polling=false }
-watch(()=>state.user?.id,()=>{clearPrivateOrder();if(visible)load()})
+function clearPrivateOrder(): void {adjustmentProcessing.value=false;order.value=null;reviews.value=[];pendingAction.value=null;actionNote.value='';reviewText.value='';paymentWallet.value=null;walletError.value='';pageVersion++;polling=false}
+watch(()=>[state.user?.id,state.user?.role,state.user?.platform_admin_role,state.user?.status,sessionRevision()].join('\n'),()=>{clearPrivateOrder();if(visible)load()})
 const isBuyer = computed(() => order.value?.buyer_id === state.user?.id)
 const isProvider = computed(() => order.value?.provider_id === state.user?.id)
 const refundActive = computed(() => order.value?.refund_status && order.value.refund_status !== 'none')
@@ -101,48 +88,27 @@ const actions = computed(() => {
   if (isProvider.value && refund === 'requested') result.push({ id:'approve_refund', label:'同意退款', primary:true }, { id:'reject_refund', label:'拒绝退款', note:true, tip:'请详细说明拒绝理由，并在聊天室补充履约证据。' })
   return result
 })
-/** 加载订单与参与者可见的证据，轮询失败只显示错误、不销毁现有记录。 */
-async function load(silent = false) {
-  if (!id.value || polling || !visible) return
-  const version=pageVersion
-  let session: ReturnType<typeof currentSession> | undefined
-  polling = true
-  try {
-    await init()
-    if(!visible||version!==pageVersion)return
-    session=currentSession()
-    if (viewerID !== (state.user?.id || '')) { viewerID = state.user?.id || ''; order.value = null; messages.value = []; reviews.value = []; chatInitialized = false; hasEarlier.value = false }
-    const last = messages.value[messages.value.length - 1]
-    const messageQuery = {limit:100,...(chatInitialized && last ? {after_id:last.id} : {})}
-    const data = await Promise.all([getOrder(id.value), listMessages(id.value,messageQuery), listOrderReviews(id.value)])
-    if(!currentRequest(version,session))return
-    order.value = data[0]; reviews.value = data[2]; error.value = ''
-    if (!chatInitialized) { hasEarlier.value = data[1].length === 100; chatInitialized = true }
-    const changed = data[1].some(item => !messages.value.some(old => old.id === item.id))
-    mergeMessages(data[1])
-    if (changed&&followChatBottom.value&&!loadingEarlier.value) await scrollChat()
-  } catch (e) { if(!visible||version!==pageVersion||(session&&!sameSession(session)))return;if ([401,403,404].includes(errorStatus(e) || 0)) { clearPrivateOrder(); clearInterval(timer);error.value = errorMessage(e) } else if (!silent || !order.value) error.value = errorMessage(e) } finally { if(version===pageVersion)polling = false }
+/** 底部只保留一个当前主动作，其它合法动作仍可在售后分节操作。 */
+const primaryAction=computed(()=>actions.value.find(action=>action.primary)||null)
+const secondaryActions=computed(()=>actions.value.filter(action=>action!==primaryAction.value))
+const orderCover=computed(()=>state.games?.find(game=>game.id===order.value?.game_id)?.cover_url||'')
+const canReview=computed(()=>isBuyer.value&&order.value?.status==='completed'&&!reviews.value.length&&!['requested','escalated','processing'].includes(order.value.refund_status||'none'))
+/** 三阶段只使用真实付款、交付和完成状态，缺少时间时不补造日期。 */
+const progressSteps=computed(()=>{const current=order.value,paid=current?.payment_status==='paid',delivered=['delivered','completed'].includes(current?.status||''),completed=current?.status==='completed';return[{label:paid?'已付款':'待付款',done:paid,active:!paid,detail:current?.paid_at?time(current.paid_at):''},{label:current?.status==='open'?'待接单':'服务中',done:delivered,active:paid&&!delivered,detail:''},{label:completed?'已验收':'待验收',done:completed,active:delivered&&!completed,detail:current?.completed_at?time(current.completed_at):''}]})
+/** 独立聊天室保留原订单编号，不在详情正文挂载聊天滚动容器。 */
+function openChat():void{if(order.value)go('/pages/orders/chat?id='+encodeURIComponent(order.value.id))}
+/** 复制真实订单编号，便于客服核对，不复制任何支付秘密。 */
+function copyOrderNumber():void{if(order.value?.order_no)uni.setClipboardData({data:order.value.order_no})}
+/** 只读取当前订单和评价，聊天由独立页面加载，减少详情轮询和布局负担。 */
+async function load(silent=false) {
+  if(!id.value||polling||!visible)return
+  const version=pageVersion;let session:ReturnType<typeof currentSession>|undefined;polling=true
+  try{await init();if(!visible||version!==pageVersion)return;session=currentSession();if(viewerID!==(state.user?.id||'')){viewerID=state.user?.id||'';order.value=null;reviews.value=[]}
+    const data=await Promise.all([getOrder(id.value),listOrderReviews(id.value)]);if(!currentRequest(version,session))return;order.value=data[0];reviews.value=data[1];error.value=''
+  }catch(err){if(!visible||version!==pageVersion||session&&!sameSession(session))return;if([401,403,404].includes(errorStatus(err)||0)){clearPrivateOrder();clearInterval(timer);error.value=errorMessage(err)}else if(!silent||!order.value)error.value=errorMessage(err)}finally{if(version===pageVersion)polling=false}
 }
-/** 下拉同时读取订单和费用记录，复用组件GET，不触发任何付款或原单同步。 */
+/** 下拉同时只读刷新调价记录，原资金同步按钮仍须用户明确操作。 */
 async function refreshOrder():Promise<void>{const version=pageVersion,session=currentSession();await load();await nextTick();if(currentRequest(version,session))await adjustmentsView.value?.refresh()}
-/** 按稳定时间和编号去重合并，轮询不会丢弃已加载的历史证据。 */
-function mergeMessages(items: Message[]) {
-  const merged = new Map(messages.value.map(item => [item.id, item]))
-  items.forEach(item => merged.set(item.id, item))
-  messages.value = [...merged.values()].sort((a,b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id))
-}
-/** 用最早一条消息的游标加载历史，新消息到达不会使分页偏移。 */
-async function loadEarlier() {
-  if (!visible||loadingEarlier.value || !hasEarlier.value || !messages.value.length) return
-  const version=pageVersion,session=currentSession()
-  loadingEarlier.value = true;historyError.value='';followChatBottom.value=false
-  const first = messages.value[0].id
-  try { const items = await listMessages(id.value,{limit:100,before_id:first});if(!currentRequest(version,session))return;hasEarlier.value = items.length === 100; mergeMessages(items); scrollTarget.value = ''; await nextTick();if(currentRequest(version,session))scrollTarget.value = 'msg-' + first } catch(e) { if(currentRequest(version,session))historyError.value='历史记录加载失败，点击重试' } finally { if(version===pageVersion)loadingEarlier.value = false }
-}
-/** 让新消息滚动到末尾，避免重复设置同一锚点无效。 */
-async function scrollChat() { followChatBottom.value=true;scrollTarget.value = ''; await nextTick(); scrollTarget.value = 'chat-bottom' }
-/** 用户向上阅读时停止新消息自动滚动，回到聊天室底部后再恢复跟随。 */
-function chatScrolled(event:{detail:{scrollTop:number}}):void{const top=event.detail.scrollTop;if(top+2<lastChatScrollTop)followChatBottom.value=false;lastChatScrollTop=top}
 /** 准备可审阅的确认表单，不立即触发金额或状态变更。 */
 async function prepare(action: OrderAction) {
   if(busy.value)return
@@ -177,7 +143,7 @@ async function payCurrentOrder(session: ReturnType<typeof currentSession>):Promi
 /** 付款、履约与退款操作使用服务端状态机，提交中禁用重复点击。 */
 async function execute() {
   if (busy.value || !pendingAction.value) return
-  const session=currentSession()
+  const session=currentSession(),finishFinancial=beginFinancialActivity()
   busy.value = true
   try {
     const action = pendingAction.value.id
@@ -187,40 +153,21 @@ async function execute() {
     else if (action.startsWith('resolve_')) await resolveOrder(id.value,action.slice(8),actionNote.value.trim())
     else await performOrderAction(id.value,action,actionNote.value.trim())
     if(!sameSession(session))return;pendingAction.value = null; if(visible){notify('操作成功，订单记录已更新');await load();if(action==='pay'&&sameSession(session))subscriptionReminder.value?.offer()}
-  } catch (e) { if(sameSession(session)&&visible)notify(e) } finally { busy.value = false }
+  } catch (e) { if(sameSession(session)&&visible)notify(e) } finally { busy.value = false;finishFinancial() }
 }
-/** 发送纯文字消息，失败时保留输入，成功后才清空。 */
-async function sendMessage() { if (sending.value || !draft.value.trim()) return;const session=currentSession(); sending.value = true; try { await sendOrderMessage(id.value,{content:draft.value.trim()});if(!sameSession(session))return;draft.value = '';if(visible){await load();await scrollChat()} } catch (e) { if(sameSession(session)&&visible)notify(e) } finally { sending.value = false } }
-/** 选择一张图片并作为订单证据发送，取消选择不显示错误。 */
-async function sendImage() { if (sending.value) return;const session=currentSession(); sending.value = true; try { const path = await prepareImage('evidence');if(!sameSession(session))return;const evidence = await uploadEvidence(id.value,path);if(!sameSession(session))return;await sendOrderMessage(id.value,{content:'',image_url:evidence.url});if(visible&&sameSession(session)){await load();await scrollChat()} } catch (e) { if(sameSession(session)&&visible&&!isCancelled(e)) notify(e) } finally { sending.value = false } }
-/** 将安全的签名证据相对路径转换为实际服务地址。 */
-function evidenceUrl(url: string | undefined): string { return assetUrl(url) }
-const refreshingImages = new Set<string>()
-/** 重新授权即将阅读的历史图片，避免十五分钟签名过期影响证据查看。 */
-async function refreshEvidence(message: Message) {
-  if (!message.image_url || refreshingImages.has(message.id)) return
-  const version=pageVersion,session=currentSession()
-  refreshingImages.add(message.id)
-  try { const evidenceID = message.image_url.split('?')[0].split('/').pop() || ''; const result = await refreshEvidenceLink(id.value,evidenceID);if(!currentRequest(version,session))return;message.image_url = result.url; return result.url } catch (e) { if(currentRequest(version,session))notify(e) } finally { refreshingImages.delete(message.id) }
-}
-/** 打开图片证据前刷新访问签名，不使用过期链接。 */
-async function previewImage(message: Message) { const url = await refreshEvidence(message); if (url) uni.previewImage({ urls:[evidenceUrl(url)] }) }
-/** 将证据中的发送身份映射为明确的角色名称。 */
-function roleName(role: string) { return ({ buyer:'老板',provider:'打手',club_admin:'俱乐部',admin:'平台',system:'系统' } as Record<string,string>)[role] || '成员' }
 /** 完成后发表一次评价，重复评价由服务端拦截。 */
-async function submitReview() { if (busy.value) return; if (reviewText.value.trim().length < 2) return notify('请填写至少两个字的真实评价');const session=currentSession(); busy.value = true; try { await submitOrderReview(id.value,{rating:rating.value,content:reviewText.value.trim()});if(sameSession(session)&&visible){await load();notify('评价已保存')} } catch (e) { if(sameSession(session)&&visible)notify(e) } finally { busy.value = false } }
+async function submitReview() { if (busy.value) return; if(!canReview.value)return notify('仅已完成且无进行中售后的订单买家可以评价');const count=Array.from(reviewText.value.trim()).length;if(count<2||count>500)return notify('评价需为2至500字');const session=currentSession(); busy.value = true; try { await submitOrderReview(id.value,{rating:rating.value,content:reviewText.value.trim()});if(sameSession(session)&&visible){await load();notify('评价已保存')} } catch (e) { if(sameSession(session)&&visible)notify(e) } finally { busy.value = false } }
 /** 停止页面离开后的轮询，避免后台读取与泄露账号切换后的数据。 */
-function stop() { visible = false;pageVersion++;polling=false;loadingEarlier.value=false;clearInterval(timer) }
+function stop() { visible = false;pageVersion++;polling=false;clearInterval(timer) }
 onLoad(options => { id.value = options?.id || '';if(!id.value)error.value='订单不存在或缺少编号' })
 onShow(() => { visible = true; load(); clearInterval(timer); timer = setInterval(() => { if (visible) load(true) }, 4000) })
 onHide(stop)
 onUnload(()=>{disposed=true;stop()})
 </script>
 <style scoped>
-.detail-content{min-width:0;padding-bottom:46.1538rpx}.loading{text-align:center;padding:76.9231rpx 0}.order-heading{display:flex;align-items:flex-start;gap:19.2308rpx;margin-bottom:38.4615rpx;min-width:0}.status-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:57.6923rpx;height:61.5385rpx;color:var(--accent)}.status-copy{flex:1;min-width:0}.status-title{display:block;font-size:40.3846rpx;line-height:57.6923rpx;font-weight:750;color:var(--accent)}.order-number{display:block;margin-top:3.8462rpx;color:var(--muted);font-size:19.2308rpx;line-height:34.6154rpx;overflow-wrap:anywhere}.stage-description{display:block;margin-top:7.6923rpx;font-size:21.1538rpx;line-height:34.6154rpx;color:var(--muted)}
-.summary{min-width:0;padding-bottom:30.7692rpx;border-bottom:1px solid var(--line-subtle)}.summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:23.0769rpx;min-width:0}.order-title{min-width:0;flex:1;font-size:34.6154rpx;line-height:51.9231rpx;font-weight:700;overflow-wrap:anywhere}.price{flex-shrink:0;max-width:50%;color:var(--accent);font-size:34.6154rpx;line-height:51.9231rpx;font-weight:700;white-space:nowrap}.people{display:flex;flex-direction:column;gap:7.6923rpx;color:var(--muted);font-size:23.0769rpx;margin:15.3846rpx 0 23.0769rpx;min-width:0}.person-line{display:flex;align-items:center;gap:15.3846rpx;min-width:0;overflow-wrap:anywhere}.agreement{display:flex;flex-direction:column;gap:7.6923rpx;padding-top:23.0769rpx;border-top:1px solid var(--line-subtle)}.agreement-title{display:block;font-size:23.0769rpx;line-height:38.4615rpx;font-weight:600;color:var(--text)}.agreement-body{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:23.0769rpx;line-height:40.3846rpx;color:var(--muted)}.agreement-price{font-size:23.0769rpx;line-height:38.4615rpx;color:var(--accent)}.requirements,.delivery{display:flex;flex-direction:column;gap:7.6923rpx;margin-top:23.0769rpx;min-width:0}
-.actions{display:flex;align-items:center;flex-wrap:wrap;gap:15.3846rpx;padding:23.0769rpx 0 30.7692rpx;border-bottom:1px solid var(--line-subtle);min-width:0}.order-primary{flex:1;min-width:307.6923rpx}.order-secondary{flex-shrink:0;max-width:100%}.refund-panel{display:flex;flex-direction:column;gap:15.3846rpx;padding:23.0769rpx;border-left:3.8462rpx solid #d7b27666;border-radius:15.3846rpx;background:#a5782010;color:#d9c4a4;font-size:23.0769rpx;line-height:1.7;margin-top:30.7692rpx;overflow-wrap:anywhere}.refund-heading{display:flex;align-items:center;gap:15.3846rpx;font-weight:650;color:#e5bd7e}.admin-resolution{display:flex;flex-direction:column;gap:23.0769rpx;margin:46.1538rpx 0;padding:30.7692rpx;background:var(--surface);border-radius:15.3846rpx;min-width:0}.review-panel{padding-top:46.1538rpx}.stars{display:flex;gap:15.3846rpx;margin:23.0769rpx 0}.rating-button{display:flex;align-items:center;justify-content:center;width:69.2308rpx;height:69.2308rpx;background:transparent;padding:0;color:var(--muted)}.stars .lit{color:#e5bd7e}.review-input{height:184.6154rpx;margin-bottom:23.0769rpx}.review-button{width:215.3846rpx}.review-result{display:flex;flex-direction:column;gap:15.3846rpx;padding:38.4615rpx 0;border-bottom:1px solid var(--line-subtle);font-size:25rpx;overflow-wrap:anywhere}
-.chat-heading{display:flex;align-items:center;justify-content:space-between;gap:23.0769rpx;margin:46.1538rpx 0 23.0769rpx;min-width:0}.chat-sub{display:block;color:var(--muted);font-size:19.2308rpx;margin-top:7.6923rpx}.evidence-badge{display:flex;align-items:center;gap:7.6923rpx;flex-shrink:0;font-size:19.2308rpx;color:var(--accent);border-radius:23.0769rpx;padding:5.7692rpx 13.4615rpx;background:#83e7b712}.chat-panel{border-radius:15.3846rpx;overflow:hidden;background:var(--surface);min-width:0}.chat-notice{display:block;padding:23.0769rpx;font-size:19.2308rpx;line-height:1.7;color:var(--muted);border-bottom:1px solid var(--line-subtle)}.chat-scroll{height:653.8462rpx;padding:0 23.0769rpx;box-sizing:border-box;max-width:100%}.history-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:69.2308rpx;font-size:21.1538rpx;background:transparent;color:var(--accent)}.chat-empty{padding:123.0769rpx 0;font-size:23.0769rpx;text-align:center;color:var(--muted)}.message{display:flex;flex-direction:column;align-items:flex-start;margin:30.7692rpx 0;min-width:0}.message.mine{align-items:flex-end}.message.system{align-items:center}.system-message{max-width:100%;font-size:19.2308rpx;line-height:1.7;color:var(--muted);text-align:center;overflow-wrap:anywhere}.message-meta{display:flex;align-items:center;flex-wrap:wrap;gap:15.3846rpx;max-width:100%;font-size:19.2308rpx;color:var(--muted);margin-bottom:11.5385rpx;overflow-wrap:anywhere}.role-badge{margin-left:11.5385rpx;font-size:17.3077rpx;padding:1.9231rpx 7.6923rpx;border-radius:7.6923rpx;background:#83e7b71a;color:var(--accent)}.bubble{max-width:88%;padding:19.2308rpx 23.0769rpx;border-radius:3.8462rpx 15.3846rpx 15.3846rpx;background:#ffffff09;color:var(--text);font-size:25rpx;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}.mine .bubble{background:var(--accent);color:#0a2116;border-radius:15.3846rpx 3.8462rpx 15.3846rpx 15.3846rpx}.evidence-image{display:block;width:346.1538rpx;max-width:100%;border-radius:11.5385rpx}.composer{display:flex;align-items:center;gap:15.3846rpx;min-width:0;padding:23.0769rpx;border-top:1px solid var(--line-subtle)}.composer-input{flex:1;min-width:0;height:69.2308rpx;padding:0 23.0769rpx;border:1px solid var(--line-subtle);border-radius:34.6154rpx;background:#ffffff04;font-size:21.1538rpx}.image-button{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:69.2308rpx;height:69.2308rpx;padding:0;border-radius:15.3846rpx;border:1px solid var(--line);background:transparent;color:var(--text)}.send-button{display:flex;align-items:center;justify-content:center;flex-shrink:0;height:69.2308rpx;padding:0 26.9231rpx;border-radius:34.6154rpx;background:var(--accent);color:#0a2116;font-size:23.0769rpx}.updated{display:block;margin-top:30.7692rpx;text-align:center;font-size:19.2308rpx;line-height:34.6154rpx;color:var(--muted)}.chat-bottom{height:7.6923rpx}.chat-history-end{display:block;text-align:center;padding:23.0769rpx 0;font-size:21.1538rpx;line-height:34.6154rpx;color:var(--muted)}
+.loading{text-align:center;padding:76.9231rpx 0}.stage-description{display:block;margin-top:7.6923rpx;font-size:23.0769rpx;line-height:38.4615rpx;color:var(--muted)}.order-number{color:var(--muted);font-size:19.2308rpx;line-height:34.6154rpx;overflow-wrap:anywhere}.status-title{display:block;font-weight:750;color:var(--accent)}.summary-row{display:flex;align-items:flex-start;justify-content:space-between;min-width:0}.order-title{min-width:0;flex:1;font-weight:650;overflow-wrap:anywhere}.price{flex-shrink:0;color:var(--accent);font-weight:700;white-space:nowrap}.agreement-title{display:block;font-size:23.0769rpx;line-height:38.4615rpx;font-weight:600;color:var(--text)}.agreement-body{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:25rpx;line-height:44.2308rpx;color:var(--muted)}.requirements,.delivery{display:flex;flex-direction:column;gap:7.6923rpx;margin-top:19.2308rpx;min-width:0}.refund-panel{display:flex;flex-direction:column;gap:15.3846rpx;padding:23.0769rpx;border-left:3.8462rpx solid #d7b27666;color:#d9c4a4;font-size:23.0769rpx;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}.admin-resolution{display:flex;flex-direction:column;gap:23.0769rpx;margin:30.7692rpx 0;padding:23.0769rpx;background:var(--surface);border-radius:15.3846rpx;min-width:0}.review-panel{padding-top:38.4615rpx}.stars{display:flex;gap:15.3846rpx;margin:23.0769rpx 0}.rating-button{display:flex;align-items:center;justify-content:center;width:69.2308rpx;min-width:103.125rpx;height:69.2308rpx;min-height:44px;background:transparent;padding:0;color:var(--muted)}.stars .lit{color:#e5bd7e}.review-input{height:184.6154rpx;margin-bottom:15.3846rpx}.review-button{margin-top:23.0769rpx;width:230.7692rpx}.review-result{display:flex;flex-direction:column;gap:15.3846rpx;padding:38.4615rpx 0;border-bottom:1px solid var(--line-subtle);font-size:25rpx;overflow-wrap:anywhere;white-space:pre-wrap}.actions{display:flex;align-items:center;flex-wrap:wrap;min-width:0}.updated{display:block;margin-top:30.7692rpx;text-align:center;font-size:19.2308rpx;line-height:34.6154rpx;color:var(--muted)}
 .modal-mask{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;padding:38.4615rpx;background:#000b}.modal{display:flex;flex-direction:column;gap:30.7692rpx;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;padding:38.4615rpx;background:var(--surface);border-radius:23.0769rpx;min-width:0}.modal-title{font-size:38.4615rpx;font-weight:700}.modal-input{height:230.7692rpx;background:#ffffff04;border:1px solid var(--line-subtle);border-radius:15.3846rpx}.modal-actions{padding:0;gap:23.0769rpx}.payment-summary{display:flex;align-items:center;justify-content:space-between;gap:23.0769rpx;min-width:0;font-size:34.6154rpx}.dev-warning{color:#d7b276;font-size:23.0769rpx}.error-panel{padding:30.7692rpx 0;border-bottom:1px solid #d7b27644;color:#efb299;font-size:23.0769rpx;overflow-wrap:anywhere}
 .payment-options{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:15.3846rpx;overflow:hidden}.payment-option{display:flex;align-items:center;gap:23.0769rpx;width:100%;min-height:107.6923rpx;padding:23.0769rpx;background:transparent;color:var(--muted);border-radius:0;text-align:left}.payment-option.chosen{color:var(--accent)}.payment-option-copy{display:flex;flex-direction:column;gap:7.6923rpx;flex:1;min-width:0;font-size:26.9231rpx;color:var(--text)}.payment-hint{display:block;font-size:23.0769rpx;line-height:38.4615rpx;color:var(--muted);overflow-wrap:anywhere}.payment-options>.payment-hint{padding:15.3846rpx 23.0769rpx;border-top:1px solid var(--line-subtle)}
+
+.detail-content{padding-bottom:calc(153.8462rpx + env(safe-area-inset-bottom))}.order-heading{display:block;margin-bottom:30.7692rpx}.status-title{font-size:46.1538rpx;line-height:65.3846rpx}.order-number-row{display:flex;align-items:center;gap:11.5385rpx;min-width:0}.order-number{flex:1;min-width:0}.copy-number{display:flex;align-items:center;justify-content:center;width:46.1538rpx;height:46.1538rpx;padding:0;background:transparent;color:var(--muted)}.order-progress{display:flex;margin:15.3846rpx 0 38.4615rpx}.progress-step{position:relative;display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;gap:7.6923rpx;color:var(--muted);font-size:23.0769rpx;line-height:34.6154rpx}.progress-icon{position:relative;z-index:1;display:flex;background:var(--bg)}.progress-line{position:absolute;top:17.3077rpx;left:calc(50% + 19.2308rpx);right:calc(-50% + 19.2308rpx);height:1px;background:var(--line)}.progress-line-done{background:var(--accent)}.progress-done,.progress-active{color:var(--accent)}.progress-detail{font-size:17.3077rpx;color:var(--muted)}.summary-card{display:flex;align-items:center;gap:19.2308rpx;padding:23.0769rpx;border:1px solid var(--line-subtle);border-radius:15.3846rpx;background:var(--surface);min-width:0}.summary-cover{display:block;flex-shrink:0;width:157.6923rpx;height:138.4615rpx;border-radius:11.5385rpx}.summary-copy{flex:1;min-width:0}.order-title{font-size:28.8462rpx;line-height:42.3077rpx;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.summary-row{gap:11.5385rpx}.price{font-size:30.7692rpx;line-height:42.3077rpx;max-width:55%}.summary-game,.summary-unit{display:block;color:var(--muted);font-size:21.1538rpx;line-height:34.6154rpx;margin-top:7.6923rpx;overflow-wrap:anywhere}.people-card{display:flex;gap:23.0769rpx;padding:23.0769rpx;margin:15.3846rpx 0;border:1px solid var(--line-subtle);border-radius:15.3846rpx;background:var(--surface)}.person{display:flex;align-items:center;gap:15.3846rpx;flex:1;min-width:0;color:var(--muted)}.person-copy{min-width:0}.person-role{display:block;color:var(--muted);font-size:19.2308rpx;line-height:30.7692rpx}.person-name{display:block;font-size:25rpx;line-height:38.4615rpx;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.detail-section{margin-top:15.3846rpx;border:1px solid var(--line-subtle);border-radius:15.3846rpx;background:var(--surface);overflow:hidden}.section-toggle{display:flex;align-items:center;gap:19.2308rpx;width:100%;min-height:92.3077rpx;padding:19.2308rpx 23.0769rpx;border-radius:0;background:transparent;color:var(--accent);text-align:left}.detail-section-title{flex:1;min-width:0;font-size:28.8462rpx;line-height:42.3077rpx;font-weight:650;color:var(--text)}.section-body{padding:0 23.0769rpx 23.0769rpx}.agreement{padding-top:0;border-top:0}.after-sale-heading{flex:1;min-width:0}.after-sale-hint{display:block;font-size:21.1538rpx;line-height:34.6154rpx;color:var(--muted);font-weight:400;margin-top:3.8462rpx}.refund-panel{margin:0 23.0769rpx 23.0769rpx;white-space:pre-wrap}.actions{padding:0 23.0769rpx 15.3846rpx;border-bottom:0;gap:15.3846rpx 30.7692rpx;justify-content:flex-end}.order-secondary{font-size:23.0769rpx;min-height:44px}.paid-row{display:flex;align-items:center;justify-content:space-between;gap:23.0769rpx;color:var(--muted);font-size:26.9231rpx;padding:15.3846rpx 0}.order-dock{position:fixed;z-index:30;bottom:0;left:0;right:0;display:flex;align-items:center;gap:19.2308rpx;width:100%;max-width:600px;margin:0 auto;padding:15.3846rpx 23.0769rpx calc(15.3846rpx + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}.chat-entry{display:flex;align-items:center;justify-content:center;gap:11.5385rpx;min-height:44px;height:84.6154rpx;padding:0 23.0769rpx;flex:1;min-width:0;border:1px solid var(--accent);border-radius:13.4615rpx;background:transparent;color:var(--accent);font-size:25rpx}.dock-primary{flex:1.5;min-width:0;min-height:44px;height:84.6154rpx;border-radius:13.4615rpx;font-size:26.9231rpx}
 </style>

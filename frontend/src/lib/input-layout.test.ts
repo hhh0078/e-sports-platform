@@ -97,7 +97,7 @@ test('搜索、金额、聊天、昵称和色值专用输入保留字号且不�
   const inputs = [
     ['components/FundsForm.vue', 'funds-amount-input'], ['components/OrderAdjustments.vue', 'adjustment-amount-input'],
     ['components/GameSelector.vue', 'catalog-input'], ['components/ManageList.vue', 'manage-search-input'],
-    ['pages/manage/games.vue', 'color-value'], ['pages/orders/detail.vue', 'composer-input'],
+    ['pages/manage/games.vue', 'color-value'], ['pages/orders/chat.vue', 'composer-input'],
     ['pages/account/login.vue', 'offer-name-input'], ['pages/services/publish.vue', 'color-code'],
     ['pages/main/player/player.vue', 'search-input'], ['pages/community/clubs/index.vue', 'search-input'],
     ['pages/manage/finance/settings.vue', 'finance-input'],

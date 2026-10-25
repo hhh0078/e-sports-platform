@@ -394,15 +394,26 @@ func reviewNoticeAction(task ModerationTask) (string, string) {
 			return "/pages/orders/detail?id=" + url.QueryEscape(task.OrderID), "查看订单并联系平台"
 		}
 	case "settings":
+		if task.TargetID == publicContentID {
+			return "/pages/manage/content/index", "修改公共信息"
+		}
 		if strings.HasPrefix(task.FieldCode, "support_") {
 			return "/pages/manage/support", "修改客服信息"
 		}
 		return "/pages/manage/platform", "修改平台公开信息"
 	case "games":
 		return "/pages/manage/games", "修改游戏资料"
+	case "articles":
+		return "/pages/manage/articles/edit?id=" + id, "修改文章内容"
 	case "inbox":
 		return "/pages/manage/messages", "查看平台通知"
 	case "evidence":
+		if task.Purpose == "promotion_banner" || task.Purpose == "announcement_image" {
+			return "/pages/manage/content/index", "重新上传公共图片"
+		}
+		if task.Purpose == "article_cover" || task.Purpose == "article_image" {
+			return "/pages/manage/articles/index", "检查文章图片"
+		}
 		if task.Purpose == "support_qr" {
 			return "/pages/manage/support", "重新上传客服二维码"
 		}

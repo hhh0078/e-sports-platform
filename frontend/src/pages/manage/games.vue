@@ -3,7 +3,7 @@
   <AppShell title="游戏配置" back>
     <ManageList v-model:query="query" placeholder="搜索游戏名称或标识" :loading="loading" :busy="editorBusy" :error="error" :empty="!games.length" :has-more="hasMore" :count="games.length" @search="loadData()" @more="loadData(true)" @retry="retryFailed" @prepare="showPage">
       <view class="game-list-heading"><text class="section-title">全部游戏</text><button class="text-btn" :disabled="editorBusy" @click="editGame()"><Icon name="plus" :size="17"/>添加游戏</button></view>
-      <view v-for="item in games" :key="item.id" class="game-row"><view class="game-summary"><image class="game-cover" :src="assetUrl(item.cover_url)" mode="aspectFill"/><view class="game-copy"><text class="game-name">{{ item.name }}</text><text class="game-id">{{ item.id }}</text><view class="game-colors"><view v-for="key in colorKeys" :key="key.id" class="game-color" :style="{ background: item[key.id] }"/></view><text class="game-categories">{{ (item.categories || []).join(' · ') }}</text></view></view><view class="game-footer"><view class="game-state"><text :class="['game-enabled', { hidden: !item.enabled }]">● {{ item.enabled ? '已启用' : '已隐藏' }}</text><text class="game-sort">排序 {{ item.sort_order }}</text></view><button class="btn btn-secondary btn-small" :disabled="editorBusy" @click="editGame(item)">编辑</button></view></view>
+      <view v-for="item in games" :key="item.id" class="game-row"><view class="game-summary"><image class="game-cover" :src="assetUrl(item.cover_url)" mode="aspectFill"/><view class="game-copy"><text class="game-name">{{ item.name }}</text><text class="game-id">{{ item.id }}</text><view class="game-colors"><view v-for="key in colorKeys" :key="key.id" class="game-color" :style="{ background: item[key.id] }"/></view><text class="game-categories">{{ (item.categories || []).join(' · ') }}</text></view></view><view class="game-footer"><view class="game-state"><text :class="['game-enabled', { hidden: !item.enabled }]">● {{ item.enabled ? '已启用' : '已隐藏' }}</text><text class="game-sort">排序 {{ item.sort_order }}</text></view><view class="row"><button class="text-btn" :disabled="editorBusy" @click="openBanners(item)">游戏轮播</button><button class="btn btn-secondary btn-small" :disabled="editorBusy" @click="editGame(item)">编辑</button></view></view></view>
     </ManageList>
     <UniPopup ref="editorPopup" type="bottom" :is-mask-click="!editorBusy" background-color="transparent" @change="popupChanged"><scroll-view v-if="editing" scroll-y class="game-sheet"><view class="editor-heading"><text class="section-title">{{ newGame ? '添加游戏' : '编辑游戏' }}</text><button class="text-btn" :disabled="editorBusy" @click="closeEditor">关闭</button></view><view class="form-section editor-form">
       <view class="field"><text class="field-label">游戏标识（小写英文）</text><input v-if="newGame" v-model="gameForm.id" class="input" maxlength="30" :disabled="editorBusy" placeholder="例如 new-game"/><text v-else class="readonly-id">{{ gameForm.id }}</text></view>
@@ -30,7 +30,7 @@ import { chooseUploadImage } from '../../lib/media'
 import { state, init } from '../../lib/store'
 import { createGame, updateGame } from '../../api/admin.api'
 import { isCancelled } from '../../api/client'
-import { assetUrl, notify } from '../../lib/format'
+import { assetUrl, notify, go } from '../../lib/format'
 import type { Game } from '../../types/models'
 
 /** 四项主题颜色与独立编辑字段。 */
@@ -49,6 +49,8 @@ const coverLibrary = computed(() => [...new Set([...gameForm.covers, ...uploaded
 function emptyGame(): GameDraft { return { id: '', name: '', short_name: '', subtitle: '', primary_color: '#83e7b7', bg_color: '#0a1110', surface_color: '#15201e', text_color: '#f2f5f3', cover_url: '', covers: [], icon_url: '', enabled: true, sort_order: Math.min(999, state.games.length + 1), categories: [], categoriesText: '' } }
 /** 普通离开或账号变化时作废编辑操作并移除旧管理员草稿。 */
 function clearGameDraft(): void { editorVersion++; choosingImage = false; saving.value = false; uploading.value = false; editing.value = false; uploadedCovers.value = []; Object.assign(gameForm, emptyGame()) }
+/** 使用独立运营配置维护本游戏轮播，不改服务封面池。 */
+function openBanners(item:Game):void{if(!editorBusy.value&&sameSession(currentSession()))go('/pages/manage/content/index?game_id='+encodeURIComponent(item.id))}
 /** 新建或复制已有游戏配置，拷贝数组以免取消编辑影响全局状态。 */
 function editGame(item?: Game): void { if (editorBusy.value || !sameSession(currentSession())) return; editorVersion++; newGame.value = !item; Object.assign(gameForm, emptyGame(), item ? JSON.parse(JSON.stringify(item)) : {}); gameForm.categoriesText = (gameForm.categories.length ? gameForm.categories : ['陪练教学', '组队陪玩', '任务协作']).join(','); editing.value = true }
 /** 编辑或上传期间禁止关闭，其他关闭会清空未保存草稿。 */

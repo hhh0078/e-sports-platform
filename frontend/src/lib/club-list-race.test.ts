@@ -15,7 +15,7 @@ const accountA={id:'A',nickname:'俱乐部申请者'}
 const accountB={id:'B',nickname:'另一位申请者'}
 
 /** 只控制网络完成次序，保留真实业务API、Vue侦听和共享会话行为。 */
-function harness(t: TestContext){
+function harness(t: TestContext,manualManaged=false){
   const storage=new Map<string,string>([['jijie_token','token-A']]),requests: DeferredRequest[]=[],notices: unknown[]=[],navigations: string[]=[]
   const native:{options?:NativePageRefreshOptions}={}
   const lifecycle: PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
@@ -24,7 +24,7 @@ function harness(t: TestContext){
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},
     token:()=>storage.get('jijie_token')||'',
     /** 每次请求都由用例显式结束，迟到响应不会被模拟器自动丢弃。 */
-    api(path:string,method='GET',body:Record<string,unknown>={}){if(path==='/financial-rules'&&method==='GET')return Promise.resolve({free_platform_rate_bps:0,club_platform_rate_bps:0,club_creation_deposit_cents:10000});return new Promise<unknown>((resolve,reject)=>requests.push({path,method,body,resolve,reject,taken:false}))},
+    api(path:string,method='GET',body:Record<string,unknown>={}){if(path.startsWith('/clubs?managed=1')&&method==='GET'&&!manualManaged)return Promise.resolve([]);if(path==='/financial-rules'&&method==='GET')return Promise.resolve({free_platform_rate_bps:0,club_platform_rate_bps:0,club_creation_deposit_cents:10000});return new Promise<unknown>((resolve,reject)=>requests.push({path,method,body,resolve,reject,taken:false}))},
     notify:(value:unknown)=>notices.push(value),go:(value:string)=>navigations.push(value),
     onLoad:(callback:PageLifecycle['load'])=>{lifecycle.load=callback},onShow:(callback:()=>void)=>{lifecycle.show=callback},onHide:(callback:()=>void)=>{lifecycle.hide=callback},onUnload:(callback:()=>void)=>{lifecycle.unload=callback},
   })
@@ -32,7 +32,7 @@ function harness(t: TestContext){
   vm.runInContext(executable(storeSource)+'\nglobalThis.store={state,login,clearSession}',context)
   context.store.state.ready=true;context.store.state.user={...accountA}
   const scope=effectScope()
-  scope.run(()=>vm.runInContext(executable(pageSource)+'\nglobalThis.page={load,retryFailed,create,openCreate,clubs,query,mine,loading,error,creating,busy,form,hasMore}',context))
+  scope.run(()=>vm.runInContext(executable(pageSource)+'\nglobalThis.page={load,retryFailed,create,openCreate,clubs,query,mine,loading,error,creating,busy,form,hasMore,loadManaged,managedClubs,managementMore,managementPopup,openManagement}',context))
   t.after(()=>scope.stop())
   return{store:context.store,page:context.page,requests,notices,navigations,lifecycle,native,
     /** 取得实际发出的单次请求，重复或缺失调用直接失败。 */
@@ -190,4 +190,19 @@ test('俱乐部目录失败重试保留原首读和追加偏移，不被搜索�
   const more=s.native.options?.more?.();await flush();s.take('/clubs?limit=20&offset=20').reject(new Error('追加失败'));await more;s.page.query.value='未确认草稿'
   const secondRetry=s.page.retryFailed();await flush();s.take('/clubs?limit=20&offset=20').resolve([{id:'last'}]);await secondRetry
   assert.equal(s.page.clubs.value.length,21);assert.equal(s.page.query.value,'未确认草稿')
+})
+
+test('俱乐部管理入口使用独立managed范围，一家直达且多家打开官方选择器',async t=>{
+  const s=harness(t,true),reading=s.page.loadManaged();await flush();s.take('/clubs?managed=1&limit=20&offset=0').resolve([{id:'deputy-club',management_role:'deputy'}]);await reading;s.page.openManagement();assert.equal(s.navigations[0],'/pages/community/clubs/console?id=deputy-club')
+  let opened=0;s.page.managementPopup.value={open:()=>{opened++},close:()=>{}}
+  const latest=s.page.loadManaged();await flush();s.take('/clubs?managed=1&limit=20&offset=0').resolve([{id:'own',management_role:'owner'},{id:'deputy',management_role:'deputy'}]);await latest;s.page.openManagement();assert.equal(opened,1)
+})
+
+test('本人管理俱乐部超过20家按服务端分页，切号后旧管理权不回填',async t=>{
+  const s=harness(t,true),reading=s.page.loadManaged();await flush();s.take('/clubs?managed=1&limit=20&offset=0').resolve(Array.from({length:20},(_,i)=>({id:'managed-'+i,management_role:'owner'})));await reading
+  const next=s.page.loadManaged(true);await flush();const old=s.take('/clubs?managed=1&limit=20&offset=20');await switchAccount(s);assert.equal(s.page.managedClubs.value.length,0);old.resolve([{id:'old-managed'}]);await next;assert.equal(s.page.managedClubs.value.length,0)
+})
+
+test('俱乐部介绍创建保留正文内部换行与空行',async t=>{
+  const s=harness(t);prepareDraft(s);s.page.form.description='  第一段团队介绍\n\n第二段履约说明  ';const creating=s.page.create();await flush();const writing=s.take('/clubs','POST');assert.equal(writing.body.description,'第一段团队介绍\n\n第二段履约说明');writing.resolve({id:'multiline-club',status:'pending_deposit'});await creating
 })

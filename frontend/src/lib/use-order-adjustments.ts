@@ -7,6 +7,7 @@ import {listOrderAdjustments,createOrderAdjustment,respondOrderAdjustment,payOrd
 import {getWallet} from '../api/wallet.api'
 import {requirePhone} from './phone'
 import {requestWechatPayment} from './payment'
+import {beginFinancialActivity} from './update-manager'
 import {newWalletRequestID} from './wallet'
 import {parseAdjustmentAmount,adjustmentPending,canProposeAdjustment} from './order-adjustments'
 import type {Order} from '../types/models'
@@ -67,7 +68,7 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
   async function confirm():Promise<void>{
     const action=dialog.value,order=readOrder(),record=selected.value
     if(!visible||disposed||busy.value||!action||!order)return
-    const t=ticket(),version=++operation;busy.value=true;formError.value='';readVersion++;loading.value=false;currentRead=null
+    const t=ticket(),version=++operation,finishFinancial=beginFinancialActivity();busy.value=true;formError.value='';readVersion++;loading.value=false;currentRead=null
     try{
       if(action==='create'){
         const cents=parseAdjustmentAmount(amount.value),text=reason.value.trim();if(Array.from(text).length<2||Array.from(text).length>500)throw new Error('请填写2—500字原因');if(kind.value==='decrease'&&cents>order.amount_cents)throw new Error('退差金额不能超过当前订单金额');if(!(await requirePhone())||!current(t,version))return
@@ -86,10 +87,10 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
         await respondOrderAdjustment(order.id,record.id,action)
       }
       if(!current(t,version))return;busy.value=false;close();changed();await load()
-    }catch(e){if(current(t,version))formError.value=errorMessage(e)}finally{if(version===operation)busy.value=false}
+    }catch(e){if(current(t,version))formError.value=errorMessage(e)}finally{if(version===operation)busy.value=false;finishFinancial()}
   }
   /** 买家及平台只同步既有付款/退款结果，不代替双方同意或另建资金单。 */
-  async function synchronize(record:OrderAdjustment):Promise<void>{if(!visible||busy.value||!canSynchronize())return;const t=ticket(),version=++operation;busy.value=true;error.value='';try{await syncOrderAdjustment(t.order||'',record.id);if(!current(t,version))return;busy.value=false;changed();await load()}catch(e){if(current(t,version))error.value=errorMessage(e)}finally{if(version===operation)busy.value=false}}
+  async function synchronize(record:OrderAdjustment):Promise<void>{if(!visible||busy.value||!canSynchronize())return;const t=ticket(),version=++operation,finishFinancial=beginFinancialActivity();busy.value=true;error.value='';try{await syncOrderAdjustment(t.order||'',record.id);if(!current(t,version))return;busy.value=false;changed();await load()}catch(e){if(current(t,version))error.value=errorMessage(e)}finally{if(version===operation)busy.value=false;finishFinancial()}}
   /** 切账号/订单立即清空旧证据、草稿与所有未发出的后续资金操作。 */
   function clear():void{operation++;readVersion++;walletVersion++;resumeDraft=null;records.value=[];loading.value=false;currentRead=null;busy.value=false;error.value='';dialog.value=null;selected.value=null;wallet.value=null;walletLoading.value=false;walletError.value='';formError.value='';amount.value='';reason.value=''}
   /** 原生授权临时隐藏只撤销旧操作和支付意图，同账号创建草稿保留供用户重新打开。 */

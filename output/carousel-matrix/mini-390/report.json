@@ -1,0 +1,3325 @@
+{
+  "file_purpose": "本地官方SDK首页轮播九宫格矩阵；不等同真机物理手势验收",
+  "passed": true,
+  "stage": "九宫格 bottom-right",
+  "width": 390,
+  "project": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/dev/mp-weixin",
+  "checks": [
+    "top-left：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
+    "top-center：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
+    "top-right：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
+    "middle-left：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
+    "middle-center：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
+    "middle-right：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
+    "bottom-left：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
+    "bottom-center：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
+    "bottom-right：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定"
+  ],
+  "measurements": [
+    {
+      "position": "top-left",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1477,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-left-slide-1.png"
+    },
+    {
+      "position": "top-left",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1297,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-left-slide-2.png"
+    },
+    {
+      "position": "top-left",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1321,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-left-slide-3.png"
+    },
+    {
+      "position": "top-center",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1343,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-center-slide-1.png"
+    },
+    {
+      "position": "top-center",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1292,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-center-slide-2.png"
+    },
+    {
+      "position": "top-center",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1318,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-center-slide-3.png"
+    },
+    {
+      "position": "top-right",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1327,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-right-slide-1.png"
+    },
+    {
+      "position": "top-right",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1371,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-right-slide-2.png"
+    },
+    {
+      "position": "top-right",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 170.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 214.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 258.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 302.4921875,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 346.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 390.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1293,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-right-slide-3.png"
+    },
+    {
+      "position": "middle-left",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1292,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-left-slide-1.png"
+    },
+    {
+      "position": "middle-left",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1305,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-left-slide-2.png"
+    },
+    {
+      "position": "middle-left",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1303,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-left-slide-3.png"
+    },
+    {
+      "position": "middle-center",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1306,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-center-slide-1.png"
+    },
+    {
+      "position": "middle-center",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1337,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-center-slide-2.png"
+    },
+    {
+      "position": "middle-center",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1385,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-center-slide-3.png"
+    },
+    {
+      "position": "middle-right",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1400,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-right-slide-1.png"
+    },
+    {
+      "position": "middle-right",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1365,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-right-slide-2.png"
+    },
+    {
+      "position": "middle-right",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 509.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 498.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 530.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 306.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 262.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 350.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 218.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1300,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-right-slide-3.png"
+    },
+    {
+      "position": "bottom-left",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1301,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-left-slide-1.png"
+    },
+    {
+      "position": "bottom-left",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1320,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-left-slide-2.png"
+    },
+    {
+      "position": "bottom-left",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 8,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 8,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 8,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 8,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 8,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 8,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1265,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-left-slide-3.png"
+    },
+    {
+      "position": "bottom-center",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1315,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-center-slide-1.png"
+    },
+    {
+      "position": "bottom-center",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1342,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-center-slide-2.png"
+    },
+    {
+      "position": "bottom-center",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 14,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 32,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 12,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 28,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 12,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 28,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1279,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-center-slide-3.png"
+    },
+    {
+      "position": "bottom-right",
+      "slide": 0,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1327,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-right-slide-1.png"
+    },
+    {
+      "position": "bottom-right",
+      "slide": 1,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1313,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-right-slide-2.png"
+    },
+    {
+      "position": "bottom-right",
+      "slide": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 461.5
+      },
+      "brand": {
+        "left": 15,
+        "top": 94,
+        "width": 248,
+        "height": 32
+      },
+      "publish": {
+        "left": 274,
+        "top": 118.5,
+        "width": 101,
+        "height": 36
+      },
+      "dots": {
+        "left": 349,
+        "top": 450.5,
+        "width": 30,
+        "height": 5
+      },
+      "games": {
+        "left": 11,
+        "top": 482.5,
+        "width": 368,
+        "height": 81
+      },
+      "labels": [
+        {
+          "index": 0,
+          "text": "游戏陪练任务完成一起开黑",
+          "rect": {
+            "left": 20,
+            "top": 394.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 1,
+          "text": "WWWWWWWWWWW1",
+          "rect": {
+            "left": 56,
+            "top": 350.5,
+            "width": 325,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "text": "认真沟通准时上线放心开玩",
+          "rect": {
+            "left": 20,
+            "top": 306.4921875,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "text": "MMMMMMMMMMM2",
+          "rect": {
+            "left": 48,
+            "top": 262.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "text": "中文文案极限长度十二个字",
+          "rect": {
+            "left": 20,
+            "top": 218.5,
+            "width": 362,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "index": 5,
+          "text": "WWWWMMMMWWM3",
+          "rect": {
+            "left": 48,
+            "top": 174.5,
+            "width": 333,
+            "height": 39
+          },
+          "font_size": 26,
+          "pointer_events": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ],
+      "sample_ms": 1291,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-right-slide-3.png"
+    }
+  ],
+  "exceptions": [],
+  "compatibility_warnings": [],
+  "cleanup_errors": [],
+  "boundaries": [
+    "只修改全局轮播与公告enabled；不改游戏素材池、角色、资金、订单、支付或订阅。",
+    "三张内置图各六条十二码点文字、24号请求；字号与矩形为官方SDK实测，未调用页面data、私有业务方法或注入令牌。",
+    "swiper.swipeTo为官方公开API；自动轮播保持开启，截图和几何仅保留同一当前图的稳定采样，不等同手机物理滑动。",
+    "恢复只提交本矩阵修改字段，配置修订和审计保持单调；独立管理员令牌只在进程内保存并于finally撤销。",
+    "每次执行只覆盖当前真实320或390窗口，需分别在微信开发工具切换机型后运行；未操作生产环境。"
+  ],
+  "completed_at": "2026-10-25T20:36:14.035Z"
+}

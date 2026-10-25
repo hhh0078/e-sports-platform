@@ -13,6 +13,8 @@ import { newWalletRequestID, parseWalletAmount } from './wallet'
 import { requestWechatPayment, confirmWechatTransfer } from './payment'
 import { requirePhone } from './phone'
 import { go, notify } from './format'
+import { canConfirmClubTransfer,isClubManager } from './management-permissions'
+import { beginFinancialActivity } from './update-manager'
 
 /** 根据资金用途加载当前成员押金或负责人独立钱包，不在本地推算到账。 */
 export function useClubFunds(scope: 'member_club' | 'club_platform', options: { summaryOnly?: boolean } = {}) {
@@ -25,7 +27,8 @@ export function useClubFunds(scope: 'member_club' | 'club_platform', options: { 
   const cursors={entries:{offset:0,more:true},topups:{offset:0,more:true},withdrawals:{offset:0,more:true},refunds:{offset:0,more:true}}
   let activeRequest:{ownerID:string;clubID:string;kind:string;cents:number;requestID:string}|null=null
   const balance=computed(()=>scope==='club_platform'?deposits.value?.platform:deposits.value?.membership)
-  const canManage=computed(()=>!!detail.value?.can_manage)
+  const canManage=computed(()=>isClubManager(detail.value))
+  const canConfirmTransfer=computed(()=>canConfirmClubTransfer(state.user,club.value))
   /** 捕获具体账号、令牌、俱乐部和会话，原生页面往返不改变交易归属。 */
   function session() { return { id:state.user?.id||'', token:token(), revision:sessionRevision(), clubID:id.value } }
   /** 迟到结果不能进入另一个组织或账号，页面销毁后不得继续操作。 */
@@ -78,7 +81,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform', options: { 
   /** 保留失败时原始分页动作，刷新失败不能错误地跳到下一页。 */
   async function retryFailed():Promise<void>{if(loading.value||busy.value||operation.value)return;await load(lastFailedAppend)}
   /** 打开明确用途的资金表单；访客保留登录后目标。 */
-  function open(kind:'pay'|'refund'|'withdraw'):void { if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/'+(scope==='club_platform'?'funds':'deposit')+'?id='+id.value));return}if(scope==='club_platform'&&!canManage.value)return notify('仅俱乐部负责人可操作');operation.value=kind;formError.value='';userName.value='';const shortfall=balance.value?.shortfall_cents??Math.max(0,(balance.value?.required_cents||0)-(balance.value?.amount_cents||0));amount.value=kind==='pay'?(shortfall>0?(shortfall/100).toFixed(2):''):kind==='refund'?String((balance.value?.amount_cents||0)/100):'' }
+  function open(kind:'pay'|'refund'|'withdraw'):void { if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/'+(scope==='club_platform'?'funds':'deposit')+'?id='+id.value));return}if(scope==='club_platform'&&!canManage.value)return notify('仅俱乐部管理者可操作');operation.value=kind;formError.value='';userName.value='';const shortfall=balance.value?.shortfall_cents??Math.max(0,(balance.value?.required_cents||0)-(balance.value?.amount_cents||0));amount.value=kind==='pay'?(shortfall>0?(shortfall/100).toFixed(2):''):kind==='refund'?String((balance.value?.amount_cents||0)/100):'' }
   /** 处理中不能关闭表单把未知结果误认为取消。 */
   function close():void { if(!busy.value){operation.value=null;userName.value='';formError.value=''} }
   /** 原生支付只完成交互，必须按原付款单查询服务端。 */
@@ -95,7 +98,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform', options: { 
   /** 校验金额、手机号和实名后提交稳定业务号，跨账号迟到结果不回填。 */
   async function submit():Promise<void> {
     const kind=operation.value;if(!kind||busy.value||!visible||!state.user)return
-    const owner=session(),action=++actionVersion,hiddenAtStart=hideRevision;busy.value=true;formError.value=''
+    const owner=session(),action=++actionVersion,hiddenAtStart=hideRevision,finishFinancial=beginFinancialActivity();busy.value=true;formError.value=''
     try {
       const cents=parseWalletAmount(amount.value,kind==='withdraw'?20000000:10000000,kind==='withdraw'?(wallet.value?.withdrawal_min_cents||1):1)
       const name=userName.value.trim()
@@ -110,20 +113,20 @@ export function useClubFunds(scope: 'member_club' | 'club_platform', options: { 
       else {const record=await createClubWithdrawal(owner.clubID,{amount_cents:cents,request_id:requestID,user_name:name});if(!same(owner))return;reconcile(owner,kind,cents,record.request_id||requestID);if(visible)notify('提现已提交，等待平台审核资金来源')}
       if(!same(owner))return;operation.value=null;userName.value='';if(visible)await load()
     } catch(err) { if(same(owner)&&visible){if(operation.value===kind)formError.value=errorMessage(err);else if(!operation.value&&hideRevision>hiddenAtStart)notify(err)} }
-    finally { if(action===actionVersion){activeRequest=null;busy.value=false} }
+    finally { if(action===actionVersion){activeRequest=null;busy.value=false};finishFinancial() }
   }
   /** 跨设备恢复未付款原单，不按相同金额新建付款。 */
-  async function resume(record:WalletTopup):Promise<void> { if(busy.value||!visible||!state.user)return;const owner=session(),action=++actionVersion;busy.value=true;try{if(!(await requirePhone())||!same(owner)||!visible)return;await pay(owner,record.amount_cents,record.request_id||'',record.id);if(same(owner)&&visible)await load()}catch(err){if(same(owner)&&visible)notify(err)}finally{if(action===actionVersion)busy.value=false} }
+  async function resume(record:WalletTopup):Promise<void> { if(busy.value||!visible||!state.user)return;const owner=session();if(scope==='club_platform'&&record.user_id!==owner.id)return notify('仅原付款人可继续支付，请同步原付款单');const action=++actionVersion,finishFinancial=beginFinancialActivity();busy.value=true;try{if(!(await requirePhone())||!same(owner)||!visible)return;await pay(owner,record.amount_cents,record.request_id||'',record.id);if(same(owner)&&visible)await load()}catch(err){if(same(owner)&&visible)notify(err)}finally{if(action===actionVersion)busy.value=false;finishFinancial()} }
   /** 同步原支付、退款或提现，微信待收款确认后仍查询实际终态。 */
   async function sync(kind:'payment'|'refund'|'withdraw',recordID:string,confirm=false):Promise<void> {
-    if(busy.value||!visible||!state.user)return;const owner=session(),action=++actionVersion;busy.value=true
-    try { if(kind==='payment')await syncWalletTopup(recordID);else if(kind==='refund')await syncDepositRefund(recordID);else{const record=await syncWalletWithdrawal(recordID);if(!same(owner)||!visible)return;if(confirm&&record.status==='wait_user_confirm'&&record.confirmation){try{await confirmWechatTransfer(record.confirmation)}finally{if(same(owner))await syncWalletWithdrawal(recordID)}}}if(same(owner)&&visible)await load() }
-    catch(err){if(same(owner)&&visible)notify(err)}finally{if(action===actionVersion)busy.value=false}
+    if(busy.value||!visible||!state.user)return;const owner=session(),action=++actionVersion,finishFinancial=beginFinancialActivity();busy.value=true
+    try { if(kind==='payment')await syncWalletTopup(recordID);else if(kind==='refund')await syncDepositRefund(recordID);else{const record=await syncWalletWithdrawal(recordID);if(!same(owner)||!visible)return;if(confirm&&canConfirmClubTransfer(state.user,club.value,record)&&record.status==='wait_user_confirm'&&record.confirmation){try{await confirmWechatTransfer(record.confirmation)}finally{if(same(owner))await syncWalletWithdrawal(recordID)}}}if(same(owner)&&visible)await load() }
+    catch(err){if(same(owner)&&visible)notify(err)}finally{if(action===actionVersion)busy.value=false;finishFinancial()}
   }
   /** 原生授权或支付暂时隐藏时清除实名与短暂收款凭据，仅使读取失效。 */
   function hide():void {visible=false;hideRevision++;loadVersion++;loading.value=false;operation.value=null;amount.value='';formError.value='';userName.value='';withdrawals.value=withdrawals.value.map(({confirmation,...item})=>item)}
   watch([()=>state.user?.id,sessionRevision],()=>{clear();if(visible)void load()},{flush:'sync'})
   onLoad((options:Record<string,string|undefined>={})=>{id.value=options.id||'';if(!id.value)error.value='缺少俱乐部编号'})
   onShow(()=>{visible=true;void load()});onHide(hide);onUnload(()=>{disposed=true;hide();clear()})
-  return {id,club,detail,deposits,balance,wallet,entries,topups,refunds,withdrawals,canManage,hasMore,loading,busy,error,formError,operation,amount,userName,load,retryFailed,open,close,submit,resume,sync}
+  return {id,club,detail,deposits,balance,wallet,entries,topups,refunds,withdrawals,canManage,canConfirmTransfer,hasMore,loading,busy,error,formError,operation,amount,userName,load,retryFailed,open,close,submit,resume,sync}
 }

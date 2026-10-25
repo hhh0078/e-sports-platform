@@ -1,8 +1,9 @@
 <!-- 文件作用：统一三类实缴押金徽标，按服务端有效金额展示实心安全图标与可选金额。 -->
-<template><view v-if="hasDeposit" :class="['deposit-badge',{'deposit-badge-amount':showAmount}]"><Icon name="shield-filled" :size="showAmount?14:11"/><text class="deposit-badge-label">{{ badgeText }}</text></view></template>
+<template><view v-if="hasDeposit&&showAmount" class="deposit-badge deposit-badge-amount"><Icon name="shield-filled" :size="14"/><text class="deposit-badge-label">{{badgeText}}</text></view><SecurityMarker v-else-if="hasDeposit" :label="badgeText" :description="(kind==='user_club'?'俱乐部托管押金':'平台押金')+money(amountCents)+'元'"/></template>
 <script setup lang="ts">
 import { computed } from 'vue'
 import Icon from './Icon.vue'
+import SecurityMarker from './SecurityMarker.vue'
 import { money } from '../lib/format'
 const props=withDefaults(defineProps<{amountCents?:number;showAmount?:boolean;kind?:'user_platform'|'user_club'|'club_platform'}>(),{amountCents:0,showAmount:false,kind:'user_platform'})
 /** 只有服务端返回的正整数分才显示，未知、零额及退款中的无效金额均隐藏。 */

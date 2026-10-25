@@ -1,5 +1,7 @@
 # 用户管理 · 独立模块设计
 
+2026-10-26：本轮最新见 [安全摘要列表](users.list-v2.design.md) 及 [用户详情](users/detail.design.md)，列表不再显示简介或直接冻结。
+
 文件作用：对应 `frontend/src/pages/manage/users.vue` 的先行ImageGen设计与实施依据；2026-10-22管理模块拆分。
 
 - 共享返回标题“用户管理”，无主底栏；q搜索昵称或用户ID、真实分页、加载/失败重试均保留。

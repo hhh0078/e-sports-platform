@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import { API_BASE, request, requestPublic, upload, download, queryString, errorMessage, errorStatus, errorCode } from '../api/client'
 import { performOrderAction, listMessages } from '../api/orders.api'
 import { verifyDevPhone } from '../api/auth.api'
+import { getUpdatePromptState } from './update-manager'
 
 /** 创建可控的 uni 平台传输接口，测试实际 API 层而不替代业务方法。 */
 function setup() {
@@ -32,6 +33,24 @@ test('请求统一附带当前令牌并只解包业务data', async () => {
     subject.requests[0].success?.({ statusCode: 200, data: { data: { id: 'current-user' } }, header: {}, cookies: [] })
     assert.deepEqual(await pending, { id: 'current-user' })
   } finally { subject.restore() }
+})
+
+test('真实资金请求在成功、HTTP拒绝、网络失败和同步异常后都释放更新保护', async () => {
+  const subject=setup(),platform=globalThis as unknown as {uni:Partial<typeof uni>}
+  try{
+    const first=request('/wallet');assert.equal(getUpdatePromptState().financialBusy,true)
+    const second=request('/wallet/topups','POST',{});assert.equal(getUpdatePromptState().financialBusy,true)
+    subject.requests[0].success?.({statusCode:200,data:{data:{}},header:{},cookies:[]});await first
+    assert.equal(getUpdatePromptState().financialBusy,true,'并行资金请求仍持有独立任务')
+    subject.requests[1].success?.({statusCode:409,data:{error:'原单处理中'},header:{},cookies:[]});await assert.rejects(second)
+    assert.equal(getUpdatePromptState().financialBusy,false)
+    const third=request('/clubs/club-A/withdrawals','POST',{});subject.requests[2].fail?.({errMsg:'request:fail timeout'});await assert.rejects(third)
+    assert.equal(getUpdatePromptState().financialBusy,false)
+    platform.uni.request=()=>{throw new Error('原生接口不可用')};await assert.rejects(request('/orders/order-A/pay','POST',{}),/原生接口不可用/)
+    assert.equal(getUpdatePromptState().financialBusy,false)
+    platform.uni.getStorageSync=()=>{throw new Error('会话存储不可用')};await assert.rejects(request('/wallet'),/会话存储不可用/)
+    assert.equal(getUpdatePromptState().financialBusy,false,'会话读取失败不能遗留未释放资金任务')
+  }finally{subject.restore()}
 })
 
 test('朋友圈公共读取即使本机有会话也不携带Authorization且只使用GET',async()=>{

@@ -37,7 +37,7 @@ function pageContext(t:TestContext,page:BalancePage,balance:Partial<Wallet>|null
  */
 function renderBalance(page:BalancePage,context:Record<string,unknown>):VNode{
   const source=readFileSync(new URL('../pages/'+page,import.meta.url),'utf8')
-  const block=source.match(page==='main/me/me.vue'?/(<view class="me-wallet"[\s\S]*?)\n\t\t<view class="space-grid">/:/(<view class="balance-section">[\s\S]*?)\n    <view class="deposit-section">/)
+  const block=source.match(page==='main/me/me.vue'?/(<view class="me-wallet"[\s\S]*?)\n\n\t\t<view v-if="error"/:/(<view class="balance-section">[\s\S]*?)\n    <view class="deposit-section">/)
   assert.ok(block,'缺少真实钱包摘要模板')
   const render=compile(block[1],{isCustomElement:()=>true,prefixIdentifiers:true}) as unknown as (context:Record<string,unknown>,cache:unknown[])=>VNode
   return render(context,[])
@@ -55,8 +55,8 @@ for(const page of ['main/me/me.vue','account/wallet.vue'] as const){
     const data={spendable_cents:7001,available_cents:1000,recharge_cents:6001,ongoing_cents:2500,settling_cents:3000,withdrawal_frozen_cents:500}
     const rendered=renderBalance(page,pageContext(t,page,data))
     assert.equal(classText(rendered,mainClass),'¥70.01')
-    assert.equal(classText(rendered,noteClass),'其中可提现 ¥10.00，充值仅用于消费')
-    assert.match(visibleText(rendered),/账户余额/)
+    if(page==='account/wallet.vue')assert.equal(classText(rendered,noteClass),'其中可提现 ¥10.00，充值仅用于消费');else assert.equal(classText(rendered,noteClass),'')
+    if(page==='account/wallet.vue')assert.match(visibleText(rendered),/账户余额/);else assert.doesNotMatch(visibleText(rendered),/我的钱包|账户余额|充值仅用于消费/)
     assert.match(visibleText(rendered),/进行中¥25.00结算中¥30.00提现中¥5.00/)
     assert.equal(classText(rendered,'wallet-recharge'),'')
     assert.doesNotMatch(visibleText(rendered),/充值余额 ¥|充值余额（仅消费）/)
@@ -65,7 +65,7 @@ for(const page of ['main/me/me.vue','account/wallet.vue'] as const){
   test(page+'：主额只取权威spendable字段，不从缓存分区拼造',t=>{
     const rendered=renderBalance(page,pageContext(t,page,{spendable_cents:6051,available_cents:50,recharge_cents:600000}))
     assert.equal(classText(rendered,mainClass),'¥60.51')
-    assert.match(classText(rendered,noteClass),/可提现 ¥0.50/)
+    if(page==='account/wallet.vue')assert.match(classText(rendered,noteClass),/可提现 ¥0.50/)
   })
   test(page+'：登录后缺失或无效合计显示未知，不能当成零或用充值推造',async t=>{
     for(const data of [null,{available_cents:1000,recharge_cents:6000},{spendable_cents:NaN},{spendable_cents:1.5}])await t.test(String(data?.spendable_cents),child=>{
@@ -76,6 +76,6 @@ for(const page of ['main/me/me.vue','account/wallet.vue'] as const){
   test(page+'：访客始终零值，不显示上个账号缓存',t=>{
     const rendered=renderBalance(page,pageContext(t,page,{spendable_cents:999999,available_cents:999999},false))
     assert.equal(classText(rendered,mainClass),'¥0.00')
-    assert.equal(classText(rendered,noteClass),'其中可提现 ¥0.00，充值仅用于消费')
+    assert.equal(classText(rendered,noteClass),page==='account/wallet.vue'?'其中可提现 ¥0.00，充值仅用于消费':'')
   })
 }

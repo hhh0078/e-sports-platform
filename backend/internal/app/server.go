@@ -116,7 +116,14 @@ func (a *App) Close() {
 
 // decode 限制请求体大小并拒绝未知字段与多份 JSON。
 func decode(r *http.Request, out any) error {
-	d := json.NewDecoder(io.LimitReader(r.Body, 65537))
+	return decodeWithLimit(r, out, 64*1024)
+}
+
+// decodeWithLimit 复用统一JSON安全规则，在有界传输预算内解码并严格拒绝未知字段及尾部JSON。
+// limit 为服务端固定字节预算；正文实际长度仍由对应领域校验器独立核验。
+func decodeWithLimit(r *http.Request, out any, limit int64) error {
+	reader := &io.LimitedReader{R: r.Body, N: limit + 1}
+	d := json.NewDecoder(reader)
 	d.DisallowUnknownFields()
 	if err := d.Decode(out); err != nil {
 		return fail(400, "请求内容格式不正确")
@@ -124,7 +131,20 @@ func decode(r *http.Request, out any) error {
 	if d.Decode(&struct{}{}) != io.EOF {
 		return fail(400, "请求仅允许一个 JSON 对象")
 	}
+	if reader.N <= 0 {
+		return fail(400, "请求内容超过接口允许大小")
+	}
 	return nil
+}
+
+// jsonTransportLimit 仅给三个精确文章写入路由预留JSON最坏转义预算，其它接口保持64KiB。
+func jsonTransportLimit(r *http.Request) int64 {
+	switch r.Pattern {
+	case "POST /api/admin/articles", "PATCH /api/admin/articles/{id}", "POST /api/admin/articles/preview":
+		return articleJSONTransportMaxBytes
+	default:
+		return 64 * 1024
+	}
 }
 
 // respond 写入统一响应。
@@ -155,7 +175,7 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 			return
 		}
 		if !strings.HasSuffix(r.URL.Path, "/evidence") && r.URL.Path != "/api/admin/covers" && r.URL.Path != "/api/media/images" {
-			r.Body = http.MaxBytesReader(w, r.Body, 65536)
+			r.Body = http.MaxBytesReader(w, r.Body, jsonTransportLimit(r))
 		}
 		if r.Method != http.MethodGet && r.Method != http.MethodHead && r.Method != http.MethodOptions {
 			for _, id := range []string{r.PathValue("id"), r.PathValue("user_id"), r.URL.Query().Get("club_id")} {
@@ -203,6 +223,8 @@ func (a *App) Handler() http.Handler {
 	mux.Handle("GET /static/covers/", assets.Handler())
 	mux.Handle("GET /static/avatars/", assets.AvatarHandler())
 	a.registerIdentityRoutes(mux)
+	a.registerAdminCentersRoutes(mux)
+	a.registerPublicContentRoutes(mux)
 	a.registerPaymentSettingsRoutes(mux)
 	a.registerWalletRoutes(mux)
 	a.registerAIRoutes(mux)

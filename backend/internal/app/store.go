@@ -20,7 +20,7 @@ type querier interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
 }
 
-var tables = []string{"users", "games", "services", "clubs", "members", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits", "order_adjustments", "order_payments", "order_refunds", "shares", "moderation_tasks", "moderation_targets", "subscription_deliveries", "subscription_authorizations", "subscription_preferences", "subscription_receipts", "subscription_callbacks"}
+var tables = []string{"users", "articles", "announcement_receipts", "games", "services", "clubs", "members", "club_deputies", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits", "order_adjustments", "order_payments", "order_refunds", "shares", "moderation_tasks", "moderation_targets", "subscription_deliveries", "subscription_authorizations", "subscription_preferences", "subscription_receipts", "subscription_callbacks"}
 
 // now 返回统一的 UTC 时间文本。
 func now() string { return time.Now().UTC().Format(time.RFC3339Nano) }
@@ -148,7 +148,7 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	if _, err = tx.Exec(ctx, "SELECT pg_advisory_xact_lock(8173001)"); err != nil {
 		return err
 	}
-	names := map[string]string{"users": "平台用户与权限", "games": "游戏主题与服务分类", "services": "服务发布与审核", "clubs": "俱乐部组织与认证", "members": "俱乐部挂靠申请与成员", "orders": "交易订单与状态", "messages": "订单沟通与文字证据", "reviews": "订单完成评价", "audit": "管理员操作审计", "settings": "平台运营配置", "evidence": "订单原始图片证据与完整性摘要", "identities": "微信私密身份映射", "inbox": "用户未读系统通知", "inbox_receipts": "同日审核拒绝通知防重复摘要", "moderation_tasks": "图文后置审核持久任务与人工决定", "moderation_targets": "图文字段单调版本与审核展示状态"}
+	names := map[string]string{"articles": "平台Markdown文章与发布状态", "announcement_receipts": "用户按公告版本跨设备已读记录", "users": "平台用户与权限", "games": "游戏主题与服务分类", "services": "服务发布与审核", "clubs": "俱乐部组织与认证", "members": "俱乐部挂靠申请与成员", "club_deputies": "俱乐部副管理员授权与撤销记录", "orders": "交易订单与状态", "messages": "订单沟通与文字证据", "reviews": "订单完成评价", "audit": "管理员操作审计", "settings": "平台运营配置", "evidence": "订单原始图片证据与完整性摘要", "identities": "微信私密身份映射", "inbox": "用户未读系统通知", "inbox_receipts": "同日审核拒绝通知防重复摘要", "moderation_tasks": "图文后置审核持久任务与人工决定", "moderation_targets": "图文字段单调版本与审核展示状态"}
 	for table, label := range map[string]string{"subscription_deliveries": "微信订阅业务提醒持久发件箱", "subscription_authorizations": "微信一次性模板候选与消费记录", "subscription_preferences": "用户订阅场景偏好", "subscription_receipts": "订阅事件与请求幂等摘要", "subscription_callbacks": "微信验签订阅回调摘要"} {
 		names[table] = label
 	}
@@ -175,6 +175,12 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 	if _, err = tx.Exec(ctx, `CREATE INDEX IF NOT EXISTS inbox_user_time_idx ON inbox ((data->>'user_id'),(data->>'created_at'),id);`); err != nil {
+		return err
+	}
+	if err = migratePublicContent(ctx, tx); err != nil {
+		return err
+	}
+	if err = migrateManagementPermissions(ctx, tx); err != nil {
 		return err
 	}
 	if err = migrateSubscriptions(ctx, tx); err != nil {

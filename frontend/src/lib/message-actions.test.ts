@@ -10,8 +10,8 @@ test('无行动字段的旧消息兼容，明确站内业务路径可正常恢�
   assert.deepEqual(safeMessageAction({action_path:'/pages/orders/detail?id=club%3Aorder',action_label:'查看相关订单'}),{path:'/pages/orders/detail?id=club%3Aorder',label:'查看相关订单'})
 })
 
-test('仅四个明确管理入口允许管理员访问，普通成员不显示管理行动',()=>{
-  for(const path of ['/pages/manage/support','/pages/manage/platform','/pages/manage/games','/pages/manage/messages']){
+test('明确管理入口允许管理员访问，普通成员不显示管理行动',()=>{
+  for(const path of ['/pages/manage/support','/pages/manage/platform','/pages/manage/games','/pages/manage/messages','/pages/manage/content/index','/pages/manage/articles/index','/pages/manage/articles/edit?id=article-A']){
     assert.equal(safeMessageAction({action_path:path},'user'),null)
     assert.equal(safeMessageAction({action_path:path},'clubowner'),null)
     assert.equal(safeMessageAction({action_path:path},'admin')?.path,path)

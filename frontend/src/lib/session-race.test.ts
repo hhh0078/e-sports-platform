@@ -31,9 +31,9 @@ function harness(pageName: 'me' | 'profile' | 'orders' = 'me') {
   vm.runInContext(executable(storeSource) + '\nglobalThis.store = { state, refreshMe, login, prepareWechatLogin, wechatLogin, logout, sessionRevision, lastLoginWasNew, clearSession }', context)
   context.store.state.user = { ...accountA }
   context.store.state.ready = true
-  if(pageName==='me')vm.runInContext('(function(){'+executable(phoneSource)+';globalThis.requirePhone=requirePhone;globalThis.phone={phoneGate,finishPhone}})()',context)
+  if(pageName==='me'||pageName==='profile')vm.runInContext('(function(){'+executable(phoneSource)+';globalThis.requirePhone=requirePhone;globalThis.phone={phoneGate,finishPhone}})()',context)
   const source = { me: meSource, profile: profileSource, orders: ordersSource }[pageName]
-  const exposed = { me: 'load, verifyPhone, hidePage, stats,wallet,walletError,orderCount,walletAmount', profile: 'load, saveProfile, signOut, hidePage, form, saving', orders: 'load, orders, loading, error, hasMore' }[pageName]
+  const exposed = { me: 'load, copyUserID, hidePage, stats,wallet,walletError,orderCount,walletAmount', profile: 'load, verifyPhone, saveProfile, signOut, hidePage, form, saving', orders: 'load, orders, loading, error, hasMore' }[pageName]
   vm.runInContext(executable(source) + '\nglobalThis.page = { ' + exposed + ' }', context)
   if (pageName === 'me' || pageName === 'orders') vm.runInContext('visible = true', context)
   return {
@@ -58,8 +58,8 @@ async function loginB(subject: ReturnType<typeof harness>) {
   await pending
 }
 
-test('个人中心手机号读取失败正常提示且不会产生未处理拒绝', async () => {
-  const subject=harness(),verifying=subject.page.verifyPhone()
+test('个人资料手机号读取失败正常提示且不会产生未处理拒绝', async () => {
+  const subject=harness('profile'),verifying=subject.page.verifyPhone()
   subject.take('/me').reject(new Error('手机号状态读取失败'))
   await assert.doesNotReject(verifying)
   assert.equal(subject.notices.length,1)
@@ -70,7 +70,7 @@ test('个人中心手机号读取失败正常提示且不会产生未处理拒�
 
 test('离页或换账号后的手机号读取失败不弹到其他页面或身份', async t => {
   for(const boundary of ['hide','switch'])await t.test(boundary,async()=>{
-    const subject=harness(),verifying=subject.page.verifyPhone(),old=subject.take('/me')
+    const subject=harness('profile'),verifying=subject.page.verifyPhone(),old=subject.take('/me')
     if(boundary==='hide')subject.page.hidePage();else await loginB(subject)
     old.reject(new Error('旧手机号请求失败'))
     await assert.doesNotReject(verifying)
@@ -80,8 +80,8 @@ test('离页或换账号后的手机号读取失败不弹到其他页面或身�
   })
 })
 
-test('个人中心正常打开手机号门槛，关闭只取消授权不提示失败', async () => {
-  const subject=harness(),verifying=subject.page.verifyPhone()
+test('个人资料正常打开手机号门槛，关闭只取消授权不提示失败', async () => {
+  const subject=harness('profile'),verifying=subject.page.verifyPhone()
   subject.take('/me').resolve({...accountA,phone_verified:false});await flush()
   assert.equal(subject.phone.phoneGate.visible,true)
   subject.phone.finishPhone(false)
@@ -296,4 +296,9 @@ test('首次资料弹层依据服务端注册标记，旧响应和退出不会�
   const registering=subject.store.wechatLogin('register-ticket',{agreed:true});subject.take('/auth/wechat','POST').resolve({token:'register-token',user:{...accountA},first_login:true});await registering
   assert.equal(subject.store.lastLoginWasNew.value,true)
   subject.store.clearSession();assert.equal(subject.store.lastLoginWasNew.value,false)
+})
+
+test('个人简介保存只修剪首尾，内部换行和空行按原文提交',async()=>{
+  const s=harness('profile'),reading=s.page.load();await flush();s.take('/me').resolve({...accountA});await reading
+  s.page.form.bio='  第一行介绍\n\n第二行时段  ';const saving=s.page.saveProfile(),writing=s.take('/me/profile','PATCH');assert.equal(writing.body.bio,'第一行介绍\n\n第二行时段');writing.resolve({...accountA,bio:writing.body.bio});await saving
 })

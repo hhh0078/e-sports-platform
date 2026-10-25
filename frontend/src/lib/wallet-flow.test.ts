@@ -8,6 +8,7 @@ import { reactive,ref,computed,watch,effectScope } from 'vue'
 import { executable,pageScript,injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest } from './sfc-test'
 import { parseWalletAmount } from './wallet'
+import { getUpdatePromptState } from './update-manager'
 
 /** 执行生产组合函数，只控制HTTP完成顺序和原生支付回调。 */
 function harness(t:TestContext){
@@ -60,12 +61,12 @@ test('钱包金额严格拒绝负数、指数、超额与多余小数',()=>{
 
 test('微信原生付款成功后仍须原单查单，不能直接增发余额',async t=>{
   const s=harness(t);s.hooks.show();await flush();s.page.open('balance');s.page.amount.value='10'
-  const first=s.page.submit();await flush();await s.page.submit();assert.equal(s.pending.length,1)
+  const first=s.page.submit();await flush();await s.page.submit();assert.equal(s.pending.length,1);assert.equal(getUpdatePromptState().financialBusy,true)
   s.take('/wallet/topups').resolve({payment:topup,mode:'wechat',pay_params:params});await flush()
   assert.equal(s.payments.length,1);assert.equal(s.page.wallet.value.recharge_cents,0)
-  s.payments[0].success();await flush();assert.equal(s.page.wallet.value.recharge_cents,0)
+  s.payments[0].success();await flush();assert.equal(s.page.wallet.value.recharge_cents,0);assert.equal(getUpdatePromptState().financialBusy,true,'原生付款回调结束后，原单查单仍须持锁')
   s.balance.recharge_cents=1000;s.take('/wallet/topups/topup-A/sync').resolve({...topup,status:'paid'});await first
-  assert.equal(s.page.wallet.value.recharge_cents,1000);assert.equal(s.page.operation.value,null)
+  assert.equal(s.page.wallet.value.recharge_cents,1000);assert.equal(s.page.operation.value,null);assert.equal(getUpdatePromptState().financialBusy,false)
 })
 
 test('充值请求未知时重复提交沿原请求号，失败保留输入',async t=>{
@@ -90,9 +91,9 @@ test('离开页面后迟到支付参数不弹付款页，原请求号可恢复',
 
 test('原生付款隐藏页面后仍用原账号查询，不靠隐藏状态误报失败',async t=>{
   const s=harness(t);s.hooks.show();await flush();s.page.open('balance');s.page.amount.value='10';const first=s.page.submit();await flush()
-  s.take('/wallet/topups').resolve({payment:topup,mode:'wechat',pay_params:params});await flush();s.hooks.hide();s.payments[0].success();await flush()
+  s.take('/wallet/topups').resolve({payment:topup,mode:'wechat',pay_params:params});await flush();s.hooks.hide();assert.equal(getUpdatePromptState().financialBusy,true);s.payments[0].success();await flush();assert.equal(getUpdatePromptState().financialBusy,true,'页面隐藏及原生回调不能提前释放完整任务')
   s.take('/wallet/topups/topup-A/sync').resolve({...topup,status:'paid'});await first
-  assert.equal(s.notices.length,0);s.hooks.show();await flush();assert.equal(s.page.operation.value,null)
+  assert.equal(s.notices.length,0);s.hooks.show();await flush();assert.equal(s.page.operation.value,null);assert.equal(getUpdatePromptState().financialBusy,false)
 })
 
 test('提现不能动用充值余额且实名只在达到门槛时发送',async t=>{

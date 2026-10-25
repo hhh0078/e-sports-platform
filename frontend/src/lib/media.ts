@@ -27,6 +27,10 @@ export const IMAGE_RULES: Record<ImagePurpose, ImageRule> = {
   game_cover: { label: '游戏封面 · 16:9', ratio: '16:9', width: 1280 },
   game_icon: { label: '游戏图标 · 1:1', ratio: '1:1', width: 256 },
   evidence: { label: '订单证据 · 保留完整图片比例', width: 1600 },
+  promotion_banner: { label: '运营轮播 · 16:9', ratio:'16:9',width:1280 },
+  announcement_image: { label: '公告图片 · 保留原比例，不裁剪',width:1280 },
+  article_cover: { label: '文章封面 · 16:9',ratio:'16:9',width:1280 },
+  article_image: { label: '文章插图 · 保留原比例',width:1280 },
 }
 const MAX_BYTES = 3 * 1024 * 1024
 /** 将单次官方媒体操作转换为 Promise，并标记主动取消。 */

@@ -24,7 +24,7 @@ function harness(module: Module, role = 'admin') {
     onLoad: (callback: PageLifecycle['load']) => { lifecycle.load = callback }, onShow: (callback: () => void) => { lifecycle.show = callback }, onHide: (callback: () => void) => { lifecycle.hide = callback }, onUnload: (callback: () => void) => { lifecycle.unload = callback },
   })
   injectBusinessAPIs(context); vm.runInContext(executable(storeSource) + '\nglobalThis.store = { state, login }', context); context.store.state.user = { id: 'A', role }; context.store.state.ready = true
-  const exposed = { users: 'users, toggleUser, confirming', services: 'services, review, status, chooseStatus', clubs: 'clubs, review, status, chooseStatus, openClub', orders: 'orders, refundOnly, chooseFilter, refundName' }[module]
+  const exposed = { users: 'users, openUser', services: 'services, review, status, chooseStatus', clubs: 'clubs, review, status, chooseStatus, openClub', orders: 'orders, refundOnly, chooseFilter, refundName' }[module]
   scope.run(() => vm.runInContext(executable(resourceSource) + '\n' + executable(pageScript('manage/' + module + '.vue')) + '\nglobalThis.page = { loadData, ' + exposed + ' }', context))
   return { page: context.page, store: context.store, requests, notices, dialogs, navigations, lifecycle, scope,
     /** 取得最新未消费请求，避免账号轮换期间误拿更早读取。 */
@@ -64,18 +64,12 @@ test('订单refund深链与切换使用后端售后过滤，不新增前端局�
   assert.equal(subject.page.refundName('processing'), '退款通道处理中'); assert.equal(subject.page.refundName('approved'), '退款完成'); subject.scope.stop()
 })
 
-test('冻结操作必须确认且禁止冻结自己，重复点击只出现一次弹框', async () => {
-  const subject = harness('users'); await load(subject, '/admin/users?limit=20&offset=0')
-  await subject.page.toggleUser({ id: 'A', status: 'active' }); assert.equal(subject.dialogs.length, 0)
-  const cancelled = subject.page.toggleUser({ id: 'target', nickname: '目标用户', status: 'active' }); await subject.page.toggleUser({ id: 'target', status: 'active' }); assert.equal(subject.dialogs.length, 1); subject.dialogs[0].resolve({ confirm: false }); await cancelled; assert.equal(subject.requests.filter(item => item.method === 'PATCH').length, 0)
-  const saving = subject.page.toggleUser({ id: 'target', nickname: '目标用户', status: 'active' }); subject.dialogs[1].resolve({ confirm: true }); await flush(); const write = subject.take('/admin/users/target', 'PATCH'); assert.equal(write.body.status, 'frozen'); write.resolve({ id: 'target' }); await flush(); subject.take('/admin/users?limit=20&offset=0').resolve([]); await saving
-  assert.equal(subject.page.confirming.value, false); subject.scope.stop()
+test('用户列表只显示安全摘要并进入真实详情，不直接冻结或授予权限',async()=>{
+  const subject=harness('users');await load(subject,'/admin/users?limit=20&offset=0',[{id:'target A',nickname:'目标用户'}]);subject.page.openUser({id:'target A'});assert.deepEqual(subject.navigations,['/pages/manage/users/detail?id=target%20A']);assert.equal(subject.requests.filter(item=>item.method!=='GET').length,0);assert.equal(subject.dialogs.length,0);subject.scope.stop()
 })
 
-test('旧冻结弹框在离开再返回后确认，也不能执行原操作', async () => {
-  const subject = harness('users'); await load(subject, '/admin/users?limit=20&offset=0'); const pending = subject.page.toggleUser({ id: 'target', status: 'active' })
-  subject.lifecycle.hide(); await load(subject, '/admin/users?limit=20&offset=0'); subject.dialogs[0].resolve({ confirm: true }); await pending
-  assert.equal(subject.requests.filter(item => item.method === 'PATCH').length, 0); assert.equal(subject.page.confirming.value, false); subject.scope.stop()
+test('隐藏或已清空旧列表不能用旧用户行打开详情',async()=>{
+  const subject=harness('users');await load(subject,'/admin/users?limit=20&offset=0',[{id:'target'}]);subject.lifecycle.hide();subject.page.openUser({id:'target'});assert.deepEqual(subject.navigations,[]);subject.scope.stop()
 })
 
 test('玩家和俱乐部管理员不能读取或审核平台资源', async t => {
@@ -83,7 +77,7 @@ test('玩家和俱乐部管理员不能读取或审核平台资源', async t => 
     const subject = harness(module, role); subject.lifecycle.show(); await flush()
     if (module === 'services') await subject.page.review('service-A', 'active')
     if (module === 'clubs') await subject.page.review({ id: 'club-A' }, 'active', true)
-    if (module === 'users') await subject.page.toggleUser({ id: 'target', status: 'active' })
+    if (module === 'users') subject.page.openUser({ id: 'target', status: 'active' })
     assert.equal(subject.requests.length, 0); assert.equal(subject.dialogs.length, 0); subject.scope.stop()
   })
 })

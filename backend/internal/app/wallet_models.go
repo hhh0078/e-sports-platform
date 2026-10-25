@@ -70,6 +70,8 @@ type WalletTopup struct {
 
 // WalletWithdrawal 先冻结服务收入，再由已核验的官方转账终态扣除或解冻；充值余额不能提现。
 type WalletWithdrawal struct {
+	// RequestedBy 保存真实申请操作者，俱乐部副管理员操作不替换原负责人收款身份。
+	RequestedBy    string         `json:"requested_by,omitempty"`
 	AccountID      string         `json:"account_id,omitempty"`
 	AccountType    string         `json:"account_type"`
 	ClubID         string         `json:"club_id,omitempty"`

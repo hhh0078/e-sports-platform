@@ -2,9 +2,10 @@
 import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import ts from 'typescript'
-import { ref } from 'vue'
+import { ref,nextTick } from 'vue'
 import { newWalletRequestID } from './wallet'
 import type { NativePageRefreshOptions } from './native-page-refresh'
+import { beginFinancialActivity } from './update-manager'
 /** 测试中等待明确返回的真实业务请求。 */
 export interface DeferredRequest { path: string; method: string; body: Record<string, unknown>; resolve: (value: unknown) => void; reject: (error?: unknown) => void; taken: boolean }
 /** 测试中等待原生图片选择完成的上传。 */
@@ -27,6 +28,13 @@ export function injectBusinessAPIs(context: vm.Context): void {
   context.onShareAppMessage ??= () => {}
   context.onShareTimeline ??= () => {}
   context.defineExpose ??= () => {}
+  context.getCurrentInstance ??= () => null
+  context.useViewportWidth ??= () => ref(390)
+  context.publicContent ??= ref(null)
+  context.nextTick ??= nextTick
+  context.onMounted ??= () => {}
+  context.onBeforeUnmount ??= () => {}
+  context.beginFinancialActivity ??= beginFinancialActivity
   context.uni ??= {}
   context.uni.stopPullDownRefresh ??= () => {}
   // 旧页面夹具只存一个生命周期，原生适配本身由native-page-refresh.test执行真实实现。
@@ -40,7 +48,8 @@ export function injectBusinessAPIs(context: vm.Context): void {
   context.errorMessage = (error: unknown) => typeof error === 'object' && error !== null ? 'message' in error ? String(error.message) : 'errMsg' in error ? String(error.errMsg) : '操作失败，请重试' : String(error || '操作失败，请重试')
   context.errorStatus = (error: unknown) => typeof error === 'object' && error !== null && 'status' in error ? error.status : undefined
   context.isCancelled = (error: unknown) => typeof error === 'object' && error !== null && 'cancelled' in error && error.cancelled === true
-  for (const name of ['auth', 'games', 'services', 'users', 'orders', 'clubs', 'admin', 'wallet', 'messages', 'ai', 'finance']) vm.runInContext(executable(readFileSync(new URL('../api/' + name + '.api.ts', import.meta.url), 'utf8')), context)
+  for (const name of ['auth', 'games', 'services', 'users', 'orders', 'clubs', 'admin', 'wallet', 'messages', 'ai', 'finance', 'management']) vm.runInContext(executable(readFileSync(new URL('../api/' + name + '.api.ts', import.meta.url), 'utf8')), context)
   vm.runInContext(executable(readFileSync(new URL('./finance.ts', import.meta.url), 'utf8')), context)
+  vm.runInContext(executable(readFileSync(new URL('./management-permissions.ts', import.meta.url), 'utf8')), context)
   vm.runInContext('const revokeSession = signOut', context)
 }

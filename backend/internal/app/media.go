@@ -42,7 +42,7 @@ func validateImageDimensions(purpose string, width, height int) error {
 		if width < 128 || width > 2048 || width != height {
 			return fail(400, "客服二维码需裁剪为1:1，边长128至2048像素")
 		}
-	case "profile_cover", "club_cover":
+	case "profile_cover", "club_cover", "promotion_banner", "article_cover":
 		difference := width*9 - height*16
 		if width < 320 || height < 180 || width > 2560 || height > 1440 || difference < -16 || difference > 16 {
 			return fail(400, "封面需裁剪为 16:9，尺寸 320×180 至 2560×1440 像素")
@@ -50,6 +50,10 @@ func validateImageDimensions(purpose string, width, height int) error {
 	case "club_detail":
 		if width < 320 || width > 2560 || height < 160 || height > 8192 {
 			return fail(400, "详情图宽度需为 320 至 2560 像素，高度 160 至 8192 像素")
+		}
+	case "announcement_image", "article_image":
+		if width > 2560 || height > 8192 {
+			return fail(400, "图片保留原比例，宽度不得超过2560、高度不得超过8192像素")
 		}
 	default:
 		return fail(400, "图片用途不支持")
@@ -100,11 +104,11 @@ func (a *App) uploadImage(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	purpose, clubID := r.URL.Query().Get("purpose"), r.URL.Query().Get("club_id")
-	if !contains([]string{"avatar", "profile_cover", "club_cover", "club_detail", "support_qr", "club_contact_qr"}, purpose) {
+	if !contains([]string{"avatar", "profile_cover", "club_cover", "club_detail", "support_qr", "club_contact_qr", "promotion_banner", "announcement_image", "article_cover", "article_image"}, purpose) {
 		return nil, fail(400, "图片用途不支持")
 	}
-	if purpose == "support_qr" && u.Role != "admin" {
-		return nil, fail(403, "仅平台管理员可上传平台客服二维码")
+	if contains([]string{"support_qr", "promotion_banner", "announcement_image", "article_cover", "article_image"}, purpose) && u.Role != "admin" {
+		return nil, fail(403, "仅平台管理员可上传此类公共图片")
 	}
 	if clubID != "" {
 		if !contains([]string{"club_cover", "club_detail", "club_contact_qr"}, purpose) {

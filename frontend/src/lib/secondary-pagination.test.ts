@@ -8,7 +8,7 @@ import type {DeferredRequest,PageLifecycle} from './sfc-test'
 import type {NativePageRefreshOptions} from './native-page-refresh'
 
 /** 仅替换网络和原生页面边界，分页、合并及失效判断均运行生产实现。 */
-function harness(kind:'service'|'player'|'club'){
+function harness(kind:'service'|'player'|'club',preview=false){
   const requests:DeferredRequest[]=[],native:{options?:NativePageRefreshOptions}={},scope=effectScope()
   const lifecycle:PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
   const state=reactive({user:{id:'viewer',role:'user'},games:[],gameId:'delta',ready:true})
@@ -18,12 +18,12 @@ function harness(kind:'service'|'player'|'club'){
     api:(path:string,method='GET',body={})=>new Promise((resolve,reject)=>requests.push({path,method,body,resolve,reject,taken:false})),notify:()=>{},
   })
   injectBusinessAPIs(context)
-  const route=kind==='service'?'services/detail.vue':kind==='player'?'community/players/detail.vue':'community/clubs/detail.vue'
-  const exposed=kind==='service'?'service,reviews,reviewsMore,load,retryFailed,quantity,requirements':kind==='player'?'profile,services,hasMore,load,retryFailed':'club,services,serviceMore,members,canManage,load,retryFailed,tab,visibleCertifiedMembers,visibleMembers,orders,loadOrders'
+  const route=kind==='service'?(preview?'services/detail.vue':'services/reviews.vue'):kind==='player'?'community/players/detail.vue':'community/clubs/detail.vue'
+  const exposed=kind==='service'?(preview?'service,reviews,load,retryFailed,quantity,requirements':'service,reviews,reviewsMore,load,retryFailed'):kind==='player'?'profile,services,hasMore,load,retryFailed':'club,services,serviceMore,members,canManage,load,retryFailed,tab,visibleCertifiedMembers,visibleMembers,orders,loadOrders'
   scope.run(()=>vm.runInContext(executable(pageScript(route))+'\nglobalThis.page={'+exposed+'}',context))
   return{page:context.page,native,lifecycle,scope,requests,
     /** 取真实发出的分页地址，缺少或者重复消费均失败。 */
-    take(offset=0){const prefix=kind==='service'?'/services/target':kind==='player'?'/players/target':'/clubs/target',path=prefix+'?limit=20&offset='+offset,item=requests.find(row=>!row.taken&&row.path===path);assert.ok(item,'缺少请求 '+path);item.taken=true;return item},
+    take(offset=0){const prefix=kind==='service'?'/services/target':kind==='player'?'/players/target':'/clubs/target',path=prefix+'?limit='+(preview?3:20)+'&offset='+offset,item=requests.find(row=>!row.taken&&row.path===path);assert.ok(item,'缺少请求 '+path);item.taken=true;return item},
     /** 使用服务端返回形状建立公开业务对象，不从展示数量推算偏移。 */
     result(rows:Array<{id:string;status?:string}>){return kind==='service'?{id:'target',status:'active',reviews:rows}:kind==='player'?{profile:{id:'target',nickname:'玩家'},services:rows,clubs:[]}:{club:{id:'target',game_ids:['delta']},services:rows,members:[],can_manage:true}},
     /** 读取不同页面的实际列表以共同验证公开分页契约。 */
@@ -42,7 +42,7 @@ for(const kind of ['service','player','club'] as const){
     const firstRetry=s.page.retryFailed();await flush();s.take().resolve(s.result(batch(0)));await firstRetry;assert.equal(s.rows().length,20)
     const more=s.native.options?.more?.();await flush();s.take(20).reject(new Error('追加网络失败'));await more
     const secondRetry=s.page.retryFailed();await flush();s.take(20).resolve(s.result(batch(20,2)));await secondRetry;assert.equal(s.rows().length,22)
-    const route=kind==='service'?'services/detail.vue':kind==='player'?'community/players/detail.vue':'community/clubs/detail.vue'
+    const route=kind==='service'?'services/reviews.vue':kind==='player'?'community/players/detail.vue':'community/clubs/detail.vue'
     const source=pageScript(route);assert.ok(source.includes('async function retryFailed'))
   })
   test(kind+'公开列表按原始20条推进，去重不漏下一页且迟到追加不覆盖刷新',async t=>{
@@ -64,10 +64,10 @@ for(const kind of ['service','player','club'] as const){
   })
 }
 
-test('服务评价分页及下拉不改购买数量和需求草稿',async t=>{
-  const s=harness('service');t.after(()=>s.scope.stop());s.lifecycle.load({id:'target'});await flush();s.take().resolve(s.result(batch(0)));await flush();s.page.quantity.value=3;s.page.requirements.value='预约周六晚，先确认区服'
+test('服务详情前三条与下拉不改购买数量和需求草稿，触底不追加评价',async t=>{
+  const s=harness('service',true);t.after(()=>s.scope.stop());s.lifecycle.load({id:'target'});await flush();s.take().resolve(s.result(batch(0)));await flush();s.page.quantity.value=3;s.page.requirements.value='预约周六晚，先确认区服'
   const refreshing=s.native.options?.refresh();await flush();s.take().resolve(s.result(batch(20,1)));await refreshing
-  assert.equal(s.page.quantity.value,3);assert.equal(s.page.requirements.value,'预约周六晚，先确认区服')
+  assert.equal(s.page.quantity.value,3);assert.equal(s.page.requirements.value,'预约周六晚，先确认区服');assert.equal(s.native.options?.more,undefined);assert.ok(s.requests.every(item=>item.path.includes('limit=3&offset=0')))
 })
 
 test('俱乐部成员宫格触底只增量渲染已认证成员，不伪造服务端分页',async t=>{

@@ -120,15 +120,15 @@ async function compact(session: AuthSession, slug: string): Promise<void> {
   assert.equal(expected.spendable_cents, expected.available_cents + expected.recharge_cents, '账户合计与收入/充值分区不符')
   const main = await until(() => view.$('.wallet-main-value'), '账户余额')
   await until(async () => (await main.text()) === '¥' + (expected.spendable_cents / 100).toFixed(2), '个人中心真实账户合计')
-  assert.equal(await (await until(() => view.$('.wallet-caption'), '账户合计标题')).text(), '账户余额')
-  assert.equal(await (await until(() => view.$('.wallet-balance-note'), '可提现限制说明')).text(), '其中可提现 ¥' + (expected.available_cents / 100).toFixed(2) + '，充值仅用于消费')
+  assert.equal(await view.$('.wallet-caption'),null,'个人中心钱包去标题')
+  assert.equal(await view.$('.wallet-balance-note'),null,'个人中心不重复说明，钱包详情保留充值限制')
   const card = await until(() => view.$('.me-wallet'), '钱包卡'), area = await rect(card), parts = await view.$$('.wallet-item') as Element[]
   assert.ok(area.height <= 170, '个人中心钱包卡过高：' + area.height); assert.equal(parts.length, 3)
   for (const [index, key] of (['ongoing_cents', 'settling_cents', 'withdrawal_frozen_cents'] as const).entries()) { const amount = expected[key]; assert.ok(typeof amount === 'number'); assert.ok((await parts[index].text()).includes('¥' + (amount / 100).toFixed(2))) }
-  await within([view], '.me-wallet'); await within([view], '.wallet-available'); await within([view], '.wallet-balance-note')
+  await within([view], '.me-wallet'); await within([view], '.wallet-heading'); await within([view], '.wallet-main-value')
   assert.equal(await view.$('.wallet-recharge'), null, '账户合计下不再重复显示充值金额行')
   if (session.user.role !== 'admin') assert.doesNotMatch(await view.text(), /支付配置|商户配置|平台管理中心/)
-  await record(slug + '个人中心钱包≤170px，合计账户余额、可提现说明和三类在途资金清晰', 'me-' + slug)
+  await record(slug + '个人中心钱包≤170px，左侧账户总额、相邻箭头和三类在途资金清晰', 'me-' + slug)
 }
 /** 取得资金表单、共享 FinancePopup 和官方 UniPopup 的真实组件实例。 */
 async function popup(page: Page, form = true, ruleScope?: Element): Promise<{ scopes: Array<Page | Element>; finance: Element; native: Element; sheet: Element }> {

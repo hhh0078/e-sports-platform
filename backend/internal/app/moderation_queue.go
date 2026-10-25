@@ -176,7 +176,7 @@ func putWithReview(ctx context.Context, q querier, table, id string, value any, 
 
 // reviewedTable 将审核钩子限定于真实图文业务表，资金事实不进入审核模块。
 func reviewedTable(table string) bool {
-	return contains([]string{"users", "services", "clubs", "members", "orders", "messages", "reviews", "evidence", "order_adjustments", "settings", "games", "inbox"}, table)
+	return contains([]string{"articles", "users", "services", "clubs", "members", "orders", "messages", "reviews", "evidence", "order_adjustments", "settings", "games", "inbox"}, table)
 }
 
 // enqueueReviewField 创建带当前版本、归属与图片摘要的任务，任务持久失败会回滚本次业务保存。

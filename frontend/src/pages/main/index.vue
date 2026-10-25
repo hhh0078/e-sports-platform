@@ -7,10 +7,12 @@
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
 			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll main-scroll-safe" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'worker' }" :refresher-enabled="mainNavigation.tab==='worker'" :refresher-triggered="refreshing.worker" refresher-background="transparent" refresher-default-style="white" @refresherrefresh="runGesture('worker','refresh')" @scrolltolower="runGesture('worker','more')">
+				<ContentTip class="main-content-tip" :tip="publicContent?.page_tips.worker"/>
 				<WorkerView ref="workerView" :active="mainNavigation.tab === 'worker'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
 			<scroll-view scroll-y :show-scrollbar="false" class="main-scroll main-scroll-safe" :class="{ 'main-scroll-inactive': mainNavigation.tab !== 'orders' }" :refresher-enabled="mainNavigation.tab==='orders'" :refresher-triggered="refreshing.orders" refresher-background="transparent" refresher-default-style="white" @refresherrefresh="runGesture('orders','refresh')" @scrolltolower="runGesture('orders','more')">
+				<ContentTip class="main-content-tip" :tip="publicContent?.page_tips.orders"/>
 				<OrdersView ref="ordersView" :active="mainNavigation.tab === 'orders'" />
 				<TechSupportFooter @open="supportOpen=true" />
 			</scroll-view>
@@ -22,6 +24,7 @@
 		<BottomNav v-if="!timelinePreview" :active="mainNavigation.tab" @change="selectMainTab" />
 		<PhoneVerification />
 		<TechSupportDialog :open="supportOpen" @close="supportOpen=false" />
+		<HomeAnnouncement v-if="!timelinePreview" :active="mainPageActive&&mainNavigation.tab==='player'" :announcement="publicContent?.announcement"/>
 	</view>
 </template>
 <script setup lang="ts">
@@ -31,6 +34,9 @@
 	import PhoneVerification from '../../components/PhoneVerification.vue'
 	import TechSupportFooter from '../../components/TechSupportFooter.vue'
 	import TechSupportDialog from '../../components/TechSupportDialog.vue'
+	import ContentTip from '../../components/ContentTip.vue'
+	import HomeAnnouncement from '../../components/HomeAnnouncement.vue'
+	import { publicContent,refreshPublicContent,resetPublicContent } from '../../lib/public-content'
 	import PlayerView from './player/player.vue'
 	import WorkerView from './worker/worker.vue'
 	import OrdersView from './orders/orders.vue'
@@ -49,6 +55,7 @@
 	const refreshing=ref<Record<MainTab,boolean>>({player:false,worker:false,orders:false,me:false})
 	const gestureLocks=new Map<MainTab,number>()
 	let pageVisible=false,gestureSequence=0
+	const mainPageActive=ref(false)
 	/** 清理原生刷新显示和旧请求锁，迟到finally不能关闭下一轮新刷新。 */
 	function clearGestures():void{gestureSequence++;gestureLocks.clear();for(const tab of ['player','worker','orders','me'] as const)refreshing.value[tab]=false}
 	/** 在原生事件处串行化当前容器动作，隐藏、换号、切主题后只允许最新finally恢复状态。 */
@@ -60,9 +67,10 @@
 		try{await action()}catch(error){if(pageVisible&&mainNavigation.tab===tab&&gestureLocks.get(tab)===sequence)notify(error)}finally{if(gestureLocks.get(tab)===sequence){gestureLocks.delete(tab);refreshing.value[tab]=false}}
 	}
 	watch([()=>mainNavigation.tab,()=>state.user?.id,sessionRevision,()=>state.gameId,()=>playerView.value?.refreshKey,()=>workerView.value?.refreshKey,()=>ordersView.value?.refreshKey],clearGestures,{flush:'sync'})
-	onShow(()=>{enablePublicShareMenu();pageVisible=true})
-	onHide(()=>{pageVisible=false;clearGestures()})
-	onUnload(()=>{pageVisible=false;clearGestures()})
+	onShow(()=>{enablePublicShareMenu();pageVisible=true;mainPageActive.value=true;void init(false,isTimelinePreview()).then(refreshPublicContent).catch(()=>{})})
+	onHide(()=>{pageVisible=false;mainPageActive.value=false;clearGestures()})
+	onUnload(()=>{pageVisible=false;mainPageActive.value=false;clearGestures()})
+	watch(()=>state.gameId,()=>{resetPublicContent();if(pageVisible)void refreshPublicContent().catch(()=>{})})
 
 	const timelinePreview = isTimelinePreview()
 	const safe = readSafeArea()
@@ -120,4 +128,5 @@
 		top: var(--status-bar-height, 0px);
 		height: calc(100% - var(--status-bar-height, 0px))
 	}
+	.main-content-tip{margin:0 30.7692rpx 23.0769rpx}
 </style>

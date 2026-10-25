@@ -15,17 +15,14 @@
 						<view class="profile-name-row"><text
 								class="profile-name">{{ state.user?.nickname||'登录后查看' }}</text>
 							<Icon name="arrow" :size="12" />
-						</view><text
-							class="profile-bio">{{ state.user?.bio||(state.user?'认真游戏，快乐同行':'登录后管理服务与订单') }}</text>
+						</view><button v-if="state.user" class="profile-id" aria-label="复制用户ID" @click.stop="copyUserID"><text class="profile-id-value">ID: {{ state.user.id }}</text><Icon name="copy" :size="12"/></button><text v-else class="profile-bio">登录后管理服务与订单</text>
 					</view>
 				</view>
 			</view>
 		</view>
+		<ContentTip :tip="publicContent?.page_tips.me"/>
 		<view class="orders-section">
-			<view class="panel-heading"><text>我的订单</text><button class="all-orders-entry"
-					@click="protectedGo('/pages/main/index?tab=orders&role=buyer')">全部
-					<Icon name="arrow" :size="12" />
-				</button></view>
+
 			<view class="order-shortcuts"><button class="order-shortcut" v-for="item in orderLinks" :key="item.status"
 					@click="protectedGo('/pages/main/index?tab=orders&role=buyer&status='+item.status)">
 					<view class="order-icon-wrap">
@@ -35,13 +32,7 @@
 				</button></view>
 		</view>
 		<view class="me-wallet" @click="protectedGo('/pages/account/wallet')">
-			<view class="wallet-heading">
-				<Icon name="wallet" :size="21" /><text class="wallet-heading-title">我的钱包</text>
-				<view class="wallet-available"><text class="wallet-caption">账户余额</text><text
-						class="wallet-main-value">{{ walletAmount('spendable_cents') }}</text></view>
-				<Icon name="arrow" :size="13" />
-			</view>
-			<text class="wallet-balance-note">其中可提现 {{ walletAmount('available_cents') }}，充值仅用于消费</text>
+			<view class="wallet-heading"><text class="wallet-main-value">{{ walletAmount('spendable_cents') }}</text><Icon name="arrow" :size="13"/></view>
 			<view class="wallet-amounts">
 				<view class="wallet-item"><text>进行中</text><text
 						class="wallet-item-value">{{ walletAmount('ongoing_cents') }}</text></view>
@@ -52,38 +43,19 @@
 			</view>
 			<text v-if="walletError" class="wallet-error">{{ walletError }}</text>
 		</view>
-		<view class="space-grid"><button class="space-entry" @click="openIdentity">
-				<Icon name="user" :size="25" />
-				<view class="space-copy"><text class="space-title">我的主页</text><text class="space-detail">展示你的游戏生涯</text>
-				</view>
-				<Icon class="space-arrow" name="arrow" :size="13" />
-			</button><button class="space-entry space-club" @click="protectedGo('/pages/community/clubs/index?mine=1')">
-				<Icon name="club" :size="25" />
-				<view class="space-copy"><text class="space-title">我的俱乐部</text><text class="space-detail">管理专属俱乐部</text>
-				</view>
-				<Icon class="space-arrow" name="arrow" :size="13" />
-			</button></view>
+
 
 		<view v-if="error" class="error-box"><text>{{ error }}</text><button class="text-btn"
 				@click="load()">重新加载</button></view>
 		<view class="menu-list">
-			<ContactSupport :active="props.active" /><button class="menu-item messages-entry"
+			<ContactSupport :active="props.active" menu /><button class="menu-item messages-entry"
 				@click="go('/pages/account/messages/index')">
 				<Icon name="bell" :size="22" /><text class="menu-label">消息中心</text>
 				<Icon name="arrow" :size="14" />
 			</button><button class="menu-item" @click="protectedGo('/pages/account/profile')">
 				<Icon name="user" :size="22" /><text class="menu-label">个人资料</text>
 				<Icon name="arrow" :size="14" />
-			</button><button class="menu-item" @click="verifyPhone">
-				<Icon name="phone" :size="22" /><text class="menu-label">手机号验证</text><text
-					class="menu-value">{{ state.user?.phone_verified?state.user.phone_masked||'已验证':'未验证' }}</text>
-				<Icon name="arrow" :size="14" />
-			</button><button class="menu-item" @click="go('/pages/account/agreements?type=user_agreement')">
-				<Icon name="orders" :size="22" /><text class="menu-label">用户协议</text>
-				<Icon name="arrow" :size="14" />
-			</button><button class="menu-item" @click="go('/pages/account/agreements?type=privacy_policy')">
-				<Icon name="shield" :size="22" /><text class="menu-label">隐私政策</text>
-				<Icon name="arrow" :size="14" />
+			</button><button class="menu-item" @click="go('/pages/community/clubs/index')"><Icon name="club" :size="22"/><text class="menu-label">俱乐部中心</text><Icon name="arrow" :size="14"/></button><button class="menu-item" @click="go('/pages/content/articles/index')"><Icon name="orders" :size="22"/><text class="menu-label">文章中心</text><Icon name="arrow" :size="14"/></button><button class="menu-item" @click="go('/pages/account/agreements')"><Icon name="shield" :size="22"/><text class="menu-label">协议与隐私</text><Icon name="arrow" :size="14"/>
 			</button><button v-if="state.user?.role==='admin'" class="menu-item" @click="go('/pages/manage/index')">
 				<Icon name="settings" :size="22" /><text class="menu-label">平台管理中心</text>
 				<Icon name="arrow" :size="14" />
@@ -98,12 +70,13 @@
 	import { ref, watch } from 'vue'
 	import Icon from '../../../components/Icon.vue'
 	import ContactSupport from '../../../components/ContactSupport.vue'
+	import ContentTip from '../../../components/ContentTip.vue'
+	import { publicContent } from '../../../lib/public-content'
 	import { state, game, init, clearSession, sessionRevision } from '../../../lib/store'
 	import { token, errorMessage, errorStatus } from '../../../api/client'
 	import { getMe, getMyStats } from '../../../api/users.api'
 	import { getWallet } from '../../../api/wallet.api'
 	import type { Wallet } from '../../../types/wallet'
-	import { requirePhone } from '../../../lib/phone'
 	import { go, notify, assetUrl } from '../../../lib/format'
 	import { useMainVisibility } from '../../../lib/navigation'
 	import type { UserStats } from '../../../types/models'
@@ -128,8 +101,8 @@
 	function protectedGo(target : string) : boolean { if (!state.user) { go('/pages/account/login?next=' + encodeURIComponent(target)); return false } go(target); return true }
 	/** 点击头像查看本人公开名片。 */
 	function openIdentity() : void { protectedGo(state.user ? '/pages/community/players/detail?id=' + encodeURIComponent(state.user.id) : '/pages/main/index?tab=me') }
-	/** 主动验证手机号，授权拒绝不绕过交易门槛。 */
-	async function verifyPhone() : Promise<void> { if (!state.user) { protectedGo('/pages/main/index?tab=me'); return } if (state.user.phone_verified) { notify('已验证 ' + (state.user.phone_masked || '手机号')); return } const session = currentSession(); try { await requirePhone() } catch (err) { if (visible && sameSession(session)) notify(err) } }
+	/** 复制公开用户ID；切号或离页后不向其他身份显示旧操作结果。 */
+	function copyUserID():void{const userID=state.user?.id;if(!userID)return;const session=currentSession();uni.setClipboardData({data:userID,success(){if(visible&&sameSession(session))notify('用户ID已复制')},fail(err){if(visible&&sameSession(session))notify(err)}})}
 	/** 刷新个人资料和真实统计，保留隐藏及跨账号竞态保护。 */
 	async function load(preserve=false) : Promise<void> {
 		const version = preserve?++loadVersion:invalidateLoad(); let session : ReturnType<typeof currentSession> | undefined; error.value = ''
@@ -158,7 +131,7 @@
 		min-height: 323.0769rpx;
 		box-sizing: border-box;
 		margin: 0 -30.7692rpx;
-		padding: max(30.7692rpx, calc(var(--status-bar-height, 0px) + var(--capsule-space, 44px) - 23.0769rpx)) 30.7692rpx 23.0769rpx;
+		padding: max(30.7692rpx, calc(var(--status-bar-height, 0px) + var(--capsule-space, 44px) - 42.3077rpx)) 30.7692rpx 23.0769rpx;
 		overflow: hidden;
 		background: var(--bg)
 	}
@@ -253,70 +226,17 @@
 		overflow-wrap: anywhere
 	}
 
-	.stats-row {
-		position: relative;
-		z-index: 2;
-		display: flex;
-		margin-top: 38.4615rpx;
-		padding: 0
-	}
 
-	.profile-stat {
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		align-items: center;
-		gap: 7.6923rpx;
-		min-width: 0;
-		border-right: 1px solid #ffffff16
-	}
 
-	.profile-stat:last-child {
-		border-right: 0
-	}
 
-	.profile-stat-value {
-		color: var(--accent);
-		font-size: 42.3077rpx;
-		font-weight: 650;
-		line-height: 53.8462rpx;
-		font-variant-numeric: tabular-nums
-	}
 
-	.profile-stat-label {
-		font-size: 21.1538rpx;
-		line-height: 32.6923rpx;
-		color: #c1cdc5;
-		white-space: nowrap
-	}
 
 	.orders-section {
 		padding: 15.3846rpx 0 30.7692rpx;
 		border-bottom: 1px solid var(--line-subtle)
 	}
 
-	.panel-heading {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 23.0769rpx;
-		min-height: 69.2308rpx;
-		font-size: 28.8462rpx;
-		font-weight: 650
-	}
 
-	.all-orders-entry {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 5.7692rpx;
-		min-height: 53.8462rpx;
-		padding: 0;
-		background: transparent;
-		color: var(--muted);
-		font-size: 19.2308rpx;
-		font-weight: 400
-	}
 
 	.order-shortcuts {
 		display: flex;
@@ -338,104 +258,17 @@
 		line-height: 34.6154rpx
 	}
 
-	.space-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		padding: 30.7692rpx 0;
-		border-bottom: 1px solid var(--line-subtle)
-	}
 
-	.space-entry {
-		display: flex;
-		align-items: center;
-		gap: 15.3846rpx;
-		min-width: 0;
-		min-height: 44px;
-		padding: 0 23.0769rpx 0 0;
-		border: 0;
-		border-radius: 0;
-		background: transparent;
-		color: var(--accent)
-	}
 
-	.space-club {
-		padding: 0 0 0 30.7692rpx;
-		border-left: 1px solid var(--line-subtle)
-	}
 
-	.space-copy {
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		gap: 7.6923rpx;
-		text-align: left;
-		min-width: 0
-	}
 
-	.space-title {
-		font-size: 25rpx;
-		font-weight: 650;
-		line-height: 38.4615rpx;
-		color: var(--text);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap
-	}
 
-	.space-detail {
-		font-size: 19.2308rpx;
-		line-height: 30.7692rpx;
-		color: var(--muted);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap
-	}
 
-	.space-arrow {
-		color: var(--muted)
-	}
 
-	.provider-row {
-		display: flex;
-		align-items: center;
-		gap: 23.0769rpx;
-		min-height: 130.7692rpx;
-		padding: 23.0769rpx 0;
-		border-bottom: 1px solid var(--line-subtle);
-		color: #d0ded4
-	}
 
-	.provider-copy {
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		gap: 5.7692rpx;
-		min-width: 0
-	}
 
-	.provider-title {
-		font-size: 25rpx;
-		font-weight: 650;
-		line-height: 38.4615rpx;
-		color: var(--text)
-	}
 
-	.provider-detail {
-		font-size: 19.2308rpx;
-		line-height: 32.6923rpx;
-		color: var(--muted)
-	}
 
-	.provider-default {
-		display: flex;
-		align-items: center;
-		gap: 9.6154rpx;
-		flex-shrink: 0;
-		color: var(--accent);
-		font-size: 21.1538rpx;
-		line-height: 34.6154rpx;
-		white-space: nowrap
-	}
 
 	.menu-list {
 		min-width: 0
@@ -463,7 +296,7 @@
 	.menu-label {
 		flex: 1;
 		min-width: 0;
-		font-size: 25rpx;
+		font-size: 28.8462rpx;
 		color: var(--text)
 	}
 
@@ -525,28 +358,8 @@
 		font-weight: 650
 	}
 
-	.wallet-heading-title {
-		flex: 1;
-		min-width: 0;
-		white-space: nowrap
-	}
 
-	.wallet-available {
-		display: flex;
-		align-items: baseline;
-		justify-content: flex-end;
-		flex-wrap: wrap;
-		gap: 9.6154rpx;
-		min-width: 0;
-		max-width: 65%
-	}
 
-	.wallet-caption {
-		color: var(--muted);
-		font-size: 19.2308rpx;
-		line-height: 34.6154rpx;
-		font-weight: 400
-	}
 
 	.wallet-main-value {
 		max-width: 100%;
@@ -588,14 +401,6 @@
 		overflow-wrap: anywhere
 	}
 
-	.wallet-balance-note {
-		display: block;
-		margin-top: 3.8462rpx;
-		color: var(--muted);
-		font-size: 19.2308rpx;
-		line-height: 34.6154rpx;
-		overflow-wrap: anywhere
-	}
 
 	.wallet-error {
 		display: block;
@@ -627,29 +432,12 @@
 			font-size: 21.1538rpx
 		}
 
-		.space-entry {
-			gap: 13.4615rpx;
-			padding-right: 15.3846rpx
-		}
 
-		.space-club {
-			padding: 0 0 0 19.2308rpx
-		}
 
-		.space-title {
-			font-size: 23.0769rpx
-		}
 
-		.space-detail {
-			font-size: 17.3077rpx
-		}
 
-		.space-arrow {
-			display: none
-		}
 
-		.profile-stat-label {
-			font-size: 19.2308rpx
-		}
 	}
+
+.profile-id{display:flex;align-items:center;gap:11.5385rpx;max-width:100%;min-width:0;padding:0;background:transparent;color:#c1cdc5;font-size:23.0769rpx;line-height:34.6154rpx;text-align:left}.profile-id-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wallet-heading{justify-content:flex-start;color:var(--muted)}.order-shortcuts{padding-top:7.6923rpx}
 </style>

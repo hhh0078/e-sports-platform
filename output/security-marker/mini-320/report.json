@@ -1,0 +1,188 @@
+{
+  "file_purpose": "本地官方SDK只读保障角标验收",
+  "passed": true,
+  "coverage_completed": true,
+  "stage": "从所测卡片进入同一服务详情",
+  "width": 320,
+  "viewport": {
+    "pixelRatio": 2,
+    "safeArea": {
+      "top": 20,
+      "left": 0,
+      "right": 320,
+      "bottom": 568,
+      "width": 320,
+      "height": 548
+    },
+    "screenWidth": 320,
+    "screenHeight": 568,
+    "screenTop": 0,
+    "windowWidth": 320,
+    "windowHeight": 568,
+    "statusBarHeight": 20
+  },
+  "service": {
+    "id": "honor-service-4",
+    "provider_id": "worker",
+    "club_id": "shanhai",
+    "club_verified": true,
+    "platform_deposit_cents": 2340,
+    "club_deposit_cents": 25,
+    "label_count": 1
+  },
+  "checks": [
+    "公开主页卡片：三枚真实小盾牌<=30×34且贴右上，图标/形状/文字分层",
+    "公开卡片：已有1条文字与标题、标签、保障组无交叠",
+    "服务详情：平台/俱乐部押金金额与公开接口一致，标题/标签/文字无交叠"
+  ],
+  "measurements": [
+    {
+      "scene": "public-profile-card",
+      "frame": {
+        "left": 14,
+        "top": 80.8125,
+        "width": 142,
+        "height": 107.203125
+      },
+      "labels": [
+        {
+          "left": 22,
+          "top": 118.34375,
+          "width": 57,
+          "height": 18.9921875
+        }
+      ],
+      "system": {
+        ".service-title": {
+          "left": 20,
+          "top": 150.015625,
+          "width": 130,
+          "height": 14
+        },
+        ".service-tags": {
+          "left": 20,
+          "top": 167.015625,
+          "width": 130,
+          "height": 13
+        },
+        ".service-deposits": {
+          "left": 96,
+          "top": 80.8125,
+          "width": 60,
+          "height": 26
+        }
+      },
+      "markers": [
+        {
+          "label": "押金",
+          "rect": {
+            "left": 96,
+            "top": 80.8125,
+            "width": 19,
+            "height": 26
+          },
+          "shape": {
+            "left": 96,
+            "top": 80.8125,
+            "width": 19,
+            "height": 26
+          },
+          "icon": {
+            "left": 101.5,
+            "top": 83.8125,
+            "width": 8,
+            "height": 8
+          }
+        },
+        {
+          "label": "俱乐部",
+          "rect": {
+            "left": 115,
+            "top": 80.8125,
+            "width": 22,
+            "height": 26
+          },
+          "shape": {
+            "left": 115,
+            "top": 80.8125,
+            "width": 22,
+            "height": 26
+          },
+          "icon": {
+            "left": 122,
+            "top": 83.8125,
+            "width": 8,
+            "height": 8
+          }
+        },
+        {
+          "label": "认证",
+          "rect": {
+            "left": 137,
+            "top": 80.8125,
+            "width": 19,
+            "height": 26
+          },
+          "shape": {
+            "left": 137,
+            "top": 80.8125,
+            "width": 19,
+            "height": 26
+          },
+          "icon": {
+            "left": 142.5,
+            "top": 83.8125,
+            "width": 8,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "scene": "service-detail",
+      "frame": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 261.3515625
+      },
+      "labels": [
+        {
+          "left": 8,
+          "top": 68.09375,
+          "width": 100,
+          "height": 30.9921875
+        }
+      ],
+      "system": {
+        ".detail-title": {
+          "left": 13,
+          "top": 181.3515625,
+          "width": 294,
+          "height": 24
+        },
+        ".detail-labels": {
+          "left": 13,
+          "top": 209.3515625,
+          "width": 294,
+          "height": 18
+        },
+        ".detail-deposits": {
+          "left": 13,
+          "top": 231.3515625,
+          "width": 294,
+          "height": 19
+        }
+      }
+    }
+  ],
+  "exceptions": [],
+  "compatibility_warnings": [],
+  "uncovered": [],
+  "boundaries": [
+    "没有登录、创建服务、制造押金、支付或退款；只读取已有公开服务与页面。",
+    "仅证明所选已有服务及当前实际机型；不等同全部文字/位置矩阵或真实资金来源验收。",
+    "SDK证明节点几何、资源引用和独立图层；具体图案像素、黑金视觉和手机触感须结合原始截图或真机确认。"
+  ],
+  "completed_at": "2026-10-25T21:14:16.819Z"
+}

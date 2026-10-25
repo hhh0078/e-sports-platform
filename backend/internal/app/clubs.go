@@ -38,6 +38,9 @@ func (a *App) decorateClub(ctx context.Context, c Club) Club {
 
 // clubs 返回公开俱乐部或当前用户创建及申请挂靠的俱乐部。
 func (a *App) clubs(w http.ResponseWriter, r *http.Request) (any, error) {
+	if r.URL.Query().Get("managed") == "1" {
+		return a.managedClubs(w, r)
+	}
 	mine := r.URL.Query().Get("mine") == "1"
 	var u User
 	var err error
@@ -88,7 +91,14 @@ func (a *App) club(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	u, _ := a.actor(r)
-	manager := u.Role == "admin" || u.ID == c.OwnerID
+	manager, checkErr := canManageClub(r.Context(), a.DB, u, c)
+	if checkErr != nil {
+		return nil, checkErr
+	}
+	managementRole, checkErr := clubManagementRole(r.Context(), a.DB, u, c)
+	if checkErr != nil {
+		return nil, checkErr
+	}
 	if c.Status != "active" && !manager {
 		return nil, fail(404, "俱乐部尚未通过审核")
 	}
@@ -115,7 +125,7 @@ func (a *App) club(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"club": a.decorateClub(r.Context(), c), "members": out, "my_membership": my, "services": services, "can_manage": manager}, nil
+	return map[string]any{"club": a.decorateClub(r.Context(), c), "members": out, "my_membership": my, "services": services, "can_manage": manager, "management_role": managementRole, "can_manage_admins": canManageClubAdmins(u, c)}, nil
 }
 
 // validateClub 校验组织基本资料与游戏范围。
@@ -253,11 +263,17 @@ func (a *App) saveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 		if err = lockClubFinance(r.Context(), tx, id); err != nil {
 			return nil, err
 		}
+		u, err = lockManagementWriteActor(r.Context(), tx, u.ID)
+		if err != nil {
+			return nil, err
+		}
 		c, err = get[Club](r.Context(), tx, "clubs", id, true)
 		if err != nil {
 			return nil, err
 		}
-		if c.OwnerID != u.ID && u.Role != "admin" {
+		if allowed, permissionErr := canManageClub(r.Context(), tx, u, c); permissionErr != nil {
+			return nil, permissionErr
+		} else if !allowed {
 			return nil, fail(403, "只能管理自己的俱乐部")
 		}
 	}
@@ -354,7 +370,9 @@ func (a *App) clubManager(r *http.Request, u User, id string) (Club, error) {
 	if err != nil {
 		return c, err
 	}
-	if c.OwnerID != u.ID && u.Role != "admin" {
+	if allowed, permissionErr := canManageClub(r.Context(), a.DB, u, c); permissionErr != nil {
+		return c, permissionErr
+	} else if !allowed {
 		return c, fail(403, "无权管理此俱乐部")
 	}
 	return c, nil
@@ -459,6 +477,9 @@ func (a *App) leaveClub(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err = revokeClubDeputy(r.Context(), tx, c.ID, u.ID, u.ID); err != nil {
+		return nil, err
+	}
 	m.Status = "left"
 	if err = put(r.Context(), tx, "members", id, m); err != nil {
 		return nil, err
@@ -501,6 +522,10 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 	if err = lockClubFinance(r.Context(), tx, c.ID); err != nil {
 		return nil, err
 	}
+	u, err = lockManagementWriteActor(r.Context(), tx, u.ID, r.PathValue("user_id"))
+	if err != nil {
+		return nil, err
+	}
 	if in.Status == "active" {
 		if err = guardClubDeposit(r.Context(), tx, c.ID); err != nil {
 			return nil, err
@@ -511,7 +536,9 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 	if err != nil {
 		return nil, err
 	}
-	if c.OwnerID != u.ID && u.Role != "admin" {
+	if allowed, permissionErr := canManageClub(r.Context(), tx, u, c); permissionErr != nil {
+		return nil, permissionErr
+	} else if !allowed {
 		return nil, fail(403, "无权管理此俱乐部")
 	}
 	m, err := get[ClubMember](r.Context(), tx, "members", id, true)
@@ -538,6 +565,16 @@ func (a *App) moderateMember(w http.ResponseWriter, r *http.Request) (any, error
 		member, e := get[User](r.Context(), tx, "users", m.UserID, false)
 		if e != nil || member.Status != "active" {
 			return nil, fail(400, "该成员账号当前不可认证")
+		}
+	}
+	if in.Status != "active" {
+		if deputy, e := get[ClubDeputy](r.Context(), tx, "club_deputies", id, false); e == nil && deputy.Status == "active" && !canManageClubAdmins(u, c) {
+			return nil, fail(403, "副管理员不能通过移除成员撤销管理员")
+		} else if e != nil && !missing(e) {
+			return nil, e
+		}
+		if err = revokeClubDeputy(r.Context(), tx, c.ID, m.UserID, u.ID); err != nil {
+			return nil, err
 		}
 	}
 	m.Status = in.Status

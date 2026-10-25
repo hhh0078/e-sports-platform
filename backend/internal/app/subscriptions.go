@@ -73,7 +73,7 @@ func subscriptionSceneAllowed(ctx context.Context, q querier, userID, scene stri
 	}
 	if scene == "club_member" || scene == "club_dispute" {
 		var exists bool
-		err := q.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM clubs WHERE data->>'owner_id'=$1)`, userID).Scan(&exists)
+		err := q.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM clubs WHERE "+managedClubWhere("clubs", "$1")+")", userID).Scan(&exists)
 		return exists, err
 	}
 	return true, nil

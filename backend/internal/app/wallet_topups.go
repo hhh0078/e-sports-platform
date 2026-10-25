@@ -19,7 +19,13 @@ func (a *App) walletTopups(w http.ResponseWriter, r *http.Request) (any, error) 
 	if !length(clubID, 0, 128) || purpose != "" && !contains([]string{"balance", "deposit", "member_club", "club_platform"}, purpose) {
 		return nil, fail(400, "资金记录筛选条件无效")
 	}
-	// 组织筛选始终叠加本人归属，不开放其他成员的付款单或凭据。
+	if purpose == "club_platform" && clubID != "" {
+		if _, err = a.clubManager(r, u, clubID); err != nil {
+			return nil, err
+		}
+		return list[WalletTopup](r.Context(), a.DB, "wallet_topups", "WHERE data->>'club_id'=$1 AND data->>'purpose'='club_platform' AND (data->>'account_id'=$2 OR COALESCE(data->>'account_id','')='' AND data->>'user_id'=$3) ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $4 OFFSET $5", clubID, clubDepositAccount(clubID), u.ID, limit, offset)
+	}
+	// 其它用途继续叠加本人归属，绝不展示其它成员的消费充值和个人押金。
 	return list[WalletTopup](r.Context(), a.DB, "wallet_topups", "WHERE data->>'user_id'=$1 AND ($4='' OR data->>'club_id'=$4) AND ($5='' OR data->>'purpose'=$5) ORDER BY (data->>'created_at')::timestamptz DESC,id DESC LIMIT $2 OFFSET $3", u.ID, limit, offset, clubID, purpose)
 }
 
@@ -220,7 +226,12 @@ func (a *App) syncWalletTopup(w http.ResponseWriter, r *http.Request) (any, erro
 		return nil, err
 	}
 	if p.UserID != u.ID {
-		return nil, fail(403, "无权同步他人充值")
+		if p.Purpose != "club_platform" || p.ClubID == "" {
+			return nil, fail(403, "无权同步他人充值")
+		}
+		if _, err = a.clubManager(r, u, p.ClubID); err != nil {
+			return nil, err
+		}
 	}
 	if !a.Config.DevMode && p.Status == "pending_payment" {
 		c, e := a.loadWXPay()

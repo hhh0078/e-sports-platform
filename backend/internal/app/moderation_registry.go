@@ -171,6 +171,7 @@ func registeredReviewFields(table, id string, v map[string]any) []reviewField {
 		text("title", "平台消息标题")
 		text("body", "平台消息正文")
 	}
+	out = append(out, registeredPublicContentReviewFields(table, id, v)...)
 	for i := range out {
 		if out[i].Code == "unit" {
 			out[i].Replacement = "审核未通过"

@@ -13,7 +13,7 @@ import { parseWalletAmount } from './wallet'
 function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platform',summaryOnly=false){
   const storage=new Map<string,unknown>(),pending:DeferredRequest[]=[],notices:unknown[]=[],payments:Array<{resolve:()=>void;reject:(error:unknown)=>void}>=[]
   const hooks:PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
-  const state=reactive({user:{id:'user-A'},ready:true});let revision=0,bottom=()=>{}
+  const state=reactive({user:{id:'user-A'},ready:true});let revision=0,bottom=()=>{},clubOwner='user-A',confirmations=0
   const wallet={available_cents:10000,recharge_cents:0,pending_cents:0,ongoing_cents:0,settling_cents:0,withdrawal_frozen_cents:0,deposit_cents:0,deposit_refunding_cents:0,withdrawal_min_cents:1,dev_mode:true,currency:'CNY',settlement_hold_days:7}
   const deposits={platform:{amount_cents:100,refunding_cents:0,required_cents:10000,shortfall_cents:9900,qualified:false,can_manage:true},membership:{amount_cents:25,refunding_cents:0,required_cents:25}}
   const histories={entries:[] as unknown[],topups:[] as unknown[],refunds:[] as unknown[],withdrawals:[] as unknown[]}
@@ -21,11 +21,11 @@ function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platfor
   const context=vm.createContext({ref,reactive,computed,watch,state,onReachBottom:(callback:()=>void)=>{bottom=callback},init:async()=>{},sessionRevision:()=>revision,token:()=>state.user.id+'token',parseWalletAmount,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:unknown)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},
     requirePhone:async()=>true,go:()=>{},notify:(value:unknown)=>notices.push(value),
-    requestWechatPayment:()=>new Promise<void>((resolve,reject)=>payments.push({resolve,reject})),confirmWechatTransfer:async()=>{},
+    requestWechatPayment:()=>new Promise<void>((resolve,reject)=>payments.push({resolve,reject})),confirmWechatTransfer:async()=>{confirmations++},
     onLoad:(callback:PageLifecycle['load'])=>hooks.load=callback,onShow:(callback:()=>void)=>hooks.show=callback,onHide:(callback:()=>void)=>hooks.hide=callback,onUnload:(callback:()=>void)=>hooks.unload=callback,
     /** 资金写入与原单同步由用例逐个结束；读取返回明确组织归属。 */
     api(path:string,method='GET',body:Record<string,unknown>={}){
-      if(method==='GET'){reads.push(path);if(nextReadFailure&&path.startsWith(nextReadFailure)){nextReadFailure='';return Promise.reject(new Error('读取失败'))};const url=new URL(path,'https://test.local'),base=url.pathname,offset=Number(url.searchParams.get('offset')||0),limit=Number(url.searchParams.get('limit')||30);return Promise.resolve(base==='/clubs/club-A'?{club:{id:'club-A',name:'测试俱乐部'},can_manage:true,members:[],services:[],my_membership:null}:base.endsWith('/deposits')?deposits:base.endsWith('/wallet')?{...wallet}:(base.endsWith('/withdrawals')?histories.withdrawals:base.endsWith('/entries')?histories.entries:base==='/wallet/topups'?histories.topups:base==='/wallet/deposit-refunds'?histories.refunds:[]).slice(offset,offset+limit))}
+      if(method==='GET'){reads.push(path);if(nextReadFailure&&path.startsWith(nextReadFailure)){nextReadFailure='';return Promise.reject(new Error('读取失败'))};const url=new URL(path,'https://test.local'),base=url.pathname,offset=Number(url.searchParams.get('offset')||0),limit=Number(url.searchParams.get('limit')||30);return Promise.resolve(base==='/clubs/club-A'?{club:{id:'club-A',name:'测试俱乐部',owner_id:clubOwner},can_manage:true,members:[],services:[],my_membership:null}:base.endsWith('/deposits')?deposits:base.endsWith('/wallet')?{...wallet}:(base.endsWith('/withdrawals')?histories.withdrawals:base.endsWith('/entries')?histories.entries:base==='/wallet/topups'?histories.topups:base==='/wallet/deposit-refunds'?histories.refunds:[]).slice(offset,offset+limit))}
       return new Promise((resolve,reject)=>pending.push({path,method,body,resolve,reject,taken:false}))
     },
   })
@@ -36,7 +36,7 @@ function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platfor
     /** 挂载负责人资金或成员押金页的真实原生分页回调，复用当前资金模型。 */
     attachBottom(){scopeEffect.run(()=>{vm.runInContext(executable(readFileSync(new URL('./native-page-refresh.ts',import.meta.url),'utf8')),context);vm.runInContext('(function(useClubFunds){'+executable(pageScript('community/clubs/'+(scope==='club_platform'?'funds':'deposit')+'.vue'))+'})(()=>globalThis.page)',context)})},
     /** 触发页面实际注册的触底事件。 */
-    bottom(){bottom()},page:context.page,hooks,pending,storage,notices,payments,wallet,deposits,histories,reads,
+    bottom(){bottom()},get confirmations(){return confirmations},setClubOwner(id:string){clubOwner=id},page:context.page,hooks,pending,storage,notices,payments,wallet,deposits,histories,reads,
     /** 让指定下一页读取失败，验证重试不会跳过历史。 */
     failRead(prefix:string){nextReadFailure=prefix},
     /** 切换真实响应式身份并触发生产会话清理。 */
@@ -77,9 +77,26 @@ test('俱乐部提现强制填写负责人实名且不会动用押金',async t=>
   s.hooks.hide();assert.equal(s.page.userName.value,'');writing.resolve({id:'withdrawal',status:'pending_review'});await applying;assert.equal(s.page.userName.value,'')
 })
 test('已存在的未付款原单恢复时不新建另一笔付款',async t=>{
-  const s=harness(t);s.hooks.show();await flush();const resuming=s.page.resume({id:'original',purpose:'club_platform',club_id:'club-A',amount_cents:100,status:'pending_payment'});await flush()
+  const s=harness(t);s.hooks.show();await flush();const resuming=s.page.resume({id:'original',user_id:'user-A',purpose:'club_platform',club_id:'club-A',amount_cents:100,status:'pending_payment'});await flush()
   s.take('/wallet/topups/original/pay').resolve({mode:'dev',payment:{id:'original',status:'pending_payment'}});await flush();s.take('/wallet/topups/original/sync').resolve({id:'original',status:'paid'});await resuming
   assert.equal(s.pending.filter(item=>item.path==='/wallet/topups').length,0)
+})
+
+test('组织其他付款人的未付原单不能由副管理员恢复微信付款',async t=>{
+  const s=harness(t);s.hooks.show();await flush();await s.page.resume({id:'other-payment',user_id:'other',purpose:'club_platform',club_id:'club-A',amount_cents:100,status:'pending_payment'})
+  assert.equal(s.pending.length,0);assert.equal(s.payments.length,0);assert.match(String(s.notices[0]),/仅原付款人/)
+})
+
+test('组织副管理员可同步提现，但即使异常返回确认参数也不能拉起收款',async t=>{
+  const s=harness(t);s.setClubOwner('owner');s.hooks.show();await flush();const syncing=s.page.sync('withdraw','withdraw-owner',true)
+  s.take('/wallet/withdrawals/withdraw-owner/sync').resolve({id:'withdraw-owner',user_id:'owner',status:'wait_user_confirm',confirmation:{mch_id:'merchant',app_id:'app',package_info:'short-lived'}});await syncing
+  assert.equal(s.confirmations,0);assert.equal(s.pending.length,1);assert.equal(s.page.canConfirmTransfer.value,false)
+})
+
+test('仅当前负责人匹配原提现受益人时可确认微信收款，确认后仍同步原单',async t=>{
+  const s=harness(t);s.hooks.show();await flush();const syncing=s.page.sync('withdraw','own-withdrawal',true)
+  s.take('/wallet/withdrawals/own-withdrawal/sync').resolve({id:'own-withdrawal',user_id:'user-A',status:'wait_user_confirm',confirmation:{mch_id:'merchant',app_id:'app',package_info:'short-lived'}});await flush();assert.equal(s.confirmations,1)
+  s.take('/wallet/withdrawals/own-withdrawal/sync').resolve({id:'own-withdrawal',user_id:'user-A',status:'success'});await syncing;assert.equal(s.page.canConfirmTransfer.value,true)
 })
 
 test('并行查单已确认原提交时关闭原表单，迟到超时不诱导第二笔付款退款或提现',async t=>{

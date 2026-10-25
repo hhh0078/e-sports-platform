@@ -10,6 +10,7 @@ import { go,notify } from './format'
 import { parseWalletAmount,newWalletRequestID } from './wallet'
 import { requestWechatPayment,confirmWechatTransfer } from './payment'
 import { mergeFundRecords } from './finance'
+import { beginFinancialActivity } from './update-manager'
 /** 钱包弹层对应的唯一资金意图。 */
 export type WalletOperation='balance'|'deposit'|'withdrawal'|'refund'
 /** 按本人、资金用途及整数分定位原请求缓存，不保存实名或支付参数。 */
@@ -108,14 +109,14 @@ export function useWallet(){
   /** 恢复服务端本人原付款单，跨设备也不会错误创建另一笔充值。 */
   async function resumeTopup(record:WalletTopup){
     if(busy.value||!visible||!state.user)return
-    const owner=session();busy.value=true
+    const owner=session(),finishFinancial=beginFinancialActivity();busy.value=true
     try{if(!(await requirePhone())||!same(owner)||!visible)return;await payTopup(owner,record.purpose,record.amount_cents,undefined,record.id);if(same(owner))await load()}
-    catch(err){if(same(owner)&&visible)notify(err)}finally{busy.value=false}
+    catch(err){if(same(owner)&&visible)notify(err)}finally{busy.value=false;finishFinancial()}
   }
   /** 同一提交锁覆盖手机号与资金动作，错误或网络未知保持原请求号。 */
   async function submit(){
     if(busy.value||!operation.value||!visible||!state.user)return
-    const owner=session(),kind=operation.value,hiddenAtStart=hideRevision;busy.value=true;formError.value=''
+    const owner=session(),kind=operation.value,hiddenAtStart=hideRevision,finishFinancial=beginFinancialActivity();busy.value=true;formError.value=''
     try{
       const cents=parseWalletAmount(amount.value,kind==='withdrawal'?20000000:10000000,kind==='withdrawal'?(wallet.value?.withdrawal_min_cents||1):kind==='balance'?100:1)
       if(kind==='withdrawal'&&wallet.value&&cents>wallet.value.available_cents)throw new Error('提现金额超过可提现服务收入')
@@ -131,12 +132,12 @@ export function useWallet(){
         reconcileRequest(owner,kind,cents,record.request_id||intent.id);if(visible)notify(kind==='withdrawal'?'提现已提交，等待平台审核':'已申请原路退还，请查看退款进度')
       }
       if(!same(owner))return;operation.value=null;userName.value='';await load()
-    }catch(err){if(same(owner)&&visible){if(operation.value===kind)formError.value=errorMessage(err);else if(!operation.value&&hideRevision>hiddenAtStart)notify(err)}}finally{activeRequest=null;busy.value=false}
+    }catch(err){if(same(owner)&&visible){if(operation.value===kind)formError.value=errorMessage(err);else if(!operation.value&&hideRevision>hiddenAtStart)notify(err)}}finally{activeRequest=null;busy.value=false;finishFinancial()}
   }
   /** 对原记录查单或拉起官方收款确认，状态始终取后端。 */
   async function syncRecord(kind:'topup'|'withdrawal'|'refund',id:string,confirm=false){
     if(busy.value||!visible||!state.user)return
-    const owner=session();busy.value=true
+    const owner=session(),finishFinancial=beginFinancialActivity();busy.value=true
     try{
       if(kind==='topup'){const record=await syncWalletTopup(id);reconcileTopup(owner,record)}
       else if(kind==='refund'){const record=await syncDepositRefund(id);reconcileRequest(owner,'refund',record.amount_cents,record.request_id)}
@@ -147,7 +148,7 @@ export function useWallet(){
         if(confirm&&record.status==='wait_user_confirm'&&record.confirmation){try{await confirmWechatTransfer(record.confirmation)}finally{if(same(owner))await syncWalletWithdrawal(id)}}
       }
       if(same(owner))await load()
-    }catch(err){if(same(owner)&&visible)notify(err);if(same(owner))await load()}finally{busy.value=false}
+    }catch(err){if(same(owner)&&visible)notify(err);if(same(owner))await load()}finally{busy.value=false;finishFinancial()}
   }
   /** 官方支付页会暂时隐藏钱包，隐藏时仅清理实名、收款凭据与迟到读取。 */
   function hide(){visible=false;hideRevision++;version++;loading.value=false;operation.value=null;amount.value='';formError.value='';userName.value='';withdrawals.value=withdrawals.value.map(({confirmation,...record})=>record)}

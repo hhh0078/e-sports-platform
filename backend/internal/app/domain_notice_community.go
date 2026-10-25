@@ -12,11 +12,11 @@ func noticeMemberChange(ctx context.Context, q querier, before, after ClubMember
 	if after.Status != "pending" || existed && before.Status == "pending" || after.ClubID == "" || after.UserID == "" || strings.HasPrefix(after.ClubID, "demo_") || strings.HasPrefix(after.UserID, "demo_") {
 		return nil
 	}
-	owner, err := noticeClubOwner(ctx, q, after.ClubID)
+	managers, err := clubManagementRecipients(ctx, q, after.ClubID)
 	if err != nil {
 		return err
 	}
-	n := domainNotice("member:"+after.ClubID+":"+after.UserID+":applied:"+after.CreatedAt, "club_member", "member_applied", "收到新的入会申请", "有玩家申请加入俱乐部，请查看申请、考核及托管押金状态后处理。", "/pages/community/clubs/console?id="+url.QueryEscape(after.ClubID)+"&member_id="+url.QueryEscape(after.UserID), owner)
+	n := domainNotice("member:"+after.ClubID+":"+after.UserID+":applied:"+after.CreatedAt, "club_member", "member_applied", "收到新的入会申请", "有玩家申请加入俱乐部，请查看申请、考核及托管押金状态后处理。", "/pages/community/clubs/console?id="+url.QueryEscape(after.ClubID)+"&member_id="+url.QueryEscape(after.UserID), managers...)
 	return queueDomainNotice(ctx, q, n)
 }
 

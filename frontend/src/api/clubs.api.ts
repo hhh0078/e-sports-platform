@@ -2,11 +2,11 @@
 import { request, requestPublic, queryString } from './client'
 import type { Club, ClubDetail, ClubMember, ListQuery, Order } from '../types/models'
 /** 俱乐部列表筛选。 */
-export interface ClubQuery extends ListQuery { mine?: 0 | 1 }
+export interface ClubQuery extends ListQuery { mine?: 0 | 1;managed?:0|1 }
 /** 新俱乐部或装修资料。 */
 export type ClubInput = { request_id?: string } & Pick<Club, 'name' | 'description' | 'game_ids'> & Partial<Pick<Club, 'cover_url' | 'detail_blocks' | 'deposit_cents' | 'assessment' | 'commission_rate_bps' | 'join_note' | 'avatar_url' | 'contact_qr_url' | 'contact_phone' | 'contact_wechat'>>
 /** 读取公开俱乐部或本人挂靠。 */
-export function listClubs(query: ClubQuery = {}): Promise<Club[]> { return (query.mine ? request : requestPublic)('/clubs' + queryString(query)) }
+export function listClubs(query: ClubQuery = {}): Promise<Club[]> { return (query.mine||query.managed ? request : requestPublic)('/clubs' + queryString(query)) }
 /** 读取俱乐部资料及有权限的成员信息。 */
 export function getClub(id: string, publicOnly = false, query: ListQuery = {}): Promise<ClubDetail> { return (publicOnly ? requestPublic : request)('/clubs/' + encodeURIComponent(id) + queryString(query)) }
 /** 提交新俱乐部审核。 */

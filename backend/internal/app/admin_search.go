@@ -39,6 +39,9 @@ func adminQuery(r *http.Request, resource string) (string, []any, error) {
 		if extra := currentNames[resource]; extra != "" {
 			where += " OR " + extra
 		}
+		if resource == "users" {
+			where += " OR EXISTS(SELECT 1 FROM identities phone_identity WHERE phone_identity.id=users.id AND strpos(phone_identity.data->>'phone_number',$3)>0)"
+		}
 		where += ") "
 	}
 	statuses := map[string][]string{"services": {"pending", "active", "paused", "rejected"}, "clubs": {"pending", "active", "rejected"}, "users": {"active", "frozen"}}

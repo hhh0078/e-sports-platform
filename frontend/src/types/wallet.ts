@@ -5,13 +5,13 @@ export interface Wallet { deposit_required_cents?:number; deposit_shortfall_cent
 /** 不可变资金变动，金额正负由对应资金分区变动决定。 */
 export interface WalletEntry { id:string; kind:string; reference_id:string; amount_cents:number; note:string; created_at:string; recharge_delta:number; available_delta:number; pending_delta:number; withdrawal_frozen_delta:number; deposit_delta:number; deposit_refunding_delta:number }
 /** 微信充值或自愿押金付款。 */
-export interface WalletTopup { id:string; request_id?:string; purpose:WalletTopupPurpose; club_id?:string; amount_cents:number; status:'pending_payment'|'paid'|'refunded'; refunded_cents:number; created_at:string }
+export interface WalletTopup { user_id?:string; id:string; request_id?:string; purpose:WalletTopupPurpose; club_id?:string; amount_cents:number; status:'pending_payment'|'paid'|'refunded'; refunded_cents:number; created_at:string }
 /** 服务端支付准备结果，不能从原生支付回调直接推断到账。 */
 export interface WalletTopupPayment { payment:WalletTopup; mode:'dev'|'wechat'; pay_params?:PaymentParams }
 /** 微信待收款确认凭据，仅当前用户短暂读取。 */
 export interface TransferConfirmation { mch_id:string; app_id:string; package_info:string }
 /** 提现申请的审核、冻结和微信实际终态。 */
-export interface WalletWithdrawal { account_type?:'user'|'club'; club_id?:string; id:string; request_id?:string; user_id:string; amount_cents:number; status:'pending_review'|'processing'|'wait_user_confirm'|'success'|'failed'|'rejected'; failure_reason?:string; created_at:string; updated_at:string; confirmation?:TransferConfirmation }
+export interface WalletWithdrawal { requested_by?:string; account_type?:'user'|'club'; club_id?:string; id:string; request_id?:string; user_id:string; amount_cents:number; status:'pending_review'|'processing'|'wait_user_confirm'|'success'|'failed'|'rejected'; failure_reason?:string; created_at:string; updated_at:string; confirmation?:TransferConfirmation }
 /** 每笔押金按原付款渠道分别退还。 */
 export interface WalletDepositRefund { scope?:DepositScope; club_id?:string; id:string; request_id?:string; amount_cents:number; status:'processing'|'success'; created_at:string; parts:Array<{topup_id:string;amount_cents:number;status:'queued'|'processing'|'success'}> }
 /** 管理员填写获批商家转账场景，秘密沿用支付配置。 */

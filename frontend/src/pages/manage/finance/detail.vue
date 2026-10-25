@@ -23,6 +23,7 @@
   </AppShell>
 </template>
 <script setup lang="ts">
+import { beginFinancialActivity } from '../../../lib/update-manager'
 import { computed,nextTick,ref,watch } from 'vue'
 import { useNativePageRefresh } from '../../../lib/native-page-refresh'
 import { onLoad,onShow,onHide,onUnload } from '@dcloudio/uni-app'
@@ -78,7 +79,7 @@ async function confirmAction():Promise<void>{
   if(!kind||!fresh.value||busy.value||(kind==='approve'&&!canApprove.value))return
   const reason=rejectReason.value.trim()
   if(kind==='reject'&&(Array.from(reason).length<2||Array.from(reason).length>500)){actionError.value='请填写2—500字拒绝原因';return}
-  const current=++actionVersion,session=currentSession(),withdrawalID=id.value
+  const current=++actionVersion,session=currentSession(),withdrawalID=id.value,finishFinancial=beginFinancialActivity()
   busy.value=true;actionError.value=''
   try{
     if(kind==='approve'){const latest=await getWithdrawalAudit(withdrawalID);if(current!==actionVersion||!sameSession(session))return;audit.value=latest;loadedSession=session;if(latest.withdrawal.status!=='pending_review')throw new Error('申请状态已变化，请关闭弹层后查看最新进度');if(!latest.passed||latest.issues.length||latest.total_cents!==latest.withdrawal.amount_cents)throw new Error(latest.issues.join('；')||'资金来源核验未通过，不能发起转账')}
@@ -86,7 +87,7 @@ async function confirmAction():Promise<void>{
     const result=kind==='reject'?await rejectAdminWithdrawal(withdrawalID,reason):await executeAdminWithdrawal(withdrawalID,state.devMode?{dev_outcome:devOutcome.value}:{})
     if(current!==actionVersion||!sameSession(session))return
     busy.value=false;closeAction();notify('处理结果：'+walletStatus(result.status));await load()
-  }catch(err){if(current===actionVersion&&sameSession(session))actionError.value=errorMessage(err)}finally{if(current===actionVersion)busy.value=false}
+  }catch(err){if(current===actionVersion&&sameSession(session))actionError.value=errorMessage(err)}finally{if(current===actionVersion)busy.value=false;finishFinancial()}
 }
 /** 账号变化彻底清空来源与弹层，不让新身份看到旧管理员资金资料。 */
 function clear():void{version++;actionVersion++;popupVersion++;audit.value=null;loadedSession=null;loading.value=false;busy.value=false;error.value='';actionError.value='';pendingAction.value=null;rejectReason.value='';popup.value?.close()}
