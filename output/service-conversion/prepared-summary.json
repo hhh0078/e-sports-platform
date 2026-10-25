@@ -1,0 +1,29 @@
+{
+  "backup_dir": "服务器受限备份目录（由管理员保存）",
+  "source_commit": "d6777e62c1d33a61ee5fcd974eedb032d735d80f",
+  "count": 130,
+  "owner_nickname": "瓜瓜 小程序AI软件开发",
+  "owner_id_masked": "wx_f3895…39f4",
+  "plan_digest": "ada5670a1cdcd33792fdc094ec4b9470a14687596c1309dec91399bbefd2603d",
+  "games": {
+    "delta": 10,
+    "honor": 10,
+    "peace": 10,
+    "arena": 10,
+    "valorant": 10,
+    "cfm": 10,
+    "tft": 10,
+    "lol": 10,
+    "valorantm": 10,
+    "codm": 10,
+    "narakam": 10,
+    "identityv": 10,
+    "eggy": 10
+  },
+  "min_price_cents": 900,
+  "max_price_cents": 4600,
+  "new_clubs_empty": true,
+  "zero_real_sales_and_ratings": true,
+  "backup_bytes": 143200,
+  "read_only_business": true
+}

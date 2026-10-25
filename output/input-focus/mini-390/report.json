@@ -1,0 +1,2102 @@
+{
+  "file_purpose": "本地微信输入聚焦外框和原始像素证据；不代表内部字形已经人工验收",
+  "passed": true,
+  "stage": "/pages/account/profile",
+  "project": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/dev/mp-weixin",
+  "api": "http://127.0.0.1:18091/api",
+  "endpoint": "ws://127.0.0.1:9423",
+  "expected_width": 390,
+  "checks": [
+    "payment-text：真实tap、草稿输入、相邻切换与hideKeyboard，外框及相对关系稳定；内部字形需目视截图",
+    "payment-password：真实tap、草稿输入、相邻切换与hideKeyboard，外框及相对关系稳定；内部字形需目视截图",
+    "payment-textarea：真实tap、草稿输入、相邻切换与hideKeyboard，外框及相对关系稳定；内部字形需目视截图",
+    "wallet-amount：真实tap、草稿输入、相邻切换与hideKeyboard，外框及相对关系稳定；内部字形需目视截图",
+    "service-title：真实tap、草稿输入、相邻切换与hideKeyboard，外框及相对关系稳定；内部字形需目视截图",
+    "service-color：真实tap、草稿输入、相邻切换与hideKeyboard，外框及相对关系稳定；内部字形需目视截图",
+    "game-search：真实tap、草稿输入、相邻切换与hideKeyboard，外框及相对关系稳定；内部字形需目视截图",
+    "home-search：真实tap、草稿输入、相邻切换与hideKeyboard，外框及相对关系稳定；内部字形需目视截图"
+  ],
+  "measurements": [
+    {
+      "scene": "payment-text",
+      "phase": "before-empty",
+      "route": "pages/manage/settings",
+      "scroll_top": 220.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "first_label": {
+          "left": 15,
+          "top": 121.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "first_input": {
+          "left": 15,
+          "top": 150.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "second_label": {
+          "left": 15,
+          "top": 213.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "second_input": {
+          "left": 15,
+          "top": 242.1953125,
+          "width": 360,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-before-empty.png"
+    },
+    {
+      "scene": "payment-text",
+      "phase": "tap-empty",
+      "route": "pages/manage/settings",
+      "scroll_top": 220.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "first_label": {
+          "left": 15,
+          "top": 121.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "first_input": {
+          "left": 15,
+          "top": 150.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "second_label": {
+          "left": 15,
+          "top": 213.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "second_input": {
+          "left": 15,
+          "top": 242.1953125,
+          "width": 360,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-tap-empty.png"
+    },
+    {
+      "scene": "payment-text",
+      "phase": "filled-before-tap",
+      "route": "pages/manage/settings",
+      "scroll_top": 220.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "first_label": {
+          "left": 15,
+          "top": 121.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "first_input": {
+          "left": 15,
+          "top": 150.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "second_label": {
+          "left": 15,
+          "top": 213.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "second_input": {
+          "left": 15,
+          "top": 242.1953125,
+          "width": 360,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-filled-before-tap.png"
+    },
+    {
+      "scene": "payment-text",
+      "phase": "tap-filled",
+      "route": "pages/manage/settings",
+      "scroll_top": 220.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "first_label": {
+          "left": 15,
+          "top": 121.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "first_input": {
+          "left": 15,
+          "top": 150.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "second_label": {
+          "left": 15,
+          "top": 213.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "second_input": {
+          "left": 15,
+          "top": 242.1953125,
+          "width": 360,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-tap-filled.png"
+    },
+    {
+      "scene": "payment-text",
+      "phase": "tap-adjacent",
+      "route": "pages/manage/settings",
+      "scroll_top": 220.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "first_label": {
+          "left": 15,
+          "top": 121.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "first_input": {
+          "left": 15,
+          "top": 150.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "second_label": {
+          "left": 15,
+          "top": 213.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "second_input": {
+          "left": 15,
+          "top": 242.1953125,
+          "width": 360,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-tap-adjacent.png"
+    },
+    {
+      "scene": "payment-text",
+      "phase": "after-blur",
+      "route": "pages/manage/settings",
+      "scroll_top": 220.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "first_label": {
+          "left": 15,
+          "top": 121.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "first_input": {
+          "left": 15,
+          "top": 150.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "second_label": {
+          "left": 15,
+          "top": 213.1953125,
+          "width": 360,
+          "height": 22
+        },
+        "second_input": {
+          "left": 15,
+          "top": 242.1953125,
+          "width": 360,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-after-blur.png"
+    },
+    {
+      "scene": "payment-password",
+      "phase": "before-empty",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "password_label": {
+          "left": 15,
+          "top": 190.1953125,
+          "width": 106.1171875,
+          "height": 22
+        },
+        "password_input": {
+          "left": 15,
+          "top": 219.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-before-empty.png"
+    },
+    {
+      "scene": "payment-password",
+      "phase": "tap-empty",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "password_label": {
+          "left": 15,
+          "top": 190.1953125,
+          "width": 106.1171875,
+          "height": 22
+        },
+        "password_input": {
+          "left": 15,
+          "top": 219.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-tap-empty.png"
+    },
+    {
+      "scene": "payment-password",
+      "phase": "filled-before-tap",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "password_label": {
+          "left": 15,
+          "top": 190.1953125,
+          "width": 106.1171875,
+          "height": 22
+        },
+        "password_input": {
+          "left": 15,
+          "top": 219.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-filled-before-tap.png"
+    },
+    {
+      "scene": "payment-password",
+      "phase": "tap-filled",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "password_label": {
+          "left": 15,
+          "top": 190.1953125,
+          "width": 106.1171875,
+          "height": 22
+        },
+        "password_input": {
+          "left": 15,
+          "top": 219.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-tap-filled.png"
+    },
+    {
+      "scene": "payment-password",
+      "phase": "tap-adjacent",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "password_label": {
+          "left": 15,
+          "top": 190.1953125,
+          "width": 106.1171875,
+          "height": 22
+        },
+        "password_input": {
+          "left": 15,
+          "top": 219.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-tap-adjacent.png"
+    },
+    {
+      "scene": "payment-password",
+      "phase": "after-blur",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "password_label": {
+          "left": 15,
+          "top": 190.1953125,
+          "width": 106.1171875,
+          "height": 22
+        },
+        "password_input": {
+          "left": 15,
+          "top": 219.1953125,
+          "width": 360,
+          "height": 44
+        },
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-after-blur.png"
+    },
+    {
+      "scene": "payment-textarea",
+      "phase": "before-empty",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        },
+        "public_label": {
+          "left": 15,
+          "top": 441.1953125,
+          "width": 121.734375,
+          "height": 22
+        },
+        "public_input": {
+          "left": 15,
+          "top": 470.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-before-empty.png"
+    },
+    {
+      "scene": "payment-textarea",
+      "phase": "tap-empty",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        },
+        "public_label": {
+          "left": 15,
+          "top": 441.1953125,
+          "width": 121.734375,
+          "height": 22
+        },
+        "public_input": {
+          "left": 15,
+          "top": 470.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-tap-empty.png"
+    },
+    {
+      "scene": "payment-textarea",
+      "phase": "filled-before-tap",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        },
+        "public_label": {
+          "left": 15,
+          "top": 441.1953125,
+          "width": 121.734375,
+          "height": 22
+        },
+        "public_input": {
+          "left": 15,
+          "top": 470.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-filled-before-tap.png"
+    },
+    {
+      "scene": "payment-textarea",
+      "phase": "tap-filled",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        },
+        "public_label": {
+          "left": 15,
+          "top": 441.1953125,
+          "width": 121.734375,
+          "height": 22
+        },
+        "public_input": {
+          "left": 15,
+          "top": 470.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-tap-filled.png"
+    },
+    {
+      "scene": "payment-textarea",
+      "phase": "tap-adjacent",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        },
+        "public_label": {
+          "left": 15,
+          "top": 441.1953125,
+          "width": 121.734375,
+          "height": 22
+        },
+        "public_input": {
+          "left": 15,
+          "top": 470.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-tap-adjacent.png"
+    },
+    {
+      "scene": "payment-textarea",
+      "phase": "after-blur",
+      "route": "pages/manage/settings",
+      "scroll_top": 745.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "pem_label": {
+          "left": 15,
+          "top": 282.1953125,
+          "width": 77.734375,
+          "height": 22
+        },
+        "pem_input": {
+          "left": 15,
+          "top": 311.1953125,
+          "width": 360,
+          "height": 111
+        },
+        "public_label": {
+          "left": 15,
+          "top": 441.1953125,
+          "width": 121.734375,
+          "height": 22
+        },
+        "public_input": {
+          "left": 15,
+          "top": 470.1953125,
+          "width": 360,
+          "height": 111
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-after-blur.png"
+    },
+    {
+      "scene": "wallet-amount",
+      "phase": "before-empty",
+      "route": "pages/account/wallet",
+      "scroll_top": 246.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "description": {
+          "left": 36,
+          "top": 321,
+          "width": 318,
+          "height": 69
+        },
+        "field": {
+          "left": 36,
+          "top": 405,
+          "width": 318,
+          "height": 63
+        },
+        "input": {
+          "left": 70.2421875,
+          "top": 412.5,
+          "width": 271.7578125,
+          "height": 48
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-before-empty.png"
+    },
+    {
+      "scene": "wallet-amount",
+      "phase": "tap-empty",
+      "route": "pages/account/wallet",
+      "scroll_top": 246.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "description": {
+          "left": 36,
+          "top": 321,
+          "width": 318,
+          "height": 69
+        },
+        "field": {
+          "left": 36,
+          "top": 405,
+          "width": 318,
+          "height": 63
+        },
+        "input": {
+          "left": 70.2421875,
+          "top": 412.5,
+          "width": 271.7578125,
+          "height": 48
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-tap-empty.png"
+    },
+    {
+      "scene": "wallet-amount",
+      "phase": "filled-before-tap",
+      "route": "pages/account/wallet",
+      "scroll_top": 246.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "description": {
+          "left": 36,
+          "top": 321,
+          "width": 318,
+          "height": 69
+        },
+        "field": {
+          "left": 36,
+          "top": 405,
+          "width": 318,
+          "height": 63
+        },
+        "input": {
+          "left": 70.2421875,
+          "top": 412.5,
+          "width": 271.7578125,
+          "height": 48
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-filled-before-tap.png"
+    },
+    {
+      "scene": "wallet-amount",
+      "phase": "tap-filled",
+      "route": "pages/account/wallet",
+      "scroll_top": 246.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "description": {
+          "left": 36,
+          "top": 321,
+          "width": 318,
+          "height": 69
+        },
+        "field": {
+          "left": 36,
+          "top": 405,
+          "width": 318,
+          "height": 63
+        },
+        "input": {
+          "left": 70.2421875,
+          "top": 412.5,
+          "width": 271.7578125,
+          "height": 48
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-tap-filled.png"
+    },
+    {
+      "scene": "wallet-amount",
+      "phase": "after-blur",
+      "route": "pages/account/wallet",
+      "scroll_top": 246.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "description": {
+          "left": 36,
+          "top": 321,
+          "width": 318,
+          "height": 69
+        },
+        "field": {
+          "left": 36,
+          "top": 405,
+          "width": 318,
+          "height": 63
+        },
+        "input": {
+          "left": 70.2421875,
+          "top": 412.5,
+          "width": 271.7578125,
+          "height": 48
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-after-blur.png"
+    },
+    {
+      "scene": "service-title",
+      "phase": "before-empty",
+      "route": "pages/services/publish",
+      "scroll_top": 934,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "title_label": {
+          "left": 15,
+          "top": 126.390625,
+          "width": 360,
+          "height": 16.5
+        },
+        "title": {
+          "left": 15,
+          "top": 149.890625,
+          "width": 360,
+          "height": 44
+        },
+        "price_label": {
+          "left": 15,
+          "top": 299.390625,
+          "width": 174.5,
+          "height": 16.5
+        },
+        "price": {
+          "left": 15,
+          "top": 322.890625,
+          "width": 174.5,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-before-empty.png"
+    },
+    {
+      "scene": "service-title",
+      "phase": "tap-empty",
+      "route": "pages/services/publish",
+      "scroll_top": 934,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "title_label": {
+          "left": 15,
+          "top": 126.390625,
+          "width": 360,
+          "height": 16.5
+        },
+        "title": {
+          "left": 15,
+          "top": 149.890625,
+          "width": 360,
+          "height": 44
+        },
+        "price_label": {
+          "left": 15,
+          "top": 299.390625,
+          "width": 174.5,
+          "height": 16.5
+        },
+        "price": {
+          "left": 15,
+          "top": 322.890625,
+          "width": 174.5,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-tap-empty.png"
+    },
+    {
+      "scene": "service-title",
+      "phase": "filled-before-tap",
+      "route": "pages/services/publish",
+      "scroll_top": 934,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "title_label": {
+          "left": 15,
+          "top": 126.390625,
+          "width": 360,
+          "height": 16.5
+        },
+        "title": {
+          "left": 15,
+          "top": 149.890625,
+          "width": 360,
+          "height": 44
+        },
+        "price_label": {
+          "left": 15,
+          "top": 299.390625,
+          "width": 174.5,
+          "height": 16.5
+        },
+        "price": {
+          "left": 15,
+          "top": 322.890625,
+          "width": 174.5,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-filled-before-tap.png"
+    },
+    {
+      "scene": "service-title",
+      "phase": "tap-filled",
+      "route": "pages/services/publish",
+      "scroll_top": 934,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "title_label": {
+          "left": 15,
+          "top": 126.390625,
+          "width": 360,
+          "height": 16.5
+        },
+        "title": {
+          "left": 15,
+          "top": 149.890625,
+          "width": 360,
+          "height": 44
+        },
+        "price_label": {
+          "left": 15,
+          "top": 299.390625,
+          "width": 174.5,
+          "height": 16.5
+        },
+        "price": {
+          "left": 15,
+          "top": 322.890625,
+          "width": 174.5,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-tap-filled.png"
+    },
+    {
+      "scene": "service-title",
+      "phase": "tap-adjacent",
+      "route": "pages/services/publish",
+      "scroll_top": 934,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "title_label": {
+          "left": 15,
+          "top": 126.390625,
+          "width": 360,
+          "height": 16.5
+        },
+        "title": {
+          "left": 15,
+          "top": 149.890625,
+          "width": 360,
+          "height": 44
+        },
+        "price_label": {
+          "left": 15,
+          "top": 299.390625,
+          "width": 174.5,
+          "height": 16.5
+        },
+        "price": {
+          "left": 15,
+          "top": 322.890625,
+          "width": 174.5,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-tap-adjacent.png"
+    },
+    {
+      "scene": "service-title",
+      "phase": "after-blur",
+      "route": "pages/services/publish",
+      "scroll_top": 934,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "title_label": {
+          "left": 15,
+          "top": 126.390625,
+          "width": 360,
+          "height": 16.5
+        },
+        "title": {
+          "left": 15,
+          "top": 149.890625,
+          "width": 360,
+          "height": 44
+        },
+        "price_label": {
+          "left": 15,
+          "top": 299.390625,
+          "width": 174.5,
+          "height": 16.5
+        },
+        "price": {
+          "left": 15,
+          "top": 322.890625,
+          "width": 174.5,
+          "height": 44
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-after-blur.png"
+    },
+    {
+      "scene": "service-color",
+      "phase": "before-empty",
+      "route": "pages/services/publish",
+      "scroll_top": 882.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "editor_label": {
+          "left": 15,
+          "top": 72.9453125,
+          "width": 30.328125,
+          "height": 16.5
+        },
+        "color": {
+          "left": 300,
+          "top": 150.1953125,
+          "width": 75,
+          "height": 28
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-before-empty.png"
+    },
+    {
+      "scene": "service-color",
+      "phase": "tap-empty",
+      "route": "pages/services/publish",
+      "scroll_top": 882.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "editor_label": {
+          "left": 15,
+          "top": 72.9453125,
+          "width": 30.328125,
+          "height": 16.5
+        },
+        "color": {
+          "left": 300,
+          "top": 150.1953125,
+          "width": 75,
+          "height": 28
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-tap-empty.png"
+    },
+    {
+      "scene": "service-color",
+      "phase": "filled-before-tap",
+      "route": "pages/services/publish",
+      "scroll_top": 882.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "editor_label": {
+          "left": 15,
+          "top": 72.9453125,
+          "width": 30.328125,
+          "height": 16.5
+        },
+        "color": {
+          "left": 300,
+          "top": 150.1953125,
+          "width": 75,
+          "height": 28
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-filled-before-tap.png"
+    },
+    {
+      "scene": "service-color",
+      "phase": "tap-filled",
+      "route": "pages/services/publish",
+      "scroll_top": 882.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "editor_label": {
+          "left": 15,
+          "top": 72.9453125,
+          "width": 30.328125,
+          "height": 16.5
+        },
+        "color": {
+          "left": 300,
+          "top": 150.1953125,
+          "width": 75,
+          "height": 28
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-tap-filled.png"
+    },
+    {
+      "scene": "service-color",
+      "phase": "after-blur",
+      "route": "pages/services/publish",
+      "scroll_top": 882.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "editor_label": {
+          "left": 15,
+          "top": 72.9453125,
+          "width": 30.328125,
+          "height": 16.5
+        },
+        "color": {
+          "left": 300,
+          "top": 150.1953125,
+          "width": 75,
+          "height": 28
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-after-blur.png"
+    },
+    {
+      "scene": "game-search",
+      "phase": "before-empty",
+      "route": "pages/services/publish",
+      "scroll_top": 0,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "heading": {
+          "left": 16,
+          "top": 320,
+          "width": 358,
+          "height": 44
+        },
+        "input": {
+          "left": 51,
+          "top": 385.5,
+          "width": 311,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-before-empty.png"
+    },
+    {
+      "scene": "game-search",
+      "phase": "tap-empty",
+      "route": "pages/services/publish",
+      "scroll_top": 0,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "heading": {
+          "left": 16,
+          "top": 320,
+          "width": 358,
+          "height": 44
+        },
+        "input": {
+          "left": 51,
+          "top": 385.5,
+          "width": 311,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-tap-empty.png"
+    },
+    {
+      "scene": "game-search",
+      "phase": "filled-before-tap",
+      "route": "pages/services/publish",
+      "scroll_top": 0,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "heading": {
+          "left": 16,
+          "top": 320,
+          "width": 358,
+          "height": 44
+        },
+        "input": {
+          "left": 51,
+          "top": 385.5,
+          "width": 311,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-filled-before-tap.png"
+    },
+    {
+      "scene": "game-search",
+      "phase": "tap-filled",
+      "route": "pages/services/publish",
+      "scroll_top": 0,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "heading": {
+          "left": 16,
+          "top": 320,
+          "width": 358,
+          "height": 44
+        },
+        "input": {
+          "left": 51,
+          "top": 385.5,
+          "width": 311,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-tap-filled.png"
+    },
+    {
+      "scene": "game-search",
+      "phase": "after-blur",
+      "route": "pages/services/publish",
+      "scroll_top": 0,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "heading": {
+          "left": 16,
+          "top": 320,
+          "width": 358,
+          "height": 44
+        },
+        "input": {
+          "left": 51,
+          "top": 385.5,
+          "width": 311,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-after-blur.png"
+    },
+    {
+      "scene": "home-search",
+      "phase": "before-empty",
+      "route": "pages/main/index",
+      "scroll_top": 0,
+      "container_scroll_top": 272.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "toolbar": {
+          "left": 15,
+          "top": 101.5,
+          "width": 360,
+          "height": 28
+        },
+        "search_row": {
+          "left": 15,
+          "top": 140.5,
+          "width": 360,
+          "height": 42
+        },
+        "input": {
+          "left": 49,
+          "top": 150,
+          "width": 280,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-before-empty.png"
+    },
+    {
+      "scene": "home-search",
+      "phase": "tap-empty",
+      "route": "pages/main/index",
+      "scroll_top": 0,
+      "container_scroll_top": 272.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "toolbar": {
+          "left": 15,
+          "top": 101.5,
+          "width": 360,
+          "height": 28
+        },
+        "search_row": {
+          "left": 15,
+          "top": 140.5,
+          "width": 360,
+          "height": 42
+        },
+        "input": {
+          "left": 49,
+          "top": 150,
+          "width": 280,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-tap-empty.png"
+    },
+    {
+      "scene": "home-search",
+      "phase": "filled-before-tap",
+      "route": "pages/main/index",
+      "scroll_top": 0,
+      "container_scroll_top": 272.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "toolbar": {
+          "left": 15,
+          "top": 101.5,
+          "width": 360,
+          "height": 28
+        },
+        "search_row": {
+          "left": 15,
+          "top": 140.5,
+          "width": 360,
+          "height": 42
+        },
+        "input": {
+          "left": 49,
+          "top": 150,
+          "width": 253,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-filled-before-tap.png"
+    },
+    {
+      "scene": "home-search",
+      "phase": "tap-filled",
+      "route": "pages/main/index",
+      "scroll_top": 0,
+      "container_scroll_top": 272.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "toolbar": {
+          "left": 15,
+          "top": 101.5,
+          "width": 360,
+          "height": 28
+        },
+        "search_row": {
+          "left": 15,
+          "top": 140.5,
+          "width": 360,
+          "height": 42
+        },
+        "input": {
+          "left": 49,
+          "top": 150,
+          "width": 253,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-tap-filled.png"
+    },
+    {
+      "scene": "home-search",
+      "phase": "after-blur",
+      "route": "pages/main/index",
+      "scroll_top": 0,
+      "container_scroll_top": 272.5,
+      "window": {
+        "pixelRatio": 3,
+        "safeArea": {
+          "top": 47,
+          "left": 0,
+          "right": 390,
+          "bottom": 810,
+          "width": 390,
+          "height": 763
+        },
+        "screenWidth": 390,
+        "screenHeight": 844,
+        "screenTop": 0,
+        "windowWidth": 390,
+        "windowHeight": 844,
+        "statusBarHeight": 47
+      },
+      "nodes": {
+        "toolbar": {
+          "left": 15,
+          "top": 101.5,
+          "width": 360,
+          "height": 28
+        },
+        "search_row": {
+          "left": 15,
+          "top": 140.5,
+          "width": 360,
+          "height": 42
+        },
+        "input": {
+          "left": 49,
+          "top": 150,
+          "width": 253,
+          "height": 23
+        }
+      },
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-after-blur.png"
+    }
+  ],
+  "screenshots": [
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-before-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-tap-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-filled-before-tap.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-tap-filled.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-tap-adjacent.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-text-after-blur.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-before-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-tap-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-filled-before-tap.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-tap-filled.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-tap-adjacent.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-password-after-blur.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-before-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-tap-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-filled-before-tap.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-tap-filled.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-tap-adjacent.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/payment-textarea-after-blur.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-before-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-tap-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-filled-before-tap.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-tap-filled.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/wallet-amount-after-blur.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-before-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-tap-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-filled-before-tap.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-tap-filled.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-tap-adjacent.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-title-after-blur.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-before-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-tap-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-filled-before-tap.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-tap-filled.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/service-color-after-blur.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-before-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-tap-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-filled-before-tap.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-tap-filled.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/game-search-after-blur.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-before-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-tap-empty.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-filled-before-tap.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-tap-filled.png",
+    "/Users/Zhuanz/Desktop/三角洲/output/input-focus/mini-390/home-search-after-blur.png"
+  ],
+  "screenshot_errors": [],
+  "runtime_exceptions": [],
+  "final_session_logged_out": true,
+  "visual_review_required": true,
+  "boundaries": [
+    "Element.tap是本脚本聚焦动作；input方法只填写假草稿，不以程序输入冒充物理点击或真实手机键盘。",
+    "外框不变不能证明占位文字像素未移动；必须逐组目视before-empty、tap-empty、tap-filled、tap-adjacent及after-blur原始截图。",
+    "保留page.scrollTop、主容器scrollTop和窗口变化；键盘合法避让与内部文字跳动要分别判断。",
+    "只在18091开发后端使用真实协议勾选及开发体验UI登录，未保存支付设置、发布服务、创建订单或付款；手机键盘效果需真机另验。"
+  ]
+}

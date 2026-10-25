@@ -6,7 +6,7 @@ button::after,uni-button::after{border:0}
 button[disabled]{opacity:.45}
 image{display:block;flex-shrink:0}
 input,textarea{min-width:0;max-width:100%;font-family:inherit;font-size:26.9231rpx;color:var(--text)}
-input{height:46.1538rpx}textarea{width:100%;min-height:184.6154rpx}
+input{height:46.1538rpx;line-height:normal}uni-input{line-height:normal}textarea{width:100%;min-height:184.6154rpx}
 .app-frame{min-height:100vh;background:var(--bg);color:var(--text)}
 .app-frame,.app-body,.main-shell{width:100%;min-width:0;max-width:100%}
 .app-body{max-width:600px;margin:0 auto;padding:30.7692rpx 30.7692rpx calc(46.1538rpx + env(safe-area-inset-bottom));background-color:var(--bg)}
@@ -26,7 +26,8 @@ input{height:46.1538rpx}textarea{width:100%;min-height:184.6154rpx}
 .field{display:flex;flex-direction:column;gap:15.3846rpx;margin-bottom:38.4615rpx;min-width:0}.field:last-child{margin-bottom:0}
 .field-label{font-size:25rpx;color:#c8d4cd;font-weight:600}
 .input{display:flex;align-items:center;width:100%;background:#ffffff04;border:1px solid var(--line);border-radius:19.2308rpx;padding:19.2308rpx 23.0769rpx;min-height:44px;line-height:42.3077rpx;color:var(--text)}
-input.input{display:block;height:84.6154rpx}textarea.input{display:block;height:215.3846rpx}
+/* 单行原生编辑器自行居中文字，避免聚焦层与占位层重复计算上下padding和固定行高。 */
+input.input,uni-input.input{display:block;height:var(--control-height);padding-top:0;padding-bottom:0;line-height:normal}textarea.input{display:block;height:215.3846rpx}
 .btn,.btn-secondary{display:flex;align-items:center;justify-content:center;gap:15.3846rpx;height:var(--control-height);min-height:max(44px,var(--control-height));padding:0 30.7692rpx;border-radius:19.2308rpx;border:1px solid var(--accent);background:var(--accent);color:#0a2116;font-size:26.9231rpx;line-height:38.4615rpx;font-weight:650;text-align:center;cursor:pointer}
 .btn-secondary{background:transparent;border-color:var(--line);color:var(--text)}
 .btn-danger{background:#f19a8810;border-color:#f19a8840;color:#f19a88}
@@ -43,6 +44,8 @@ input.input{display:block;height:84.6154rpx}textarea.input{display:block;height:
 .form-actions{display:flex;flex-wrap:wrap;gap:23.0769rpx;min-width:0}.form-actions>.btn,.form-actions>.btn-secondary{flex:1;min-width:0}
 /* 普通编辑页以开放分节和细线输入组织内容，不再逐层叠加外框。 */
 .form-section{min-width:0;padding:46.1538rpx 0;border-bottom:1px solid var(--line-subtle);overflow-wrap:anywhere}.form-section>.section-title{display:block;margin-bottom:30.7692rpx}.form-section .field-label{color:var(--muted);font-size:23.0769rpx}.form-section .input{border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:19.2308rpx 0}.form-section textarea.input{border:1px solid var(--line-subtle);border-radius:15.3846rpx;background:#ffffff03;padding:23.0769rpx}.subtle-note{display:block;padding:23.0769rpx 0;color:var(--muted);font-size:23.0769rpx;line-height:1.7}.action-footer{display:flex;align-items:center;gap:30.7692rpx;min-width:0;padding:46.1538rpx 0 15.3846rpx}.action-footer>.btn{flex:1;min-width:0}.action-footer>.text-btn{flex-shrink:0;min-width:130.7692rpx}
+/* 开放式表单只移除单行输入的垂直padding，多行文本和带图标的view.input保持原设计。 */
+.form-section input.input,.form-section uni-input.input{padding-top:0;padding-bottom:0}
 .nowrap{white-space:nowrap}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cover-preview{overflow:hidden;border-radius:19.2308rpx}
 .tabs{display:flex;gap:15.3846rpx;min-width:0;max-width:100%;overflow-x:auto;padding-bottom:7.6923rpx}
 .tab{display:inline-flex;flex-shrink:0;align-items:center;justify-content:center;min-height:69.2308rpx;padding:0 23.0769rpx;color:#a7b6ae;background:transparent;border:1px solid var(--line);border-radius:15.3846rpx;font-size:23.0769rpx;line-height:38.4615rpx;cursor:pointer}

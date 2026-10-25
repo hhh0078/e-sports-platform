@@ -20,7 +20,8 @@
     "../scripts/mini-order-adjustment-smoke.ts",
     "../scripts/check-share-runtime-hooks.ts",
     "../scripts/mini-sharing-smoke.ts",
-    "../scripts/mini-refresh.ts"
+    "../scripts/mini-refresh.ts",
+    "../scripts/mini-input-focus.ts"
   ],
   "exclude": [
     "node_modules",

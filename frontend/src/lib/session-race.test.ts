@@ -190,12 +190,12 @@ test('个人中心和资料页的跨会话回调及隐藏后的统计不再提�
   })
 })
 
-test('个人中心钱包分区与订单角标读取真实数据，充值不混入可提现余额',async()=>{
+test('个人中心展示服务端账户合计与真实订单角标，可提现分区仍独立',async()=>{
   const subject=harness(),reading=subject.page.load();await flush();subject.take('/me').resolve({...accountA});await flush()
   subject.take('/me/stats').resolve({buyer_pending_payment_count:2,buyer_working_count:120,buyer_delivered_count:0,buyer_refund_count:-1})
-  subject.take('/wallet').resolve({available_cents:1000,recharge_cents:6000,ongoing_cents:2500,settling_cents:3000,withdrawal_frozen_cents:500})
+  subject.take('/wallet').resolve({spendable_cents:7000,available_cents:1000,recharge_cents:6000,ongoing_cents:2500,settling_cents:3000,withdrawal_frozen_cents:500})
   await reading
-  assert.equal(subject.page.walletAmount('available_cents'),'¥10.00');assert.equal(subject.page.walletAmount('recharge_cents'),'¥60.00');assert.equal(subject.page.walletAmount('ongoing_cents'),'¥25.00')
+  assert.equal(subject.page.walletAmount('spendable_cents'),'¥70.00');assert.equal(subject.page.walletAmount('available_cents'),'¥10.00');assert.equal(subject.page.walletAmount('recharge_cents'),'¥60.00');assert.equal(subject.page.walletAmount('ongoing_cents'),'¥25.00')
   assert.equal(subject.page.orderCount('buyer_pending_payment_count'),'2');assert.equal(subject.page.orderCount('buyer_working_count'),'99+');assert.equal(subject.page.orderCount('buyer_delivered_count'),'');assert.equal(subject.page.orderCount('buyer_refund_count'),'')
 })
 

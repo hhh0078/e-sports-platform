@@ -3,10 +3,11 @@
   <AppShell title="我的钱包" back :style="{'--accent-soft':softAccent}">
     <view v-if="error" class="error-box" @click="retryFailed">{{ error }} · 点击重试</view>
     <view class="balance-section">
-      <text class="balance-caption">可提现余额</text>
-      <view class="balance-main"><text class="balance-value">{{ state.user ? (wallet ? '¥'+fixed(wallet.available_cents) : '—') : '¥0.00' }}</text><view class="wallet-actions"><button class="btn btn-secondary btn-small" :disabled="busy" @click="open('balance')">充值</button><button class="btn btn-small" :disabled="busy" @click="open('withdrawal')">提现</button></view></view>
+      <text class="balance-caption">账户余额</text>
+      <view class="balance-main"><text class="balance-value">{{ walletAmount('spendable_cents') }}</text><view class="wallet-actions"><button class="btn btn-secondary btn-small" :disabled="busy" @click="open('balance')">充值</button><button class="btn btn-small" :disabled="busy" @click="open('withdrawal')">提现</button></view></view>
+      <text class="wallet-note balance-availability">其中可提现 {{ walletAmount('available_cents') }}，充值仅用于消费</text>
       <text v-if="!state.user" class="wallet-note">登录后查看</text>
-      <WithdrawalRules :minimum="wallet?.withdrawal_min_cents"/><view class="balance-breakdown"><view class="balance-part"><text class="wallet-note">进行中</text><text>¥{{ fixed(wallet?.ongoing_cents) }}</text></view><view class="balance-part"><text class="wallet-note">结算中</text><text>¥{{ fixed(wallet?.settling_cents) }}</text></view><view class="balance-part"><text class="wallet-note">提现中</text><text>¥{{ fixed(wallet?.withdrawal_frozen_cents) }}</text></view></view><text class="wallet-note">充值余额 ¥{{ fixed(wallet?.recharge_cents) }} · 仅可消费</text>
+      <WithdrawalRules :minimum="wallet?.withdrawal_min_cents"/><view class="balance-breakdown"><view class="balance-part"><text class="wallet-note">进行中</text><text>{{ walletAmount('ongoing_cents') }}</text></view><view class="balance-part"><text class="wallet-note">结算中</text><text>{{ walletAmount('settling_cents') }}</text></view><view class="balance-part"><text class="wallet-note">提现中</text><text>{{ walletAmount('withdrawal_frozen_cents') }}</text></view></view>
 
       <text class="wallet-note">服务验收后保留 {{ wallet?.settlement_hold_days || 7 }} 天售后期，无退款争议后转为可提现。充值余额仅可消费。</text>
     </view>
@@ -36,7 +37,7 @@ import { paymentPurposeName } from '../../lib/finance'
 import { state,game,sessionRevision } from '../../lib/store'
 import { time } from '../../lib/format'
 import { useWallet } from '../../lib/use-wallet'
-import type { WalletEntry } from '../../types/wallet'
+import type { Wallet,WalletEntry } from '../../types/wallet'
 import { walletStatus,walletKind } from '../../lib/wallet'
 const {wallet,entries,topups,withdrawals,refunds,filteredEntries,loading,busy,error,operation,amount,userName,formError,filter,hasMore,load,retryFailed,open,close,submit,syncRecord,resumeTopup}=useWallet()
 useNativePageRefresh({refresh:()=>load(),more:()=>error.value?retryFailed():load(true),blocked:()=>busy.value||!!operation.value,context:()=>[state.user?.id,state.user?.role,sessionRevision(),filter.value]})
@@ -52,6 +53,12 @@ const activeRefunds=computed(()=>refunds.value.filter(record=>(!record.scope||re
 function entryName(entry:WalletEntry):string{return entry.kind==='topup'&&entry.deposit_delta>0?'缴纳平台押金':walletKind(entry.kind)}
 /** 钱包金额保留两位小数，未取得余额时由页面单独显示占位。 */
 function fixed(cents?:number):string{return ((cents||0)/100).toFixed(2)}
+/**
+ * 仅展示服务端确认的资金分区，账户合计不参与提现资格计算。
+ * @param key - 服务端钱包金额字段。
+ * @returns 访客显示零，已登录但金额未知显示占位，否则显示人民币金额。
+ */
+function walletAmount(key:keyof Wallet):string{if(!state.user)return '¥0.00';const value=wallet.value?.[key];return typeof value==='number'&&Number.isSafeInteger(value)?'¥'+fixed(value):'—'}
 </script>
 <style scoped>
 .balance-section,.deposit-section,.progress-section{padding:46.1538rpx 0;border-bottom:1px solid var(--line-subtle)}.balance-caption{display:block;color:var(--muted);font-size:26.9231rpx}.balance-main{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:23.0769rpx;margin:23.0769rpx 0}.balance-value{font-size:80.7692rpx;line-height:100rpx;font-weight:700;letter-spacing:-1.9231rpx;min-width:0;overflow-wrap:anywhere}.wallet-actions{display:flex;gap:15.3846rpx;flex-shrink:0}.balance-breakdown{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:23.0769rpx;margin-top:30.7692rpx;color:var(--text);font-size:28.8462rpx}.balance-part{display:flex;flex-direction:column;gap:13.4615rpx;min-width:0;overflow-wrap:anywhere}.wallet-note{display:block;font-size:26.9231rpx;line-height:42.3077rpx;color:var(--muted);overflow-wrap:anywhere}.balance-section>.wallet-note{margin-top:23.0769rpx}.wallet-heading{display:flex;align-items:center;gap:15.3846rpx;min-width:0}.voluntary{font-size:23.0769rpx;line-height:38.4615rpx;padding:0 11.5385rpx;border-radius:7.6923rpx;background:var(--accent-soft);color:var(--accent)}.deposit-main{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;min-width:0;gap:23.0769rpx;margin:23.0769rpx 0}.deposit-value{min-width:0;max-width:100%;overflow-wrap:anywhere;font-size:57.6923rpx;line-height:73.0769rpx;font-weight:650}.refund-entry{margin-top:23.0769rpx}.ledger-section{padding:46.1538rpx 0}.ledger-heading{justify-content:space-between;margin-bottom:30.7692rpx}.ledger-tabs{display:flex;align-items:center;padding:5.7692rpx;gap:7.6923rpx;border:1px solid var(--line-subtle);border-radius:46.1538rpx;background:var(--surface)}.ledger-tab{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;height:61.5385rpx;padding:0;background:transparent;border-radius:38.4615rpx;color:var(--muted);font-size:26.9231rpx}.ledger-tab.selected{color:var(--text);background:var(--accent-soft)}.ledger-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30.7692rpx;min-height:384.6154rpx;color:var(--muted);font-size:26.9231rpx}.progress-row,.ledger-row{display:flex;align-items:center;justify-content:space-between;gap:23.0769rpx;min-width:0;padding:30.7692rpx 0;border-bottom:1px solid var(--line-subtle)}.record-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:7.6923rpx;font-size:26.9231rpx;overflow-wrap:anywhere}.record-actions{display:flex;flex-direction:column;gap:15.3846rpx}.entry-title{line-height:42.3077rpx}.entry-amount{flex-shrink:0;max-width:50%;overflow-wrap:anywhere;text-align:right;font-size:30.7692rpx;font-weight:600}.load-more{display:flex;margin:30.7692rpx auto}.dev-note{padding-bottom:46.1538rpx}.deposit-shortfall,.deposit-qualified{display:block;margin-top:15.3846rpx;font-size:25rpx;line-height:42.3077rpx;overflow-wrap:anywhere}.deposit-shortfall{color:#dfbb71}.deposit-qualified{color:var(--accent)}

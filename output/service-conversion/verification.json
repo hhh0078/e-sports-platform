@@ -1,0 +1,49 @@
+{
+  "checked_at": "2026-10-25T17:04:29.035401+00:00",
+  "plan_digest": "ada5670a1cdcd33792fdc094ec4b9470a14687596c1309dec91399bbefd2603d",
+  "applied": {
+    "created": 130,
+    "paused": 130,
+    "pending_review_fields": 650
+  },
+  "non_payment_preflight": {
+    "live_ready": 130,
+    "mapped": 130,
+    "old_paused": 130
+  },
+  "public_services": 131,
+  "protected_tables_unchanged": [
+    "clubs",
+    "evidence",
+    "fund_audits",
+    "fund_lots",
+    "fund_movements",
+    "fund_receipts",
+    "games",
+    "identities",
+    "members",
+    "messages",
+    "order_adjustments",
+    "order_payments",
+    "order_refunds",
+    "orders",
+    "reviews",
+    "shares",
+    "users",
+    "wallet_deposit_refunds",
+    "wallet_entries",
+    "wallet_escrows",
+    "wallet_requests",
+    "wallet_topups",
+    "wallet_withdrawals",
+    "wallets"
+  ],
+  "original_live_services_unchanged": true,
+  "api_container_unchanged": true,
+  "new_detail_http": 200,
+  "old_detail_http": 404,
+  "real_order_created": false,
+  "real_payment_executed": false,
+  "production_session_created": false,
+  "backup_available": true
+}

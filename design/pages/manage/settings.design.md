@@ -24,3 +24,7 @@ Use case: ui-mockup. Edit the attached Chinese390x844 mini-program design to app
 默认协议标题与正文平台名改开机电竞，使用独立新协议版本；保持字段、布局和原有滚动。 本次只局部替换品牌文字，不新增界面、控件、图片或视觉规则。历史图保留原名称。
 
 编辑提示词：Use case: text-localization. Edit only the product brand text in the attached existing 390x844 design. Use exact Chinese brand 开机电竞. 默认协议标题与正文平台名改开机电竞，使用独立新协议版本；保持字段、布局和原有滚动。 Keep all unrelated layout, artwork, colors, type sizes, fields, amounts, safe areas and dimensions unchanged. No redesign, stretching, added height or new decorations.
+
+## 输入聚焦稳定性（2026-10-26）
+
+沿用`settings.png`的开放式表单设计和原字段顺序，共用规则见[输入控件聚焦依据](../../INPUT_FOCUS.md)。商户号、证书序列号、公钥ID、回调URL及密码输入在聚焦前后保持固定外高，去除原生单行控件上下padding与固定行高的叠加；多行协议／PEM文本保留原padding、行高和高度。不得因任意单行输入聚焦而重新排列同页其他字段，底部字段仍保留正常键盘避让。验收使用320／390实际聚焦截图和节点测量，不在测试中保存任何支付密钥。

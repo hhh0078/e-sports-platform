@@ -322,7 +322,7 @@ async function mainTheme(game: string): Promise<void> {
   await mainScrollRetention(page, buttons, game)
   assert.deepEqual(await sdk().evaluate(() => wx.getStorageSync('jijie_game')), originalGame, '只浏览主题不能写入游戏偏好')
 }
-/** 核验个人中心封面真实渐变、上移身份与紧凑订单间距，保留充值和收入独立文案。 */
+/** 核验个人中心封面真实渐变、上移身份与紧凑订单间距，账户合计下保留可提现和充值仅消费说明。 */
 async function personal(page: Page, scroll: ScrollViewElement, base: number[], game: string, bottom: Rectangle): Promise<void> {
   const view = await until(() => child(page, ['me-view', 'pages\\/main\\/me\\/me']), '个人中心真实组件')
   const hero = await until(() => view.$('.profile-hero'), '个人封面'), shade = await until(() => view.$('.profile-hero-shade'), '个人封面灰色渐变'), identity = await until(() => view.$('.identity-row'), '头像昵称')
@@ -337,7 +337,8 @@ async function personal(page: Page, scroll: ScrollViewElement, base: number[], g
   const stops = Array.from(gradient.matchAll(/([\d.]+)%/g), match => Number(match[1])); assert.ok(stops.length >= 2 && stops.every(stop => stop <= 100), '渐变不得使用超出100%的色标')
   const name = await until(() => view.$('.profile-name'), '访客名称'); assert.match(await name.text(), /登录后查看/)
   const wallet = await until(() => view.$('.me-wallet'), '紧凑钱包卡'), walletRect = await rect(wallet), walletText = await wallet.text()
-  assert.ok(walletRect.height <= 170, '个人中心钱包卡超过170px'); assert.match(walletText, /可提现/); assert.match(walletText, /充值余额（仅消费）/)
+  assert.ok(walletRect.height <= 170, '个人中心钱包卡超过170px'); assert.match(walletText, /账户余额/); assert.match(walletText, /其中可提现 ¥0\.00，充值仅用于消费/)
+  assert.equal(await (await until(() => view.$('.wallet-main-value'), '访客账户合计')).text(), '¥0.00'); assert.equal(await view.$('.wallet-recharge'), null, '不恢复重复充值金额行')
   for (const word of ['进行中', '结算中', '提现中']) assert.ok(walletText.includes(word), '钱包丢失' + word + '分区')
   const image = await screenshot(game + '-me-top')
   for (const [label, y] of [['渐变底部', heroRect.top + heroRect.height - 1], ['订单上沿', orderRect.top + 4], ['钱包旁边', walletRect.top + 24], ['主滚动底部', bottom.top - 5], ['底栏侧边', bottom.top + 16]] as const) sample(image, game + label, 4, y, base, label === '渐变底部' ? 12 : 3)

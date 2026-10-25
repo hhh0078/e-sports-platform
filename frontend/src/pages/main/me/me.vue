@@ -37,10 +37,11 @@
 		<view class="me-wallet" @click="protectedGo('/pages/account/wallet')">
 			<view class="wallet-heading">
 				<Icon name="wallet" :size="21" /><text class="wallet-heading-title">我的钱包</text>
-				<view class="wallet-available"><text class="wallet-caption">可提现</text><text
-						class="wallet-main-value">{{ walletAmount('available_cents') }}</text></view>
+				<view class="wallet-available"><text class="wallet-caption">账户余额</text><text
+						class="wallet-main-value">{{ walletAmount('spendable_cents') }}</text></view>
 				<Icon name="arrow" :size="13" />
 			</view>
+			<text class="wallet-balance-note">其中可提现 {{ walletAmount('available_cents') }}，充值仅用于消费</text>
 			<view class="wallet-amounts">
 				<view class="wallet-item"><text>进行中</text><text
 						class="wallet-item-value">{{ walletAmount('ongoing_cents') }}</text></view>
@@ -49,10 +50,7 @@
 				<view class="wallet-item"><text>提现中</text><text
 						class="wallet-item-value">{{ walletAmount('withdrawal_frozen_cents') }}</text></view>
 			</view>
-			<view class="wallet-recharge"><text class="wallet-recharge-label">充值余额（仅消费）</text><text
-					class="wallet-recharge-value">{{ walletAmount('recharge_cents') }}</text>
-				<Icon name="arrow" :size="12" />
-			</view><text v-if="walletError" class="wallet-error">{{ walletError }}</text>
+			<text v-if="walletError" class="wallet-error">{{ walletError }}</text>
 		</view>
 		<view class="space-grid"><button class="space-entry" @click="openIdentity">
 				<Icon name="user" :size="25" />
@@ -590,24 +588,13 @@
 		overflow-wrap: anywhere
 	}
 
-	.wallet-recharge {
-		display: flex;
-		align-items: center;
-		gap: 15.3846rpx;
-		padding: 13.4615rpx 0;
-		border-top: 1px solid var(--line-subtle);
+	.wallet-balance-note {
+		display: block;
+		margin-top: 3.8462rpx;
 		color: var(--muted);
 		font-size: 19.2308rpx;
-		line-height: 34.6154rpx
-	}
-
-	.wallet-recharge-label {
-		flex: 1;
-		min-width: 0
-	}
-
-	.wallet-recharge-value {
-		color: var(--accent)
+		line-height: 34.6154rpx;
+		overflow-wrap: anywhere
 	}
 
 	.wallet-error {

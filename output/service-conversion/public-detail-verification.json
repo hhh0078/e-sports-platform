@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-10-25T17:06:31.744068+00:00",
+  "public_details_passed": 130,
+  "public_details_failed": 0,
+  "unique_game_covers_passed": 30,
+  "moderation_status_counts": {
+    "ai_processing": 4,
+    "ai_pending": 456,
+    "allowed": 189,
+    "manual_pending": 1
+  },
+  "real_payment_executed": false
+}
