@@ -2,6 +2,14 @@
 
 本文对应当前项目：Go API + PostgreSQL + Redis；域名 `game.ai.58it.cn`。前端由微信发布，服务器不需要运行 Node、Vite 或 H5。游戏封面嵌入 Go 后端，随 `/static/covers/` 提供；用户上传的图片保存在 PostgreSQL 中。
 
+## 当前交付（2026-10-26）
+
+功能源码提交`edfceb4c3dcc2767f02f9a74faf8352c7aa51043`，交付分支`codex/public-content-admin-centers`。后端已通过宝塔MCP部署至`game.ai.58it.cn`，镜像`jijie-api:20261026-operations-edfceb4`；正式只读检查83项全部通过。数据库／Redis原容器、数据卷、旧资金账单和私密配置保留，瓜瓜账号为现有根管理员。详见[本轮发布及用户测试清单](PUBLIC_OPERATIONS_ACCEPTANCE.md)。
+
+本轮增加公共运营、Markdown文章、分级管理员与独立订单聊天。文章和用户图文使用后置AI／人工审核，AI未配置时等待人工；不可再按历史描述把“无AI”理解为禁止保存。支付／AI配置仅保存原值，本轮没有执行真实资金或模型调用，不凭加密配置存在就宣称真实能力已验收。
+
+正式小程序包为`frontend/dist/build/mp-weixin`，API固定`https://game.ai.58it.cn/api`；需要操作者自行在微信工具上传、真机测试并提交审核。日常开发私有配置为本地8090，本轮独立验收18091不可当正式包上传。下方2026-10-23及更早记录保留历史状态，不代表当前运行版本或配置现状。
+
 ## 品牌更新（2026-10-23）
 
 当前对外名称统一为「开机电竞」，源码、启动提示、小程序与 H5 元数据已同步。数据库名、Go 模块、Redis 键前缀、容器及命名卷继续使用原有 `jijie` 标识，升级时不要因此重建数据库或数据卷。
@@ -10,7 +18,7 @@
 
 本次源码更名不代表生产部署已经完成，实际站点及微信后台登记名称需在发布时核对。
 
-## 当前部署与源码边界（2026-10-23）
+## 历史部署与源码边界（2026-10-23）
 
 钱包、押金补缴、资金审核、客服、订单调价、分享、AI审核及消息中心代码已通过宝塔 MCP 升级到生产。运行源码为 `ecac760b185ec33f7025c01a7e072d734ef49343`，镜像 `jijie-api:20261023-wallet-ecac760`。API、PostgreSQL和Redis健康，生产 `dev_mode=false`；只更新API，保留数据库、Redis和加密主密钥。旧业务行数未丢失，迁移未按历史订单增发资金。核查及明确的真实能力边界见[本轮验收](WALLET_DEPOSIT_POLISH_ACCEPTANCE.md)。
 
@@ -23,7 +31,7 @@
 新机器从源码构建可执行：
 
 ```bash
-git clone --branch main https://github.com/hhh0078/e-sports-platform.git jijie-source
+git clone --branch codex/public-content-admin-centers https://github.com/hhh0078/e-sports-platform.git jijie-source
 cd jijie-source
 git rev-parse --short HEAD
 ```
@@ -233,7 +241,9 @@ chmod 600 backup/*
 
 数据库包含上传图、订单证据及协议内容，备份需覆盖整个数据库。Redis 会话有独立持久卷，丢失后用户需重新登录；不要执行 `docker compose down -v`，它会删除业务持久卷。
 
-升级前备份并记录当前镜像标签；源码构建新标签、`docker compose up -d api`，验证 health/真实页面。失败时把 `.env` 的 `IMAGE_TAG` 恢复旧值，再 `docker compose up -d --no-build api`。本次新增字段在 JSON 结构中，未删表；以后有破坏性迁移时需单独设计数据库回滚，不能只换镜像。
+升级前备份并记录当前镜像标签；从核对过的提交构建新标签，再使用`docker compose up -d --no-deps --no-build api`仅切换API，验证健康和真实页面。失败回退前必须检查权限及数据库兼容性；只有旧镜像兼容时，才恢复`IMAGE_TAG`并以相同API-only命令启动。不得为回退代码还原正在交易的资金数据库。
+
+2026-10-26版本加入`platform_admin_role=deputy`。旧镜像不认识该字段，会把副管理员当完整管理员；如果新版本已经授予副管理员，禁止直接回退不识别副权限的旧镜像，应使用保留新权限语义的修复镜像。新表为`articles`、`announcement_receipts`、`club_deputies`，迁移保留旧业务和资金；不能仅凭“没有删表”认定回滚安全。
 
 ## 11. 发布验收清单
 
