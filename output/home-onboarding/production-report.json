@@ -1,0 +1,92 @@
+{
+  "file_purpose": "本轮正式后端与默认运营内容上线聚合证据，不含配置正文、身份秘密或私密备份",
+  "result": "passed",
+  "checked_at": "2026-10-26T03:45:33.391994+00:00",
+  "code_commit": "1df3b7a36db660ff320a2860232cac77a89df5fd",
+  "branch": "codex/home-onboarding-polish",
+  "domain": "https://game.ai.58it.cn",
+  "image": "jijie-api:20261026-home-1df3b7a",
+  "image_id": "sha256:91f02d30b6a7cd38fcc19bbc31c1334f78288360f8fd0ac901fe85375b20590c",
+  "activated_at": "2026-10-26T03:07:39.965165+00:00",
+  "backup_dir": "/www/wwwroot/game.ai.58it.cn/.deploy-backups/pre-home-onboarding-activation-20261026-home-1df3b7a",
+  "backup_available": true,
+  "production_checks_passed": 120,
+  "production_checks_failed": 0,
+  "only_api_recreated": true,
+  "postgres_redis_containers_and_volumes_unchanged": true,
+  "env_only_image_tag_changed": true,
+  "private_settings_and_master_key_unchanged": true,
+  "existing_wallet_entries_immutable": true,
+  "redis_public_cache": {
+    "current_ttl_min": 86392,
+    "scanned_count": 6,
+    "generation_present": true,
+    "ttl_max": 86399,
+    "ttl_min": 86392,
+    "current_day_ttl_count": 6,
+    "scan_complete": true,
+    "current_count": 6,
+    "invalid_ttl_count": 0,
+    "hash_count": 6,
+    "live_count": 6,
+    "current_ttl_max": 86399,
+    "ready_exists": true,
+    "ready_ttl_ms": 4788,
+    "old_generation_count": 0
+  },
+  "default_content": {
+    "applied": true,
+    "revision": 10,
+    "backup_id": "platform-default-content-backup-v1",
+    "article_ids": [
+      "platform-intro-v1",
+      "newcomer-rules-v1"
+    ],
+    "existing_slides_preserved": true,
+    "nonempty_tips_and_notices_preserved": true,
+    "cache_invalidation_pending": false
+  },
+  "asset_checks": {
+    "passed": true,
+    "production_content_mutated": false,
+    "assets": [
+      {
+        "name": "platform-intro-v1.png",
+        "http": 200,
+        "content_type": "image/png",
+        "bytes": 1994250,
+        "sha256_matches_source": true,
+        "size": [
+          1672,
+          941
+        ],
+        "png_color_type": 2,
+        "cache": "public, max-age=86400"
+      },
+      {
+        "name": "newcomer-rules-v1.png",
+        "http": 200,
+        "content_type": "image/png",
+        "bytes": 2206416,
+        "sha256_matches_source": true,
+        "size": [
+          1122,
+          1402
+        ],
+        "png_color_type": 6,
+        "cache": "public, max-age=86400"
+      }
+    ]
+  },
+  "real_payment_executed": false,
+  "real_subscription_sent": false,
+  "production_session_created": false,
+  "mini_program_uploaded_or_published": false,
+  "unverified": [
+    "真实微信登录和手机号授权",
+    "商户真实支付、退款和转账到账",
+    "订阅实际收件",
+    "真机手势和版本升级",
+    "小程序正式上传、审核和发布"
+  ]
+}
