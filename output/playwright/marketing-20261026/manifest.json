@@ -1,0 +1,177 @@
+{
+  "created_at": "2026-10-26",
+  "source": "当前本地H5页面，393×759 @3x；手机状态栏与边框由合成脚本添加",
+  "data": "全部私有接口仅返回浏览器内虚构数据；未写入业务数据库",
+  "groups": [
+    {
+      "id": "01-admin",
+      "title": "管理员后台",
+      "subtitle": "经营概览、用户管理与订单售后，集中处理平台事务",
+      "screens": [
+        {
+          "id": "admin-console",
+          "label": "经营概览与待办",
+          "route": "/pages/manage/index",
+          "ready": ".metric-money",
+          "file": "raw/admin-console.png"
+        },
+        {
+          "id": "admin-users",
+          "label": "用户与权限管理",
+          "route": "/pages/manage/users",
+          "ready": ".user-row",
+          "file": "raw/admin-users.png"
+        },
+        {
+          "id": "admin-orders",
+          "label": "订单与售后管理",
+          "route": "/pages/manage/orders",
+          "ready": ".manage-search-input",
+          "file": "raw/admin-orders.png"
+        }
+      ]
+    },
+    {
+      "id": "02-content",
+      "title": "内容运营",
+      "subtitle": "轮播、公告与文章管理，运营内容独立配置",
+      "screens": [
+        {
+          "id": "content-center",
+          "label": "轮播与公告配置",
+          "route": "/pages/manage/content/index",
+          "ready": ".content-tabs",
+          "file": "raw/content-center.png"
+        },
+        {
+          "id": "content-banner",
+          "label": "图片与文字分层",
+          "route": "/pages/manage/content/banner?id=marketing-banner-01",
+          "ready": ".banner-label-editor",
+          "scrollY": 40,
+          "file": "raw/content-banner.png"
+        },
+        {
+          "id": "content-articles",
+          "label": "图文文章管理",
+          "route": "/pages/manage/articles/index",
+          "ready": ".article-list-row",
+          "file": "raw/content-articles.png"
+        }
+      ]
+    },
+    {
+      "id": "03-services",
+      "title": "多游戏服务",
+      "subtitle": "展示服务、查看详情与编辑发布，覆盖日常接单场景",
+      "screens": [
+        {
+          "id": "service-home",
+          "label": "多游戏服务展示",
+          "route": "/pages/main/index?tab=player",
+          "ready": ".service-card",
+          "file": "raw/service-home.png"
+        },
+        {
+          "id": "service-detail",
+          "label": "服务详情与价格",
+          "route": "/pages/services/detail?id=marketing-service-01",
+          "ready": ".detail-title",
+          "file": "raw/service-detail.png"
+        },
+        {
+          "id": "service-publish",
+          "label": "封面与服务配置",
+          "route": "/pages/services/publish?id=marketing-service-01",
+          "ready": ".label-editor",
+          "file": "raw/service-publish.png"
+        }
+      ]
+    },
+    {
+      "id": "04-orders",
+      "title": "订单履约与沟通",
+      "subtitle": "订单进度、交易详情与独立聊天，协作过程清楚可查",
+      "screens": [
+        {
+          "id": "order-list",
+          "label": "订单进度一目了然",
+          "route": "/pages/main/index?tab=orders",
+          "ready": ".order-card",
+          "file": "raw/order-list.png"
+        },
+        {
+          "id": "order-detail",
+          "label": "交易约定与履约",
+          "route": "/pages/orders/detail?id=marketing-order-01",
+          "ready": ".order-heading",
+          "file": "raw/order-detail.png"
+        },
+        {
+          "id": "order-chat",
+          "label": "订单独立聊天室",
+          "route": "/pages/orders/chat?id=marketing-order-01",
+          "ready": ".message",
+          "file": "raw/order-chat.png"
+        }
+      ]
+    },
+    {
+      "id": "05-clubs",
+      "title": "俱乐部体系",
+      "subtitle": "公开主页、管理工作台与团队资金，组织协作更清晰",
+      "screens": [
+        {
+          "id": "club-home",
+          "label": "俱乐部品牌主页",
+          "route": "/pages/community/clubs/detail?id=marketing-club-01",
+          "ready": ".club-title",
+          "file": "raw/club-home.png"
+        },
+        {
+          "id": "club-console",
+          "label": "俱乐部管理工作台",
+          "route": "/pages/community/clubs/console?id=marketing-club-01",
+          "ready": ".club-console-title",
+          "file": "raw/club-console.png"
+        },
+        {
+          "id": "club-funds",
+          "label": "佣金与押金分账",
+          "route": "/pages/community/clubs/funds?id=marketing-club-01",
+          "ready": ".funds-value",
+          "file": "raw/club-funds.png"
+        }
+      ]
+    },
+    {
+      "id": "06-wallet",
+      "title": "个人中心与钱包",
+      "subtitle": "个人入口、余额分区与收支记录，资金状态分别展示",
+      "screens": [
+        {
+          "id": "personal-center",
+          "label": "个人工作台",
+          "route": "/pages/main/index?tab=me",
+          "ready": ".profile-name",
+          "file": "raw/personal-center.png"
+        },
+        {
+          "id": "wallet-overview",
+          "label": "余额与结算分区",
+          "route": "/pages/account/wallet",
+          "ready": ".balance-value",
+          "file": "raw/wallet-overview.png"
+        },
+        {
+          "id": "wallet-ledger",
+          "label": "押金与收支明细",
+          "route": "/pages/account/wallet",
+          "ready": ".ledger-row",
+          "scroll": ".deposit-section",
+          "file": "raw/wallet-ledger.png"
+        }
+      ]
+    }
+  ]
+}

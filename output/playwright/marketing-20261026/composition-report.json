@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "groups": 6,
+  "phones": 18,
+  "screenshots": {
+    "width": 1179,
+    "height": 2277,
+    "statusHeight": 177,
+    "homeHeight": 102
+  },
+  "screen": {
+    "width": 1179,
+    "height": 2556,
+    "left": 75,
+    "top": 72,
+    "radius": 165
+  },
+  "phone": {
+    "width": 1329,
+    "height": 2700
+  },
+  "composite": {
+    "width": 2400,
+    "height": 1800
+  },
+  "capture": "H5真实页面截图加设备展示框；759视口上方补59、下方补34 CSS像素设备展示区，不拉伸原图；非真机截图。",
+  "frame": {
+    "source": "https://tryhoverify.com/images/devices/iphone_16/black.webp",
+    "license": "https://tryhoverify.com/tools/device-frames/license/",
+    "usage": "允许带页面截图的商业宣传成品；裸边框仅留本机忽略目录，不随源码或素材包分发。"
+  },
+  "checks": [
+    "输入截图尺寸正确",
+    "输出数量与清单一致",
+    "单机和组合尺寸正确",
+    "单机四角透明",
+    "组合图统一标注演示数据"
+  ]
+}

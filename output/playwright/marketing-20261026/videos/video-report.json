@@ -1,0 +1,374 @@
+{
+  "passed": true,
+  "size": {
+    "width": 1080,
+    "height": 1920
+  },
+  "fps": 30,
+  "duration_seconds": 30,
+  "frames": 900,
+  "audio": "静音字幕视频",
+  "source": "当前H5真实页面截图套设备展示框；全部私有数据为本地演示，非微信真机录屏。",
+  "rendering": "逐帧流式编码，手机轻运镜和镜头淡化；不缓存900帧。",
+  "tools": {
+    "ffmpeg": "/Applications/TRAE SOLO CN.app/Contents/Resources/app/bin/ffmpeg",
+    "ffprobe": "/Applications/TRAE SOLO CN.app/Contents/Resources/app/bin/ffprobe",
+    "jpegEncoder": "/Users/Zhuanz/Library/Caches/ms-playwright/ffmpeg-1009/ffmpeg-mac",
+    "direct": false
+  },
+  "preview_times_seconds": [
+    0,
+    3,
+    8,
+    15,
+    24,
+    29
+  ],
+  "results": [
+    {
+      "id": "01-platform-admin",
+      "audience": "平台管理员",
+      "hook": "想做自己的游戏接单平台？",
+      "file": "videos/01-platform-admin.mp4",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "avg_frame_rate": "30/1",
+            "nb_frames": "900"
+          }
+        ],
+        "format": {
+          "duration": "30.000000"
+        }
+      }
+    },
+    {
+      "id": "02-club-admin",
+      "audience": "俱乐部管理员",
+      "hook": "俱乐部接单，怎么管得更省心？",
+      "file": "videos/02-club-admin.mp4",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "avg_frame_rate": "30/1",
+            "nb_frames": "900"
+          }
+        ],
+        "format": {
+          "duration": "30.000000"
+        }
+      }
+    },
+    {
+      "id": "03-game-enthusiast",
+      "audience": "游戏爱好者",
+      "hook": "游戏打得好，也能接单？",
+      "file": "videos/03-game-enthusiast.mp4",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "avg_frame_rate": "30/1",
+            "nb_frames": "900"
+          }
+        ],
+        "format": {
+          "duration": "30.000000"
+        }
+      }
+    },
+    {
+      "id": "04-player",
+      "audience": "玩家",
+      "hook": "想找陪玩护航，预算不想拉满？",
+      "file": "videos/04-player.mp4",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "avg_frame_rate": "30/1",
+            "nb_frames": "900"
+          }
+        ],
+        "format": {
+          "duration": "30.000000"
+        }
+      }
+    }
+  ],
+  "plans": [
+    {
+      "id": "01-platform-admin",
+      "audience": "平台管理员",
+      "hook": "想做自己的游戏接单平台？",
+      "scenes": [
+        {
+          "phone": "admin-console",
+          "title": [
+            "想做自己的",
+            "游戏接单平台？"
+          ],
+          "detail": "先看后台能不能管好"
+        },
+        {
+          "phone": "admin-console",
+          "title": [
+            "经营与待办",
+            "一屏看清"
+          ],
+          "detail": "用户、订单、趋势与待办集中展示"
+        },
+        {
+          "phone": "admin-users",
+          "title": [
+            "用户与权限",
+            "分开管理"
+          ],
+          "detail": "用户列表、资料与管理入口清晰可查"
+        },
+        {
+          "phone": "admin-orders",
+          "title": [
+            "订单与售后",
+            "有处可查"
+          ],
+          "detail": "按订单查看进度、退款与争议"
+        },
+        {
+          "phone": "content-center",
+          "title": [
+            "轮播与公告",
+            "按需配置"
+          ],
+          "detail": "运营图、文字与公告独立管理"
+        },
+        {
+          "phone": "content-articles",
+          "title": [
+            "图文内容",
+            "持续运营"
+          ],
+          "detail": "文章列表与发布状态集中管理"
+        },
+        {
+          "phone": "admin-console",
+          "title": [
+            "了解源码",
+            "搭建自己的平台"
+          ],
+          "detail": "开机电竞 · 多游戏服务小程序"
+        }
+      ]
+    },
+    {
+      "id": "02-club-admin",
+      "audience": "俱乐部管理员",
+      "hook": "俱乐部接单，怎么管得更省心？",
+      "scenes": [
+        {
+          "phone": "club-console",
+          "title": [
+            "俱乐部接单",
+            "怎么管得更省心？"
+          ],
+          "detail": "从主页展示，到团队日常协作"
+        },
+        {
+          "phone": "club-home",
+          "title": [
+            "俱乐部主页",
+            "展示团队特色"
+          ],
+          "detail": "介绍、游戏范围与服务统一展示"
+        },
+        {
+          "phone": "club-console",
+          "title": [
+            "管理工作台",
+            "入口更集中"
+          ],
+          "detail": "成员、申请与订单，按职责处理"
+        },
+        {
+          "phone": "club-funds",
+          "title": [
+            "佣金与押金",
+            "分别记账"
+          ],
+          "detail": "团队资金分区展示，状态清楚可查"
+        },
+        {
+          "phone": "order-chat",
+          "title": [
+            "订单独立聊天",
+            "沟通围绕同一单"
+          ],
+          "detail": "交易约定与协作消息保留在订单内"
+        },
+        {
+          "phone": "order-list",
+          "title": [
+            "订单进度",
+            "随时查看"
+          ],
+          "detail": "从接单到履约，按订单跟进"
+        },
+        {
+          "phone": "club-home",
+          "title": [
+            "俱乐部入驻",
+            "或独立部署"
+          ],
+          "detail": "了解系统，让团队协作更有条理"
+        }
+      ]
+    },
+    {
+      "id": "03-game-enthusiast",
+      "audience": "游戏爱好者",
+      "hook": "游戏打得好，也能接单？",
+      "disclaimer": "收入取决于实际成交 · 须完成资料核验",
+      "scenes": [
+        {
+          "phone": "service-publish",
+          "title": [
+            "游戏打得好",
+            "也能接单？"
+          ],
+          "detail": "把擅长的游戏，整理成一项服务"
+        },
+        {
+          "phone": "service-publish",
+          "title": [
+            "接单无需",
+            "平台押金"
+          ],
+          "detail": "先完善资料，再发布适合自己的服务",
+          "note": "须符合平台资料核验及交易规则"
+        },
+        {
+          "phone": "personal-center",
+          "title": [
+            "个人工作台",
+            "管理自己的服务"
+          ],
+          "detail": "个人资料、服务入口与订单集中查看"
+        },
+        {
+          "phone": "order-list",
+          "title": [
+            "有单之后",
+            "按进度履约"
+          ],
+          "detail": "查看订单状态，确认服务约定"
+        },
+        {
+          "phone": "order-chat",
+          "title": [
+            "服务怎么做",
+            "订单内聊清楚"
+          ],
+          "detail": "独立聊天室，让沟通对应具体订单"
+        },
+        {
+          "phone": "wallet-overview",
+          "title": [
+            "余额与结算",
+            "分别展示"
+          ],
+          "detail": "收入状态与可提现金额，按规则查看"
+        },
+        {
+          "phone": "service-publish",
+          "title": [
+            "把爱好变成收入",
+            "从一单服务开始"
+          ],
+          "detail": "开机电竞 · 多游戏服务小程序"
+        }
+      ]
+    },
+    {
+      "id": "04-player",
+      "audience": "玩家",
+      "hook": "想找陪玩护航，预算不想拉满？",
+      "disclaimer": "演示价格，实际以服务详情为准",
+      "scenes": [
+        {
+          "phone": "service-home",
+          "title": [
+            "想找陪玩护航",
+            "预算不想拉满？"
+          ],
+          "detail": "低价找陪玩，护航按需选"
+        },
+        {
+          "phone": "service-home",
+          "title": [
+            "多款游戏",
+            "先挑合适队友"
+          ],
+          "detail": "看分类、服务范围与展示价格"
+        },
+        {
+          "phone": "service-detail",
+          "title": [
+            "陪玩演示价",
+            "¥12 / 小时"
+          ],
+          "detail": "先看服务详情，再确认游戏与范围"
+        },
+        {
+          "phone": "order-detail",
+          "title": [
+            "约定与进度",
+            "订单里看清"
+          ],
+          "detail": "服务内容、价格和履约状态分别展示"
+        },
+        {
+          "phone": "order-chat",
+          "title": [
+            "开局前",
+            "先把需求聊清楚"
+          ],
+          "detail": "订单独立聊天，沟通有具体上下文"
+        },
+        {
+          "phone": "club-home",
+          "title": [
+            "想找团队",
+            "也能看俱乐部"
+          ],
+          "detail": "浏览团队主页，选择适合自己的服务"
+        },
+        {
+          "phone": "service-home",
+          "title": [
+            "挑选合适队友",
+            "查看服务与价格"
+          ],
+          "detail": "开机电竞 · 多游戏服务小程序"
+        }
+      ]
+    }
+  ]
+}
