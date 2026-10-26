@@ -1,7 +1,7 @@
 <!-- 文件作用：记录四类受众宣传视频的镜头安排、准确文案与交付验证边界，供后续宣传编辑复用。 -->
 # 开机电竞宣传视频脚本
 
-四条视频均为1080×1920、30fps、30秒H264 MP4，静音配中文字幕。素材来自本次真实H5界面截图，带iPhone展示边框；不是微信真机录屏。所有视频均标记“功能演示 · 演示数据”。
+四条视频均为1080×1920、30fps、30秒H264 MP4，配中文情绪旁白与画面完整口播字幕，另附SRT与可复用旁白文件。素材来自本次真实H5界面截图，带iPhone展示边框；不是微信真机录屏。所有视频均标记“功能演示 · 演示数据”。
 
 固定节奏：0—3秒钩子，3—7.5、7.5—12、12—16.5、16.5—21、21—25.5秒各一项功能，25.5—30秒收尾。每次切换约0.4秒淡化，手机仅轻微运镜，画面和文案留在安全区。
 
@@ -12,12 +12,14 @@
 | 游戏爱好者 | 游戏打得好，也能接单？ | 接单无需平台押金、个人工作台、订单履约、订单沟通、余额结算 | 把爱好变成收入，从一单服务开始 |
 | 玩家 | 想找陪玩护航，预算不想拉满？低价找陪玩，护航按需选 | 多游戏服务、陪玩演示价格、约定进度、订单聊天、俱乐部主页 | 挑选合适队友，查看服务与价格 |
 
+配音的实际逐镜头文字、音色和情绪指令以 `scripts/marketing-voice-script.json` 为准，主标题保留完整受众钩子；少量口播使用更短的自然句，保证前三秒开场和完整收句。平台采用成熟男声、俱乐部采用温暖女声、游戏爱好者采用清爽年轻男声、玩家采用明亮女声，均由支持情绪指令的Qwen3-TTS 1.7B CustomVoice本地生成，不使用真人声音克隆。
+
 游戏爱好者视频常驻小字“收入取决于实际成交 · 须完成资料核验”，押金镜头补充“须符合平台资料核验及交易规则”。不承诺必有订单、收益或无条件交易。
 
 玩家视频使用本次虚构服务的演示价格“¥12 / 小时”，常驻小字“演示价格，实际以服务详情为准”。不宣称全网最低价或平台所有服务均为该价格。
 
-运行方式：先完成截图与手机图合成，再在仓库根目录执行 `frontend/node_modules/.bin/tsx scripts/render-marketing-videos.ts`。脚本复用本机已装的Canvas、Playwright和编码工具，不增加依赖。可通过 `MARKETING_NODE_MODULES`、`MARKETING_FFMPEG`、`MARKETING_FFPROBE` 指定已有工具路径。
+运行方式：先完成截图与手机图合成，用 `frontend/node_modules/.bin/tsx scripts/generate-marketing-voice.ts` 生成逐镜头配音；再运行 `frontend/node_modules/.bin/tsx scripts/render-marketing-videos.ts` 烧录完整字幕，最后运行 `frontend/node_modules/.bin/tsx scripts/voice-marketing-videos.ts` 合流声音。脚本复用本机已装的Canvas、Playwright和编码工具，不增加依赖。可通过 `MARKETING_NODE_MODULES`、`MARKETING_FFMPEG`、`MARKETING_FFPROBE` 指定已有工具路径。
 
-已有四条完整视频后，局部更新素材可使用 `MARKETING_VIDEO_IDS=03-game-enthusiast,04-player` 只重渲染指定视频；结束时仍会对四条成品全部重新做规格核验。
+已有四条完整视频后，局部更新素材可使用 `MARKETING_VIDEO_IDS=03-game-enthusiast,04-player` 只重渲染指定视频；渲染结束先对无声中间成片做规格核验，随后需再次执行配音合流，避免静音中间文件覆盖最终有声视频。
 
 交付目录为 `output/playwright/marketing-20261026/videos/`。每条视频由ffprobe验证H264、900帧、30fps、1080×1920与30秒，并从实际交付MP4解码提取0、3、8、15、24、29秒关键帧。报告保存为 `video-report.json`。这些验证不代表真实微信授权、支付、转账或收益验收。

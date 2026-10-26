@@ -7,9 +7,50 @@
   "fps": 30,
   "duration_seconds": 30,
   "frames": 900,
-  "audio": "静音字幕视频",
+  "audio": "AAC配音，48kHz单声道；旁白PCM统一响度并检查实际MP4解码",
   "source": "当前H5真实页面截图套设备展示框；全部私有数据为本地演示，非微信真机录屏。",
   "rendering": "逐帧流式编码，手机轻运镜和镜头淡化；不缓存900帧。",
+  "narration_subtitles": {
+    "source": "scripts/marketing-voice-script.json",
+    "segments": {
+      "01-platform-admin": [
+        "想做接单平台？",
+        "订单待办，一屏看清。",
+        "用户资料和权限，分开管理。",
+        "订单进度和售后，随时可查。",
+        "轮播和公告，自己掌控。",
+        "文章发布状态，集中管理。",
+        "开机电竞源码，搭建自己的平台。"
+      ],
+      "02-club-admin": [
+        "团队接单，怎么省心？",
+        "专属主页，展示你的团队。",
+        "成员申请和团队订单，集中管理。",
+        "佣金、押金分开记。",
+        "订单独立聊天，团队一起协作。",
+        "接单到履约，订单进度随时查看。",
+        "俱乐部入驻，也能独立部署。"
+      ],
+      "03-game-enthusiast": [
+        "游戏打得好，也能接单？",
+        "接单无需平台押金，完善资料就出发！",
+        "把擅长的游戏，整理成你的服务。",
+        "接到订单，按约定认真履约。",
+        "需求在订单里聊清楚，沟通有记录。",
+        "收入按规则结算，资金状态看得清。",
+        "把爱好变成收入，从一单服务开始！"
+      ],
+      "04-player": [
+        "陪玩护航，想省点？",
+        "多款游戏，挑选合适队友。",
+        "陪玩演示价，每小时十二元！",
+        "订单进度和约定，随时查看。",
+        "先聊清需求。",
+        "也能选团队服务。",
+        "打开开机电竞，挑选游戏队友！"
+      ]
+    }
+  },
   "tools": {
     "ffmpeg": "/Applications/TRAE SOLO CN.app/Contents/Resources/app/bin/ffmpeg",
     "ffprobe": "/Applications/TRAE SOLO CN.app/Contents/Resources/app/bin/ffprobe",
@@ -39,7 +80,17 @@
             "width": 1080,
             "height": 1920,
             "avg_frame_rate": "30/1",
+            "duration": "30.000000",
             "nb_frames": "900"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 1,
+            "avg_frame_rate": "0/0",
+            "duration": "29.994000",
+            "nb_frames": "1408"
           }
         ],
         "format": {
@@ -61,7 +112,17 @@
             "width": 1080,
             "height": 1920,
             "avg_frame_rate": "30/1",
+            "duration": "30.000000",
             "nb_frames": "900"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 1,
+            "avg_frame_rate": "0/0",
+            "duration": "29.994000",
+            "nb_frames": "1408"
           }
         ],
         "format": {
@@ -83,7 +144,17 @@
             "width": 1080,
             "height": 1920,
             "avg_frame_rate": "30/1",
+            "duration": "30.000000",
             "nb_frames": "900"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 1,
+            "avg_frame_rate": "0/0",
+            "duration": "29.994000",
+            "nb_frames": "1408"
           }
         ],
         "format": {
@@ -105,7 +176,17 @@
             "width": 1080,
             "height": 1920,
             "avg_frame_rate": "30/1",
+            "duration": "30.000000",
             "nb_frames": "900"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 1,
+            "avg_frame_rate": "0/0",
+            "duration": "29.994000",
+            "nb_frames": "1408"
           }
         ],
         "format": {
@@ -370,5 +451,7 @@
         }
       ]
     }
-  ]
+  ],
+  "voice_report": "videos/voice-report.json",
+  "subtitles": "已保留成品画面中的烧录字幕，另附七镜头完整配音SRT。"
 }

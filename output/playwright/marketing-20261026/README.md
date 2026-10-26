@@ -1,7 +1,7 @@
 <!-- 文件作用：说明开机电竞宣传图片、四类受众视频、使用方式、素材许可和验证范围。 -->
 # 开机电竞宣传素材 · 2026-10-26
 
-本批交付包括6张三屏功能组合图、18张透明背景套壳手机图、18张原始页面截图，以及4条面向不同受众的30秒竖屏字幕视频。
+本批交付包括6张三屏功能组合图、18张透明背景套壳手机图、18张原始页面截图，以及4条面向不同受众的30秒竖屏配音字幕视频。
 
 ## 图片
 
@@ -18,7 +18,7 @@
 
 ## 视频
 
-四条均为竖屏1080×1920、30fps、30.000秒、H264 MP4，每条开头3秒独立钩子，配中文字幕、轻运镜和转场，当前交付为静音字幕版。
+四条均为竖屏1080×1920、30fps、30.000秒、H264 MP4，每条开头3秒独立钩子，配有中文情绪旁白、逐镜头完整口播字幕、轻运镜和转场。四类受众分别使用成熟男声、温暖女声、清爽年轻男声与明亮女声，语气按内容调整。
 
 | 文件 | 目标人群 | 重点 |
 | --- | --- | --- |
@@ -27,13 +27,19 @@
 | videos/03-game-enthusiast.mp4 | 游戏爱好者 | 接单无需平台押金，把擅长的游戏整理为服务，把爱好变成收入 |
 | videos/04-player.mp4 | 玩家 | 语音陪玩、护航协作与低价演示服务，按详情选择队友 |
 
-镜头和文案详见仓库 `docs/MARKETING_VIDEO_SCRIPTS.md`。视频的收入、价格说明与“演示数据”标记均已写入画面。演示陪玩价格为¥12/小时，实际价格以服务详情为准；收入取决于实际成交，接单仍须满足资料核验及交易规则。
+镜头和文案详见仓库 `docs/MARKETING_VIDEO_SCRIPTS.md` 与 `scripts/marketing-voice-script.json`。同名SRT、30秒WAV和AAC/M4A旁白也一并保留，便于后续改剪。视频的收入、价格说明与“演示数据”标记均已写入画面。演示陪玩价格为¥12/小时，实际价格以服务详情为准；收入取决于实际成交，接单仍须满足资料核验及交易规则。
 
 ## 截图与数据来源
 
 截图来自2026-10-26当前本地H5产品页面。人物、组织、订单、聊天、成交、评分与资金数字由隔离浏览器中的模拟接口提供，没有写入本地或生产业务数据库，也没有使用真实会话或真实支付凭据。公共游戏主题与静态封面复用当前项目配置。
 
 H5内容按393×759逻辑像素、3倍像素密度采集；合成时上下补59和34逻辑像素的设备展示区，裁切屏幕圆角后叠加iPhone边框，不拉伸界面。该素材是产品界面截图加设备展示框，不是微信真机截图或录屏。
+
+## 配音模型
+
+配音使用支持自然语言情绪指令的Qwen3-TTS 1.7B CustomVoice，采用MLX 4bit本地推理。模型按[官方模型页](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice)的Apache 2.0许可使用；量化模型来自[对应ModelScope仓库](https://modelscope.cn/models/mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit)，两组权重SHA256已与上游核验。没有克隆真人声音，没有使用仅限个人非商用的系统配音。
+
+模型和配音工具环境仅保存在本机忽略目录`.run/`，不进入小程序依赖或售卖素材压缩包。
 
 ## 手机边框许可
 
@@ -43,7 +49,8 @@ H5内容按393×759逻辑像素、3倍像素密度采集；合成时上下补59�
 
 - 当前18张页面采集完成，截图流程无运行异常或未配置请求；修正过游戏封面对应、资金分录中文名称和轮播保存按钮取景。
 - 18张单机和6张组合的数量、尺寸、圆角和透明四角通过自检，组合排版与中文显示已目视检查。
-- 4条实际MP4逐条经ffprobe核验30秒、900帧、30fps、1080×1920、H264，并从成品抽取0、3、8、15、24、29秒画面检查。
+- 4条实际MP4逐条经ffprobe核验30秒、900帧、30fps、1080×1920、H264与AAC，并从成品抽取0、3、8、15、24、29秒画面检查。
+- 28段旁白逐段检查有效声音、峰值和时长，保留自然收句；完整口播字幕烧录在画面内，另附SRT。
 - 前端类型检查、规范检查、827项自动测试、H5与微信正式构建均通过；新增宣传脚本独立严格TypeScript检查通过。
 - 本次未验证微信真机、真实支付、转账或真实收益，宣传素材不代表这些能力已经完成现实交易验收。
 
@@ -54,7 +61,9 @@ H5内容按393×759逻辑像素、3倍像素密度采集；合成时上下补59�
 ```sh
 frontend/node_modules/.bin/tsx scripts/capture-marketing.ts
 frontend/node_modules/.bin/tsx scripts/compose-marketing.ts
+frontend/node_modules/.bin/tsx scripts/generate-marketing-voice.ts
 frontend/node_modules/.bin/tsx scripts/render-marketing-videos.ts
+frontend/node_modules/.bin/tsx scripts/voice-marketing-videos.ts
 ```
 
-复用本机已装工具，没有新增项目依赖。`MARKETING_NODE_MODULES`可指定包含Playwright、sharp和Canvas的已有工具目录；视频编码工具可通过`MARKETING_FFMPEG`和`MARKETING_FFPROBE`指定。
+图片和视频渲染复用本机已有工具；配音另建独立MLX工具环境，没有新增小程序项目依赖。`generate-marketing-voice.ts`需要本机`.run/marketing-tts-env`及`.run/marketing-tts-model`，或通过`MARKETING_TTS_PYTHON`、`MARKETING_TTS_MODEL`指定。配音环境安装前已检查国内镜像，并使用清华镜像安装MLX-Audio。`MARKETING_NODE_MODULES`可指定包含Playwright、sharp和Canvas的已有工具目录；视频编码工具可通过`MARKETING_FFMPEG`和`MARKETING_FFPROBE`指定。

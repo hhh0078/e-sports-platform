@@ -1,4 +1,4 @@
-/** 文件作用：使用已采集的真实界面手机图，生成四类受众的30秒竖屏字幕视频，并核验编码、时长与关键帧；不修改业务数据。 */
+/** 文件作用：使用已采集的真实界面手机图及逐镜头口播文案，生成四类受众的30秒竖屏字幕中间视频，核验编码、时长与关键帧，供后续配音合流；不修改业务数据。 */
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -63,6 +63,27 @@ const plans: VideoPlan[] = [
   ] }
 ]
 
+/** 读取四类受众的口播脚本，逐一校验视频编号、镜头数量和完整字幕，避免错配配音。 */
+function readVoiceScripts(): Map<string, string[]> {
+  const raw: unknown = JSON.parse(fs.readFileSync(path.join(root, 'scripts/marketing-voice-script.json'), 'utf8'))
+  assert.ok(raw && typeof raw === 'object' && 'videos' in raw && Array.isArray(raw.videos), '口播脚本缺少videos列表')
+  const result = new Map<string, string[]>()
+  for (const item of raw.videos as unknown[]) {
+    assert.ok(item && typeof item === 'object' && 'id' in item && typeof item.id === 'string' && 'segments' in item && Array.isArray(item.segments), '口播脚本的视频编号或镜头文案无效')
+    const id = item.id, plan = plans.find(value => value.id === id)
+    assert.ok(plan, '口播脚本包含未知视频编号：' + id)
+    assert.ok(!result.has(id), '口播脚本包含重复视频编号：' + id)
+    const segments = item.segments.map((value: unknown) => {
+      assert.ok(typeof value === 'string' && value.trim(), id + '存在空白口播字幕')
+      return value.trim()
+    })
+    assert.equal(segments.length, plan.scenes.length, id + '口播段数与镜头数量不一致')
+    result.set(id, segments)
+  }
+  assert.deepEqual([...result.keys()].sort(), plans.map(plan => plan.id).sort(), '口播脚本未覆盖全部四个视频')
+  return result
+}
+
 /** 在已有工具中选择可运行的编码器和探测器，不安装软件或依赖。 */
 function binaries(): { ffmpeg: string; ffprobe: string; jpegEncoder: string; direct: boolean } {
   const candidates = [process.env.MARKETING_FFMPEG, '/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/Applications/TRAE SOLO CN.app/Contents/Resources/app/bin/ffmpeg', '/Applications/Trae CN.app/Contents/Resources/app/bin/ffmpeg'].filter((item): item is string => !!item)
@@ -96,7 +117,7 @@ function text(context: SKRSContext2D, value: string, y: number, size: number, co
 }
 
 /** 将现有手机图与准确文案绘制成一个镜头，运镜只轻微放大手机图，不改动界面。 */
-function drawScene(canvas: Canvas, plan: VideoPlan, index: number, phone: Image, progress: number): void {
+function drawScene(canvas: Canvas, plan: VideoPlan, index: number, phone: Image, progress: number, subtitle: string): void {
   const context = canvas.getContext('2d'), scene = plan.scenes[index], hook = index === 0
   const background = hook ? '#123d2d' : '#f2f4f1', ink = hook ? '#ffffff' : '#173d2d', muted = hook ? '#c6dfd0' : '#5b7065'
   context.globalAlpha = 1; context.fillStyle = background; context.fillRect(0, 0, width, height)
@@ -107,18 +128,20 @@ function drawScene(canvas: Canvas, plan: VideoPlan, index: number, phone: Image,
   text(context, scene.title[0], 240, hook ? 86 : 78, ink, 750)
   text(context, scene.title[1] || '', 343, hook ? 86 : 78, ink, 750)
   text(context, scene.detail, 419, 33, muted, 500)
-  const phoneHeight = 1160 * (1 + progress * .022), phoneWidth = phoneHeight * 1329 / 2700
+  const phoneHeight = 1140 * (1 + progress * .022), phoneWidth = phoneHeight * 1329 / 2700
   const left = (width - phoneWidth) / 2, top = 490 - progress * 8
   context.save(); context.shadowColor = hook ? '#001c1466' : '#102c2030'; context.shadowBlur = 35; context.shadowOffsetY = 18
   context.drawImage(phone, left, top, phoneWidth, phoneHeight); context.restore()
-  text(context, '功能演示 · 演示数据', 1744, 28, muted, 500)
+  rounded(context, 100, 1670, 880, 50, 14, '#0a3024e6')
+  text(context, subtitle, 1706, 34, '#ffffff', 600, 840)
+  text(context, '功能演示 · 演示数据', 1758, 28, muted, 500)
   const note = scene.note || plan.disclaimer
-  if (note) text(context, note, 1790, 25, muted, 450, 930)
+  if (note) text(context, note, 1803, 25, muted, 450, 930)
   rounded(context, 100, 1848, 880, 5, 2.5, hook ? '#4e7763' : '#d6e0d6')
 }
 
 /** 将逐帧JPEG写入编码器，处理反压并限制日志长度，避免缓存整个视频到内存。 */
-async function encodeFrames(plan: VideoPlan, phones: Map<string, Image>, tool: ReturnType<typeof binaries>): Promise<string> {
+async function encodeFrames(plan: VideoPlan, phones: Map<string, Image>, tool: ReturnType<typeof binaries>, subtitles: string[]): Promise<string> {
   const destination = path.join(videos, plan.id + '.mp4'), intermediate = path.join(temporary, plan.id + '.webm')
   const args = tool.direct
     ? ['-y', '-hide_banner', '-loglevel', 'error', '-f', 'image2pipe', '-r', String(fps), '-c:v', 'mjpeg', '-i', 'pipe:0', '-frames:v', String(frameCount), '-an', '-c:v', 'libx264', '-preset', 'fast', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', destination]
@@ -140,7 +163,7 @@ async function encodeFrames(plan: VideoPlan, phones: Map<string, Image>, tool: R
       lastScene = index
       const phone = phones.get(plan.scenes[index].phone); assert.ok(phone, '缺少手机图')
       const local = frame - starts[index], progress = local / (ends[index] - starts[index] - 1)
-      drawScene(layer, plan, index, phone, progress)
+      drawScene(layer, plan, index, phone, progress, subtitles[index])
       const context = blended.getContext('2d')
       if (index > 0 && local < 12) {
         context.globalAlpha = 1; context.drawImage(previous, 0, 0); context.globalAlpha = (local + 1) / 12; context.drawImage(layer, 0, 0); context.globalAlpha = 1
@@ -170,7 +193,7 @@ function verifyVideo(file: string, tool: ReturnType<typeof binaries>): Probe {
   assert.ok(stream); assert.equal(stream.codec_name, 'h264'); assert.equal(stream.width, width); assert.equal(stream.height, height)
   assert.equal(stream.avg_frame_rate, '30/1'); assert.equal(Number(stream.nb_frames), frameCount)
   assert.ok(Math.abs(Number(data.format?.duration) - 30) < .001, '视频时长不是30秒')
-  assert.equal(data.streams?.filter(item => item.codec_type === 'audio').length, 0, '本次交付为无音乐字幕视频')
+  assert.equal(data.streams?.filter(item => item.codec_type === 'audio').length, 0, '当前渲染阶段应为无音轨中间视频，配音由后续合流加入')
   return data
 }
 
@@ -223,7 +246,7 @@ async function extractPreviews(files: string[]): Promise<void> {
 async function run(): Promise<void> {
   fs.mkdirSync(videos, { recursive: true }); fs.mkdirSync(temporary, { recursive: true })
   assert.ok(GlobalFonts.registerFromPath('/System/Library/Fonts/Hiragino Sans GB.ttc', 'Marketing Chinese'), '中文字体加载失败')
-  const tool = binaries(), phones = new Map<string, Image>(), requested = process.env.MARKETING_VIDEO_IDS?.split(',')
+  const tool = binaries(), phones = new Map<string, Image>(), requested = process.env.MARKETING_VIDEO_IDS?.split(','), voiceScripts = readVoiceScripts()
   const selected = plans.filter(plan => !requested || requested.includes(plan.id))
   assert.ok(selected.length > 0 && (!requested || selected.length === new Set(requested).size), 'MARKETING_VIDEO_IDS包含未知视频编号')
   for (const plan of plans) {
@@ -236,7 +259,8 @@ async function run(): Promise<void> {
       const image = await loadImage(path.join(output, 'phones', scene.phone + '.png'))
       assert.equal(image.width, 1329); assert.equal(image.height, 2700); phones.set(scene.phone, image)
     }
-    const file = await encodeFrames(plan, phones, tool); updated.push(file)
+    const subtitles = voiceScripts.get(plan.id); assert.ok(subtitles, '缺少对应口播字幕：' + plan.id)
+    const file = await encodeFrames(plan, phones, tool, subtitles); updated.push(file)
     verifyVideo(file, tool)
     console.log('视频编码与规格核验通过：' + plan.id)
   }
@@ -245,8 +269,8 @@ async function run(): Promise<void> {
     const file = path.join(videos, plan.id + '.mp4')
     return { id: plan.id, audience: plan.audience, hook: plan.hook, file: path.relative(output, file), probe: verifyVideo(file, tool) }
   })
-  fs.writeFileSync(path.join(videos, 'video-report.json'), JSON.stringify({ passed: true, size: { width, height }, fps, duration_seconds: 30, frames: frameCount, audio: '静音字幕视频', source: '当前H5真实页面截图套设备展示框；全部私有数据为本地演示，非微信真机录屏。', rendering: '逐帧流式编码，手机轻运镜和镜头淡化；不缓存900帧。', tools: tool, preview_times_seconds: previewTimes, results, plans }, null, 2) + '\n')
-  console.log('4个30秒竖屏视频完成，实际MP4关键帧与核验报告已保存。')
+  fs.writeFileSync(path.join(videos, 'video-report.json'), JSON.stringify({ passed: true, size: { width, height }, fps, duration_seconds: 30, frames: frameCount, audio: '无音轨中间视频，完整口播字幕已烧录，待配音合流', source: '当前H5真实页面截图套设备展示框；全部私有数据为本地演示，非微信真机录屏。', rendering: '逐帧流式编码，手机轻运镜和镜头淡化；不缓存900帧。', narration_subtitles: { source: 'scripts/marketing-voice-script.json', segments: Object.fromEntries(voiceScripts) }, tools: tool, preview_times_seconds: previewTimes, results, plans }, null, 2) + '\n')
+  console.log('4个30秒竖屏中间视频完成，完整口播字幕、实际MP4关键帧与核验报告已保存，待配音合流。')
 }
 
 run().catch((error: unknown) => { console.error(error instanceof Error ? error.stack : String(error)); process.exitCode = 1 })
