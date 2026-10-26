@@ -14,12 +14,12 @@ import (
 	"jijie/internal/app"
 )
 
-// run 仅在明确apply及根管理员ID时执行幂等初始化；默认不建表、不运行应用自动种子。
+// run 仅在明确初始化或补齐命令及根管理员ID时执行；默认不建表、不运行应用自动种子。
 func run(args []string) error {
-	if len(args) == 0 || args[0] != "apply" {
-		return fmt.Errorf("用法：jijie-default-content apply --actor-id 已有平台根管理员ID")
+	if len(args) == 0 || args[0] != "apply" && args[0] != "fill-game-captions" {
+		return fmt.Errorf("用法：jijie-default-content apply|fill-game-captions --actor-id 已有平台根管理员ID")
 	}
-	flags := flag.NewFlagSet("apply", flag.ContinueOnError)
+	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	actor := flags.String("actor-id", "", "已授权执行的现有平台根管理员ID")
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
@@ -41,7 +41,12 @@ func run(args []string) error {
 	client := redis.NewClient(&redis.Options{Addr: cfg.RedisAddr, Password: cfg.RedisPassword, DialTimeout: time.Second, ReadTimeout: time.Second, WriteTimeout: time.Second})
 	defer client.Close()
 	service := &app.App{DB: pool, Redis: client, Config: cfg}
-	result, err := service.ApplyDefaultContent(ctx, *actor)
+	var result any
+	if args[0] == "fill-game-captions" {
+		result, err = service.FillGameCaptions(ctx, *actor)
+	} else {
+		result, err = service.ApplyDefaultContent(ctx, *actor)
+	}
 	if err != nil {
 		return err
 	}

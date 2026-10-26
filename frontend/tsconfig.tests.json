@@ -24,6 +24,7 @@
     "../scripts/mini-input-focus.ts",
     "../scripts/mini-public-operations.ts",
     "../scripts/mini-carousel-matrix.ts",
+    "../scripts/mini-game-carousel-copy.ts",
     "../scripts/mini-publish-draft.ts",
     "../scripts/mini-security-marker-smoke.ts"
   ],

@@ -1,0 +1,36 @@
+{
+  "file_purpose": "本轮13游戏轮播文案双屏验收摘要，不包含会话或生产私密配置",
+  "mini_widths": [
+    320,
+    390
+  ],
+  "games_per_width": 13,
+  "screenshots": 26,
+  "mini_passed": true,
+  "exceptions": 0,
+  "color_selector_warnings": 0,
+  "frontend_tests": {
+    "passed": 827,
+    "failed": 0,
+    "skipped": 0
+  },
+  "typecheck": true,
+  "standards_pages": 54,
+  "h5_build": true,
+  "release_mini_build": true,
+  "release_api": "https://game.ai.58it.cn/api",
+  "release_url_check": true,
+  "release_private_config_absent": true,
+  "script_sha256": "f8633cb1630d9536b1a63b257c4d401ad824153da1599968bfd1a4345287c3ea",
+  "boundaries": [
+    "截图为本地微信模拟器320/390，不等同真机或正式小程序上传发布",
+    "生产只通过宝塔MCP更新后端和运营配置，不创建生产测试会话或订单"
+  ],
+  "backend_race_tests": {
+    "passed": 404,
+    "failed": 0,
+    "skipped": 0,
+    "integration_database": "isolated_pg_schema_and_redis_prefix"
+  },
+  "backend_vet": true
+}

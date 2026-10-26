@@ -132,12 +132,30 @@ func (a *App) applyDefaultContentTx(ctx context.Context, q querier, actor User) 
 	if strings.TrimSpace(v.RequestNotice) == "" {
 		v.RequestNotice = "请写清游戏区服、任务目标、数量、预算与验收标准。\n下单前先沟通范围，不向他人提供账号密码或验证码。\n重要约定请保留在订单聊天中；退款先协商，无法达成一致可申请平台介入。"
 	}
+	var captionResult GameCaptionFillResult
+	_, captionMarkerErr := get[GameCaptionFillResult](ctx, q, "settings", gameCaptionMarker, false)
+	fillCaptions := missing(captionMarkerErr)
+	if captionMarkerErr != nil && !fillCaptions {
+		return result, captionMarkerErr
+	}
+	if fillCaptions {
+		v, captionResult, err = a.gameCaptionDraft(ctx, q, v, actor)
+		if err != nil {
+			return result, err
+		}
+	}
 	v.Revision, v.UpdatedAt = previous.Revision+1, stamp
 	if err = a.validatePublicContent(ctx, q, &v, previous, actor); err != nil {
 		return result, err
 	}
 	if err = put(ctx, q, "settings", publicContentID, v); err != nil {
 		return result, err
+	}
+	if fillCaptions {
+		captionResult.Applied, captionResult.Revision = true, v.Revision
+		if err = recordGameCaptionFill(ctx, q, actor.ID, previous, existed, captionResult); err != nil {
+			return result, err
+		}
 	}
 	result.Applied, result.AddedSlide, result.Revision, result.PreservedSlides = true, true, v.Revision, len(previous.GlobalSlides)
 	if err = putRaw(ctx, q, "settings", defaultContentMarker, result); err != nil {

@@ -1,0 +1,985 @@
+{
+  "file_purpose": "13款游戏独立轮播文案的本地微信官方SDK验收",
+  "passed": true,
+  "stage": "蛋仔派对",
+  "width": 320,
+  "project": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/dev/mp-weixin",
+  "checks": [
+    "本地HTTP工程、开发API、13款启用游戏及正式域名隔离守卫通过",
+    "honor：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "peace：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "delta：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "tft：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "valorant：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "lol：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "valorantm：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "cfm：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "arena：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "codm：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "identityv：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "narakam：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过",
+    "eggy：两段完整纯文字、主24副16、透明背景、左上右下、原生安全区及原目录服务区通过"
+  ],
+  "measurements": [
+    {
+      "game_id": "honor",
+      "game_name": "王者荣耀",
+      "slide_id": "game-default-honor",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "峡谷开黑有队友",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 180,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "双排陪练一起练好配合",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(255, 240, 209)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1095,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/honor.png"
+    },
+    {
+      "game_id": "peace",
+      "game_name": "和平精英",
+      "slide_id": "game-default-peace",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "战术组队一起出发",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(16, 32, 39)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "刚枪跑图都能找到搭子",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(221, 247, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1054,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/peace.png"
+    },
+    {
+      "game_id": "delta",
+      "game_name": "三角洲行动",
+      "slide_id": "game-default-delta",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "撤离路上有人同行",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "跑图练枪任务一起协作",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(0, 229, 155)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1054,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/delta.png"
+    },
+    {
+      "game_id": "tft",
+      "game_name": "金铲铲之战",
+      "slide_id": "game-default-tft",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "双人作战默契上场",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(23, 32, 25)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "阵容运营陪你一起琢磨",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(255, 246, 222)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1083,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/tft.png"
+    },
+    {
+      "game_id": "valorant",
+      "game_name": "无畏契约",
+      "slide_id": "game-default-valorant",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "配合打好每个回合",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "练枪战术一起耐心复盘",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(255, 171, 178)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1068,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/valorant.png"
+    },
+    {
+      "game_id": "lol",
+      "game_name": "英雄联盟",
+      "slide_id": "game-default-lol",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "召唤师峡谷找队友",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "对线团战都有陪练搭子",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(201, 170, 113)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1089,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/lol.png"
+    },
+    {
+      "game_id": "valorantm",
+      "game_name": "无畏契约：源能行动",
+      "slide_id": "game-default-valorantm",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "掌上集结配合开局",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "地图战术陪你逐局练习",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(255, 120, 128)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 978,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/valorantm.png"
+    },
+    {
+      "game_id": "cfm",
+      "game_name": "穿越火线手游",
+      "slide_id": "game-default-cfm",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "火线集结并肩开黑",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "枪法地图一起边玩边练",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(242, 140, 81)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1050,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/cfm.png"
+    },
+    {
+      "game_id": "arena",
+      "game_name": "暗区突围",
+      "slide_id": "game-default-arena",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "暗区探索结伴同行",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "熟悉地图练好撤离配合",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(224, 170, 98)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1059,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/arena.png"
+    },
+    {
+      "game_id": "codm",
+      "game_name": "使命召唤手游",
+      "slide_id": "game-default-codm",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "战术小队随时集结",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "枪法身法一起练好配合",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(213, 217, 106)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1088,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/codm.png"
+    },
+    {
+      "game_id": "identityv",
+      "game_name": "第五人格",
+      "slide_id": "game-default-identityv",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "庄园相约默契配合",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "追逃练习一起复盘细节",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(196, 181, 152)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1098,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/identityv.png"
+    },
+    {
+      "game_id": "narakam",
+      "game_name": "永劫无间手游",
+      "slide_id": "game-default-narakam",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "江湖结伴切磋同行",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 204,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(255, 255, 255)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "连招身法都有耐心陪练",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(214, 141, 114)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1029,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/narakam.png"
+    },
+    {
+      "game_id": "eggy",
+      "game_name": "蛋仔派对",
+      "slide_id": "game-default-eggy",
+      "slide_index": 1,
+      "slide_count": 2,
+      "hero": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 178.1484375
+      },
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 320,
+        "height": 60
+      },
+      "dots": {
+        "left": 293,
+        "top": 169.1484375,
+        "width": 18,
+        "height": 4
+      },
+      "games": {
+        "left": 9,
+        "top": 228.1484375,
+        "width": 302,
+        "height": 62
+      },
+      "services": {
+        "left": 13,
+        "top": 343.1484375,
+        "width": 294,
+        "height": 22
+      },
+      "labels": [
+        {
+          "text": "蛋搭子一起闯关",
+          "rect": {
+            "left": 8,
+            "top": 74.5546875,
+            "width": 180,
+            "height": 32.9921875
+          },
+          "font_size": 21.3333,
+          "color": "rgb(43, 29, 36)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        },
+        {
+          "text": "地图探索欢乐组队同行",
+          "rect": {
+            "left": 140,
+            "top": 129.734375,
+            "width": 172,
+            "height": 23.9921875
+          },
+          "font_size": 14.2222,
+          "color": "rgb(255, 240, 220)",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none",
+          "visibility": "visible",
+          "opacity": "1",
+          "pointer_events": "none"
+        }
+      ],
+      "sample_ms": 1004,
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/game-carousel-copy/mini-320/eggy.png"
+    }
+  ],
+  "exceptions": [],
+  "compatibility_warnings": [],
+  "cleanup_errors": [],
+  "boundaries": [
+    "仅本地公开GET与正常页面导航，不创建认证会话，不改运营配置、角色、资金或交易。",
+    "如当前公告可见，只点击其正常关闭按钮；可能按既有逻辑记录已读，不修改公告内容。",
+    "未读取页面data或调用私有方法，未注入令牌、存储、假窗口或假二维码。",
+    "原生自动轮播每3秒保持开启，官方swipeTo只选择检查目标；同图稳定窗口才接受实测与截图。",
+    "仅当前真实320或390窗口；颜色可读性仍需人工复核原始截图，不等同真机、微信支付或线上小程序上传验收。"
+  ],
+  "completed_at": "2026-10-26T06:11:01.857Z"
+}

@@ -66,10 +66,10 @@ func newTestAPIWithDefaults(t *testing.T, keepDefaults bool) *testAPI {
 	if !keepDefaults {
 		for _, statement := range []string{
 			"DELETE FROM articles WHERE id IN ('platform-intro-v1','newcomer-rules-v1')",
-			"DELETE FROM settings WHERE id IN ('public-content-v1','platform-default-content-v1','platform-default-content-backup-v1')",
+			"DELETE FROM settings WHERE id IN ('public-content-v1','platform-default-content-v1','platform-default-content-backup-v1','game-carousel-captions-v1','game-carousel-captions-backup-v1')",
 			"DELETE FROM moderation_targets WHERE data->>'target_id' IN ('public-content-v1','platform-intro-v1','newcomer-rules-v1')",
 			"DELETE FROM moderation_tasks WHERE data->>'target_id' IN ('public-content-v1','platform-intro-v1','newcomer-rules-v1')",
-			"DELETE FROM audit WHERE data->>'action'='default_content.apply'",
+			"DELETE FROM audit WHERE data->>'action' IN ('default_content.apply','game_captions.fill')",
 		} {
 			if _, err = a.DB.Exec(t.Context(), statement); err != nil {
 				t.Fatal(err)

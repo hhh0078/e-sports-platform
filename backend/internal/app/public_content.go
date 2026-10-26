@@ -39,7 +39,11 @@ func (a *App) publicContent(w http.ResponseWriter, r *http.Request) (any, error)
 		if slide.Kind == "game_slot" {
 			batch = v.GameSlides[g.ID]
 			if len(batch) == 0 {
-				batch = []ContentSlide{{ID: "game-default-" + g.ID, Kind: "image", ImageURL: g.CoverURL, Labels: []CoverLabel{}}}
+				fallback, fallbackErr := fallbackGameSlide(r.Context(), a.DB, g)
+				if fallbackErr != nil {
+					return nil, fallbackErr
+				}
+				batch = []ContentSlide{fallback}
 			}
 		}
 		for _, item := range batch {

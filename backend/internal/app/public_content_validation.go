@@ -51,8 +51,20 @@ func validateContentImage(ctx context.Context, q querier, raw, previous, purpose
 	return validateImageDimensions(purpose, image.Width, image.Height)
 }
 
-// validateContentSlides 校验稳定图层ID、最多一个游戏槽及各图片独立文字，排序由数组决定。
-func (a *App) validateContentSlides(ctx context.Context, q querier, slides []ContentSlide, previous []ContentSlide, gameList bool, actor User) ([]ContentSlide, error) {
+// validateGameSlideImage 允许当前游戏封面及同组同图层未改的旧引用，其余图片仍遵循运营上传的用途和归属限制。
+func validateGameSlideImage(ctx context.Context, q querier, raw, previous string, game *Game, actor User) error {
+	if game != nil && (raw == game.CoverURL || raw == previous) && publicImagePath.MatchString(raw) {
+		media, err := get[Evidence](ctx, q, "evidence", strings.TrimPrefix(raw, "/api/media/"), false)
+		if err != nil || !media.Public || media.OrderID != "" || media.Moderation == "rejected" || len(media.Data) == 0 {
+			return fail(400, "当前游戏封面不存在或已被撤销")
+		}
+		return nil
+	}
+	return validateContentImage(ctx, q, raw, previous, "promotion_banner", actor)
+}
+
+// validateContentSlides 校验稳定图层ID、最多一个游戏槽及各图片独立文字；game为空表示平台轮播，排序由数组决定。
+func (a *App) validateContentSlides(ctx context.Context, q querier, slides []ContentSlide, previous []ContentSlide, game *Game, actor User) ([]ContentSlide, error) {
 	if len(slides) > 12 {
 		return nil, fail(400, "每组轮播最多12项")
 	}
@@ -72,7 +84,7 @@ func (a *App) validateContentSlides(ctx context.Context, q querier, slides []Con
 		switch slide.Kind {
 		case "game_slot":
 			slots++
-			if gameList || slots > 1 || slide.ImageURL != "" || len(slide.Labels) != 0 || slide.Target != nil {
+			if game != nil || slots > 1 || slide.ImageURL != "" || len(slide.Labels) != 0 || slide.Target != nil {
 				return nil, fail(400, "全局仅支持一个游戏槽，游戏槽不能包含图片文字或跳转")
 			}
 			slide.Labels = []CoverLabel{}
@@ -80,7 +92,7 @@ func (a *App) validateContentSlides(ctx context.Context, q querier, slides []Con
 			if slide.ImageURL == "" {
 				return nil, fail(400, "请上传轮播图片")
 			}
-			if err := validateContentImage(ctx, q, slide.ImageURL, old[slide.ID].ImageURL, "promotion_banner", actor); err != nil {
+			if err := validateGameSlideImage(ctx, q, slide.ImageURL, old[slide.ID].ImageURL, game, actor); err != nil {
 				return nil, err
 			}
 			labels, err := normalizeContentLabels(slide.Labels)
@@ -137,7 +149,7 @@ func (a *App) validatePublicContent(ctx context.Context, q querier, v *PublicCon
 		return err
 	}
 	var err error
-	v.GlobalSlides, err = a.validateContentSlides(ctx, q, v.GlobalSlides, previous.GlobalSlides, false, actor)
+	v.GlobalSlides, err = a.validateContentSlides(ctx, q, v.GlobalSlides, previous.GlobalSlides, nil, actor)
 	if err != nil {
 		return err
 	}
@@ -148,10 +160,11 @@ func (a *App) validatePublicContent(ctx context.Context, q querier, v *PublicCon
 		if !gameIDPattern.MatchString(gameID) {
 			return fail(400, "游戏编号不正确")
 		}
-		if _, err = get[Game](ctx, q, "games", gameID, false); err != nil {
+		game, gameErr := get[Game](ctx, q, "games", gameID, false)
+		if gameErr != nil {
 			return fail(400, "轮播关联游戏不存在")
 		}
-		v.GameSlides[gameID], err = a.validateContentSlides(ctx, q, slides, previous.GameSlides[gameID], true, actor)
+		v.GameSlides[gameID], err = a.validateContentSlides(ctx, q, slides, previous.GameSlides[gameID], &game, actor)
 		if err != nil {
 			return err
 		}
