@@ -9,5 +9,5 @@ const props=defineProps<{tip?:ContentTip}>()
 function open():void{if(props.tip?.article_id)openContentTarget({kind:'article',id:props.tip.article_id})}
 </script>
 <style scoped>
-.content-tip{display:flex;align-items:center;gap:15.3846rpx;min-width:0;padding:15.3846rpx 23.0769rpx;border-radius:15.3846rpx;background:rgba(131,231,183,.08);color:var(--muted);font-size:23.0769rpx;line-height:34.6154rpx}.content-tip-text{flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}.content-tip-linked{color:var(--accent)}
+.content-tip{display:flex;align-items:center;gap:15.3846rpx;min-width:0;padding:0 0 7.6923rpx;color:#f4c36c;font-size:23.0769rpx;line-height:34.6154rpx}.content-tip-text{flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}.content-tip-linked{cursor:pointer}
 </style>

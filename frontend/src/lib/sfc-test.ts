@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import ts from 'typescript'
-import { ref,nextTick } from 'vue'
+import { ref,nextTick,watch } from 'vue'
 import { newWalletRequestID } from './wallet'
 import type { NativePageRefreshOptions } from './native-page-refresh'
 import { beginFinancialActivity } from './update-manager'
@@ -37,9 +37,14 @@ export function injectBusinessAPIs(context: vm.Context): void {
   context.beginFinancialActivity ??= beginFinancialActivity
   context.uni ??= {}
   context.uni.stopPullDownRefresh ??= () => {}
+  context.ref ??= ref
+  context.watch ??= watch
+  context.setTimeout ??= setTimeout
+  context.clearTimeout ??= clearTimeout
   // 旧页面夹具只存一个生命周期，原生适配本身由native-page-refresh.test执行真实实现。
   context.useNativePageRefresh ??= (options: NativePageRefreshOptions) => ({ refreshing: ref(false), loadingMore: ref(false), refresh: options.refresh, loadMore: options.more || (async () => {}) })
   vm.runInContext(executable(readFileSync(new URL('./list-page.ts', import.meta.url), 'utf8')), context)
+  vm.runInContext(executable(readFileSync(new URL('./publish-draft.ts', import.meta.url), 'utf8')), context)
   vm.runInContext(executable(readFileSync(new URL('./use-public-share.ts', import.meta.url), 'utf8')), context)
   context.requestPublic = (path: string) => context.api(path)
   context.request = context.api

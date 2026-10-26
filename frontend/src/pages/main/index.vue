@@ -41,7 +41,7 @@
 	import WorkerView from './worker/worker.vue'
 	import OrdersView from './orders/orders.vue'
 	import MeView from './me/me.vue'
-	import { themeStyle, game, state, init, sessionRevision } from '../../lib/store'
+	import { themeStyle, game, state, init, prepareEntryGame, sessionRevision } from '../../lib/store'
 	import { isTimelinePreview, enablePublicShareMenu } from '../../lib/sharing'
 	import { createPublicShareHandlers } from '../../lib/use-public-share'
 	import { readSafeArea } from '../../lib/safe-area'
@@ -67,10 +67,10 @@
 		try{await action()}catch(error){if(pageVisible&&mainNavigation.tab===tab&&gestureLocks.get(tab)===sequence)notify(error)}finally{if(gestureLocks.get(tab)===sequence){gestureLocks.delete(tab);refreshing.value[tab]=false}}
 	}
 	watch([()=>mainNavigation.tab,()=>state.user?.id,sessionRevision,()=>state.gameId,()=>playerView.value?.refreshKey,()=>workerView.value?.refreshKey,()=>ordersView.value?.refreshKey],clearGestures,{flush:'sync'})
-	onShow(()=>{enablePublicShareMenu();pageVisible=true;mainPageActive.value=true;void init(false,isTimelinePreview()).then(refreshPublicContent).catch(()=>{})})
+	onShow(()=>{enablePublicShareMenu();pageVisible=true;mainPageActive.value=true;void refreshPublicContent().catch(()=>{});void init(false,isTimelinePreview()).catch(()=>{})})
 	onHide(()=>{pageVisible=false;mainPageActive.value=false;clearGestures()})
 	onUnload(()=>{pageVisible=false;mainPageActive.value=false;clearGestures()})
-	watch(()=>state.gameId,()=>{resetPublicContent();if(pageVisible)void refreshPublicContent().catch(()=>{})})
+	watch(()=>state.gameId,()=>{if(!state.ready)return;resetPublicContent();if(pageVisible)void refreshPublicContent().catch(()=>{})},{flush:'sync'})
 
 	const timelinePreview = isTimelinePreview()
 	const safe = readSafeArea()
@@ -79,7 +79,7 @@
 	const publicShareHandlers = createPublicShareHandlers(() => ({ title: '集结 · ' + game.value.name + '好队友，即刻集结', path: '/pages/main/index?tab=player&game_id=' + encodeURIComponent(state.gameId), image: game.value.cover_url }))
 	onShareAppMessage(publicShareHandlers.friend)
 	onShareTimeline(publicShareHandlers.timeline)
-	onLoad(async query => { applyMainQuery(isTimelinePreview() ? { ...query, tab: 'player' } : query); if (query?.game_id) { await init(false, isTimelinePreview()); if (state.games.some(item => item.id === query.game_id)) state.gameId = query.game_id } })
+	onLoad(query => { applyMainQuery(isTimelinePreview() ? { ...query, tab: 'player' } : query); prepareEntryGame(query?.game_id || '') })
 </script>
 <style scoped>
 	.main-shell {

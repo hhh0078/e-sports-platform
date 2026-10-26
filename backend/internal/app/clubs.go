@@ -12,7 +12,7 @@ func (a *App) decorateClub(ctx context.Context, c Club) Club {
 	if c.AvatarURL == "" {
 		c.AvatarURL = defaultClubAvatar(c.ID)
 	}
-	settings, settingsErr := financialSettings(ctx, a.DB)
+	settings, settingsErr := a.publicFinancialSettings(ctx)
 	if settingsErr == nil {
 		c.PlatformDepositRequiredCents = clubRequiredDeposit(c, settings)
 	}

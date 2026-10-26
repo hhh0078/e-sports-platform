@@ -44,3 +44,30 @@ test('旧文字过渡期间点击图片使用当前图目标，文字层不吞�
   const source=readFileSync(new URL('../components/ContentCarousel.vue',import.meta.url),'utf8'),css=source.match(/<style scoped>([\s\S]*?)<\/style>/)?.[1];assert.ok(css);const declarations=new Map<string,string>();postcss.parse(css).walkRules(rule=>{for(const selector of rule.selectors)rule.walkDecls('pointer-events',decl=>{declarations.set(selector,decl.value)})});for(const name of ['.carousel-labels','.carousel-label-plane','.carousel-label','.carousel-dots'])assert.equal(declarations.get(name),'none')
   assert.equal([...source.matchAll(/<swiper\s/g)].length,2);assert.doesNotMatch(source,/<view class="carousel-label-plane"[^>]*@click/)
 })
+
+test('等值新图组和热返回保留当前图片，几何重测不会把轮播归零',async t=>{
+  const s=harness(t);s.page.imageChanged({detail:{current:1}});s.advance(300);await nextTick()
+  s.props.slides=JSON.parse(JSON.stringify(s.props.slides));s.props.geometry={...s.props.geometry,width:390};await nextTick()
+  assert.equal(s.page.imageIndex.value,1);assert.equal(s.page.textIndex.value,1);assert.equal(s.jobs.size,0)
+  s.hooks.hide();s.hooks.show();await nextTick();assert.equal(s.page.imageIndex.value,1);assert.equal(s.page.textIndex.value,1)
+})
+test('真实图文审核投影变化立即撤销旧timer，并采用当前图片的新文字和目标',async t=>{
+  const s=harness(t);s.page.imageChanged({detail:{current:1}});assert.equal(s.jobs.size,1)
+  const replacement=JSON.parse(JSON.stringify(s.props.slides)) as ContentSlide[]
+  replacement[1].labels=[{text:'审核后的新文字',font_size:18}];replacement[1].target=null;s.props.slides=replacement;await nextTick()
+  assert.equal(s.jobs.size,0);assert.equal(s.page.imageIndex.value,1);assert.equal(s.page.textIndex.value,1);assert.equal(s.page.textHasLabels.value,true)
+  s.page.open(s.props.slides[1]);assert.equal(s.opened.at(-1),null)
+  s.advance(1000);await nextTick();assert.equal(s.page.textIndex.value,1)
+})
+test('后台排序变化按图片ID定位，当前图片移除或显式清空才安全回到首项',async t=>{
+  const s=harness(t);s.page.imageChanged({detail:{current:1}});s.advance(300);s.props.slides=[s.props.slides[1],s.props.slides[0]];await nextTick()
+  assert.equal(s.page.imageIndex.value,0);assert.equal(s.page.textIndex.value,0);assert.equal(s.props.slides[s.page.imageIndex.value].id,'empty')
+  s.props.slides=[s.props.slides[1]];await nextTick();assert.equal(s.page.imageIndex.value,0);assert.equal(s.page.textHasLabels.value,true)
+  s.props.slides=[];await nextTick();assert.equal(s.page.imageIndex.value,0);assert.equal(s.page.textIndex.value,0);assert.equal(s.page.textHasLabels.value,false);assert.equal(s.jobs.size,0)
+})
+test('轮播历史背景色仅留作配置数据，真实样式强制透明且无标签圆角',async t=>{
+  const s=harness(t);s.props.slides[0].labels[0].background='#FF6600';await nextTick();const label=s.page.arrangement.value.slides[0][0],style=s.page.labelStyle(label)
+  assert.equal(label.background,'#FF6600');assert.equal(style.background,'transparent');assert.equal(style.backgroundImage,undefined)
+  const source=readFileSync(new URL('../components/ContentCarousel.vue',import.meta.url),'utf8'),css=source.match(/<style scoped>([\s\S]*?)<\/style>/)?.[1];assert.ok(css)
+  postcss.parse(css).walkRules(rule=>{if(rule.selectors.includes('.carousel-label'))rule.walkDecls(decl=>{assert.ok(!decl.prop.startsWith('background')&&decl.prop!=='border-radius','纯文字CSS不得恢复底色或标签圆角')})})
+})

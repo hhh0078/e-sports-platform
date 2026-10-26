@@ -1,4 +1,4 @@
-/** 文件作用：在首页实测品牌/按钮安全带下布局独立轮播文案，全部幻灯片共用稳定高度和实际最小字号。 */
+/** 文件作用：在首页实测原生状态栏、胶囊及指示点安全带内布局独立轮播文案，全部幻灯片共用稳定高度和实际最小字号。 */
 import {layoutReadableCover} from './cover-readable'
 import type {PlacedLabel} from './cover'
 import type {ContentSlide} from '../types/content'

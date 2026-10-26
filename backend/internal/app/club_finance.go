@@ -275,7 +275,8 @@ func (a *App) clubWalletEntries(w http.ResponseWriter, r *http.Request) (any, er
 
 // financialRules 提供公开只读费率及创建俱乐部门槛，不含任何商户配置。
 func (a *App) financialRules(w http.ResponseWriter, r *http.Request) (any, error) {
-	return financialSettings(r.Context(), a.DB)
+	w.Header().Set("Cache-Control", "no-store")
+	return a.publicFinancialSettings(r.Context())
 }
 
 // memberFinancialView 从实缴专户装饰认证成员视图，规则确认永远不等于已付款。

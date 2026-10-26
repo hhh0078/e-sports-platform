@@ -20,4 +20,4 @@ export function notify(error: unknown): void {
   uni.showToast({ title: errorMessage(error), icon: 'none', duration: 2500 })
 }
 /** 将受后端托管的相对资源解析到当前服务端。 */
-export function assetUrl(url: string | null | undefined): string { const value = String(url || ''); return value.startsWith('/api/') || (value.startsWith('/static/covers/') || value.startsWith('/static/avatars/')) ? API_BASE.replace(/\/api\/?$/, '') + value : value }
+export function assetUrl(url: string | null | undefined): string { const value = String(url || ''); return value.startsWith('/api/') || (value.startsWith('/static/covers/') || value.startsWith('/static/avatars/') || value.startsWith('/static/operations/')) ? API_BASE.replace(/\/api\/?$/, '') + value : value }

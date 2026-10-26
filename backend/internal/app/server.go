@@ -14,6 +14,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -23,6 +24,12 @@ type Config struct {
 	DevMode                                                                                  bool
 }
 type App struct {
+	publicCacheEnabled       atomic.Bool
+	publicCacheReady         atomic.Bool
+	publicCacheDrainMu       sync.Mutex
+	publicCacheWorkerMu      sync.Mutex
+	publicCacheCancel        context.CancelFunc
+	publicCacheWG            sync.WaitGroup
 	subscriptionWorkerMu     sync.Mutex
 	subscriptionWorkerCancel context.CancelFunc
 	subscriptionWorkerWG     sync.WaitGroup
@@ -108,6 +115,7 @@ func New(ctx context.Context, cfg Config) (*App, error) {
 
 // Close 释放数据库与会话连接。
 func (a *App) Close() {
+	a.stopPublicCacheWorker()
 	a.stopSubscriptionWorker()
 	a.stopModerationWorker()
 	a.DB.Close()
@@ -187,6 +195,9 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 		}
 		r = a.reviewContext(r)
 		out, err := fn(w, r)
+		if err == nil && publicCacheWriteRequest(r) {
+			a.flushPublicCache(r.Context())
+		}
 		if err != nil {
 			var ae *apiError
 			if !errors.As(err, &ae) {
@@ -222,6 +233,7 @@ func (a *App) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("GET /static/covers/", assets.Handler())
 	mux.Handle("GET /static/avatars/", assets.AvatarHandler())
+	mux.Handle("GET /static/operations/", assets.OperationsHandler())
 	a.registerIdentityRoutes(mux)
 	a.registerAdminCentersRoutes(mux)
 	a.registerPublicContentRoutes(mux)

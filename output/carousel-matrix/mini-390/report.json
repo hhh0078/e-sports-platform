@@ -5,15 +5,15 @@
   "width": 390,
   "project": "/Users/Zhuanz/Desktop/三角洲/frontend/dist/dev/mp-weixin",
   "checks": [
-    "top-left：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
-    "top-center：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
-    "top-right：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
-    "middle-left：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
-    "middle-center：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
-    "middle-right：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
-    "bottom-left：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
-    "bottom-center：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定",
-    "bottom-right：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定"
+    "top-left：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定",
+    "top-center：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定",
+    "top-right：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定",
+    "middle-left：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定",
+    "middle-center：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定",
+    "middle-right：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定",
+    "bottom-left：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定",
+    "bottom-center：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定",
+    "bottom-right：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定"
   ],
   "measurements": [
     {
@@ -23,31 +23,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -55,87 +55,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1477,
+      "sample_ms": 1263,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-left-slide-1.png"
     },
     {
@@ -145,31 +157,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -177,87 +189,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1297,
+      "sample_ms": 1267,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-left-slide-2.png"
     },
     {
@@ -267,31 +291,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -299,87 +323,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1321,
+      "sample_ms": 1305,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-left-slide-3.png"
     },
     {
@@ -389,31 +425,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -421,87 +457,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1343,
+      "sample_ms": 1303,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-center-slide-1.png"
     },
     {
@@ -511,31 +559,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -543,87 +591,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1292,
+      "sample_ms": 1291,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-center-slide-2.png"
     },
     {
@@ -633,31 +693,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -665,87 +725,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1318,
+      "sample_ms": 1282,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-center-slide-3.png"
     },
     {
@@ -755,31 +827,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -787,87 +859,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1327,
+      "sample_ms": 1289,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-right-slide-1.png"
     },
     {
@@ -877,31 +961,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -909,87 +993,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1371,
+      "sample_ms": 1322,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-right-slide-2.png"
     },
     {
@@ -999,31 +1095,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -1031,87 +1127,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 170.5,
+            "top": 103,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 214.5,
+            "top": 147,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 258.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 302.4921875,
+            "top": 235,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 346.5,
+            "top": 279,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 390.5,
+            "top": 323,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1293,
+      "sample_ms": 1278,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/top-right-slide-3.png"
     },
     {
@@ -1121,31 +1229,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -1153,87 +1261,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1292,
+      "sample_ms": 1306,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-left-slide-1.png"
     },
     {
@@ -1243,31 +1363,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -1275,87 +1395,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1305,
+      "sample_ms": 1352,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-left-slide-2.png"
     },
     {
@@ -1365,31 +1497,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -1397,87 +1529,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1303,
+      "sample_ms": 1254,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-left-slide-3.png"
     },
     {
@@ -1487,31 +1631,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -1519,87 +1663,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1306,
+      "sample_ms": 1276,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-center-slide-1.png"
     },
     {
@@ -1609,31 +1765,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -1641,87 +1797,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1337,
+      "sample_ms": 1323,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-center-slide-2.png"
     },
     {
@@ -1731,31 +1899,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -1763,87 +1931,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1385,
+      "sample_ms": 1297,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-center-slide-3.png"
     },
     {
@@ -1853,31 +2033,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -1885,87 +2065,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1400,
+      "sample_ms": 1373,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-right-slide-1.png"
     },
     {
@@ -1975,31 +2167,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2007,87 +2199,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1365,
+      "sample_ms": 1250,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-right-slide-2.png"
     },
     {
@@ -2097,31 +2301,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 509.5
+        "height": 439
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 498.5,
+        "top": 428,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 530.5,
+        "top": 502,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 645,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2129,87 +2333,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 306.5,
+            "top": 237.5,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 262.5,
+            "top": 283,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 350.5,
+            "top": 191,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 218.5,
+            "top": 327,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 394.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 174.5,
+            "top": 371,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1300,
+      "sample_ms": 1273,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/middle-right-slide-3.png"
     },
     {
@@ -2219,31 +2435,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2251,87 +2467,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1301,
+      "sample_ms": 1289,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-left-slide-1.png"
     },
     {
@@ -2341,31 +2569,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2373,87 +2601,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1320,
+      "sample_ms": 1270,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-left-slide-2.png"
     },
     {
@@ -2463,31 +2703,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2495,87 +2735,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 8,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 8,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 8,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 8,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 8,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 8,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1265,
+      "sample_ms": 1267,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-left-slide-3.png"
     },
     {
@@ -2585,31 +2837,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2617,87 +2869,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1315,
+      "sample_ms": 1270,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-center-slide-1.png"
     },
     {
@@ -2707,31 +2971,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2739,87 +3003,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1342,
+      "sample_ms": 1238,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-center-slide-2.png"
     },
     {
@@ -2829,31 +3105,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2861,87 +3137,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 14,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 32,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 12,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 28,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 12,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 28,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1279,
+      "sample_ms": 1259,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-center-slide-3.png"
     },
     {
@@ -2951,31 +3239,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -2983,87 +3271,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1327,
+      "sample_ms": 1324,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-right-slide-1.png"
     },
     {
@@ -3073,31 +3373,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -3105,87 +3405,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1313,
+      "sample_ms": 1265,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-right-slide-2.png"
     },
     {
@@ -3195,31 +3507,31 @@
         "left": 0,
         "top": 0,
         "width": 390,
-        "height": 461.5
+        "height": 391
       },
-      "brand": {
-        "left": 15,
-        "top": 94,
-        "width": 248,
-        "height": 32
-      },
-      "publish": {
-        "left": 274,
-        "top": 118.5,
-        "width": 101,
-        "height": 36
+      "native_safe": {
+        "left": 0,
+        "top": 0,
+        "width": 390,
+        "height": 87
       },
       "dots": {
         "left": 349,
-        "top": 450.5,
+        "top": 380,
         "width": 30,
         "height": 5
       },
       "games": {
         "left": 11,
-        "top": 482.5,
+        "top": 454,
         "width": 368,
         "height": 81
+      },
+      "services": {
+        "left": 15,
+        "top": 597,
+        "width": 360,
+        "height": 28
       },
       "labels": [
         {
@@ -3227,87 +3539,99 @@
           "text": "游戏陪练任务完成一起开黑",
           "rect": {
             "left": 20,
-            "top": 394.5,
+            "top": 324,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 1,
           "text": "WWWWWWWWWWW1",
           "rect": {
             "left": 56,
-            "top": 350.5,
+            "top": 279,
             "width": 325,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 2,
           "text": "认真沟通准时上线放心开玩",
           "rect": {
             "left": 20,
-            "top": 306.4921875,
+            "top": 235,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 3,
           "text": "MMMMMMMMMMM2",
           "rect": {
             "left": 48,
-            "top": 262.5,
+            "top": 191,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 4,
           "text": "中文文案极限长度十二个字",
           "rect": {
             "left": 20,
-            "top": 218.5,
+            "top": 147,
             "width": 362,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         },
         {
           "index": 5,
           "text": "WWWWMMMMWWM3",
           "rect": {
             "left": 48,
-            "top": 174.5,
+            "top": 103,
             "width": 333,
             "height": 39
           },
           "font_size": 26,
           "pointer_events": "none",
           "visibility": "visible",
-          "opacity": "1"
+          "opacity": "1",
+          "background_color": "rgba(0, 0, 0, 0)",
+          "background_image": "none"
         }
       ],
-      "sample_ms": 1291,
+      "sample_ms": 1300,
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/carousel-matrix/mini-390/bottom-right-slide-3.png"
     }
   ],
@@ -3321,5 +3645,5 @@
     "恢复只提交本矩阵修改字段，配置修订和审计保持单调；独立管理员令牌只在进程内保存并于finally撤销。",
     "每次执行只覆盖当前真实320或390窗口，需分别在微信开发工具切换机型后运行；未操作生产环境。"
   ],
-  "completed_at": "2026-10-25T20:36:14.035Z"
+  "completed_at": "2026-10-26T00:47:57.927Z"
 }

@@ -77,7 +77,7 @@ test('服务下单和发布授权期间切换账号不会创建旧草稿',async 
     assert.equal(subject.requests.filter(item=>item.path===subject.creationPath).length,0)
     assert.equal(subject.page.busy.value,false)
     assert.deepEqual(subject.navigations,[])
-    assert.equal(subject.draft(),draft)
+    if(kind==='publish'){assert.equal(subject.page.form.title,'');assert.equal(subject.page.form.description,'');assert.equal(subject.page.form.price,'');assert.equal(subject.page.form.club_id,'')}else assert.equal(subject.draft(),draft)
   })
 })
 
@@ -109,7 +109,7 @@ test('服务创建的迟到结果不能触发新账号或已销毁页面的导�
     assert.deepEqual(subject.navigations,[])
     assert.deepEqual(subject.notices,[])
     assert.equal(subject.page.busy.value,false)
-    assert.equal(subject.draft(),draft)
+    if(kind==='publish'&&boundary==='switch'){assert.equal(subject.page.form.title,'');assert.equal(subject.page.form.description,'');assert.equal(subject.page.form.price,'')}else assert.equal(subject.draft(),draft)
   })
 })
 

@@ -1,0 +1,66 @@
+{
+  "file_purpose": "本轮本地自动与微信官方SDK验收汇总，生产结果另记，不代表真机或真实收付",
+  "created_at": "2026-10-26T02:05:19.626975+00:00",
+  "passed": true,
+  "frontend_tests": 827,
+  "backend_race_tests": 392,
+  "typecheck": true,
+  "standards_pages": 54,
+  "h5_build": true,
+  "formal_mini_build": true,
+  "formal_api": "https://game.ai.58it.cn/api",
+  "formal_package_file_bytes": 1472771,
+  "sdk_suites": [
+    {
+      "suite": "carousel-matrix",
+      "width": 320,
+      "passed": true,
+      "checks": 9,
+      "measurements": 27,
+      "report": "output/carousel-matrix/mini-320/report.json"
+    },
+    {
+      "suite": "public-operations",
+      "width": 320,
+      "passed": true,
+      "checks": 23,
+      "measurements": 4,
+      "report": "output/public-operations/mini-320/report.json"
+    },
+    {
+      "suite": "publish-draft",
+      "width": 320,
+      "passed": true,
+      "checks": 14,
+      "measurements": 0,
+      "report": "output/publish-draft/mini-320/report.json"
+    },
+    {
+      "suite": "carousel-matrix",
+      "width": 390,
+      "passed": true,
+      "checks": 9,
+      "measurements": 27,
+      "report": "output/carousel-matrix/mini-390/report.json"
+    },
+    {
+      "suite": "public-operations",
+      "width": 390,
+      "passed": true,
+      "checks": 23,
+      "measurements": 4,
+      "report": "output/public-operations/mini-390/report.json"
+    },
+    {
+      "suite": "publish-draft",
+      "width": 390,
+      "passed": true,
+      "checks": 14,
+      "measurements": 0,
+      "report": "output/publish-draft/mini-390/report.json"
+    }
+  ],
+  "real_payment_executed": false,
+  "real_subscription_sent": false,
+  "device_physical_test": false
+}

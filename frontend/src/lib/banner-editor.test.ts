@@ -44,6 +44,13 @@ test('游戏轮播只传指定game键，九种位置、颜色、字号均经共�
   s.page.removeLabel(5);assert.equal(s.page.form.labels.length,5)
 })
 
+test('轮播历史底色在编辑预览和保存中统一透明，新文字不继承服务标签底色',async t=>{
+  const s=harness(t),data=config();data.global_slides[0].labels[0].background='#b98132';await ready(s,data)
+  assert.equal(s.page.previewLabels.value[0].background,'transparent')
+  s.page.form.labels[0].background='url(unsafe)';assert.equal(s.page.saveBody().global_slides[0].labels[0].background,'transparent')
+  s.page.addLabel();assert.equal(s.page.form.labels[1].background,'transparent')
+})
+
 test('无图片、空文案、非法颜色均不发布，预览不会使用任意CSS',async t=>{
   const s=harness(t,{id:''});await ready(s);await s.page.save();assert.equal(s.requests.length,1);s.page.form.image_url='/api/media/new.jpg';s.page.addLabel();s.page.form.labels[0].color='url(javascript:bad)';assert.equal(s.page.previewLabels.value[0].color,'#ffffff');await s.page.save();assert.equal(s.requests.length,1)
   s.page.form.labels[0].color='#ffffff';s.page.form.labels[0].text=' ';await s.page.save();assert.equal(s.requests.length,1);assert.equal(s.notices.length,3)

@@ -25,6 +25,12 @@ func validateContentImage(ctx context.Context, q querier, raw, previous, purpose
 	if raw == "" || raw == rejectedImageURL {
 		return nil
 	}
+	if strings.HasPrefix(raw, "/static/operations/") {
+		if _, err := assets.OperationImageData(raw, purpose); err != nil {
+			return fail(400, "平台内置图片不存在或用途不匹配")
+		}
+		return nil
+	}
 	if localCover.MatchString(raw) {
 		if _, err := assets.PublicCoverData(raw); err != nil {
 			return fail(400, "内置图片不存在")

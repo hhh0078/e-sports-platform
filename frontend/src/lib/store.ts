@@ -19,6 +19,7 @@ export function pageTheme(gameId?: string): PageTheme { const selected = state.g
 export const themeStyle = computed(() => pageTheme())
 let pending: Promise<void> | null = null
 let publicPending: Promise<void> | null = null
+let pendingEntryGame = ''
 const sessionVersion = ref(0)
 /** 当前最近一次成功登录是否为服务端新注册；不按头像昵称猜测身份。 */
 export const lastLoginWasNew = ref(false)
@@ -26,6 +27,12 @@ export const lastLoginWasNew = ref(false)
 export function sessionRevision(): number { return sessionVersion.value }
 /** 清除会话并使旧请求失效。 */
 export function clearSession(): void { sessionVersion.value++; uni.removeStorageSync('jijie_token'); state.user = null; lastLoginWasNew.value = false }
+/** 在首轮公开配置完成前登记深链游戏，验证成功后仅用于当前入口，不改写用户缓存。 */
+export function prepareEntryGame(id: string): void {
+  if (!id) return
+  if (!state.ready) { pendingEntryGame = id; return }
+  if (state.games.some(item => item.id === id)) state.gameId = id
+}
 /** 仅加载公开平台配置；朋友圈单页不准备登录或读取本人资料，同类请求合并。 */
 export async function initPublic(force = false): Promise<void> {
   if (publicPending) return publicPending
@@ -33,7 +40,9 @@ export async function initPublic(force = false): Promise<void> {
   publicPending = (async () => {
     const data = await getBootstrap()
     state.games = data.games || []; state.devMode = !!data.dev_mode; state.announcement = data.announcement || ''; state.siteName = data.site_name || '开机电竞';state.support_qr_url=data.support_qr_url||'';state.support_phone=data.support_phone||'';state.support_wechat=data.support_wechat||''
-    if (!state.games.some(item => item.id === state.gameId)) state.gameId = state.games[0]?.id || 'delta'
+    const entryGame = pendingEntryGame; pendingEntryGame = ''
+    if (entryGame && state.games.some(item => item.id === entryGame)) state.gameId = entryGame
+    else if (!state.games.some(item => item.id === state.gameId)) state.gameId = state.games[0]?.id || 'delta'
     state.ready = true
   })()
   try { await publicPending } finally { publicPending = null }
@@ -64,4 +73,4 @@ export async function wechatLogin(ticket: string, consent: Consent): Promise<Use
 /** 撤销会话，迟到的退出响应不能退出新账号。 */
 export async function logout(): Promise<void> { const version = ++sessionVersion.value, requestToken = token(); try { await revokeSession() } catch (error) { if (version !== sessionVersion.value || requestToken !== token()) return; if (errorStatus(error) !== 401) throw error } if (version === sessionVersion.value && requestToken === token()) clearSession() }
 /** 保存玩家当前选择的游戏。 */
-export function selectGame(id: string): void { if (state.games.some(item => item.id === id)) { state.gameId = id; uni.setStorageSync('jijie_game', id) } }
+export function selectGame(id: string): void { if (state.games.some(item => item.id === id)) { pendingEntryGame = ''; state.gameId = id; uni.setStorageSync('jijie_game', id) } }

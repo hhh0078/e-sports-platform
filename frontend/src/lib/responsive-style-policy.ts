@@ -19,7 +19,7 @@ export function fixedVisualPixels(styles: string): FixedPixelIssue[] {
     const invalid = [...value.matchAll(/(?<![\w.])(-?(?:\d+(?:\.\d*)?|\.\d+))px\b/g)].some(match => {
       const number = Number(match[1])
       if (Math.abs(number) === 1 && ((/^(?:border|outline)/.test(property) && !property.includes('radius')) || ['height', 'width', 'box-shadow', 'text-shadow'].includes(property))) return false
-      if (property === 'min-height' && number === 44) return false
+      if (['min-height', 'min-width'].includes(property) && number === 44) return false
       if (property === 'max-width' && number >= 440) return false
       if (['top', 'left', 'right', 'bottom'].includes(property) && Math.abs(number) >= 1000) return false
       return true

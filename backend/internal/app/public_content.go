@@ -25,7 +25,7 @@ func readPublicContent(ctx context.Context, q querier) (PublicContentSettings, e
 // publicContent 返回当前游戏可展示内容，失效目标仅移除行动，不泄露目标私密资料。
 func (a *App) publicContent(w http.ResponseWriter, r *http.Request) (any, error) {
 	w.Header().Set("Cache-Control", "no-store")
-	v, err := readPublicContent(r.Context(), a.DB)
+	v, err := publicCached(r.Context(), a, "public-content-source", func() (PublicContentSettings, error) { return readPublicContent(r.Context(), a.DB) })
 	if err != nil {
 		return nil, err
 	}

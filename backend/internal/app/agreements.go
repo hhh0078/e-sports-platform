@@ -67,7 +67,8 @@ func readAgreements(ctx context.Context, q querier) (agreementSet, error) {
 
 // agreements 允许访客在登录前阅读两份当前条款。
 func (a *App) agreements(w http.ResponseWriter, r *http.Request) (any, error) {
-	return readAgreements(r.Context(), a.DB)
+	w.Header().Set("Cache-Control", "no-store")
+	return publicCached(r.Context(), a, "agreements", func() (agreementSet, error) { return readAgreements(r.Context(), a.DB) })
 }
 
 // adminAgreements 在管理端读取同一份公开条款并强制管理员身份。

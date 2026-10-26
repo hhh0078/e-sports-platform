@@ -30,6 +30,12 @@ type testAPI struct {
 // newTestAPI 使用独立临时 schema，不触及开发演示记录。
 func newTestAPI(t *testing.T) *testAPI {
 	t.Helper()
+	return newTestAPIWithDefaults(t, false)
+}
+
+// newTestAPIWithDefaults 可保留新装运营默认值；旧回归使用明确空运营夹具继续验证首次配置和零修订边界。
+func newTestAPIWithDefaults(t *testing.T, keepDefaults bool) *testAPI {
+	t.Helper()
 	if os.Getenv("TEST_INTEGRATION") != "true" {
 		t.Skip("设置 TEST_INTEGRATION=true 运行真实数据库集成测试")
 	}
@@ -56,6 +62,19 @@ func newTestAPI(t *testing.T) *testAPI {
 	a, err := New(t.Context(), cfg)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if !keepDefaults {
+		for _, statement := range []string{
+			"DELETE FROM articles WHERE id IN ('platform-intro-v1','newcomer-rules-v1')",
+			"DELETE FROM settings WHERE id IN ('public-content-v1','platform-default-content-v1','platform-default-content-backup-v1')",
+			"DELETE FROM moderation_targets WHERE data->>'target_id' IN ('public-content-v1','platform-intro-v1','newcomer-rules-v1')",
+			"DELETE FROM moderation_tasks WHERE data->>'target_id' IN ('public-content-v1','platform-intro-v1','newcomer-rules-v1')",
+			"DELETE FROM audit WHERE data->>'action'='default_content.apply'",
+		} {
+			if _, err = a.DB.Exec(t.Context(), statement); err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 	s := httptest.NewServer(a.Handler())
 	api := &testAPI{t: t, Server: s, App: a, Tokens: map[string]string{}}

@@ -1,0 +1,74 @@
+{
+  "file_purpose": "本地官方SDK发布草稿验收，尚非真实微信或生产验收",
+  "passed": true,
+  "stage": "/pages/account/profile",
+  "width": 320,
+  "test_marker": "草稿验收40c71ea4",
+  "checks": [
+    {
+      "label": "service：新实例发现自己的未发布草稿",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/restore-service.png"
+    },
+    {
+      "label": "service：恢复完整输入，明确删除后再次进入不重弹",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/discard-service.png"
+    },
+    {
+      "label": "service：原业务校验失败保留草稿",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/failed-service.png"
+    },
+    {
+      "label": "request：新实例发现自己的未发布草稿",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/restore-request.png"
+    },
+    {
+      "label": "request：恢复完整输入，明确删除后再次进入不重弹",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/discard-request.png"
+    },
+    {
+      "label": "request：原业务校验失败保留草稿",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/failed-request.png"
+    },
+    {
+      "label": "服务完整卡片预览在末尾，须知独立分隔",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/service-preview-服务一.png"
+    },
+    {
+      "label": "服务发布成功立即清稿，离开后不重存"
+    },
+    {
+      "label": "服务完整卡片预览在末尾，须知独立分隔",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/service-preview-服务二.png"
+    },
+    {
+      "label": "服务发布成功立即清稿，离开后不重存"
+    },
+    {
+      "label": "服务编辑ID隔离，B不恢复A，回到A才询问自己的修改",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/service-edit-isolation.png"
+    },
+    {
+      "label": "需求成功创建即清草稿，保留原待付订单且未付款",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/request-created.png"
+    },
+    {
+      "label": "需求订单成功后重入无已提交草稿，也没有额外预览卡"
+    },
+    {
+      "label": "真实退出/登录隔离两账号，回到原账号才恢复原稿",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/publish-draft/mini-320/draft-account-isolation.png"
+    }
+  ],
+  "exceptions": [],
+  "compatibility_warnings": [],
+  "cleanup_errors": [],
+  "boundaries": [
+    "只使用真实UI登录、输入和恢复/删除按钮；未读写客户端存储、data、私有方法或注入令牌。",
+    "成功场景仅新建本轮本地服务和未付款需求；未支付、退款、转账、发聊天、申请微信订阅或操作生产。",
+    "失败保留场景使用原预算校验失败，不声称模拟网络中断；存储故障、迟到响应、游客和同实例切号另有真实生产脚本单元回归。",
+    "本轮新服务暂停、未付款订单取消并保留审计；只按marker确认后删除本轮UI草稿，不碰其它账号已有稿。",
+    "提交只点击一次；SDK若在业务导航时报告旧页面不在栈顶，仅在真实新记录和目的路由均确认后采纳成功，不重新发单。",
+    "每次执行仅证明当前实际320或390窗口，原始截图不等同真机物理键盘或真实微信能力。"
+  ],
+  "completed_at": "2026-10-26T02:01:46.493Z"
+}

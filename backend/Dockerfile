@@ -1,4 +1,4 @@
-# 文件作用：从 Go 源码构建仅包含后端 API 与演示数据工具的非 root 镜像。
+# 文件作用：从Go源码构建后端API、演示工具和显式默认运营初始化命令的非root镜像。
 FROM golang:1.24-alpine AS builder
 ARG GOPROXY=https://goproxy.cn,direct
 ENV GOPROXY=${GOPROXY} CGO_ENABLED=0
@@ -6,7 +6,7 @@ WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -trimpath -ldflags="-s -w" -o /out/jijie-api ./cmd/server && go build -trimpath -ldflags="-s -w" -o /out/jijie-demo ./cmd/demo
+RUN go build -trimpath -ldflags="-s -w" -o /out/jijie-api ./cmd/server && go build -trimpath -ldflags="-s -w" -o /out/jijie-demo ./cmd/demo && go build -trimpath -ldflags="-s -w" -o /out/jijie-default-content ./cmd/default-content
 
 FROM alpine:3.21
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \

@@ -10,35 +10,42 @@ import (
 
 // bootstrap 提供客户端初始化数据和开发模式提示。
 func (a *App) bootstrap(w http.ResponseWriter, r *http.Request) (any, error) {
-	games, err := a.games(w, r)
-	if err != nil {
-		return nil, err
-	}
-	s, err := get[Settings](r.Context(), a.DB, "settings", "platform", false)
-	if err != nil {
-		return nil, err
-	}
-	mode := "manual"
-	if cfg, e := a.readAISettings(r.Context(), a.DB); e == nil {
-		if cfg.APIKey != "" {
-			mode = "ai"
-		} else if a.Config.DevMode {
-			mode = "manual"
+	w.Header().Set("Cache-Control", "no-store")
+	return publicCached(r.Context(), a, "bootstrap", func() (map[string]any, error) {
+		games, err := a.publicGames(r.Context())
+		if err != nil {
+			return nil, err
 		}
-	}
-	return map[string]any{"games": games, "moderation_mode": mode, "dev_mode": a.Config.DevMode, "site_name": s.SiteName, "announcement": s.Announcement, "support_qr_url": s.SupportQRURL, "support_phone": s.SupportPhone, "support_wechat": s.SupportWechat}, nil
+		s, err := get[Settings](r.Context(), a.DB, "settings", "platform", false)
+		if err != nil {
+			return nil, err
+		}
+		mode := "manual"
+		if cfg, e := a.readAISettings(r.Context(), a.DB); e == nil && cfg.APIKey != "" {
+			mode = "ai"
+		}
+		return map[string]any{"games": games, "moderation_mode": mode, "dev_mode": a.Config.DevMode, "site_name": s.SiteName, "announcement": s.Announcement, "support_qr_url": s.SupportQRURL, "support_phone": s.SupportPhone, "support_wechat": s.SupportWechat}, nil
+	})
 }
 
-// games 返回已启用的游戏主题。
+// games 返回公开游戏缓存，游戏发布和交易校验仍从事务数据库读取。
 func (a *App) games(w http.ResponseWriter, r *http.Request) (any, error) {
-	items, err := list[Game](r.Context(), a.DB, "games", "WHERE data->>'enabled'='true'")
-	sort.Slice(items, func(i, j int) bool {
-		if items[i].SortOrder == items[j].SortOrder {
-			return items[i].ID < items[j].ID
-		}
-		return items[i].SortOrder < items[j].SortOrder
+	w.Header().Set("Cache-Control", "no-store")
+	return a.publicGames(r.Context())
+}
+
+// publicGames 缓存按稳定顺序排列的公开游戏基础资料，不被事务校验调用。
+func (a *App) publicGames(ctx context.Context) ([]Game, error) {
+	return publicCached(ctx, a, "games", func() ([]Game, error) {
+		items, err := list[Game](ctx, a.DB, "games", "WHERE data->>'enabled'='true'")
+		sort.Slice(items, func(i, j int) bool {
+			if items[i].SortOrder == items[j].SortOrder {
+				return items[i].ID < items[j].ID
+			}
+			return items[i].SortOrder < items[j].SortOrder
+		})
+		return items, err
 	})
-	return items, err
 }
 
 // decorateService 实时加载昵称和认证，退出俱乐部立即撤销认证显示。
@@ -49,7 +56,7 @@ func (a *App) decorateService(ctx context.Context, s Service) Service {
 	}
 	s.ProviderDepositCents = 0
 	if wallet, err := get[Wallet](ctx, a.DB, "wallets", s.ProviderID, false); err == nil {
-		if settings, e := financialSettings(ctx, a.DB); e == nil {
+		if settings, e := a.publicFinancialSettings(ctx); e == nil {
 			s.ProviderDepositCents = qualifiedPlatformDeposit(wallet, settings.PersonalPlatformDepositCents)
 		}
 	}

@@ -2,6 +2,8 @@
 package app
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -35,6 +37,12 @@ func adminArticleView(v Article) any {
 	}{v.ArticleSummary, v.BodyMarkdown}
 }
 
+// articlePageData 为公开与管理读取保留相同分页契约，缓存键仍严格区分公开集合。
+type articlePageData struct {
+	Items []ArticleSummary `json:"items"`
+	Total int              `json:"total"`
+}
+
 // articlePage 在完整文章集合中按标题编号搜索后分页，公开集合始终只含已发布文章。
 func (a *App) articlePage(r *http.Request, management bool) (any, error) {
 	keyword := strings.TrimSpace(r.URL.Query().Get("q"))
@@ -46,16 +54,20 @@ func (a *App) articlePage(r *http.Request, management bool) (any, error) {
 		status = "published"
 	}
 	where := "WHERE ($1='' OR data->>'status'=$1) AND ($2='' OR strpos(lower(concat_ws(' ',id,data->>'title')),lower($2))>0)"
-	var total int
-	if err := a.DB.QueryRow(r.Context(), "SELECT count(*) FROM articles "+where, status, keyword).Scan(&total); err != nil {
-		return nil, err
-	}
 	limit, offset := pageLimit(r)
-	items, err := list[ArticleSummary](r.Context(), a.DB, "articles", where+" ORDER BY data->>'created_at' DESC,id DESC LIMIT $3 OFFSET $4", status, keyword, limit, offset)
-	if err != nil {
-		return nil, err
+	load := func() (articlePageData, error) {
+		var total int
+		if err := a.DB.QueryRow(r.Context(), "SELECT count(*) FROM articles "+where, status, keyword).Scan(&total); err != nil {
+			return articlePageData{}, err
+		}
+		items, err := list[ArticleSummary](r.Context(), a.DB, "articles", where+" ORDER BY data->>'created_at' DESC,id DESC LIMIT $3 OFFSET $4", status, keyword, limit, offset)
+		return articlePageData{Items: items, Total: total}, err
 	}
-	return map[string]any{"items": items, "total": total}, nil
+	// 只缓存客户端常用的五页；自由搜索、页大小和深偏移不能在共享Redis制造一天有效期的海量空键。
+	if management || keyword != "" || limit != 20 || offset > 80 || offset%20 != 0 {
+		return load()
+	}
+	return publicCached(r.Context(), a, fmt.Sprintf("articles:published:%q:%d:%d", keyword, limit, offset), load)
 }
 
 // publicArticles 允许访客分页阅读已发布文章，管理员草稿不会通过查询参数公开。
@@ -81,7 +93,10 @@ func (a *App) publicArticle(w http.ResponseWriter, r *http.Request) (any, error)
 	if err != nil {
 		return nil, err
 	}
-	body, _, err := renderArticleMarkdown(r.Context(), a.DB, v.BodyMarkdown, "", User{}, false)
+	body, err := publicCached(r.Context(), a, fmt.Sprintf("article-html:%s:%x", v.ID, sha256.Sum256([]byte(v.BodyMarkdown))), func() (string, error) {
+		html, _, renderErr := renderArticleMarkdown(r.Context(), a.DB, v.BodyMarkdown, "", User{}, false)
+		return html, renderErr
+	})
 	if err != nil {
 		return nil, err
 	}

@@ -198,6 +198,9 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	if err = migrateOrderAdjustments(ctx, tx); err != nil {
 		return err
 	}
+	if err = migratePublicCache(ctx, tx); err != nil {
+		return err
+	}
 	return tx.Commit(ctx)
 }
 

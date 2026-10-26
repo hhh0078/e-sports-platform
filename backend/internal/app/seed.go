@@ -27,6 +27,10 @@ func (a *App) seed(ctx context.Context) error {
 	if _, err = tx.Exec(ctx, "SELECT pg_advisory_xact_lock(8173002)"); err != nil {
 		return err
 	}
+	var fresh bool
+	if err = tx.QueryRow(ctx, "SELECT NOT EXISTS(SELECT 1 FROM settings WHERE id='platform') AND NOT EXISTS(SELECT 1 FROM users) AND NOT EXISTS(SELECT 1 FROM orders) AND NOT EXISTS(SELECT 1 FROM services)").Scan(&fresh); err != nil {
+		return err
+	}
 	defaults := defaultGames()
 	for _, g := range defaults {
 		if err = seedInsert(ctx, tx, "games", g.ID, g); err != nil {
@@ -113,6 +117,12 @@ func (a *App) seed(ctx context.Context) error {
 	}
 	if err = migratePostReviewDefaultAgreements(ctx, tx); err != nil {
 		return err
+	}
+	if fresh {
+		// 系统来源仅用于初始审计和人工待审归属，不创建管理员、用户、微信身份或登录会话。
+		if _, err = a.applyDefaultContentTx(ctx, tx, User{ID: "system:default-content-v1", Role: "admin", Status: "active"}); err != nil {
+			return err
+		}
 	}
 	return tx.Commit(ctx)
 }

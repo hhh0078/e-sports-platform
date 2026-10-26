@@ -21,10 +21,15 @@ test('空值和无效时间安全显示，未知状态保留原值', () => {
   assert.equal(statusLabel('future_status'), 'future_status')
 })
 
-test('上传封面采用后端地址，内置图片保持小程序相对路径', () => {
+test('上传封面和内置游戏图片采用当前后端地址', () => {
   assert.equal(assetUrl('/api/media/cover123'), 'http://127.0.0.1:8090/api/media/cover123')
   assert.equal(assetUrl('/static/covers/delta-1.jpg'), 'http://127.0.0.1:8090/static/covers/delta-1.jpg')
   assert.equal(assetUrl(null), '')
+})
+
+test('运营轮播、透明公告和文章封面解析为当前API域名，包内与外部图片保持原地址', () => {
+  for(const name of ['platform-intro-v1','newcomer-rules-v1'])assert.equal(assetUrl('/static/operations/'+name+'.png'),'http://127.0.0.1:8090/static/operations/'+name+'.png')
+  for(const value of ['/static/icons/game.png','https://images.example.com/image.png','wxfile://local.png'])assert.equal(assetUrl(value),value)
 })
 
 test('主导航归一化保留筛选，同一主页面切换不重建，二级详情保留返回路径', () => {

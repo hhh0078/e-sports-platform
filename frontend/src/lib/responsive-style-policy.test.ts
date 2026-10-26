@@ -14,8 +14,9 @@ test('安全区fallback不掩盖同一声明内新增的固定间距', () => {
 })
 
 test('真实断点细线触控下限和桌面cap保留物理布局单位', () => {
-  const css = '@media(max-width:350px){.sheet{max-width:600px;border:1px solid red;min-height:max(44px,84.6154rpx)}.divider{height:1px}}'
+  const css = '@media(max-width:350px){.sheet{max-width:600px;border:1px solid red;min-height:max(44px,84.6154rpx);min-width:44px}.divider{height:1px}}'
   assert.equal(fixedVisualPixels(css).length, 0)
+  assert.equal(fixedVisualPixels('.button{min-width:45px;min-height:45px}').length, 2)
 })
 
 test('真实位图大小允许px，普通预览图仍必须响应式', () => {

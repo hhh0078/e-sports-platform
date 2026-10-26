@@ -13,15 +13,15 @@ import type {Game,User} from '../frontend/src/types/models'
 import {POSITIONS} from '../frontend/src/lib/cover'
 
 /** evaluate只读取官方窗口信息，禁止读取页面data、存储、令牌或Vue实例。 */
-declare const wx:{getWindowInfo():{windowWidth:number;windowHeight:number}}
+declare const wx:{getWindowInfo():{windowWidth:number;windowHeight:number;statusBarHeight:number};getMenuButtonBoundingClientRect():Rect}
 /** 官方页面和组件查询的公开边界。 */
 type Scope=Page|Element
 /** 所有坐标均为官方SDK测得的实际逻辑像素。 */
 interface Rect{left:number;top:number;width:number;height:number}
 /** 单条可见文字的真实内容、尺寸、字号和层级样式。 */
-interface LabelMeasurement{index:number;text:string;rect:Rect;font_size:number;pointer_events:string;visibility:string;opacity:string}
+interface LabelMeasurement{index:number;text:string;rect:Rect;font_size:number;pointer_events:string;visibility:string;opacity:string;background_color:string;background_image:string}
 /** 每张轮播保存同屏真实矩形，不用声明尺寸代替实际布局。 */
-interface Measurement{position:string;slide:number;hero:Rect;brand:Rect;publish:Rect;dots:Rect;games:Rect;labels:LabelMeasurement[];sample_ms:number;screenshot:string}
+interface Measurement{position:string;slide:number;hero:Rect;native_safe:Rect;dots:Rect;games:Rect;services:Rect;labels:LabelMeasurement[];sample_ms:number;screenshot:string}
 const root=process.cwd(),api='http://127.0.0.1:18091/api',width=Number(process.env.UI_EXPECT_WIDTH||390)
 const project=path.resolve(process.env.UI_TEST_PROJECT||'frontend/dist/local/mp-weixin'),endpoint=process.env.WX_AUTOMATOR_ENDPOINT||'ws://127.0.0.1:9423'
 const output=path.join(root,'output/carousel-matrix/mini-'+width),marker='carousel-sdk-'+randomUUID().slice(0,8)
@@ -31,6 +31,7 @@ const aliases:Record<string,string>={'player-view':'pages/main/player/player','c
 const measurements:Measurement[]=[],checks:string[]=[],exceptions:string[]=[],warnings:string[]=[],cleanupErrors:string[]=[]
 const packageStamp=fs.statSync(path.join(project,'api/client.js')).mtimeMs
 let mini:MiniProgram|undefined,token='',original:AdminPublicContent|undefined,changed=false,failure:unknown,stage='本地守卫',complete=false
+let nativeContentTop=0
 
 /** 隐去会话及身份秘密，不把配置快照或完整接口响应写入报告。 */
 function redact(value:unknown):string{return String(value instanceof Error?value.message:value).replace(/Bearer\s+[^\s,}"']+/gi,'Bearer [REDACTED]').replace(/(token|secret|openid|authorization)["'\s:=]+[^\s,}"']+/gi,'$1=[REDACTED]').slice(0,1600)}
@@ -85,23 +86,26 @@ async function homepage(expected:ContentSlide[]):Promise<{page:Page;player:Eleme
   const player=await until(async()=>(await children(page,'player-view'))[0],'真实玩家视图'),carousel=await until(async()=>(await children(player,'content-carousel'))[0],'独立轮播组件')
   const images=await until(()=>carousel.$('.carousel-images'),'原生图片swiper') as SwiperElement,labels=await until(()=>carousel.$('.carousel-labels'),'独立文字swiper') as SwiperElement
   assert.equal(Number(await images.property('interval')),3000);assert.equal(await labels.style('pointer-events'),'none')
+  for(const selector of ['.hero-brand-row','.hero-brand','.hero-publish','.hero-copy','.hero-title','.hero-sub'])assert.equal(await player.$(selector),null,'新版首页不应残留 '+selector)
   await until(async()=>{const planes=await carousel.$$('.carousel-label-plane') as Element[];if(planes.length!==3)return false;const texts=await Promise.all(planes.map(async plane=>Promise.all((await plane.$$('.carousel-label') as Element[]).map(node=>node.text()))));return texts.every((items,index)=>items.length===6&&items.every((text,i)=>text.trim()===expected[index].labels[i].text))},'三张图各六条完整实时文字')
   await page.waitFor(800)
   return{page,player,carousel,images,labels}
 }
 /** 读取当前图原始几何；待采样前后索引确认稳定后再判断，避免自动切图瞬间产生假失败。 */
 async function measure(player:Element,carousel:Element,index:number):Promise<Omit<Measurement,'position'|'slide'|'sample_ms'|'screenshot'>>{
-  const selectors=['.hero-visual','.hero-brand-row','.hero-publish','.game-section'],nodes=await Promise.all(selectors.map(selector=>find(player,selector))),dots=await carousel.$('.carousel-dots');assert.ok(nodes.every(Boolean)&&dots,'首页原有品牌、发布、目录与指示点必须存在')
-  const [hero,brand,publish,games,dotsBox]=await Promise.all([...nodes.map(node=>rect(node!)),rect(dots)])
+  const selectors=['.hero-visual','.game-section','.service-toolbar'],nodes=await Promise.all(selectors.map(selector=>find(player,selector))),dots=await carousel.$('.carousel-dots');assert.ok(nodes.every(Boolean)&&dots,'轮播、原游戏目录、服务区与指示点必须存在')
+  const [hero,games,services,dotsBox]=await Promise.all([...nodes.map(node=>rect(node!)),rect(dots)])
+  const nativeSafe={left:hero.left,top:hero.top,width:hero.width,height:nativeContentTop}
   const planes=await carousel.$$('.carousel-label-plane') as Element[];assert.equal(planes.length,3);const labels=await planes[index].$$('.carousel-label') as Element[];assert.equal(labels.length,6,'不得隐藏或合并文案')
-  const values=await Promise.all(labels.map(async(node,i)=>{const[text,box,size,pointer,visibility,opacity]=await Promise.all([node.text(),rect(node),node.style('font-size'),node.style('pointer-events'),node.style('visibility'),node.style('opacity')]);return{index:i,text:text.trim(),rect:box,font_size:Number.parseFloat(size),pointer_events:pointer,visibility,opacity}}))
-  return{hero,brand,publish,dots:dotsBox,games,labels:values}
+  const values=await Promise.all(labels.map(async(node,i)=>{const[text,box,size,pointer,visibility,opacity,backgroundColor,backgroundImage]=await Promise.all([node.text(),rect(node),node.style('font-size'),node.style('pointer-events'),node.style('visibility'),node.style('opacity'),node.style('background-color'),node.style('background-image')]);return{index:i,text:text.trim(),rect:box,font_size:Number.parseFloat(size),pointer_events:pointer,visibility,opacity,background_color:backgroundColor,background_image:backgroundImage}}))
+  return{hero,native_safe:nativeSafe,dots:dotsBox,games,services,labels:values}
 }
 /** 同图稳定采样才执行可读性及碰撞断言，不用隐藏文案或缩小字号换取通过。 */
 function validate(value:Omit<Measurement,'position'|'slide'|'sample_ms'|'screenshot'>,expected:ContentSlide):void{
-  const{hero,brand,publish,dots,games,labels}=value
-  assert.ok(hero.left>=-1&&hero.left+hero.width<=width+1,'轮播图不得水平越界');inside(brand,hero,'品牌/分享');inside(publish,hero,'发布按钮');inside(dots,hero,'轮播指示点');assert.ok(games.top>=hero.top+hero.height-1,'游戏目录不得被扩展轮播覆盖')
-  for(const label of labels){assert.equal(label.text,expected.labels[label.index].text,'标签全文必须可见');assert.ok(Number.isFinite(label.font_size)&&label.font_size>=9.99,'文字小于10实际像素');assert.equal(label.pointer_events,'none');assert.notEqual(label.visibility,'hidden');assert.notEqual(label.opacity,'0');inside(label.rect,hero,'文案'+label.index);for(const [name,box] of [['品牌',brand],['发布',publish],['指示点',dots]] as const)assert.ok(separate(label.rect,box),'文案与'+name+'重叠')}
+  const{hero,native_safe:nativeSafe,dots,games,services,labels}=value
+  assert.ok(hero.left>=-1&&hero.left+hero.width<=width+1,'轮播图不得水平越界');inside(nativeSafe,hero,'原生状态栏及胶囊安全带');inside(dots,hero,'轮播指示点');assert.ok(games.top>=hero.top+hero.height-1,'游戏目录不得被扩展轮播覆盖');assert.ok(services.top>=games.top+games.height-1,'服务区应位于原游戏目录下方')
+  for(const box of [games,services])assert.ok(box.left>=-1&&box.left+box.width<=width+1,'原游戏目录和服务区不得水平越界')
+  for(const label of labels){assert.equal(label.text,expected.labels[label.index].text,'标签全文必须可见');assert.ok(Number.isFinite(label.font_size)&&label.font_size>=9.99,'文字小于10实际像素');assert.equal(label.pointer_events,'none');assert.notEqual(label.visibility,'hidden');assert.notEqual(label.opacity,'0');assert.ok(['transparent','rgba(0,0,0,0)'].includes(label.background_color.replace(/\s/g,'').toLowerCase()),'历史文案背景应实际透明');assert.equal(label.background_image,'none','纯文字不能保留背景图片');inside(label.rect,hero,'文案'+label.index);for(const [name,box] of [['原生状态栏/胶囊',nativeSafe],['指示点',dots]] as const)assert.ok(separate(label.rect,box),'文案与'+name+'重叠')}
   for(let i=0;i<labels.length;i++)for(let j=i+1;j<labels.length;j++)assert.ok(separate(labels[i].rect,labels[j].rect),'文案'+i+'与'+j+'重叠')
 }
 /** 原生自动轮播持续运行，仅保留同一图前后索引一致的短采样，不能暂停或改写组件data。 */
@@ -115,7 +119,7 @@ async function capture(context:Awaited<ReturnType<typeof homepage>>,position:str
     await sdk().screenshot({path:file})
     const [imageIndex,textIndex]=await Promise.all([images.property('current'),labels.property('current')]),elapsed=Date.now()-start
     if(Number(imageIndex)!==index||Number(textIndex)!==index||elapsed>=2300)continue
-    validate(value,slide)
+    try{validate(value,slide)}catch(error){fs.writeFileSync(path.join(output,'failed-measurement.json'),JSON.stringify({position,index,sample_ms:elapsed,...value},null,2));throw error}
     assert.ok(fs.statSync(file).size>100,'官方SDK原始截图不能为空')
     return{position,slide:index, ...value,sample_ms:elapsed,screenshot:file}
   }
@@ -131,7 +135,7 @@ async function scene(position:string,images:string[]):Promise<void>{
   const context=await homepage(expected),group:Measurement[]=[]
   for(let index=0;index<3;index++){const value=await capture(context,position,index,expected[index]);group.push(value);measurements.push(value)}
   for(const value of group){assert.ok(Math.abs(value.hero.height-group[0].hero.height)<=1,'同一图组切换时轮播高度跳变');assert.ok(Math.abs(value.games.top-group[0].games.top)<=1,'同一图组切换推动游戏目录')}
-  checks.push(position+'：3图×6条十二码点、24号请求；实际字号≥10px，全部文字与品牌/按钮/指示点分离，同组高度稳定')
+  checks.push(position+'：3图×6条十二码点、24号请求；实际字号≥10px、背景透明，全部文字与原生安全带/指示点分离，下方原布局及同组高度稳定')
   console.log('PASS '+position)
 }
 /** 恢复仅本矩阵改动的字段，保持修订/审计单调；撤销短会话时不注销用户原有客户端身份。 */
@@ -148,7 +152,8 @@ async function run():Promise<void>{
   const images=await guard();fs.mkdirSync(output,{recursive:true});mini=await automator.connect({wsEndpoint:endpoint})
   mini.on('exception',(error:unknown)=>exceptions.push(redact(error)))
   mini.on('console',(entry:unknown)=>{const value=JSON.stringify(entry);if(/Some selectors are not allowed|不支持颜色|unsupported color/i.test(value))warnings.push(redact(value))})
-  const viewport=await sdk().evaluate(()=>wx.getWindowInfo()) as {windowWidth:number;windowHeight:number};assert.equal(viewport.windowWidth,width,'必须在微信工具实际切换机型，不能模拟窗口');assert.ok(viewport.windowHeight>0)
+  const native=await sdk().evaluate(()=>({window:wx.getWindowInfo(),capsule:wx.getMenuButtonBoundingClientRect()})) as {window:{windowWidth:number;windowHeight:number;statusBarHeight:number};capsule:Rect}
+  const viewport=native.window;assert.equal(viewport.windowWidth,width,'必须在微信工具实际切换机型，不能模拟窗口');assert.ok(viewport.windowHeight>0);assert.ok(Number.isFinite(viewport.statusBarHeight)&&viewport.statusBarHeight>=0,'实际状态栏高度无效');assert.ok(Number.isFinite(native.capsule.top)&&native.capsule.top>=viewport.statusBarHeight&&Number.isFinite(native.capsule.height)&&native.capsule.height>0,'实际微信胶囊安全区无效');nativeContentTop=viewport.statusBarHeight+2*(native.capsule.top-viewport.statusBarHeight)+native.capsule.height
   await prepare()
   for(const[position]of POSITIONS)await scene(position,images)
   assert.equal(fs.statSync(path.join(project,'api/client.js')).mtimeMs,packageStamp,'矩阵期间编译包被其它任务覆盖');assert.equal(measurements.length,27);assert.deepEqual(exceptions,[],'不应存在运行时异常');assert.deepEqual(warnings,[],'不应存在选择器或颜色兼容告警');complete=true

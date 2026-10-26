@@ -7,7 +7,7 @@
   "phases": "all",
   "checks": [
     {
-      "label": "首页保留原布局、四常驻容器与单行游戏入口",
+      "label": "首页无固定品牌/发布区，纯文字背景透明，下方原布局和四常驻容器保留",
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/home-layout.png"
     },
     {
@@ -38,6 +38,13 @@
     {
       "label": "切换账号重新读取本人公告状态且关闭可用",
       "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/announcement-account-isolation.png"
+    },
+    {
+      "label": "透明新人公告保留原比例，父容器透明，关闭入口为至少44px的圆形纯图标",
+      "screenshot": "/Users/Zhuanz/Desktop/三角洲/output/public-operations/mini-390/newcomer-transparent.png"
+    },
+    {
+      "label": "透明新人公告实际点击进入配置文章"
     },
     {
       "label": "公共信息按轮播、公告、顶部提示三栏展示",
@@ -107,41 +114,87 @@
       "statusBarHeight": 47
     },
     {
-      "scene": "home-original-layout",
+      "scene": "home-native-layout",
       "nodes": {
-        "hero-brand": {
-          "left": 15,
-          "top": 98.5,
-          "width": 92,
-          "height": 23
-        },
-        "hero-publish": {
-          "left": 274,
-          "top": 118.5,
-          "width": 101,
-          "height": 36
+        "hero-visual": {
+          "left": 0,
+          "top": 0,
+          "width": 390,
+          "height": 231
         },
         "game-section": {
           "left": 11,
-          "top": 323,
+          "top": 312,
           "width": 368,
           "height": 81
         },
         "service-toolbar": {
           "left": 15,
-          "top": 466,
+          "top": 455,
           "width": 360,
           "height": 28
         }
-      }
+      },
+      "backgrounds": [
+        {
+          "color": "rgba(0, 0, 0, 0)",
+          "image": "none"
+        },
+        {
+          "color": "rgba(0, 0, 0, 0)",
+          "image": "none"
+        },
+        {
+          "color": "rgba(0, 0, 0, 0)",
+          "image": "none"
+        }
+      ]
     },
     {
       "scene": "text-delay-public-event",
       "configured_delay_ms": 300,
-      "early_elapsed_ms": 7,
+      "early_elapsed_ms": 6,
       "early_index": 2,
       "previous_index": 2,
       "target_index": 0
+    },
+    {
+      "scene": "newcomer-transparent",
+      "natural_size": {
+        "width": 1122,
+        "height": 1402
+      },
+      "image": {
+        "left": 20,
+        "top": 177.828125,
+        "width": 350,
+        "height": 437.34375
+      },
+      "close": {
+        "left": 173,
+        "top": 622.171875,
+        "width": 44,
+        "height": 44
+      },
+      "close_radius": "50%",
+      "close_visible_text": "",
+      "container_backgrounds": [
+        {
+          "selector": ".home-announcement",
+          "color": "rgba(0, 0, 0, 0)",
+          "image": "none"
+        },
+        {
+          "selector": ".announcement-scroll",
+          "color": "rgba(0, 0, 0, 0)",
+          "image": "none"
+        },
+        {
+          "selector": ".uni-popup__wrapper",
+          "color": "rgba(0, 0, 0, 0)",
+          "image": "none"
+        }
+      ]
     }
   ],
   "exceptions": [],
@@ -154,5 +207,5 @@
     "运营字段与角色按快照恢复；原本没有的游戏分组以空数组清空自定义轮播，配置修订、公告版本及审计记录保持单调。临时文章下架保留审计。",
     "未付款、未造订单、未退款、未发聊天、未操作生产；本地一张文章测试图保留上传审计，临时文章下架。"
   ],
-  "completed_at": "2026-10-25T21:03:37.997Z"
+  "completed_at": "2026-10-26T01:06:47.757Z"
 }

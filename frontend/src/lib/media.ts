@@ -2,7 +2,7 @@
 import { token, ApiError } from '../api/client'
 import { uploadMediaImage, type ImagePurpose } from '../api/media.api'
 /** 图片按最终展示比例和分辨率限制。 */
-interface ImageRule { label: string; ratio?: string; width: number; qr?: boolean }
+interface ImageRule { label: string; ratio?: string; width: number; qr?: boolean; preserveAlpha?: boolean }
 /** 原生媒体回调。 */
 interface MediaCallbacks<T> { success: (result: T) => void; fail: (error: { errMsg?: string }) => void }
 /** 仅声明实际使用的微信官方图片接口。 */
@@ -11,7 +11,7 @@ interface WechatMedia {
   chooseMedia: (options: MediaCallbacks<{ tempFiles: Array<{ tempFilePath: string }> }> & { count: number; mediaType: string[]; sizeType: string[]; sourceType: string[] }) => void;
   cropImage: (options: MediaCallbacks<{ tempFilePath: string }> & { src: string; cropScale: string }) => void;
   compressImage: (options: MediaCallbacks<{ tempFilePath: string }> & { src: string; quality: number; compressedWidth: number }) => void;
-  getImageInfo: (options: MediaCallbacks<{ width: number; height: number }> & { src: string }) => void;
+  getImageInfo: (options: MediaCallbacks<{ width: number; height: number; type?: string }> & { src: string }) => void;
   getFileSystemManager: () => { getFileInfo: (options: MediaCallbacks<{ size: number }> & { filePath: string }) => void };
 }
 declare const wx: WechatMedia
@@ -28,7 +28,7 @@ export const IMAGE_RULES: Record<ImagePurpose, ImageRule> = {
   game_icon: { label: '游戏图标 · 1:1', ratio: '1:1', width: 256 },
   evidence: { label: '订单证据 · 保留完整图片比例', width: 1600 },
   promotion_banner: { label: '运营轮播 · 16:9', ratio:'16:9',width:1280 },
-  announcement_image: { label: '公告图片 · 保留原比例，不裁剪',width:1280 },
+  announcement_image: { label: '公告图片 · 保留原比例，不裁剪',width:1280,preserveAlpha:true },
   article_cover: { label: '文章封面 · 16:9',ratio:'16:9',width:1280 },
   article_image: { label: '文章插图 · 保留原比例',width:1280 },
 }
@@ -41,7 +41,8 @@ async function explain(rule: ImageRule): Promise<void> {
   // #ifdef H5
   if (rule.ratio) cropHint = '本地预览将按显示比例居中裁剪。'
   // #endif
-  const result = await invoke<{ confirm: boolean }>(callbacks => uni.showModal({ title: rule.label, content: `图片会压缩至宽度不超过 ${rule.width}px，上传大小不超过 3MB。${rule.qr?'请保留完整二维码和四周白边，优先保留清晰度，通常约500KB以内。':''}${cropHint}`, confirmText: '选择图片', ...callbacks }))
+  const sizeHint = rule.preserveAlpha ? `PNG保留透明背景，宽度不超过 ${rule.width}px，大小不超过3MB；微信端PNG超限需先缩小图片。` : `图片会压缩至宽度不超过 ${rule.width}px，上传大小不超过 3MB。`
+  const result = await invoke<{ confirm: boolean }>(callbacks => uni.showModal({ title: rule.label, content: `${sizeHint}${rule.qr?'请保留完整二维码和四周白边，优先保留清晰度，通常约500KB以内。':''}${cropHint}`, confirmText: '选择图片', ...callbacks }))
   if (!result.confirm) { const error = new ApiError('已取消选择'); error.cancelled = true; throw error }
 }
 /** 读取压缩后实际字节数，不能信任原始文件大小。 */
@@ -53,17 +54,25 @@ async function fileSize(path: string): Promise<number> {
   return (await (await fetch(path)).blob()).size
   // #endif
 }
+/** 公告PNG直接保留透明像素，输出尺寸同时满足前端宽度与后端800万像素限制。 */
+function validateAnnouncementPixels(width: number, height: number): void {
+  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || width > IMAGE_RULES.announcement_image.width || height > 8192 || width * height > 8000000) throw new Error('公告PNG宽度不得超过1280、高度不得超过8192且不超过800万像素，请先缩小图片')
+}
 /** H5 体验按用途比例居中裁剪并压缩，微信端使用官方裁剪。 */
 async function processWeb(path: string, rule: ImageRule): Promise<string> {
   const source = await new Promise<HTMLImageElement>((resolve, reject) => { const item = new Image(); item.onload = () => resolve(item); item.onerror = () => reject(new Error('无法读取所选图片')); item.src = path })
+  if (rule.preserveAlpha && source.width * source.height > 40000000) throw new Error('图片分辨率过大，请先选择较小图片')
   const dimensions = rule.ratio?.split(':').map(Number)
   const ratio = dimensions ? dimensions[0] / dimensions[1] : source.width / source.height
   const cropWidth = Math.min(source.width, source.height * ratio), cropHeight = cropWidth / ratio
-  const canvas = document.createElement('canvas'); canvas.width = Math.round(Math.min(rule.width, cropWidth)); canvas.height = Math.round(canvas.width / ratio)
+  const width = Math.round(Math.min(rule.width, cropWidth)), height = Math.round(width / ratio)
+  if (rule.preserveAlpha) validateAnnouncementPixels(width, height)
+  const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height
   const context = canvas.getContext('2d'); if (!context) throw new Error('当前环境不支持图片处理')
   if (rule.qr) { context.fillStyle = '#fff'; context.fillRect(0, 0, canvas.width, canvas.height) }
   context.drawImage(source, (source.width - cropWidth) / 2, (source.height - cropHeight) / 2, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height)
-  const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, rule.qr ? 'image/png' : 'image/jpeg', rule.qr ? undefined : 0.82))
+  const lossless = rule.qr || rule.preserveAlpha
+  const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, lossless ? 'image/png' : 'image/jpeg', lossless ? undefined : 0.82))
   if (!blob || blob.size > MAX_BYTES) throw new Error('图片压缩后仍大于3MB，请选择较小图片')
   return URL.createObjectURL(blob)
 }
@@ -75,19 +84,22 @@ export async function prepareImage(purpose: ImagePurpose, options: ImageOptions 
   if (!path) {
     await explain(rule)
     // #ifdef MP-WEIXIN
-    path = (await invoke<{ tempFiles: Array<{ tempFilePath: string }> }>(callbacks => wx.chooseMedia({ count: 1, mediaType: ['image'], sizeType: ['original', 'compressed'], sourceType: ['album', 'camera'], ...callbacks }))).tempFiles[0]?.tempFilePath
+    path = (await invoke<{ tempFiles: Array<{ tempFilePath: string }> }>(callbacks => wx.chooseMedia({ count: 1, mediaType: ['image'], sizeType: rule.preserveAlpha ? ['original'] : ['original', 'compressed'], sourceType: ['album', 'camera'], ...callbacks }))).tempFiles[0]?.tempFilePath
     // #endif
     // #ifdef H5
-    const chosen = await invoke<UniApp.ChooseImageSuccessCallbackResult>(callbacks => uni.chooseImage({ count: 1, sizeType: ['original', 'compressed'], ...callbacks }))
+    const chosen = await invoke<UniApp.ChooseImageSuccessCallbackResult>(callbacks => uni.chooseImage({ count: 1, sizeType: rule.preserveAlpha ? ['original'] : ['original', 'compressed'], ...callbacks }))
     path = typeof chosen.tempFilePaths === 'string' ? chosen.tempFilePaths : chosen.tempFilePaths[0]
     // #endif
   }
   if (!path) throw new Error('没有选中图片')
   // #ifdef MP-WEIXIN
   if (rule.ratio) { if (!wx.canIUse('cropImage')) throw new Error('当前微信不支持官方图片裁剪，请升级微信后重试'); const src = path; path = (await invoke<{ tempFilePath: string }>(callbacks => wx.cropImage({ src, cropScale: rule.ratio!, ...callbacks }))).tempFilePath }
-  const info = await invoke<{ width: number; height: number }>(callbacks => wx.getImageInfo({ src: path!, ...callbacks }))
+  const info = await invoke<{ width: number; height: number; type?: string }>(callbacks => wx.getImageInfo({ src: path!, ...callbacks }))
   if (info.width * info.height > 40000000) throw new Error('图片分辨率过大，请先选择较小图片')
-  for (const quality of rule.qr ? [96, 92] : [82, 65, 45]) { const src = path; path = (await invoke<{ tempFilePath: string }>(callbacks => wx.compressImage({ src, quality, compressedWidth: Math.min(rule.width, info.width), ...callbacks }))).tempFilePath; if (await fileSize(path) <= (rule.qr ? 500*1024 : MAX_BYTES)) break }
+  // 微信compressImage可能转成JPEG；公告PNG保留官方原图字节，超限明确拒绝而不丢透明度。
+  if (rule.preserveAlpha && !info.type) throw new Error('无法确认公告图片格式，请重新选择PNG或JPEG图片')
+  if (rule.preserveAlpha && info.type?.toLowerCase() === 'png') validateAnnouncementPixels(info.width, info.height)
+  else for (const quality of rule.qr ? [96, 92] : [82, 65, 45]) { const src = path; path = (await invoke<{ tempFilePath: string }>(callbacks => wx.compressImage({ src, quality, compressedWidth: Math.min(rule.width, info.width), ...callbacks }))).tempFilePath; if (await fileSize(path) <= (rule.qr ? 500*1024 : MAX_BYTES)) break }
   if (await fileSize(path) > MAX_BYTES) throw new Error('图片压缩后仍大于3MB，请换一张图片')
   // #endif
   // #ifdef H5

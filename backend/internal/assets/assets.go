@@ -1,4 +1,4 @@
-// Package assets 将游戏官方封面嵌入后端，减少小程序包体积并由同一 HTTPS 域名提供图片。
+// Package assets 将游戏封面、默认头像和受控运营素材嵌入后端，由同一HTTPS域名提供图片并减少小程序包体积。
 package assets
 
 import (
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-//go:embed covers avatars
+//go:embed covers avatars operations
 var files embed.FS
 
 // Handler 仅提供已嵌入的图片文件，不列目录、不访问服务器其他文件。

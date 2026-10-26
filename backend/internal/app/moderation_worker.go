@@ -315,6 +315,9 @@ func (a *App) finishModeration(ctx context.Context, task ModerationTask, decisio
 	if err = tx.Commit(ctx); err != nil {
 		return err
 	}
+	if current.TargetType == "games" || current.TargetType == "settings" || current.TargetType == "articles" || current.Kind == "image" && current.Status == "rejected" {
+		a.flushPublicCache(ctx)
+	}
 	if current.Status == "superseded" && lease == "" {
 		return fail(409, "内容已更新，旧审核任务不能修改新内容")
 	}
