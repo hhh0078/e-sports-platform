@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "api_base": "http://127.0.0.1:18091/api",
+  "dev_mode": true,
+  "schema": "tutorial_20261026_1793009054",
+  "schema_evidence": "由根代理启动参数指定的独立schema；本脚本仅用限定本地HTTP API，不直连数据库。",
+  "service_id": "044ff840ae375bbca80271076b1eb641",
+  "team_order_id": "fe6e670867cf2126ddfc80202dbaafde",
+  "moderation_task_id": "b1ae9136db867c028cdfc6c13c48e001",
+  "club_id": "shanhai",
+  "membership_user_id": "outsider",
+  "api_preflight_order_id": "af7b859428bbe50e8df937eebfe09781",
+  "checks": [
+    {
+      "check": "限定本地健康检查与开发模式",
+      "passed": true
+    },
+    {
+      "check": "本地人工审核模式可用",
+      "passed": true
+    },
+    {
+      "check": "admin真实开发登录",
+      "passed": true
+    },
+    {
+      "check": "clubowner真实开发登录",
+      "passed": true
+    },
+    {
+      "check": "player真实开发登录",
+      "passed": true
+    },
+    {
+      "check": "worker真实开发登录",
+      "passed": true
+    },
+    {
+      "check": "outsider真实开发登录",
+      "passed": true
+    },
+    {
+      "check": "干净教程环境组织平台押金为零",
+      "passed": true
+    },
+    {
+      "check": "种子俱乐部归属与状态",
+      "passed": true
+    },
+    {
+      "check": "组织规则真实保存百分之十佣金与零成员押金",
+      "passed": true
+    },
+    {
+      "check": "可交易教程服务真实发布",
+      "passed": true
+    },
+    {
+      "check": "自由玩家真实待审核申请",
+      "passed": true
+    },
+    {
+      "check": "原API履约预检订单仍真实完成",
+      "passed": true
+    },
+    {
+      "check": "保留真实团队进行中订单",
+      "passed": true
+    },
+    {
+      "check": "保留专用服务真实待人工审核任务",
+      "passed": true
+    },
+    {
+      "check": "组织资金显示进行中及结算中佣金",
+      "passed": true
+    },
+    {
+      "check": "主理人团队订单列表包含原订单",
+      "passed": true
+    },
+    {
+      "check": "主理人成员审核列表有待办",
+      "passed": true
+    }
+  ],
+  "wallet_summary": {
+    "ongoing_cents": 120,
+    "settling_cents": 240,
+    "available_cents": 0,
+    "dev_mode": true
+  },
+  "boundaries": [
+    "全部业务记录经真实本地API保存；没有GET响应mock、数据库改状态或生产请求。",
+    "本地开发付款不代表真实微信扣款、商家转账或真实到账。",
+    "未伪造完成时间，刚完成订单保留7天售后期，组织可提现佣金仍为零。"
+  ]
+}

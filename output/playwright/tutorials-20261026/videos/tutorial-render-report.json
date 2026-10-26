@@ -1,0 +1,674 @@
+{
+  "passed": true,
+  "kind": "real-ui-recording",
+  "source": "当前H5真实页面连续录屏；数据为隔离环境演示，不代表微信真机或真实资金交易。",
+  "playback": "按原录屏时间范围剪辑，操作始终1x；旁白需要额外时间时只延长步骤末帧。",
+  "canvas": {
+    "width": 1080,
+    "height": 1920
+  },
+  "fps": 30,
+  "voice_root": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-voice",
+  "frame_license": "https://tryhoverify.com/tools/device-frames/license/",
+  "rendered_ids": [
+    "03-order-tutorial"
+  ],
+  "results": [
+    {
+      "id": "01-platform-tutorial",
+      "title": "平台管理员 · 运营上手",
+      "audience": "平台管理员",
+      "file": "videos/01-platform-tutorial.mp4",
+      "srt": "videos/01-platform-tutorial.srt",
+      "narration_audio": "audio/01-platform-tutorial/narration.wav",
+      "playback_rate": 1,
+      "seconds": 51.93333333333334,
+      "raw": "raw/01-platform-tutorial.webm",
+      "raw_media": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "vp8",
+            "codec_type": "video",
+            "width": 786,
+            "height": 1518,
+            "avg_frame_rate": "25/1"
+          }
+        ],
+        "format": {
+          "duration": "37.160000"
+        }
+      },
+      "content_crop": {
+        "x": 0,
+        "y": 0,
+        "width": 393,
+        "height": 759
+      },
+      "raw_clean": "raw-clean/01-platform-tutorial.webm",
+      "steps": [
+        {
+          "id": "01",
+          "title": "进入管理中心",
+          "narration": "平台日常运营，从我的页面进入平台管理中心。",
+          "raw_start": 0.322717041015625,
+          "raw_end": 3.354717041015625,
+          "operation_seconds": 3.032,
+          "voice_seconds": 4.48,
+          "hold_seconds": 1.7679999999999998,
+          "start": 0,
+          "end": 4.8,
+          "frames": 144,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-0.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-0.wav"
+        },
+        {
+          "id": "02",
+          "title": "查看经营趋势",
+          "narration": "切换统计周期，查看真实订单金额和经营趋势。",
+          "raw_start": 3.431717041015625,
+          "raw_end": 5.366717041015625,
+          "operation_seconds": 1.935,
+          "voice_seconds": 7.68,
+          "hold_seconds": 6.0649999999999995,
+          "start": 4.8,
+          "end": 12.8,
+          "frames": 240,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-1.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-1.wav"
+        },
+        {
+          "id": "03",
+          "title": "查找用户",
+          "narration": "打开用户管理，输入用户编号，快速定位资料。",
+          "raw_start": 5.465717041015625,
+          "raw_end": 9.943717041015624,
+          "operation_seconds": 4.477999999999999,
+          "voice_seconds": 5.84,
+          "hold_seconds": 1.688666666666668,
+          "start": 12.8,
+          "end": 18.96666666666667,
+          "frames": 185,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-2.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-2.wav"
+        },
+        {
+          "id": "04",
+          "title": "核对用户资料",
+          "narration": "点开用户详情，核对身份和手机验证状态。",
+          "raw_start": 9.999717041015625,
+          "raw_end": 11.918717041015626,
+          "operation_seconds": 1.9190000000000005,
+          "voice_seconds": 3.76,
+          "hold_seconds": 2.147666666666666,
+          "start": 18.96666666666667,
+          "end": 23.033333333333335,
+          "frames": 122,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-3.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-3.wav"
+        },
+        {
+          "id": "05",
+          "title": "打开图文审核",
+          "narration": "回到管理中心，进入图文审核，筛选待人工内容。",
+          "raw_start": 14.082717041015625,
+          "raw_end": 17.096717041015626,
+          "operation_seconds": 3.014000000000001,
+          "voice_seconds": 4.48,
+          "hold_seconds": 1.7859999999999987,
+          "start": 23.033333333333335,
+          "end": 27.833333333333336,
+          "frames": 144,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-4.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-4.wav"
+        },
+        {
+          "id": "06",
+          "title": "查看完整内容",
+          "narration": "打开任务，先看完整内容，再决定是否通过。",
+          "raw_start": 17.459717041015626,
+          "raw_end": 19.525717041015625,
+          "operation_seconds": 2.065999999999999,
+          "voice_seconds": 5.28,
+          "hold_seconds": 3.5340000000000007,
+          "start": 27.833333333333336,
+          "end": 33.43333333333334,
+          "frames": 168,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-5.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-5.wav"
+        },
+        {
+          "id": "07",
+          "title": "确认审核结果",
+          "narration": "确认内容符合要求后，点击通过，结果会保留记录。",
+          "raw_start": 19.642717041015626,
+          "raw_end": 22.147717041015625,
+          "operation_seconds": 2.504999999999999,
+          "voice_seconds": 4.24,
+          "hold_seconds": 2.0616666666666674,
+          "start": 33.43333333333334,
+          "end": 38,
+          "frames": 137,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-6.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-6.wav"
+        },
+        {
+          "id": "08",
+          "title": "编辑首页提示",
+          "narration": "公共信息里选择顶部提示，填写玩家首页要展示的内容。",
+          "raw_start": 23.939717041015626,
+          "raw_end": 29.007717041015624,
+          "operation_seconds": 5.067999999999998,
+          "voice_seconds": 6.64,
+          "hold_seconds": 1.898666666666669,
+          "start": 38,
+          "end": 44.96666666666667,
+          "frames": 209,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-7.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-7.wav"
+        },
+        {
+          "id": "09",
+          "title": "保存并查看效果",
+          "narration": "保存公共信息后，返回玩家首页，查看提示是否生效。",
+          "raw_start": 29.056717041015624,
+          "raw_end": 35.16471704101563,
+          "operation_seconds": 6.108000000000004,
+          "voice_seconds": 6.64,
+          "hold_seconds": 0.8586666666666627,
+          "start": 44.96666666666667,
+          "end": 51.93333333333334,
+          "frames": 209,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-8.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-8.wav"
+        }
+      ],
+      "verified": {
+        "media": {
+          "programs": [],
+          "streams": [
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1080,
+              "height": 1920,
+              "avg_frame_rate": "30/1",
+              "nb_frames": "1558"
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 1,
+              "avg_frame_rate": "0/0",
+              "nb_frames": "2436"
+            }
+          ],
+          "format": {
+            "duration": "51.933333"
+          }
+        },
+        "max_volume_dbfs": -2
+      },
+      "previews": [
+        "videos/qa/01-platform-tutorial/01-01.png",
+        "videos/qa/01-platform-tutorial/02-02.png",
+        "videos/qa/01-platform-tutorial/03-03.png",
+        "videos/qa/01-platform-tutorial/04-04.png",
+        "videos/qa/01-platform-tutorial/05-05.png",
+        "videos/qa/01-platform-tutorial/06-06.png",
+        "videos/qa/01-platform-tutorial/07-07.png",
+        "videos/qa/01-platform-tutorial/08-08.png",
+        "videos/qa/01-platform-tutorial/09-09.png"
+      ]
+    },
+    {
+      "id": "02-club-tutorial",
+      "title": "俱乐部管理员 · 团队协作",
+      "audience": "俱乐部管理员",
+      "file": "videos/02-club-tutorial.mp4",
+      "srt": "videos/02-club-tutorial.srt",
+      "narration_audio": "audio/02-club-tutorial/narration.wav",
+      "playback_rate": 1,
+      "seconds": 50.26666666666666,
+      "raw": "raw/02-club-tutorial.webm",
+      "raw_media": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "vp8",
+            "codec_type": "video",
+            "width": 786,
+            "height": 1518,
+            "avg_frame_rate": "25/1"
+          }
+        ],
+        "format": {
+          "duration": "32.440000"
+        }
+      },
+      "content_crop": {
+        "x": 0,
+        "y": 0,
+        "width": 393,
+        "height": 759
+      },
+      "raw_clean": "raw-clean/02-club-tutorial.webm",
+      "steps": [
+        {
+          "id": "01",
+          "title": "进入俱乐部控制台",
+          "narration": "在我的页面打开俱乐部中心，进入自己的管理控制台。",
+          "raw_start": 0.327443115234375,
+          "raw_end": 3.450443115234375,
+          "operation_seconds": 3.1229999999999998,
+          "voice_seconds": 8.4,
+          "hold_seconds": 5.610333333333333,
+          "start": 0,
+          "end": 8.733333333333333,
+          "frames": 262,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-0.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-0.wav"
+        },
+        {
+          "id": "02",
+          "title": "查看加入规则",
+          "narration": "加入规则与装修里，可以核对抽成、押金和团队介绍。",
+          "raw_start": 3.520443115234375,
+          "raw_end": 5.955443115234375,
+          "operation_seconds": 2.4349999999999996,
+          "voice_seconds": 7.76,
+          "hold_seconds": 5.631666666666667,
+          "start": 8.733333333333333,
+          "end": 16.799999999999997,
+          "frames": 242,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-1.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-1.wav"
+        },
+        {
+          "id": "03",
+          "title": "查找入会申请",
+          "narration": "打开成员管理，搜索申请人，找到待审核的申请。",
+          "raw_start": 7.092443115234375,
+          "raw_end": 11.563443115234374,
+          "operation_seconds": 4.470999999999999,
+          "voice_seconds": 5.44,
+          "hold_seconds": 1.2956666666666674,
+          "start": 16.799999999999997,
+          "end": 22.566666666666663,
+          "frames": 173,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-2.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-2.wav"
+        },
+        {
+          "id": "04",
+          "title": "填写审核说明",
+          "narration": "核对申请人，点击审核，填写本次处理说明。",
+          "raw_start": 11.683443115234375,
+          "raw_end": 15.076443115234374,
+          "operation_seconds": 3.392999999999999,
+          "voice_seconds": 5.44,
+          "hold_seconds": 2.3736666666666677,
+          "start": 22.566666666666663,
+          "end": 28.33333333333333,
+          "frames": 173,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-3.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-3.wav"
+        },
+        {
+          "id": "05",
+          "title": "完成成员认证",
+          "narration": "确认处理后，申请人会成为俱乐部的认证成员。",
+          "raw_start": 15.249443115234374,
+          "raw_end": 17.272443115234374,
+          "operation_seconds": 2.0229999999999997,
+          "voice_seconds": 4.96,
+          "hold_seconds": 3.243666666666667,
+          "start": 28.33333333333333,
+          "end": 33.599999999999994,
+          "frames": 158,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-4.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-4.wav"
+        },
+        {
+          "id": "06",
+          "title": "查看团队订单",
+          "narration": "进入团队订单，打开订单详情，查看履约进度。",
+          "raw_start": 18.426443115234374,
+          "raw_end": 21.921443115234375,
+          "operation_seconds": 3.495000000000001,
+          "voice_seconds": 4.56,
+          "hold_seconds": 1.3716666666666653,
+          "start": 33.599999999999994,
+          "end": 38.46666666666666,
+          "frames": 146,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-5.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-5.wav"
+        },
+        {
+          "id": "07",
+          "title": "协助订单沟通",
+          "narration": "订单聊天保存沟通记录，管理员也能协助双方确认进度。",
+          "raw_start": 21.995443115234377,
+          "raw_end": 28.117443115234376,
+          "operation_seconds": 6.122,
+          "voice_seconds": 4.88,
+          "hold_seconds": 0.011333333333333862,
+          "start": 38.46666666666666,
+          "end": 44.599999999999994,
+          "frames": 184,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-6.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-6.wav"
+        },
+        {
+          "id": "08",
+          "title": "查看组织资金",
+          "narration": "俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
+          "raw_start": 28.192443115234376,
+          "raw_end": 30.644443115234374,
+          "operation_seconds": 2.451999999999998,
+          "voice_seconds": 5.36,
+          "hold_seconds": 3.214666666666669,
+          "start": 44.599999999999994,
+          "end": 50.26666666666666,
+          "frames": 170,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-7.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-7.wav"
+        }
+      ],
+      "verified": {
+        "media": {
+          "programs": [],
+          "streams": [
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1080,
+              "height": 1920,
+              "avg_frame_rate": "30/1",
+              "nb_frames": "1508"
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 1,
+              "avg_frame_rate": "0/0",
+              "nb_frames": "2358"
+            }
+          ],
+          "format": {
+            "duration": "50.266667"
+          }
+        },
+        "max_volume_dbfs": -2
+      },
+      "previews": [
+        "videos/qa/02-club-tutorial/01-01.png",
+        "videos/qa/02-club-tutorial/02-02.png",
+        "videos/qa/02-club-tutorial/03-03.png",
+        "videos/qa/02-club-tutorial/04-04.png",
+        "videos/qa/02-club-tutorial/05-05.png",
+        "videos/qa/02-club-tutorial/06-06.png",
+        "videos/qa/02-club-tutorial/07-07.png",
+        "videos/qa/02-club-tutorial/08-08.png"
+      ]
+    },
+    {
+      "id": "03-order-tutorial",
+      "title": "玩家与接单者 · 完整订单",
+      "audience": "玩家与游戏爱好者",
+      "file": "videos/03-order-tutorial.mp4",
+      "srt": "videos/03-order-tutorial.srt",
+      "narration_audio": "audio/03-order-tutorial/narration.wav",
+      "playback_rate": 1,
+      "seconds": 80.86666666666667,
+      "raw": "raw/03-order-tutorial.webm",
+      "raw_media": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "vp8",
+            "codec_type": "video",
+            "width": 786,
+            "height": 1518,
+            "avg_frame_rate": "25/1"
+          }
+        ],
+        "format": {
+          "duration": "60.680000"
+        }
+      },
+      "content_crop": {
+        "x": 0,
+        "y": 0,
+        "width": 393,
+        "height": 759
+      },
+      "raw_clean": "raw-clean/03-order-tutorial.webm",
+      "steps": [
+        {
+          "id": "01",
+          "title": "选择服务",
+          "narration": "玩家先查看服务详情，确认价格、介绍和服务方。",
+          "raw_start": 0.331526123046875,
+          "raw_end": 2.287526123046875,
+          "operation_seconds": 1.956,
+          "voice_seconds": 5.2,
+          "hold_seconds": 3.544,
+          "start": 0,
+          "end": 5.5,
+          "frames": 165,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-0.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-0.wav"
+        },
+        {
+          "id": "02",
+          "title": "写清需求",
+          "narration": "填写区服、预约时间和验收标准，双方更容易对齐预期。",
+          "raw_start": 2.353526123046875,
+          "raw_end": 5.702526123046875,
+          "operation_seconds": 3.3489999999999998,
+          "voice_seconds": 6,
+          "hold_seconds": 2.951,
+          "start": 5.5,
+          "end": 11.8,
+          "frames": 189,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-1.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-1.wav"
+        },
+        {
+          "id": "03",
+          "title": "创建订单",
+          "narration": "核对金额后确认下单，系统会生成一笔待付款订单。",
+          "raw_start": 5.883526123046875,
+          "raw_end": 8.316526123046875,
+          "operation_seconds": 2.4330000000000007,
+          "voice_seconds": 4.64,
+          "hold_seconds": 2.533666666666666,
+          "start": 11.8,
+          "end": 16.766666666666666,
+          "frames": 149,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-2.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-2.wav"
+        },
+        {
+          "id": "04",
+          "title": "选择支付方式",
+          "narration": "订单内选择支付方式。这次演示使用本地测试支付。",
+          "raw_start": 8.401526123046875,
+          "raw_end": 11.373526123046876,
+          "operation_seconds": 2.9720000000000013,
+          "voice_seconds": 4.88,
+          "hold_seconds": 2.227999999999999,
+          "start": 16.766666666666666,
+          "end": 21.966666666666665,
+          "frames": 156,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-3.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-3.wav"
+        },
+        {
+          "id": "05",
+          "title": "完成测试支付",
+          "narration": "确认支付后，订单进入待接单状态，正式交易以微信结果为准。",
+          "raw_start": 11.447526123046876,
+          "raw_end": 13.714526123046875,
+          "operation_seconds": 2.2669999999999995,
+          "voice_seconds": 11.92,
+          "hold_seconds": 9.966333333333333,
+          "start": 21.966666666666665,
+          "end": 34.199999999999996,
+          "frames": 367,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-4.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-4.wav"
+        },
+        {
+          "id": "06",
+          "title": "订单内沟通",
+          "narration": "打开订单聊天，把集合时间和服务需求留在订单里。",
+          "raw_start": 13.782526123046875,
+          "raw_end": 19.489526123046875,
+          "operation_seconds": 5.707000000000001,
+          "voice_seconds": 5.2,
+          "hold_seconds": 0.026333333333332654,
+          "start": 34.199999999999996,
+          "end": 39.93333333333333,
+          "frames": 172,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-5.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-5.wav"
+        },
+        {
+          "id": "07",
+          "title": "接单者接受订单",
+          "narration": "切到接单者视角，核对需求后，点击接受订单。",
+          "raw_start": 22.153526123046873,
+          "raw_end": 26.241526123046874,
+          "operation_seconds": 4.088000000000001,
+          "voice_seconds": 4.8,
+          "hold_seconds": 1.0119999999999987,
+          "start": 39.93333333333333,
+          "end": 45.03333333333333,
+          "frames": 153,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-6.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-6.wav"
+        },
+        {
+          "id": "08",
+          "title": "开始服务",
+          "narration": "双方确认后，点击开始服务，订单进度同步更新。",
+          "raw_start": 26.349526123046875,
+          "raw_end": 29.955526123046877,
+          "operation_seconds": 3.6060000000000016,
+          "voice_seconds": 5.92,
+          "hold_seconds": 2.6273333333333317,
+          "start": 45.03333333333333,
+          "end": 51.266666666666666,
+          "frames": 187,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-7.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-7.wav"
+        },
+        {
+          "id": "09",
+          "title": "同步履约进度",
+          "narration": "服务过程中在订单聊天同步进度，方便双方核对。",
+          "raw_start": 30.022526123046877,
+          "raw_end": 36.097526123046876,
+          "operation_seconds": 6.074999999999999,
+          "voice_seconds": 4.64,
+          "hold_seconds": 0.025000000000000355,
+          "start": 51.266666666666666,
+          "end": 57.36666666666667,
+          "frames": 183,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-8.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-8.wav"
+        },
+        {
+          "id": "10",
+          "title": "提交交付说明",
+          "narration": "完成服务后提交交付，写清完成内容，等待玩家验收。",
+          "raw_start": 37.60852612304687,
+          "raw_end": 44.40752612304688,
+          "operation_seconds": 6.799000000000007,
+          "voice_seconds": 5.76,
+          "hold_seconds": 0.0009999999999932285,
+          "start": 57.36666666666667,
+          "end": 64.16666666666667,
+          "frames": 204,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-9.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-9.wav"
+        },
+        {
+          "id": "11",
+          "title": "玩家核对并验收",
+          "narration": "玩家核对交付说明，确认符合约定后，验收并完成。",
+          "raw_start": 48.372526123046875,
+          "raw_end": 52.91652612304687,
+          "operation_seconds": 4.543999999999997,
+          "voice_seconds": 4.96,
+          "hold_seconds": 0.7226666666666697,
+          "start": 64.16666666666667,
+          "end": 69.43333333333334,
+          "frames": 158,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-10.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-10.wav"
+        },
+        {
+          "id": "12",
+          "title": "查看待结算收入",
+          "narration": "服务收入先进入结算中，保留七天售后期，再按规则转为可提现。",
+          "raw_start": 56.662526123046874,
+          "raw_end": 58.68152612304687,
+          "operation_seconds": 2.0189999999999984,
+          "voice_seconds": 11.12,
+          "hold_seconds": 9.414333333333335,
+          "start": 69.43333333333334,
+          "end": 80.86666666666667,
+          "frames": 343,
+          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-11.mp4",
+          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-11.wav"
+        }
+      ],
+      "verified": {
+        "media": {
+          "programs": [],
+          "streams": [
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1080,
+              "height": 1920,
+              "avg_frame_rate": "30/1",
+              "nb_frames": "2426"
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 1,
+              "avg_frame_rate": "0/0",
+              "nb_frames": "3792"
+            }
+          ],
+          "format": {
+            "duration": "80.866667"
+          }
+        },
+        "max_volume_dbfs": -2
+      },
+      "previews": [
+        "videos/qa/03-order-tutorial/01-01.png",
+        "videos/qa/03-order-tutorial/02-02.png",
+        "videos/qa/03-order-tutorial/03-03.png",
+        "videos/qa/03-order-tutorial/04-04.png",
+        "videos/qa/03-order-tutorial/05-05.png",
+        "videos/qa/03-order-tutorial/06-06.png",
+        "videos/qa/03-order-tutorial/07-07.png",
+        "videos/qa/03-order-tutorial/08-08.png",
+        "videos/qa/03-order-tutorial/09-09.png",
+        "videos/qa/03-order-tutorial/10-10.png",
+        "videos/qa/03-order-tutorial/11-11.png",
+        "videos/qa/03-order-tutorial/12-12.png"
+      ]
+    }
+  ]
+}

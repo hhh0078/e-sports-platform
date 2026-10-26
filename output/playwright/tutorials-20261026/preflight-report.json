@@ -1,0 +1,1134 @@
+{
+  "mode": "preflight",
+  "local_api": "http://127.0.0.1:18091/api",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/stats",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/stats",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/overview",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users/outsider",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users/outsider/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users/outsider/wallet/entries",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/overview",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/moderation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/moderation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/moderation/47889081f819c4b1a939fa3e32df0da5",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/moderation/47889081f819c4b1a939fa3e32df0da5/decision",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/moderation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/overview",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/public-content",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/overview",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/stats",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/announcement-state",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/announcement-ack",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/services",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/stats",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/stats",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai/members",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai/members",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/clubs/shanhai/members/outsider",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai/members",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/fe6e670867cf2126ddfc80202dbaafde",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai/deposits",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai/withdrawals",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/deposit-refunds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/clubs/shanhai/entries",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/topups",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/stats",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/stats",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/services/044ff840ae375bbca80271076b1eb641",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/pay",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/announcement-state",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/announcement-state",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/services",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/announcement-ack",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/actions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/actions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/actions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/announcement-state",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/announcement-state",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/services",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/announcement-ack",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/actions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/adjustments",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/0c64e7de859a011c2a6df93e4a4ca379",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/public-content",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/announcement-state",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/topups",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/entries",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/deposit-refunds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/services",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/withdrawals",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/deposit-refunds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/topups",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/withdrawals",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wallet/entries",
+      "status": 200
+    }
+  ],
+  "runtime_errors": [],
+  "real_ui": true,
+  "production_writes": false
+}

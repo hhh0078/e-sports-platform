@@ -67,3 +67,10 @@ frontend/node_modules/.bin/tsx scripts/voice-marketing-videos.ts
 ```
 
 图片和视频渲染复用本机已有工具；配音另建独立MLX工具环境，没有新增小程序项目依赖。`generate-marketing-voice.ts`需要本机`.run/marketing-tts-env`及`.run/marketing-tts-model`，或通过`MARKETING_TTS_PYTHON`、`MARKETING_TTS_MODEL`指定。配音环境安装前已检查国内镜像，并使用清华镜像安装MLX-Audio。`MARKETING_NODE_MODULES`可指定包含Playwright、sharp和Canvas的已有工具目录；视频编码工具可通过`MARKETING_FFMPEG`和`MARKETING_FFPROBE`指定。
+
+
+## 女声更新与使用教程
+
+2026-10-26：原4条30秒宣传视频已统一替换为女声，字幕与画面不变。新增3条实际操作教程，见本目录`tutorials/preview.html`；覆盖平台管理员、俱乐部管理员、玩家下单与接单者履约。教程含女声、烧录字幕、SRT、iPhone边框、原始录屏和逐步骤剪辑映射。全部操作原速，仅剪掉步骤间的准备和空等。录制前真实界面预检225次本地接口零失败，正式录制216次本地接口零失败，均无页面运行异常。
+
+教程在隔离本地开发环境真实操作，支付为模拟，不代表微信真机或真实支付验收。根目录中的`tutorials`为指向同级教程目录的相对链接；一体压缩包会放入实际教程文件，可直接解压预览。

@@ -1,11 +1,11 @@
-<!-- 文件作用：俱乐部负责人编辑封面、图文介绍、覆盖游戏及加入门槛，提交后重新进行平台审核。 -->
+<!-- 文件作用：俱乐部负责人编辑封面、图文介绍、覆盖游戏及加入门槛，图文审核与组织认证独立处理。 -->
 <template>
   <AppShell title="俱乐部装修" :game-id="form.game_ids[0]" back>
     <view v-if="error" class="error-box mb">{{ error }}</view>
     <view v-if="loading" class="loading-line">正在读取俱乐部资料…</view>
     <EmptyState v-else-if="!canManage" title="仅俱乐部负责人可装修" detail="请登录有管理权限的账号，普通成员可以查看公开主页。" icon="shield"><button class="text-btn" @click="go(state.user?'/pages/community/clubs/detail?id='+id:'/pages/account/login?next='+encodeURIComponent('/pages/community/clubs/edit?id='+id))">{{ state.user?'返回俱乐部':'登录开机电竞' }} <Icon name="arrow" :size="12"/></button></EmptyState>
     <template v-else>
-      <text class="subtle-note review-note">修改资料后重新审核，认证在通过后恢复。</text>
+      <text class="subtle-note review-note">资料保存后进入图文审核，组织认证状态独立管理。</text>
       <view class="form-section identity-section">
         <text class="section-title">主页形象</text>
         <view class="cover-editor"><image v-if="previewCover" class="cover-image" :src="assetUrl(previewCover)" mode="aspectFill"/><view class="cover-caption"><text>16:9 · 自动裁剪压缩</text><button class="text-btn cover-change" :disabled="saving||uploading" @click="uploadCover"><Icon name="image" :size="14"/>{{ uploading?'处理中…':'更换封面' }}</button></view></view>

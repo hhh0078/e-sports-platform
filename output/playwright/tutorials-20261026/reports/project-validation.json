@@ -1,0 +1,45 @@
+{
+  "说明": "文件作用：记录本轮俱乐部审核提示修正及教程制作的验证范围，完整日志保留在本机.run/female-copy-checks。",
+  "frontend": {
+    "typecheck": {
+      "passed": true,
+      "command": "npm --prefix frontend run typecheck"
+    },
+    "standards": {
+      "passed": true,
+      "command": "npm --prefix frontend run check:standards",
+      "pages_and_views": 54
+    },
+    "tests": {
+      "passed": 827,
+      "failed": 0,
+      "skipped": 0,
+      "command": "npm --prefix frontend test"
+    },
+    "h5_build": {
+      "passed": true,
+      "command": "npm --prefix frontend run build:h5"
+    },
+    "wechat_build": {
+      "passed": true,
+      "command": "npm --prefix frontend run build:mp-weixin"
+    }
+  },
+  "ui": {
+    "preflight": {
+      "local_requests": 225,
+      "failed_requests": 0,
+      "runtime_errors": 0
+    },
+    "recording": {
+      "local_requests": 216,
+      "failed_requests": 0,
+      "runtime_errors": 0
+    },
+    "real_ui": true,
+    "local_simulated_payment": true,
+    "real_wechat_payment_verified": false,
+    "wechat_device_verified": false
+  },
+  "fix": "俱乐部资料保存后的图文审核与组织认证状态独立管理，页面提示已修正。"
+}
