@@ -3,13 +3,13 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 import {spawn} from 'node:child_process'
-const root=process.cwd(),directory=path.join(root,'.run/marketing-voice')
+const root=process.cwd(),directory=process.env.MARKETING_VOICE_ROOT||path.join(root,'.run/marketing-voice')
 const python=process.env.MARKETING_TTS_PYTHON||path.join(root,'.run/marketing-tts-env/bin/python')
 const model=process.env.MARKETING_TTS_MODEL||path.join(root,'.run/marketing-tts-model')
 assert.ok(fs.existsSync(python),'请先准备独立MLX配音环境')
 assert.ok(fs.existsSync(path.join(model,'model.safetensors')),'情绪模型尚未下载完成')
 fs.mkdirSync(directory,{recursive:true})
-fs.copyFileSync(path.join(root,'scripts/marketing-voice-script.json'),path.join(directory,'script.json'))
+fs.copyFileSync(process.env.MARKETING_VOICE_SCRIPT_SOURCE||path.join(root,'scripts/marketing-voice-script.json'),path.join(directory,'script.json'))
 // Python是MLX官方推理接口所需的局部适配，不进入前端业务或产品运行环境。
 const worker=String.raw`"""文件作用：调用本地MLX情绪语音模型生成可复用的逐镜头PCM配音，并记录文本、音色和音量校验信息。"""
 import os,json,hashlib,time,wave
@@ -43,7 +43,7 @@ for plan_index,plan in enumerate(config['videos']):
     target=root/plan['id'];target.mkdir(exist_ok=True)
     for index,text in enumerate(plan['segments']):
         if indices and index not in indices:continue
-        timing='开头钩子，短促抓耳，请在两秒半左右自然说完。' if index==0 else '这一句请在四秒内自然利落说完，短停顿，重点鲜明。'
+        timing=plan.get('timing') or ('开头钩子，短促抓耳，请在两秒半左右自然说完。' if index==0 else '这一句请在四秒内自然利落说完，短停顿，重点鲜明。')
         instruction=plan['instruct']+timing
         signature=hashlib.sha256(json.dumps([text,plan['voice'],instruction,attempt],ensure_ascii=False).encode()).hexdigest()
         file=target/(str(index)+'.wav');meta=target/(str(index)+'.json')
