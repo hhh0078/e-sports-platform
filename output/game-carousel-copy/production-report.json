@@ -1,0 +1,860 @@
+{
+  "file_purpose": "13款游戏轮播文案经宝塔MCP更新后的脱敏线上验收记录",
+  "commit": "504387e570d4639815e3c26c2e748192c74185d8",
+  "image_tag": "20261026-game-504387e",
+  "image_sha256": "sha256:f7d2bd77a4d0dc192ecd7009ea3a958b1ef15c7dbf2fd237d2170bc9f105da16",
+  "checked_at": "2026-10-26T07:44:28.366756+00:00",
+  "passed": 200,
+  "failed": 0,
+  "public_content_revision": 11,
+  "filled_games": [
+    "arena",
+    "cfm",
+    "codm",
+    "delta",
+    "eggy",
+    "honor",
+    "identityv",
+    "lol",
+    "narakam",
+    "peace",
+    "tft",
+    "valorant",
+    "valorantm"
+  ],
+  "filled_slides": 13,
+  "filled_caption_layers": 26,
+  "cache_invalidation_pending": false,
+  "redis_public_cache": {
+    "current_ttl_min": 86386,
+    "scanned_count": 6,
+    "generation_present": true,
+    "ttl_max": 86392,
+    "ttl_min": 72064,
+    "current_day_ttl_count": 5,
+    "scan_complete": true,
+    "current_count": 5,
+    "invalid_ttl_count": 0,
+    "hash_count": 6,
+    "live_count": 6,
+    "current_ttl_max": 86392,
+    "ready_exists": true,
+    "ready_ttl_ms": 4031,
+    "old_generation_count": 1
+  },
+  "checks": [
+    {
+      "name": "formal_https_health",
+      "passed": true
+    },
+    {
+      "name": "postgres_redis_production",
+      "passed": true
+    },
+    {
+      "name": "jijie-api-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-postgres-1_not_public",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_healthy",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_unchanged",
+      "passed": true
+    },
+    {
+      "name": "jijie-redis-1_not_public",
+      "passed": true
+    },
+    {
+      "name": "api_exact_image",
+      "passed": true
+    },
+    {
+      "name": "api_loopback_only",
+      "passed": true
+    },
+    {
+      "name": "only_image_tag_changed",
+      "passed": true
+    },
+    {
+      "name": "env_600",
+      "passed": true
+    },
+    {
+      "name": "master_key_preserved",
+      "passed": true
+    },
+    {
+      "name": "six_subscriptions_and_private_settings_unchanged",
+      "passed": true
+    },
+    {
+      "name": "compose_unchanged",
+      "passed": true
+    },
+    {
+      "name": "nginx_unchanged",
+      "passed": true
+    },
+    {
+      "name": "private_backup_modes",
+      "passed": true
+    },
+    {
+      "name": "database.sql.gz_checksum",
+      "passed": true
+    },
+    {
+      "name": "roles.sql.gz_checksum",
+      "passed": true
+    },
+    {
+      "name": "old_tables_and_three_new_tables_preserved",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_clubs",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_fund_audits",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_fund_lots",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_fund_movements",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_fund_receipts",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_order_adjustments",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_order_payments",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_order_refunds",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_orders",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_services",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_users",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_wallet_deposit_refunds",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_wallet_entries",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_wallet_escrows",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_wallet_requests",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_wallet_topups",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_wallet_withdrawals",
+      "passed": true
+    },
+    {
+      "name": "old_records_preserved_wallets",
+      "passed": true
+    },
+    {
+      "name": "old_wallet_entries_immutable",
+      "passed": true
+    },
+    {
+      "name": "existing_root_admin_preserved",
+      "passed": true
+    },
+    {
+      "name": "three_new_tables_chinese_comments",
+      "passed": true
+    },
+    {
+      "name": "new_lookup_indexes",
+      "passed": true
+    },
+    {
+      "name": "native_cache_outbox_chinese_comments",
+      "passed": true
+    },
+    {
+      "name": "native_cache_outbox_types",
+      "passed": true
+    },
+    {
+      "name": "trusted_platform_banner_available",
+      "passed": true
+    },
+    {
+      "name": "trusted_newcomer_image_available",
+      "passed": true
+    },
+    {
+      "name": "public_/api/bootstrap",
+      "passed": true
+    },
+    {
+      "name": "public_/api/services",
+      "passed": true
+    },
+    {
+      "name": "public_/api/clubs",
+      "passed": true
+    },
+    {
+      "name": "public_/api/financial-rules",
+      "passed": true
+    },
+    {
+      "name": "public_/api/public-content",
+      "passed": true
+    },
+    {
+      "name": "no_store_/api/public-content",
+      "passed": true
+    },
+    {
+      "name": "public_/api/articles",
+      "passed": true
+    },
+    {
+      "name": "no_store_/api/articles",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_honor",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_peace",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_delta",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_tft",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_valorant",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_lol",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_valorantm",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_cfm",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_arena",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_codm",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_identityv",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_narakam",
+      "passed": true
+    },
+    {
+      "name": "public_content_game_eggy",
+      "passed": true
+    },
+    {
+      "name": "public_article_page_shape",
+      "passed": true
+    },
+    {
+      "name": "published_article_detail",
+      "passed": true
+    },
+    {
+      "name": "missing_article_404",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/admin/public-content",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/admin/content-targets?kind=service",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/admin/articles",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/admin/articles/no-such-release-check",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/admin/users",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/me/announcement-state",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/clubs?managed=1",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/admin/subscriptions/settings",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/admin/payment-settings",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/admin/ai-settings",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/orders",
+      "passed": true
+    },
+    {
+      "name": "visitor_denied_/api/me",
+      "passed": true
+    },
+    {
+      "name": "dev_accounts_disabled",
+      "passed": true
+    },
+    {
+      "name": "private_path_denied_/.env",
+      "passed": true
+    },
+    {
+      "name": "private_path_denied_/deploy/.env",
+      "passed": true
+    },
+    {
+      "name": "private_path_denied_/.deploy-backups/pre-game-captions-activation-20261026-game-504387e/deploy.env",
+      "passed": true
+    },
+    {
+      "name": "private_path_denied_/.deploy-backups/pre-game-captions-activation-20261026-game-504387e/database.sql.gz",
+      "passed": true
+    },
+    {
+      "name": "captions_config_exists",
+      "passed": true
+    },
+    {
+      "name": "original_public_field_preserved_page_tips",
+      "passed": true
+    },
+    {
+      "name": "original_public_field_preserved_request_notice",
+      "passed": true
+    },
+    {
+      "name": "original_public_field_preserved_service_notice",
+      "passed": true
+    },
+    {
+      "name": "original_public_field_preserved_announcement",
+      "passed": true
+    },
+    {
+      "name": "original_public_field_preserved_global_slides",
+      "passed": true
+    },
+    {
+      "name": "thirteen_enabled_game_ids",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_honor",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_honor",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_honor",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_honor",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_honor",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_peace",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_peace",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_peace",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_peace",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_peace",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_delta",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_delta",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_delta",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_delta",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_delta",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_tft",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_tft",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_tft",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_tft",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_tft",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_valorant",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_valorant",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_valorant",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_valorant",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_valorant",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_lol",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_lol",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_lol",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_lol",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_lol",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_valorantm",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_valorantm",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_valorantm",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_valorantm",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_valorantm",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_cfm",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_cfm",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_cfm",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_cfm",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_cfm",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_arena",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_arena",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_arena",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_arena",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_arena",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_codm",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_codm",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_codm",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_codm",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_codm",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_identityv",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_identityv",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_identityv",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_identityv",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_identityv",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_narakam",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_narakam",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_narakam",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_narakam",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_narakam",
+      "passed": true
+    },
+    {
+      "name": "two_game_captions_eggy",
+      "passed": true
+    },
+    {
+      "name": "game_caption_format_eggy",
+      "passed": true
+    },
+    {
+      "name": "game_caption_editable_eggy",
+      "passed": true
+    },
+    {
+      "name": "game_image_unchanged_eggy",
+      "passed": true
+    },
+    {
+      "name": "platform_slides_and_order_preserved_eggy",
+      "passed": true
+    },
+    {
+      "name": "game_count_and_revision",
+      "passed": true
+    },
+    {
+      "name": "original_public_backup_matches",
+      "passed": true
+    },
+    {
+      "name": "once_marker_recorded",
+      "passed": true
+    },
+    {
+      "name": "other_settings_preserved",
+      "passed": true
+    },
+    {
+      "name": "env_unchanged_during_fill",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_honor_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_honor_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_peace_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_peace_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_delta_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_delta_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_tft_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_tft_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_valorant_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_valorant_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_lol_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_lol_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_valorantm_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_valorantm_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_cfm_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_cfm_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_arena_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_arena_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_codm_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_codm_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_identityv_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_identityv_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_narakam_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_narakam_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_eggy_game-caption-main",
+      "passed": true
+    },
+    {
+      "name": "current_moderation_binding_eggy_game-caption-sub",
+      "passed": true
+    },
+    {
+      "name": "caption_cache_generation_changed",
+      "passed": true
+    },
+    {
+      "name": "game_fill_audit_recorded",
+      "passed": true
+    },
+    {
+      "name": "private_game_backup_denied_defaults-before.json",
+      "passed": true
+    },
+    {
+      "name": "private_game_backup_denied_defaults-settings-hashes.json",
+      "passed": true
+    },
+    {
+      "name": "private_game_backup_denied_defaults-database.sql.gz",
+      "passed": true
+    },
+    {
+      "name": "redis_public_cache_scan_complete",
+      "passed": true
+    },
+    {
+      "name": "redis_public_cache_ready_lease",
+      "passed": true
+    },
+    {
+      "name": "redis_public_cache_hashes_have_ttl",
+      "passed": true
+    },
+    {
+      "name": "redis_public_cache_current_generation_one_day",
+      "passed": true
+    }
+  ],
+  "production_session_created": false,
+  "production_test_order_created": false,
+  "real_payment_executed": false,
+  "real_subscription_sent": false,
+  "backup_completed": true,
+  "api_only_activation": true,
+  "original_platform_content_preserved": true,
+  "postgres_redis_containers_and_volumes_preserved": true,
+  "boundaries": [
+    "仅后端镜像和已授权运营配置已上线；不等同微信小程序上传、提审或发布",
+    "320/390截图为本地微信模拟器；未执行真机或真实支付验收",
+    "完整原配置和数据库备份仅保存在服务器私密备份目录，不进入仓库"
+  ]
+}
