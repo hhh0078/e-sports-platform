@@ -1,0 +1,204 @@
+{
+  "id": "02-club-admin",
+  "kind": "ad",
+  "single_generation_pass": true,
+  "voice": "Serena",
+  "source_audio_sha256": "5fc052b9792c250567918d80a6788d9fe1a2e829f09198649cbedf92f2a8de51",
+  "source_duration_seconds": 34.88,
+  "alignment_sha256": "43cf37c5244bee3cab7b6d519ffcbd378e225ce857dd13e3af926a3d767feeb8",
+  "global_gain_db": 1.2000000000000002,
+  "global_gain_scope": "同一固定增益应用整条音源，所有句子相同",
+  "global_tempo_ratio": 1.1823728813559322,
+  "sentence_gain_applied": false,
+  "sentence_tts_applied": false,
+  "pitch_shift_applied": false,
+  "samples_preserved_in_order": true,
+  "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+  "playback_rate": "广告轻运镜按句窗配时",
+  "frames": 900,
+  "duration_seconds": 30,
+  "spans": [
+    {
+      "source_start": 0,
+      "source_end": 206231,
+      "output_start": 0,
+      "output_end": 206400,
+      "inserted_samples": 169,
+      "boundary_rms": 0.00019809509012718094
+    },
+    {
+      "source_start": 206231,
+      "source_end": 407212,
+      "output_start": 206400,
+      "output_end": 411200,
+      "inserted_samples": 3819,
+      "boundary_rms": 0.00010436758889748069
+    },
+    {
+      "source_start": 407212,
+      "source_end": 609342,
+      "output_start": 411200,
+      "output_end": 616000,
+      "inserted_samples": 2670,
+      "boundary_rms": 0.00016950882479166473
+    },
+    {
+      "source_start": 609342,
+      "source_end": 810385,
+      "output_start": 616000,
+      "output_end": 820800,
+      "inserted_samples": 3757,
+      "boundary_rms": 0.00029324412649331817
+    },
+    {
+      "source_start": 810385,
+      "source_end": 1021957,
+      "output_start": 820800,
+      "output_end": 1033600,
+      "inserted_samples": 1228,
+      "boundary_rms": 0.000253739026829509
+    },
+    {
+      "source_start": 1021957,
+      "source_end": 1219420,
+      "output_start": 1033600,
+      "output_end": 1236800,
+      "inserted_samples": 5737,
+      "boundary_rms": 0.00683331197886079
+    },
+    {
+      "source_start": 1219420,
+      "source_end": 1416143,
+      "output_start": 1236800,
+      "output_end": 1440000,
+      "inserted_samples": 6477,
+      "boundary_rms": 0
+    }
+  ],
+  "cues": [
+    {
+      "index": 0,
+      "text": "团队接单，怎么省心？",
+      "start": 0.76125,
+      "end": 3.9585416666666666,
+      "coverage": 1
+    },
+    {
+      "index": 1,
+      "text": "专属主页，展示你的团队。",
+      "start": 4.638729166666667,
+      "end": 8.2081875,
+      "coverage": 0.9
+    },
+    {
+      "index": 2,
+      "text": "成员申请和团队订单，集中管理。",
+      "start": 8.846,
+      "end": 12.263208333333333,
+      "coverage": 1
+    },
+    {
+      "index": 3,
+      "text": "佣金、押金分开记。",
+      "start": 13.350770833333334,
+      "end": 16.581875,
+      "coverage": 0.7143
+    },
+    {
+      "index": 4,
+      "text": "订单独立聊天，团队一起协作。",
+      "start": 17.539833333333334,
+      "end": 21.126208333333334,
+      "coverage": 1
+    },
+    {
+      "index": 5,
+      "text": "接单到履约，订单进度随时查看。",
+      "start": 21.91304166666667,
+      "end": 25.600916666666667,
+      "coverage": 0.8462
+    },
+    {
+      "index": 6,
+      "text": "俱乐部入驻，也能独立部署。",
+      "start": 25.600916666666667,
+      "end": 29.746645833333332,
+      "coverage": 0.8182
+    }
+  ],
+  "generation_metadata": {
+    "sample_rate": 24000,
+    "samples": 837120,
+    "duration_seconds": 34.88,
+    "peak": 0.615264892578125,
+    "rms": 0.04105115309357643,
+    "clipped_samples": 0,
+    "overall_safety_gain": 1,
+    "audio_sha256": "5fc052b9792c250567918d80a6788d9fe1a2e829f09198649cbedf92f2a8de51",
+    "id": "02-club-admin",
+    "text": "团队接单，怎么省心？专属主页，展示你的团队。成员申请和团队订单，集中管理。佣金、押金分开记。订单独立聊天，团队一起协作。接单到履约，订单进度随时查看。俱乐部入驻，也能独立部署。",
+    "voice": "Serena",
+    "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+    "sampling_parameters": {
+      "temperature": 0.65,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repetition_penalty": 1.05,
+      "max_tokens": 2048,
+      "seed": 20261026
+    },
+    "token_limit": 512,
+    "token_count": 436,
+    "generation_seconds": 22.001770208007656,
+    "api_calls_per_video": 1,
+    "signature": "7fa69bcc495eada9429d73527728a20ef2964637f62685062c9dedd782b51985",
+    "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+    "license": "Apache-2.0",
+    "source": "scripts/marketing-voice-script.json",
+    "segments": [
+      "团队接单，怎么省心？",
+      "专属主页，展示你的团队。",
+      "成员申请和团队订单，集中管理。",
+      "佣金、押金分开记。",
+      "订单独立聊天，团队一起协作。",
+      "接单到履约，订单进度随时查看。",
+      "俱乐部入驻，也能独立部署。"
+    ],
+    "seed_scope": "one_fixed_seed_per_complete_article",
+    "natural_eos_before_limit": true,
+    "non_streaming_result_count": 1,
+    "model_peak_memory_gb": null,
+    "acceptance_note": "自然EOS；原34.5秒内部阈值放宽为36秒后，根代理明确接纳34.88秒整篇原件。WAV逐字节未变，不继承失败交付标记。",
+    "needs_whole_utterance_atempo": true,
+    "suggested_whole_atempo": 1.17,
+    "postprocess": "仅生成时统一必要降峰与PCM量化；原始时序保留，未裁词、未变速、未变调。最终广告可整篇保音调配时，不能逐句处理。"
+  },
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "avg_frame_rate": "30/1",
+        "nb_frames": "900"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "avg_frame_rate": "0/0",
+        "nb_frames": "1408"
+      }
+    ],
+    "format": {
+      "duration": "30.000000"
+    },
+    "max_volume_dbfs": -3.1
+  },
+  "normalized_pcm_sha256": "00af4560fab260fd07d1babd4392ad54a8622bbc1647f9f278ee68ba6c8000ae",
+  "narration_sha256": "18e157f3dbc00e8e3a38bb04843066bc7e6b53625fdd68d948b5bba9eb6bda4d",
+  "video_sha256": "adfb8d85228036b87a11a5fa80805a2398df2879dea6c4dff7e5ddc6ca1f7817",
+  "original_video_sha256": "545e5afc51aae5a97bd4b7e8024db2744f0e8c334d5f25f7017d03997553aa85"
+}

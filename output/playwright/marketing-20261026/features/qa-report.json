@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "functions": 70,
+  "groups": 6,
+  "text_complete": true,
+  "source": "当前前后端源码，业务功能静态核对；不代表真实微信资金或真机验收。",
+  "sheets": [
+    {
+      "file": "overview.png",
+      "width": 2400,
+      "height": 10052,
+      "functions": 70
+    },
+    {
+      "file": "groups/01-player.png",
+      "width": 1600,
+      "height": 2076,
+      "functions": 10
+    },
+    {
+      "file": "groups/02-provider.png",
+      "width": 1600,
+      "height": 1832,
+      "functions": 7
+    },
+    {
+      "file": "groups/03-club.png",
+      "width": 1600,
+      "height": 2320,
+      "functions": 11
+    },
+    {
+      "file": "groups/04-platform.png",
+      "width": 1600,
+      "height": 3296,
+      "functions": 20
+    },
+    {
+      "file": "groups/05-finance.png",
+      "width": 1600,
+      "height": 2076,
+      "functions": 10
+    },
+    {
+      "file": "groups/06-foundation.png",
+      "width": 1600,
+      "height": 2320,
+      "functions": 12
+    }
+  ],
+  "browser_zoom_passed": true,
+  "text_bounds": {
+    "width": 2400,
+    "height": 10052,
+    "text_nodes": 216,
+    "outside": []
+  },
+  "runtime_errors": []
+}

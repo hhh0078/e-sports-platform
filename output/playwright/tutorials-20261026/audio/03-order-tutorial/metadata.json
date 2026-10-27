@@ -1,0 +1,535 @@
+{
+  "id": "03-order-tutorial",
+  "kind": "tutorial",
+  "voice": "Serena",
+  "single_generation_pass": true,
+  "source_audio_sha256": "77303e12fe04428a720b096e57ac46e31e1403734a3d5ebfab3451e22af0b7f0",
+  "single_source_audio_sha256": "77303e12fe04428a720b096e57ac46e31e1403734a3d5ebfab3451e22af0b7f0",
+  "source_duration_seconds": 85.04,
+  "original_video_sha256": "c232bab5a121e73df674de26a8f4aae78a64160394ba9e4a7fe0048ee7ac5754",
+  "old_video_sha256": "c232bab5a121e73df674de26a8f4aae78a64160394ba9e4a7fe0048ee7ac5754",
+  "alignment_sha256": "63208960456e1ae41110fb50c211e1cccf32b76ce3932d50c2ec0c3ed1a93c47",
+  "normalized_pcm_sha256": "50b760f39944ee2e4f46ddd600afe3d74f497926fe5189fb4244360141146ab5",
+  "narration_sha256": "ba7f3c1581db5859e967d61c117cfb9d71ecb56ea22756453425d338d19ba1fa",
+  "global_gain_db": 3.2,
+  "global_gain_scope": "同一固定增益作用于整篇一次",
+  "global_tempo": 1,
+  "global_tempo_ratio": 1,
+  "resample_passes": 1,
+  "sentence_gain_applied": false,
+  "sentence_tts_applied": false,
+  "pitch_shift_applied": false,
+  "samples_preserved_in_order": true,
+  "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+  "source_sample_count": 4081920,
+  "preserved_sample_count": 4081920,
+  "inserted_samples": 10880,
+  "sample_rate": 48000,
+  "playback_rate": 1,
+  "fps": 30,
+  "frames": 2558,
+  "duration_seconds": 85.26666666666667,
+  "spans": [
+    {
+      "source_start": 0,
+      "source_end": 254934,
+      "output_start": 0,
+      "output_end": 256000,
+      "inserted_samples": 1066,
+      "boundary_rms": 0.00009931897235407212
+    },
+    {
+      "source_start": 254934,
+      "source_end": 600958,
+      "output_start": 256000,
+      "output_end": 603200,
+      "inserted_samples": 1176,
+      "boundary_rms": 0.000047990448183045004
+    },
+    {
+      "source_start": 600958,
+      "source_end": 887545,
+      "output_start": 603200,
+      "output_end": 891200,
+      "inserted_samples": 1413,
+      "boundary_rms": 0.0001963241523642324
+    },
+    {
+      "source_start": 887545,
+      "source_end": 1188870,
+      "output_start": 891200,
+      "output_end": 1193600,
+      "inserted_samples": 1075,
+      "boundary_rms": 0.00018720799298106564
+    },
+    {
+      "source_start": 1188870,
+      "source_end": 1541728,
+      "output_start": 1193600,
+      "output_end": 1547200,
+      "inserted_samples": 742,
+      "boundary_rms": 0.00010794087946423446
+    },
+    {
+      "source_start": 1541728,
+      "source_end": 1863843,
+      "output_start": 1547200,
+      "output_end": 1870400,
+      "inserted_samples": 1085,
+      "boundary_rms": 0.00005320556902955083
+    },
+    {
+      "source_start": 1863843,
+      "source_end": 2218075,
+      "output_start": 1870400,
+      "output_end": 2225600,
+      "inserted_samples": 968,
+      "boundary_rms": 0.0000714751171586214
+    },
+    {
+      "source_start": 2218075,
+      "source_end": 2582400,
+      "output_start": 2225600,
+      "output_end": 2590400,
+      "inserted_samples": 475,
+      "boundary_rms": 0.00010420944904896693
+    },
+    {
+      "source_start": 2582400,
+      "source_end": 2909693,
+      "output_start": 2590400,
+      "output_end": 2918400,
+      "inserted_samples": 707,
+      "boundary_rms": 0.00012011552308126035
+    },
+    {
+      "source_start": 2909693,
+      "source_end": 3300950,
+      "output_start": 2918400,
+      "output_end": 3310400,
+      "inserted_samples": 743,
+      "boundary_rms": 0.000079078714187006
+    },
+    {
+      "source_start": 3300950,
+      "source_end": 3666704,
+      "output_start": 3310400,
+      "output_end": 3676800,
+      "inserted_samples": 646,
+      "boundary_rms": 0.000059847400958955834
+    },
+    {
+      "source_start": 3666704,
+      "source_end": 4081920,
+      "output_start": 3676800,
+      "output_end": 4092800,
+      "inserted_samples": 784,
+      "boundary_rms": 0
+    }
+  ],
+  "boundaries": [
+    {
+      "sample": 0,
+      "rms": 0,
+      "asr_midpoint": 0
+    },
+    {
+      "sample": 254934,
+      "rms": 0.00009931897235407212,
+      "asr_midpoint": 5.3100000000000005
+    },
+    {
+      "sample": 600958,
+      "rms": 0.000047990448183045004,
+      "asr_midpoint": 12.52
+    },
+    {
+      "sample": 887545,
+      "rms": 0.0001963241523642324,
+      "asr_midpoint": 18.490000000000002
+    },
+    {
+      "sample": 1188870,
+      "rms": 0.00018720799298106564,
+      "asr_midpoint": 24.77
+    },
+    {
+      "sample": 1541728,
+      "rms": 0.00010794087946423446,
+      "asr_midpoint": 32.120000000000005
+    },
+    {
+      "sample": 1863843,
+      "rms": 0.00005320556902955083,
+      "asr_midpoint": 38.83
+    },
+    {
+      "sample": 2218075,
+      "rms": 0.0000714751171586214,
+      "asr_midpoint": 46.21
+    },
+    {
+      "sample": 2582400,
+      "rms": 0.00010420944904896693,
+      "asr_midpoint": 53.8
+    },
+    {
+      "sample": 2909693,
+      "rms": 0.00012011552308126035,
+      "asr_midpoint": 60.620000000000005
+    },
+    {
+      "sample": 3300950,
+      "rms": 0.000079078714187006,
+      "asr_midpoint": 68.77
+    },
+    {
+      "sample": 3666704,
+      "rms": 0.000059847400958955834,
+      "asr_midpoint": 76.38999999999999
+    },
+    {
+      "sample": 4081920,
+      "rms": 0,
+      "asr_midpoint": 85.04
+    }
+  ],
+  "cues": [
+    {
+      "index": 0,
+      "text": "玩家先查看服务详情，确认价格、介绍和服务方。",
+      "start": 0,
+      "end": 4.82,
+      "coverage": 1
+    },
+    {
+      "index": 1,
+      "text": "填写区服、预约时间和验收标准，双方更容易对齐预期。",
+      "start": 5.822208333333333,
+      "end": 11.862208333333333,
+      "coverage": 0.9545
+    },
+    {
+      "index": 2,
+      "text": "核对金额后确认下单，系统会生成一笔待付款订单。",
+      "start": 13.246708333333334,
+      "end": 18.106708333333334,
+      "coverage": 0.9048
+    },
+    {
+      "index": 3,
+      "text": "订单内选择支付方式。这次演示使用本地测试支付。",
+      "start": 18.996145833333333,
+      "end": 24.456145833333334,
+      "coverage": 0.9524
+    },
+    {
+      "index": 4,
+      "text": "确认支付后，订单进入待接单状态，正式交易以微信结果为准。",
+      "start": 25.258541666666666,
+      "end": 31.698541666666667,
+      "coverage": 0.96
+    },
+    {
+      "index": 5,
+      "text": "打开订单聊天，把集合时间和服务需求留在订单里。",
+      "start": 32.754,
+      "end": 38.274,
+      "coverage": 1
+    },
+    {
+      "index": 6,
+      "text": "切到接单者视角，核对需求后，点击接受订单。",
+      "start": 39.636604166666665,
+      "end": 45.596604166666665,
+      "coverage": 0.9444
+    },
+    {
+      "index": 7,
+      "text": "双方确认后，点击开始服务，订单进度同步更新。",
+      "start": 47.116770833333334,
+      "end": 53.19677083333333,
+      "coverage": 1
+    },
+    {
+      "index": 8,
+      "text": "服务过程中在订单聊天同步进度，方便双方核对。",
+      "start": 54.72666666666667,
+      "end": 60.06666666666667,
+      "coverage": 0.95
+    },
+    {
+      "index": 9,
+      "text": "完成服务后提交交付，写清完成内容，等待玩家验收。",
+      "start": 61.52139583333334,
+      "end": 68.14139583333333,
+      "coverage": 1
+    },
+    {
+      "index": 10,
+      "text": "玩家核对交付说明，确认符合约定后，验收并完成。",
+      "start": 69.776875,
+      "end": 75.516875,
+      "coverage": 1
+    },
+    {
+      "index": 11,
+      "text": "服务收入先进入结算中，保留七天售后期，再按规则转为可提现。",
+      "start": 77.67033333333333,
+      "end": 85.23033333333333,
+      "coverage": 0.9615
+    }
+  ],
+  "operations": [
+    {
+      "index": 0,
+      "id": "01",
+      "title": "选择服务",
+      "source_video_start": 0,
+      "source_video_end": 1.956,
+      "operation_seconds": 1.956,
+      "operation_speed": 1,
+      "output_start": 0,
+      "output_operation_end": 1.956,
+      "output_end": 5.333333333333333,
+      "output_frames": 160,
+      "held_end_frame_seconds": 3.377333333333333
+    },
+    {
+      "index": 1,
+      "id": "02",
+      "title": "写清需求",
+      "source_video_start": 5.5,
+      "source_video_end": 8.849,
+      "operation_seconds": 3.3489999999999998,
+      "operation_speed": 1,
+      "output_start": 5.333333333333333,
+      "output_operation_end": 8.682333333333332,
+      "output_end": 12.566666666666666,
+      "output_frames": 217,
+      "held_end_frame_seconds": 3.8843333333333336
+    },
+    {
+      "index": 2,
+      "id": "03",
+      "title": "创建订单",
+      "source_video_start": 11.8,
+      "source_video_end": 14.233,
+      "operation_seconds": 2.4330000000000007,
+      "operation_speed": 1,
+      "output_start": 12.566666666666666,
+      "output_operation_end": 14.999666666666666,
+      "output_end": 18.566666666666666,
+      "output_frames": 180,
+      "held_end_frame_seconds": 3.5669999999999993
+    },
+    {
+      "index": 3,
+      "id": "04",
+      "title": "选择支付方式",
+      "source_video_start": 16.766666666666666,
+      "source_video_end": 19.738666666666667,
+      "operation_seconds": 2.9720000000000013,
+      "operation_speed": 1,
+      "output_start": 18.566666666666666,
+      "output_operation_end": 21.538666666666668,
+      "output_end": 24.866666666666667,
+      "output_frames": 189,
+      "held_end_frame_seconds": 3.3279999999999985
+    },
+    {
+      "index": 4,
+      "id": "05",
+      "title": "完成测试支付",
+      "source_video_start": 21.966666666666665,
+      "source_video_end": 24.233666666666664,
+      "operation_seconds": 2.2669999999999995,
+      "operation_speed": 1,
+      "output_start": 24.866666666666667,
+      "output_operation_end": 27.133666666666667,
+      "output_end": 32.233333333333334,
+      "output_frames": 221,
+      "held_end_frame_seconds": 5.099666666666667
+    },
+    {
+      "index": 5,
+      "id": "06",
+      "title": "订单内沟通",
+      "source_video_start": 34.199999999999996,
+      "source_video_end": 39.907,
+      "operation_seconds": 5.707000000000001,
+      "operation_speed": 1,
+      "output_start": 32.233333333333334,
+      "output_operation_end": 37.940333333333335,
+      "output_end": 38.96666666666667,
+      "output_frames": 202,
+      "held_end_frame_seconds": 1.0263333333333327
+    },
+    {
+      "index": 6,
+      "id": "07",
+      "title": "接单者接受订单",
+      "source_video_start": 39.93333333333333,
+      "source_video_end": 44.02133333333333,
+      "operation_seconds": 4.088000000000001,
+      "operation_speed": 1,
+      "output_start": 38.96666666666667,
+      "output_operation_end": 43.05466666666667,
+      "output_end": 46.36666666666667,
+      "output_frames": 222,
+      "held_end_frame_seconds": 3.3119999999999994
+    },
+    {
+      "index": 7,
+      "id": "08",
+      "title": "开始服务",
+      "source_video_start": 45.03333333333333,
+      "source_video_end": 48.63933333333333,
+      "operation_seconds": 3.6060000000000016,
+      "operation_speed": 1,
+      "output_start": 46.36666666666667,
+      "output_operation_end": 49.97266666666667,
+      "output_end": 53.96666666666667,
+      "output_frames": 228,
+      "held_end_frame_seconds": 3.993999999999998
+    },
+    {
+      "index": 8,
+      "id": "09",
+      "title": "同步履约进度",
+      "source_video_start": 51.266666666666666,
+      "source_video_end": 57.34166666666667,
+      "operation_seconds": 6.074999999999999,
+      "operation_speed": 1,
+      "output_start": 53.96666666666667,
+      "output_operation_end": 60.04166666666667,
+      "output_end": 60.8,
+      "output_frames": 205,
+      "held_end_frame_seconds": 0.7583333333333337
+    },
+    {
+      "index": 9,
+      "id": "10",
+      "title": "提交交付说明",
+      "source_video_start": 57.36666666666667,
+      "source_video_end": 64.16566666666668,
+      "operation_seconds": 6.799000000000007,
+      "operation_speed": 1,
+      "output_start": 60.8,
+      "output_operation_end": 67.599,
+      "output_end": 68.96666666666667,
+      "output_frames": 245,
+      "held_end_frame_seconds": 1.3676666666666595
+    },
+    {
+      "index": 10,
+      "id": "11",
+      "title": "玩家核对并验收",
+      "source_video_start": 64.16666666666667,
+      "source_video_end": 68.71066666666667,
+      "operation_seconds": 4.543999999999997,
+      "operation_speed": 1,
+      "output_start": 68.96666666666667,
+      "output_operation_end": 73.51066666666667,
+      "output_end": 76.6,
+      "output_frames": 229,
+      "held_end_frame_seconds": 3.089333333333337
+    },
+    {
+      "index": 11,
+      "id": "12",
+      "title": "查看待结算收入",
+      "source_video_start": 69.43333333333334,
+      "source_video_end": 71.45233333333334,
+      "operation_seconds": 2.0189999999999984,
+      "operation_speed": 1,
+      "output_start": 76.6,
+      "output_operation_end": 78.619,
+      "output_end": 85.26666666666667,
+      "output_frames": 260,
+      "held_end_frame_seconds": 6.647666666666668
+    }
+  ],
+  "generation_metadata": {
+    "sample_rate": 24000,
+    "samples": 2040960,
+    "duration_seconds": 85.04,
+    "peak": 0.48834228515625,
+    "rms": 0.05002744868397713,
+    "clipped_samples": 0,
+    "overall_safety_gain": 1,
+    "audio_sha256": "77303e12fe04428a720b096e57ac46e31e1403734a3d5ebfab3451e22af0b7f0",
+    "id": "03-order-tutorial",
+    "signature": "90914ed1fbac89802f66f237601e7ba1793ddcc9c88ac975efbec0d17b90dc2f",
+    "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+    "license": "Apache-2.0",
+    "source": "scripts/tutorial-voice-script.json",
+    "voice": "Serena",
+    "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+    "text": "玩家先查看服务详情，确认价格、介绍和服务方。填写区服、预约时间和验收标准，双方更容易对齐预期。核对金额后确认下单，系统会生成一笔待付款订单。订单内选择支付方式。这次演示使用本地测试支付。确认支付后，订单进入待接单状态，正式交易以微信结果为准。打开订单聊天，把集合时间和服务需求留在订单里。切到接单者视角，核对需求后，点击接受订单。双方确认后，点击开始服务，订单进度同步更新。服务过程中在订单聊天同步进度，方便双方核对。完成服务后提交交付，写清完成内容，等待玩家验收。玩家核对交付说明，确认符合约定后，验收并完成。服务收入先进入结算中，保留七天售后期，再按规则转为可提现。",
+    "segments": [
+      "玩家先查看服务详情，确认价格、介绍和服务方。",
+      "填写区服、预约时间和验收标准，双方更容易对齐预期。",
+      "核对金额后确认下单，系统会生成一笔待付款订单。",
+      "订单内选择支付方式。这次演示使用本地测试支付。",
+      "确认支付后，订单进入待接单状态，正式交易以微信结果为准。",
+      "打开订单聊天，把集合时间和服务需求留在订单里。",
+      "切到接单者视角，核对需求后，点击接受订单。",
+      "双方确认后，点击开始服务，订单进度同步更新。",
+      "服务过程中在订单聊天同步进度，方便双方核对。",
+      "完成服务后提交交付，写清完成内容，等待玩家验收。",
+      "玩家核对交付说明，确认符合约定后，验收并完成。",
+      "服务收入先进入结算中，保留七天售后期，再按规则转为可提现。"
+    ],
+    "sampling_parameters": {
+      "temperature": 0.65,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repetition_penalty": 1.05,
+      "max_tokens": 2048,
+      "seed": 20261026
+    },
+    "token_limit": 2048,
+    "seed_scope": "one_fixed_seed_per_complete_article",
+    "api_calls_per_video": 1,
+    "non_streaming_result_count": 1,
+    "token_count": 1065,
+    "natural_eos_before_limit": true,
+    "generation_seconds": 57.88075337500777,
+    "model_peak_memory_gb": 14.816206437,
+    "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。"
+  },
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "r_frame_rate": "30/1",
+        "avg_frame_rate": "30/1",
+        "duration": "85.266667",
+        "nb_frames": "2558"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "channels": 1,
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "duration": "85.266000",
+        "nb_frames": "3998"
+      }
+    ],
+    "format": {
+      "duration": "85.266667"
+    },
+    "max_volume_dbfs": -3,
+    "full_decode_passed": true,
+    "expected_frames": 2558,
+    "expected_seconds": 85.26666666666667
+  },
+  "video_sha256": "68e4832cd0c52a7f0c10b07b6503e7483f5523a735d4f59b75bf1ecfc100f0c0"
+}

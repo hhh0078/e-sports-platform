@@ -1,7 +1,7 @@
 <!-- 文件作用：说明开机电竞宣传图片、四类受众视频、使用方式、素材许可和验证范围。 -->
 # 开机电竞宣传素材 · 2026-10-26
 
-本批交付包括6张三屏功能组合图、18张透明背景套壳手机图、18张原始页面截图，以及4条面向不同受众的30秒竖屏配音字幕视频。
+本批交付包括6张三屏功能组合图、18张透明背景套壳手机图、18张原始页面截图，以及4条面向不同受众的30秒竖屏配音字幕视频、3条真实操作教程和70项能力的项目功能介绍图。
 
 ## 图片
 
@@ -18,7 +18,7 @@
 
 ## 视频
 
-四条均为竖屏1080×1920、30fps、30.000秒、H264 MP4，每条开头3秒独立钩子，配有中文情绪旁白、逐镜头完整口播字幕、轻运镜和转场。四条已按反馈统一改为女声：平台管理员、俱乐部管理员、游戏爱好者使用温暖清亮的Serena，玩家篇使用更活泼的Vivian；保留原文、字幕与30秒画面，语气按内容调整。
+四条均为竖屏1080×1920、30fps、30.000秒、H264 MP4，每条开头3秒独立钩子，配有中文情绪旁白、逐镜头完整口播字幕、轻运镜和转场。七条视频均统一为Serena女声。每条原始旁白一次完整生成，保留整段语音上下文；整条只做统一响度和必要的统一语速处理，不再逐句生成、逐句归一或逐句变调。
 
 | 文件 | 目标人群 | 重点 |
 | --- | --- | --- |
@@ -27,11 +27,11 @@
 | videos/03-game-enthusiast.mp4 | 游戏爱好者 | 接单无需平台押金，把擅长的游戏整理为服务，把爱好变成收入 |
 | videos/04-player.mp4 | 玩家 | 语音陪玩、护航协作与低价演示服务，按详情选择队友 |
 
-镜头和文案详见仓库 `docs/MARKETING_VIDEO_SCRIPTS.md` 与 `scripts/marketing-voice-script.json`。同名SRT、30秒WAV和AAC/M4A旁白也一并保留，便于后续改剪。视频的收入、价格说明与“演示数据”标记均已写入画面。演示陪玩价格为¥12/小时，实际价格以服务详情为准；收入取决于实际成交，接单仍须满足资料核验及交易规则。
+镜头和文案详见仓库 `docs/MARKETING_VIDEO_SCRIPTS.md` 与 `scripts/marketing-voice-script.json`。同名SRT、30秒WAV和AAC/M4A旁白也一并保留；audio目录另附single-take.wav整篇原始女声，便于后续改剪。视频的收入、价格说明与“演示数据”标记均已写入画面。演示陪玩价格为¥12/小时，实际价格以服务详情为准；收入取决于实际成交，接单仍须满足资料核验及交易规则。
 
 ## 截图与数据来源
 
-截图来自2026-10-26当前本地H5产品页面。人物、组织、订单、聊天、成交、评分与资金数字由隔离浏览器中的模拟接口提供，没有写入本地或生产业务数据库，也没有使用真实会话或真实支付凭据。公共游戏主题与静态封面复用当前项目配置。
+本节仅说明原6组宣传截图；3条教程在独立本地环境真实操作并有模拟交易写入，见教程说明。截图来自2026-10-26当前本地H5产品页面。人物、组织、订单、聊天、成交、评分与资金数字由隔离浏览器中的模拟接口提供，没有写入本地或生产业务数据库，也没有使用真实会话或真实支付凭据。公共游戏主题与静态封面复用当前项目配置。
 
 H5内容按393×759逻辑像素、3倍像素密度采集；合成时上下补59和34逻辑像素的设备展示区，裁切屏幕圆角后叠加iPhone边框，不拉伸界面。该素材是产品界面截图加设备展示框，不是微信真机截图或录屏。
 
@@ -50,24 +50,29 @@ H5内容按393×759逻辑像素、3倍像素密度采集；合成时上下补59�
 - 当前18张页面采集完成，截图流程无运行异常或未配置请求；修正过游戏封面对应、资金分录中文名称和轮播保存按钮取景。
 - 18张单机和6张组合的数量、尺寸、圆角和透明四角通过自检，组合排版与中文显示已目视检查。
 - 4条实际MP4逐条经ffprobe核验30秒、900帧、30fps、1080×1920、H264与AAC，并从成品抽取0、3、8、15、24、29秒画面检查。
-- 28段旁白逐段检查有效声音、峰值和时长，保留自然收句；完整口播字幕烧录在画面内，另附SRT。
+- 7条整篇原音、57句口播独立ASR对齐与近音复核，核对正文完整和真实声音边界；只有一次全局增益，完整字幕烧录在画面内，另附SRT。
 - 前端类型检查、规范检查、827项自动测试、H5与微信正式构建均通过；新增宣传脚本独立严格TypeScript检查通过。
 - 本次未验证微信真机、真实支付、转账或真实收益，宣传素材不代表这些能力已经完成现实交易验收。
 
-## 重新生成
+## 重新生成连续女声
 
-先启动项目本地H5（127.0.0.1:5173）及开发API（127.0.0.1:18091），依次执行：
+当前交付使用整篇生成管线；原逐句脚本仅为历史制作工具。
 
 ```sh
-frontend/node_modules/.bin/tsx scripts/capture-marketing.ts
-frontend/node_modules/.bin/tsx scripts/compose-marketing.ts
-frontend/node_modules/.bin/tsx scripts/generate-marketing-voice.ts
-frontend/node_modules/.bin/tsx scripts/render-marketing-videos.ts
-frontend/node_modules/.bin/tsx scripts/voice-marketing-videos.ts
+frontend/node_modules/.bin/tsx scripts/generate-consistent-voice.ts
+frontend/node_modules/.bin/tsx scripts/align-consistent-voice.ts
+frontend/node_modules/.bin/tsx scripts/render-consistent-videos.ts --apply
 ```
 
-图片和视频渲染复用本机已有工具；配音另建独立MLX工具环境，没有新增小程序项目依赖。`generate-marketing-voice.ts`需要本机`.run/marketing-tts-env`及`.run/marketing-tts-model`，或通过`MARKETING_TTS_PYTHON`、`MARKETING_TTS_MODEL`指定。配音环境安装前已检查国内镜像，并使用清华镜像安装MLX-Audio。`MARKETING_NODE_MODULES`可指定包含Playwright、sharp和Canvas的已有工具目录；视频编码工具可通过`MARKETING_FFMPEG`和`MARKETING_FFPROBE`指定。
+生成工具需要本机忽略目录中的MLX环境与模型；对齐使用缓存Whisper真实词时间戳，不把原文喂给ASR。遇到缺字、乱序或没有依据的时间边界会拒绝使用；繁简、同值数字和少量近音须保留独立复核证据。
 
+新管线复用已验收成片，首次运行会将原始画面和旧时间轴保存在`.run/consistent-originals`。重跑须保留该目录；需从全新检出重建时，可从`b386def`恢复该版原始成片与报告，再执行本管线。重新采集图片仍用`capture-marketing.ts`与`compose-marketing.ts`，不会向业务服务写入模拟宣传数据。
+
+## 项目全功能介绍图
+
+`features/overview.png`为2400×10052高清总图，包含交易、资金、售后流程与6大分支70项能力，每项都有完整说明。`features/groups/`提供6张1600像素宽分组图；全部另附可编辑SVG。用`features/preview.html`缩放查看。标题和描述均按当前源码核对；同一账号可发单与接单，俱乐部挂靠可选。
+
+源数据在`scripts/project-feature-map.json`，渲染使用`render-project-feature-map.ts`。总图70个标题与70段说明均做文本完整性和实际浏览器文字边界检查。
 
 ## 女声更新与使用教程
 

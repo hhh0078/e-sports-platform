@@ -1,0 +1,105 @@
+{
+  "video_id": "03-order-tutorial",
+  "method": "whisper-independent-word-dtw-global-character-edit-alignment-v1",
+  "source_audio": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/03-order-tutorial/narration.wav",
+  "audio_sha256": "77303e12fe04428a720b096e57ac46e31e1403734a3d5ebfab3451e22af0b7f0",
+  "script_sha256": {
+    "/Users/Zhuanz/Desktop/三角洲/scripts/marketing-voice-script.json": "ae45509002e9f868e5c1fa35b76f2fdd67aeff7fe214c844837538a65d18929b",
+    "/Users/Zhuanz/Desktop/三角洲/scripts/tutorial-voice-script.json": "e9376717f37cca9029fcdaf963262a4e2ca0f8354d9103983e08a3e76e717bae"
+  },
+  "source_duration_seconds": 85.04,
+  "needs_review": false,
+  "raw_asr_path": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/03-order-tutorial/asr-words.json",
+  "segments": [
+    {
+      "index": 0,
+      "text": "玩家先查看服务详情，确认价格、介绍和服务方。",
+      "start": 0.0,
+      "end": 4.82,
+      "coverage": 1.0
+    },
+    {
+      "index": 1,
+      "text": "填写区服、预约时间和验收标准，双方更容易对齐预期。",
+      "start": 5.8,
+      "end": 11.84,
+      "coverage": 0.9545
+    },
+    {
+      "index": 2,
+      "text": "核对金额后确认下单，系统会生成一笔待付款订单。",
+      "start": 13.2,
+      "end": 18.06,
+      "coverage": 0.9048
+    },
+    {
+      "index": 3,
+      "text": "订单内选择支付方式。这次演示使用本地测试支付。",
+      "start": 18.92,
+      "end": 24.38,
+      "coverage": 0.9524
+    },
+    {
+      "index": 4,
+      "text": "确认支付后，订单进入待接单状态，正式交易以微信结果为准。",
+      "start": 25.16,
+      "end": 31.6,
+      "coverage": 0.96
+    },
+    {
+      "index": 5,
+      "text": "打开订单聊天，把集合时间和服务需求留在订单里。",
+      "start": 32.64,
+      "end": 38.16,
+      "coverage": 1.0
+    },
+    {
+      "index": 6,
+      "text": "切到接单者视角，核对需求后，点击接受订单。",
+      "start": 39.5,
+      "end": 45.46,
+      "coverage": 0.9444
+    },
+    {
+      "index": 7,
+      "text": "双方确认后，点击开始服务，订单进度同步更新。",
+      "start": 46.96,
+      "end": 53.04,
+      "coverage": 1.0
+    },
+    {
+      "index": 8,
+      "text": "服务过程中在订单聊天同步进度，方便双方核对。",
+      "start": 54.56,
+      "end": 59.9,
+      "coverage": 0.95
+    },
+    {
+      "index": 9,
+      "text": "完成服务后提交交付，写清完成内容，等待玩家验收。",
+      "start": 61.34,
+      "end": 67.96,
+      "coverage": 1.0
+    },
+    {
+      "index": 10,
+      "text": "玩家核对交付说明，确认符合约定后，验收并完成。",
+      "start": 69.58,
+      "end": 75.32,
+      "coverage": 1.0
+    },
+    {
+      "index": 11,
+      "text": "服务收入先进入结算中，保留七天售后期，再按规则转为可提现。",
+      "start": 77.46,
+      "end": 85.02,
+      "coverage": 0.9615
+    }
+  ],
+  "coverage_threshold": 0.75,
+  "canonicalization": "macOS Foundation繁转简、NFKC及12/7数字写法；不改原始证据或时间。",
+  "independent_window_evidence": [],
+  "reviewed_near_homophones": [],
+  "boundary_source": "每句首尾匹配字符所属的真实Whisper词起止；独立窗口替换保留来源，不按字符比例切分词，不插值，不均分时长。",
+  "timing_precision_note": "Whisper cross-attention/DTW估计值，原生时间格20毫秒；不是采样级声学真值。"
+}

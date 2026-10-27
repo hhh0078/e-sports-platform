@@ -1,0 +1,70 @@
+{
+  "video_id": "04-player",
+  "method": "whisper-independent-word-dtw-global-character-edit-alignment-v1",
+  "source_audio": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/04-player/narration.wav",
+  "audio_sha256": "4356147b3db3c4463bbecf45024d96a14479dc970f09a41c9870a02f0d7d5406",
+  "script_sha256": {
+    "/Users/Zhuanz/Desktop/三角洲/scripts/marketing-voice-script.json": "ae45509002e9f868e5c1fa35b76f2fdd67aeff7fe214c844837538a65d18929b",
+    "/Users/Zhuanz/Desktop/三角洲/scripts/tutorial-voice-script.json": "e9376717f37cca9029fcdaf963262a4e2ca0f8354d9103983e08a3e76e717bae"
+  },
+  "source_duration_seconds": 21.12,
+  "needs_review": false,
+  "raw_asr_path": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/04-player/asr-words.json",
+  "segments": [
+    {
+      "index": 0,
+      "text": "陪玩护航，想省点？",
+      "start": 0.0,
+      "end": 2.84,
+      "coverage": 0.8571
+    },
+    {
+      "index": 1,
+      "text": "多款游戏，挑选合适队友。",
+      "start": 4.06,
+      "end": 7.12,
+      "coverage": 1.0
+    },
+    {
+      "index": 2,
+      "text": "陪玩演示价，每小时十二元！",
+      "start": 7.84,
+      "end": 10.04,
+      "coverage": 0.8182
+    },
+    {
+      "index": 3,
+      "text": "订单进度和约定，随时查看。",
+      "start": 10.62,
+      "end": 13.52,
+      "coverage": 0.9091
+    },
+    {
+      "index": 4,
+      "text": "先聊清需求。",
+      "start": 14.14,
+      "end": 15.58,
+      "coverage": 0.8
+    },
+    {
+      "index": 5,
+      "text": "也能选团队服务。",
+      "start": 15.98,
+      "end": 17.28,
+      "coverage": 1.0
+    },
+    {
+      "index": 6,
+      "text": "打开开机电竞，挑选游戏队友！",
+      "start": 17.8,
+      "end": 21.1,
+      "coverage": 1.0
+    }
+  ],
+  "coverage_threshold": 0.75,
+  "canonicalization": "macOS Foundation繁转简、NFKC及12/7数字写法；不改原始证据或时间。",
+  "independent_window_evidence": [],
+  "reviewed_near_homophones": [],
+  "boundary_source": "每句首尾匹配字符所属的真实Whisper词起止；独立窗口替换保留来源，不按字符比例切分词，不插值，不均分时长。",
+  "timing_precision_note": "Whisper cross-attention/DTW估计值，原生时间格20毫秒；不是采样级声学真值。"
+}

@@ -1,3 +1,4 @@
+/** 历史逐句制作入口：当前交付改用generate-consistent-voice.ts、align-consistent-voice.ts及render-consistent-videos.ts，避免重置每句话的音色。 */
 /** 文件作用：把七镜头真实配音拼成30秒旁白，统一音量并无损合流到四条宣传MP4，附完整SRT和可复用音频；不合成默认系统配音。 */
 import assert from 'node:assert/strict'
 import fs from 'node:fs'

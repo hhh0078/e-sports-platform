@@ -1,0 +1,109 @@
+{
+  "video_id": "02-club-tutorial",
+  "method": "whisper-independent-word-dtw-global-character-edit-alignment-v1",
+  "source_audio": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/02-club-tutorial/narration.wav",
+  "audio_sha256": "32e42fffc98d5ec9ed8cc597e59a6f4fa6ba49f09b01a71bd7f3381cb67e0f37",
+  "script_sha256": {
+    "/Users/Zhuanz/Desktop/三角洲/scripts/marketing-voice-script.json": "ae45509002e9f868e5c1fa35b76f2fdd67aeff7fe214c844837538a65d18929b",
+    "/Users/Zhuanz/Desktop/三角洲/scripts/tutorial-voice-script.json": "e9376717f37cca9029fcdaf963262a4e2ca0f8354d9103983e08a3e76e717bae"
+  },
+  "source_duration_seconds": 54.8,
+  "needs_review": false,
+  "raw_asr_path": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/02-club-tutorial/asr-words.json",
+  "segments": [
+    {
+      "index": 0,
+      "text": "在我的页面打开俱乐部中心，进入自己的管理控制台。",
+      "start": 0.0,
+      "end": 5.82,
+      "coverage": 1.0
+    },
+    {
+      "index": 1,
+      "text": "加入规则与装修里，可以核对抽成、押金和团队介绍。",
+      "start": 6.48,
+      "end": 13.16,
+      "coverage": 0.9048
+    },
+    {
+      "index": 2,
+      "text": "打开成员管理，搜索申请人，找到待审核的申请。",
+      "start": 13.96,
+      "end": 20.2,
+      "coverage": 0.9474
+    },
+    {
+      "index": 3,
+      "text": "核对申请人，点击审核，填写本次处理说明。",
+      "start": 20.88,
+      "end": 26.7,
+      "coverage": 0.9412
+    },
+    {
+      "index": 4,
+      "text": "确认处理后，申请人会成为俱乐部的认证成员。",
+      "start": 27.0,
+      "end": 33.2,
+      "coverage": 0.8421
+    },
+    {
+      "index": 5,
+      "text": "进入团队订单，打开订单详情，查看履约进度。",
+      "start": 34.04,
+      "end": 39.8,
+      "coverage": 1.0
+    },
+    {
+      "index": 6,
+      "text": "订单聊天保存沟通记录，管理员也能协助双方确认进度。",
+      "start": 40.4,
+      "end": 46.64,
+      "coverage": 1.0
+    },
+    {
+      "index": 7,
+      "text": "俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
+      "start": 47.32,
+      "end": 54.74,
+      "coverage": 0.913
+    }
+  ],
+  "coverage_threshold": 0.75,
+  "canonicalization": "macOS Foundation繁转简、NFKC及12/7数字写法；不改原始证据或时间。",
+  "independent_window_evidence": [
+    {
+      "id": "02-club-tutorial",
+      "audio_sha256": "32e42fffc98d5ec9ed8cc597e59a6f4fa6ba49f09b01a71bd7f3381cb67e0f37",
+      "evidence_file": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice-club-retake/retake-window-verification.json",
+      "evidence_sha256": "32168a343450707cde2bd6a6374aba343e7bfebb876ca28733943bdbe6bd04a5",
+      "evidence_index": 0,
+      "replace_start": 27.0,
+      "replace_end": 33.3,
+      "word_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "reason": "整篇重录在30秒处small附带零时长“聚”；独立完整句窗口只有一次原句，全句正时长词证据，无额外“聚”。"
+    }
+  ],
+  "reviewed_near_homophones": [],
+  "boundary_source": "每句首尾匹配字符所属的真实Whisper词起止；独立窗口替换保留来源，不按字符比例切分词，不插值，不均分时长。",
+  "timing_precision_note": "Whisper cross-attention/DTW估计值，原生时间格20毫秒；不是采样级声学真值。"
+}

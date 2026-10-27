@@ -1,0 +1,202 @@
+{
+  "id": "01-platform-admin",
+  "kind": "ad",
+  "single_generation_pass": true,
+  "voice": "Serena",
+  "source_audio_sha256": "0c47c733830b55b7b63556f04280b32bcd54df73d8a116ee2776ace60e895348",
+  "source_duration_seconds": 18.88,
+  "alignment_sha256": "b895a1dc3425be633f679596106a044b422ed4ca89827d10209d03acffff7490",
+  "global_gain_db": 8,
+  "global_gain_scope": "同一固定增益应用整条音源，所有句子相同",
+  "global_tempo_ratio": 1,
+  "sentence_gain_applied": false,
+  "sentence_tts_applied": false,
+  "pitch_shift_applied": false,
+  "samples_preserved_in_order": true,
+  "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+  "playback_rate": "广告轻运镜按句窗配时",
+  "frames": 900,
+  "duration_seconds": 30,
+  "spans": [
+    {
+      "source_start": 0,
+      "source_end": 82618,
+      "output_start": 0,
+      "output_end": 144000,
+      "inserted_samples": 61382,
+      "boundary_rms": 0.00041204852367546387
+    },
+    {
+      "source_start": 82618,
+      "source_end": 207881,
+      "output_start": 144000,
+      "output_end": 360000,
+      "inserted_samples": 90737,
+      "boundary_rms": 0.0003097383843142096
+    },
+    {
+      "source_start": 207881,
+      "source_end": 345693,
+      "output_start": 360000,
+      "output_end": 576000,
+      "inserted_samples": 78188,
+      "boundary_rms": 0.0003072130232598544
+    },
+    {
+      "source_start": 345693,
+      "source_end": 507839,
+      "output_start": 576000,
+      "output_end": 792000,
+      "inserted_samples": 53854,
+      "boundary_rms": 0.00025331045208526763
+    },
+    {
+      "source_start": 507839,
+      "source_end": 621965,
+      "output_start": 792000,
+      "output_end": 1008000,
+      "inserted_samples": 101874,
+      "boundary_rms": 0.007174771885848611
+    },
+    {
+      "source_start": 621965,
+      "source_end": 751835,
+      "output_start": 1008000,
+      "output_end": 1224000,
+      "inserted_samples": 86130,
+      "boundary_rms": 0.000336262192098871
+    },
+    {
+      "source_start": 751835,
+      "source_end": 906240,
+      "output_start": 1224000,
+      "output_end": 1440000,
+      "inserted_samples": 61595,
+      "boundary_rms": 0
+    }
+  ],
+  "cues": [
+    {
+      "index": 0,
+      "text": "想做接单平台？",
+      "start": 0,
+      "end": 1.46,
+      "coverage": 1
+    },
+    {
+      "index": 1,
+      "text": "订单待办，一屏看清。",
+      "start": 3.2587916666666668,
+      "end": 5.398791666666667,
+      "coverage": 1
+    },
+    {
+      "index": 2,
+      "text": "用户资料和权限，分开管理。",
+      "start": 7.709145833333333,
+      "end": 10.369145833333333,
+      "coverage": 1
+    },
+    {
+      "index": 3,
+      "text": "订单进度和售后，随时可查。",
+      "start": 10.369145833333333,
+      "end": 15.1180625,
+      "coverage": 0.9091
+    },
+    {
+      "index": 4,
+      "text": "轮播和公告，自己掌控。",
+      "start": 16.760020833333332,
+      "end": 18.860020833333333,
+      "coverage": 0.8889
+    },
+    {
+      "index": 5,
+      "text": "文章发布状态，集中管理。",
+      "start": 18.860020833333333,
+      "end": 23.702395833333334,
+      "coverage": 1
+    },
+    {
+      "index": 6,
+      "text": "开机电竞源码，搭建自己的平台。",
+      "start": 23.702395833333334,
+      "end": 28.636770833333333,
+      "coverage": 0.9231
+    }
+  ],
+  "generation_metadata": {
+    "sample_rate": 24000,
+    "samples": 453120,
+    "duration_seconds": 18.88,
+    "peak": 0.269775390625,
+    "rms": 0.028795305639505386,
+    "clipped_samples": 0,
+    "overall_safety_gain": 1,
+    "audio_sha256": "0c47c733830b55b7b63556f04280b32bcd54df73d8a116ee2776ace60e895348",
+    "id": "01-platform-admin",
+    "signature": "0cf90df58ab480db24af4a4f52eaeb5737a31df108b0bd27c091dbba5373e111",
+    "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+    "license": "Apache-2.0",
+    "source": "scripts/marketing-voice-script.json",
+    "voice": "Serena",
+    "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+    "text": "想做接单平台？订单待办，一屏看清。用户资料和权限，分开管理。订单进度和售后，随时可查。轮播和公告，自己掌控。文章发布状态，集中管理。开机电竞源码，搭建自己的平台。",
+    "segments": [
+      "想做接单平台？",
+      "订单待办，一屏看清。",
+      "用户资料和权限，分开管理。",
+      "订单进度和售后，随时可查。",
+      "轮播和公告，自己掌控。",
+      "文章发布状态，集中管理。",
+      "开机电竞源码，搭建自己的平台。"
+    ],
+    "sampling_parameters": {
+      "temperature": 0.65,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repetition_penalty": 1.05,
+      "max_tokens": 2048,
+      "seed": 20261026
+    },
+    "token_limit": 512,
+    "seed_scope": "one_fixed_seed_per_complete_article",
+    "api_calls_per_video": 1,
+    "non_streaming_result_count": 1,
+    "token_count": 237,
+    "natural_eos_before_limit": true,
+    "generation_seconds": 13.07587570801843,
+    "model_peak_memory_gb": 7.880539349,
+    "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。",
+    "seed_scope_note": "本样本是原工作进程首篇，生成前唯一一次固定seed初始化与篇前固定同一个seed等价；WAV未重新处理。"
+  },
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "avg_frame_rate": "30/1",
+        "nb_frames": "900"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "avg_frame_rate": "0/0",
+        "nb_frames": "1408"
+      }
+    ],
+    "format": {
+      "duration": "30.000000"
+    },
+    "max_volume_dbfs": -3.4
+  },
+  "normalized_pcm_sha256": "afef7290b9d0f5ca40da3705ab41276d4466a9e32a7b1d91a3caef02b1309696",
+  "narration_sha256": "68a4a388082fa27ba2991ef27dd2f4bda46b416d35765f86e225de11312876e8",
+  "video_sha256": "15e20dd0698ac2ee33c2bf204366eebdc5b24014f629c26dde8c1153173add41",
+  "original_video_sha256": "deef8b545111f4a9939e41d7c6102f5efbe5d8e72b8e20a7819ab11d5d1782b0"
+}

@@ -1,0 +1,82 @@
+{
+  "video_id": "02-club-admin",
+  "method": "whisper-independent-word-dtw-global-character-edit-alignment-v1",
+  "source_audio": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/02-club-admin/narration.wav",
+  "audio_sha256": "5fc052b9792c250567918d80a6788d9fe1a2e829f09198649cbedf92f2a8de51",
+  "script_sha256": {
+    "/Users/Zhuanz/Desktop/三角洲/scripts/marketing-voice-script.json": "ae45509002e9f868e5c1fa35b76f2fdd67aeff7fe214c844837538a65d18929b",
+    "/Users/Zhuanz/Desktop/三角洲/scripts/tutorial-voice-script.json": "e9376717f37cca9029fcdaf963262a4e2ca0f8354d9103983e08a3e76e717bae"
+  },
+  "source_duration_seconds": 34.88,
+  "needs_review": false,
+  "raw_asr_path": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/02-club-admin/asr-words.json",
+  "segments": [
+    {
+      "index": 0,
+      "text": "团队接单，怎么省心？",
+      "start": 0.9,
+      "end": 4.68,
+      "coverage": 1.0
+    },
+    {
+      "index": 1,
+      "text": "专属主页，展示你的团队。",
+      "start": 5.48,
+      "end": 9.7,
+      "coverage": 0.9
+    },
+    {
+      "index": 2,
+      "text": "成员申请和团队订单，集中管理。",
+      "start": 10.36,
+      "end": 14.4,
+      "coverage": 1.0
+    },
+    {
+      "index": 3,
+      "text": "佣金、押金分开记。",
+      "start": 15.62,
+      "end": 19.44,
+      "coverage": 0.7143
+    },
+    {
+      "index": 4,
+      "text": "订单独立聊天，团队一起协作。",
+      "start": 20.48,
+      "end": 24.72,
+      "coverage": 1.0
+    },
+    {
+      "index": 5,
+      "text": "接单到履约，订单进度随时查看。",
+      "start": 25.62,
+      "end": 29.98,
+      "coverage": 0.8462
+    },
+    {
+      "index": 6,
+      "text": "俱乐部入驻，也能独立部署。",
+      "start": 29.98,
+      "end": 34.74,
+      "coverage": 0.8182
+    }
+  ],
+  "coverage_threshold": 0.75,
+  "canonicalization": "macOS Foundation繁转简、NFKC及12/7数字写法；不改原始证据或时间。",
+  "independent_window_evidence": [],
+  "reviewed_near_homophones": [
+    {
+      "id": "02-club-admin",
+      "index": 3,
+      "text": "佣金、押金分开记。",
+      "audio_sha256": "5fc052b9792c250567918d80a6788d9fe1a2e829f09198649cbedf92f2a8de51",
+      "evidence_file": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/extra-window-verification.json",
+      "evidence_sha256": "6f79b0cdcf5019ee584a3d4f5c660ed1dfc5f2b0ea21db86bc9e9cc7bfbd7238",
+      "evidence_index": 0,
+      "reason": "原small识别“拥金、押金、分开计”，备用独立base识别“用筋、压筋、分开几”，7个真实音节和时间齐全；佣/拥/用、记/计为同音字面差异，未遗漏或改变押金/佣金顺序。",
+      "boundary_limit": "仅解决已完整一一映射句的近音字面覆盖差异；不豁免缺字、零时长、乱序或金额差异。"
+    }
+  ],
+  "boundary_source": "每句首尾匹配字符所属的真实Whisper词起止；独立窗口替换保留来源，不按字符比例切分词，不插值，不均分时长。",
+  "timing_precision_note": "Whisper cross-attention/DTW估计值，原生时间格20毫秒；不是采样级声学真值。"
+}

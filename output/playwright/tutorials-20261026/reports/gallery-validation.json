@@ -1,5 +1,6 @@
 {
   "passed": true,
+  "version": "continuous-serena-v3",
   "videos": [
     {
       "file": "/videos/01-platform-admin.mp4",
@@ -9,7 +10,7 @@
       "played": true,
       "error": null,
       "poster": "http://127.0.0.1:18726/videos/qa/01-platform-admin/00s.png",
-      "sha256": "deef8b545111f4a9939e41d7c6102f5efbe5d8e72b8e20a7819ab11d5d1782b0"
+      "sha256": "15e20dd0698ac2ee33c2bf204366eebdc5b24014f629c26dde8c1153173add41"
     },
     {
       "file": "/videos/02-club-admin.mp4",
@@ -19,7 +20,7 @@
       "played": true,
       "error": null,
       "poster": "http://127.0.0.1:18726/videos/qa/02-club-admin/00s.png",
-      "sha256": "545e5afc51aae5a97bd4b7e8024db2744f0e8c334d5f25f7017d03997553aa85"
+      "sha256": "adfb8d85228036b87a11a5fa80805a2398df2879dea6c4dff7e5ddc6ca1f7817"
     },
     {
       "file": "/videos/03-game-enthusiast.mp4",
@@ -29,7 +30,7 @@
       "played": true,
       "error": null,
       "poster": "http://127.0.0.1:18726/videos/qa/03-game-enthusiast/00s.png",
-      "sha256": "4bb2eec67716fff62b9e7bd1042c1011e5f283ea0a91cf2143878166db30a787"
+      "sha256": "06a18a76dcf520c5ea545d90d39f2ece00d3f6708a4d82586c1e383859f76621"
     },
     {
       "file": "/videos/04-player.mp4",
@@ -39,37 +40,37 @@
       "played": true,
       "error": null,
       "poster": "http://127.0.0.1:18726/videos/qa/04-player/00s.png",
-      "sha256": "c4a97b1ec142d494be0ebfcbff800fe317a42a756a75f68845b072a4fc2cffe3"
+      "sha256": "2ad0b01a3784f2cf037ddb3ccbace839c51ed6778b4666bfecfb191c80ec9d13"
     },
     {
       "file": "/tutorials/videos/01-platform-tutorial.mp4",
       "width": 1080,
       "height": 1920,
-      "seconds": 51.933333,
+      "seconds": 48.466667,
       "played": true,
       "error": null,
       "poster": "http://127.0.0.1:18726/tutorials/videos/qa/01-platform-tutorial/01-01.png",
-      "sha256": "0ec1e74f4685505ace6eb8b22025afdf46f472396f91c2c071fa74885b5c9674"
+      "sha256": "7939d2ce7288c439460457fc18fdbf324521753866ee1ce60a8a50d0ee123ebd"
     },
     {
       "file": "/tutorials/videos/02-club-tutorial.mp4",
       "width": 1080,
       "height": 1920,
-      "seconds": 50.266667,
+      "seconds": 54.966667,
       "played": true,
       "error": null,
       "poster": "http://127.0.0.1:18726/tutorials/videos/qa/02-club-tutorial/01-01.png",
-      "sha256": "ac832888762c3d1b039e7b419941998a169384e528c570d859080932c480e5a9"
+      "sha256": "00d806e0d2a7a0e8b80cdc65048fade1e73fc7f7f243e0fae5c70634d54c77b8"
     },
     {
       "file": "/tutorials/videos/03-order-tutorial.mp4",
       "width": 1080,
       "height": 1920,
-      "seconds": 80.866667,
+      "seconds": 85.266667,
       "played": true,
       "error": null,
       "poster": "http://127.0.0.1:18726/tutorials/videos/qa/03-order-tutorial/01-01.png",
-      "sha256": "c232bab5a121e73df674de26a8f4aae78a64160394ba9e4a7fe0048ee7ac5754"
+      "sha256": "68e4832cd0c52a7f0c10b07b6503e7483f5523a735d4f59b75bf1ecfc100f0c0"
     }
   ],
   "runtime_errors": [],

@@ -1,0 +1,201 @@
+{
+  "id": "04-player",
+  "kind": "ad",
+  "single_generation_pass": true,
+  "voice": "Serena",
+  "source_audio_sha256": "4356147b3db3c4463bbecf45024d96a14479dc970f09a41c9870a02f0d7d5406",
+  "source_duration_seconds": 21.12,
+  "alignment_sha256": "b1329b148588d495461c9fe8d89e23618e854c5788228526d06444a8cd512fc8",
+  "global_gain_db": 6.800000000000001,
+  "global_gain_scope": "同一固定增益应用整条音源，所有句子相同",
+  "global_tempo_ratio": 1,
+  "sentence_gain_applied": false,
+  "sentence_tts_applied": false,
+  "pitch_shift_applied": false,
+  "samples_preserved_in_order": true,
+  "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+  "playback_rate": "广告轻运镜按句窗配时",
+  "frames": 900,
+  "duration_seconds": 30,
+  "spans": [
+    {
+      "source_start": 0,
+      "source_end": 165570,
+      "output_start": 0,
+      "output_end": 166400,
+      "inserted_samples": 830,
+      "boundary_rms": 0.00010863964919810543
+    },
+    {
+      "source_start": 165570,
+      "source_end": 359035,
+      "output_start": 166400,
+      "output_end": 379200,
+      "inserted_samples": 19335,
+      "boundary_rms": 0.0006756430867801936
+    },
+    {
+      "source_start": 359035,
+      "source_end": 495873,
+      "output_start": 379200,
+      "output_end": 592000,
+      "inserted_samples": 75962,
+      "boundary_rms": 0.00015984142964289524
+    },
+    {
+      "source_start": 495873,
+      "source_end": 663834,
+      "output_start": 592000,
+      "output_end": 804800,
+      "inserted_samples": 44839,
+      "boundary_rms": 0.0001488351285426324
+    },
+    {
+      "source_start": 663834,
+      "source_end": 755037,
+      "output_start": 804800,
+      "output_end": 1017600,
+      "inserted_samples": 121597,
+      "boundary_rms": 0.007818619248877882
+    },
+    {
+      "source_start": 755037,
+      "source_end": 841908,
+      "output_start": 1017600,
+      "output_end": 1228800,
+      "inserted_samples": 124329,
+      "boundary_rms": 0.00017549265907528897
+    },
+    {
+      "source_start": 841908,
+      "source_end": 1013760,
+      "output_start": 1228800,
+      "output_end": 1440000,
+      "inserted_samples": 39348,
+      "boundary_rms": 0
+    }
+  ],
+  "cues": [
+    {
+      "index": 0,
+      "text": "陪玩护航，想省点？",
+      "start": 0,
+      "end": 2.84,
+      "coverage": 0.8571
+    },
+    {
+      "index": 1,
+      "text": "多款游戏，挑选合适队友。",
+      "start": 4.0772916666666665,
+      "end": 7.137291666666667,
+      "coverage": 1
+    },
+    {
+      "index": 2,
+      "text": "陪玩演示价，每小时十二元！",
+      "start": 8.260104166666666,
+      "end": 10.460104166666667,
+      "coverage": 0.8182
+    },
+    {
+      "index": 3,
+      "text": "订单进度和约定，随时查看。",
+      "start": 12.622645833333333,
+      "end": 15.522645833333334,
+      "coverage": 0.9091
+    },
+    {
+      "index": 4,
+      "text": "先聊清需求。",
+      "start": 17.076791666666665,
+      "end": 18.516791666666666,
+      "coverage": 0.8
+    },
+    {
+      "index": 5,
+      "text": "也能选团队服务。",
+      "start": 21.4500625,
+      "end": 22.7500625,
+      "coverage": 1
+    },
+    {
+      "index": 6,
+      "text": "打开开机电竞，挑选游戏队友！",
+      "start": 25.86025,
+      "end": 29.16025,
+      "coverage": 1
+    }
+  ],
+  "generation_metadata": {
+    "sample_rate": 24000,
+    "samples": 506880,
+    "duration_seconds": 21.12,
+    "peak": 0.325042724609375,
+    "rms": 0.03887677192687988,
+    "clipped_samples": 0,
+    "overall_safety_gain": 1,
+    "audio_sha256": "4356147b3db3c4463bbecf45024d96a14479dc970f09a41c9870a02f0d7d5406",
+    "id": "04-player",
+    "signature": "dea125128c820e47e2205a7a3486840d89df593de28fb7285832073ac26c7908",
+    "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+    "license": "Apache-2.0",
+    "source": "scripts/marketing-voice-script.json",
+    "voice": "Serena",
+    "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+    "text": "陪玩护航，想省点？多款游戏，挑选合适队友。陪玩演示价，每小时十二元！订单进度和约定，随时查看。先聊清需求。也能选团队服务。打开开机电竞，挑选游戏队友！",
+    "segments": [
+      "陪玩护航，想省点？",
+      "多款游戏，挑选合适队友。",
+      "陪玩演示价，每小时十二元！",
+      "订单进度和约定，随时查看。",
+      "先聊清需求。",
+      "也能选团队服务。",
+      "打开开机电竞，挑选游戏队友！"
+    ],
+    "sampling_parameters": {
+      "temperature": 0.65,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repetition_penalty": 1.05,
+      "max_tokens": 2048,
+      "seed": 20261026
+    },
+    "token_limit": 512,
+    "seed_scope": "one_fixed_seed_per_complete_article",
+    "api_calls_per_video": 1,
+    "non_streaming_result_count": 1,
+    "token_count": 264,
+    "natural_eos_before_limit": true,
+    "generation_seconds": 13.342237957986072,
+    "model_peak_memory_gb": 7.546705899,
+    "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。"
+  },
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "avg_frame_rate": "30/1",
+        "nb_frames": "900"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "avg_frame_rate": "0/0",
+        "nb_frames": "1408"
+      }
+    ],
+    "format": {
+      "duration": "30.000000"
+    },
+    "max_volume_dbfs": -2.9
+  },
+  "normalized_pcm_sha256": "88e8e0df4f57a687e3288afc49b48c958879ece263cae07257e80b383dca1b41",
+  "narration_sha256": "6c291313fb07268ef04577786301014f1d84d0f0331270afadf0f148b1321552",
+  "video_sha256": "2ad0b01a3784f2cf037ddb3ccbace839c51ed6778b4666bfecfb191c80ec9d13",
+  "original_video_sha256": "c4a97b1ec142d494be0ebfcbff800fe317a42a756a75f68845b072a4fc2cffe3"
+}

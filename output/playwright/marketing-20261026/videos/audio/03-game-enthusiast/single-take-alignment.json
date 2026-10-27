@@ -1,0 +1,93 @@
+{
+  "video_id": "03-game-enthusiast",
+  "method": "whisper-independent-word-dtw-global-character-edit-alignment-v1",
+  "source_audio": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/03-game-enthusiast/narration.wav",
+  "audio_sha256": "115c0de3e6e82d5388e9db7b285cbdfa7cb2a6e42206ca2f3ff75922570850c6",
+  "script_sha256": {
+    "/Users/Zhuanz/Desktop/三角洲/scripts/marketing-voice-script.json": "ae45509002e9f868e5c1fa35b76f2fdd67aeff7fe214c844837538a65d18929b",
+    "/Users/Zhuanz/Desktop/三角洲/scripts/tutorial-voice-script.json": "e9376717f37cca9029fcdaf963262a4e2ca0f8354d9103983e08a3e76e717bae"
+  },
+  "source_duration_seconds": 36.24,
+  "needs_review": false,
+  "raw_asr_path": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/03-game-enthusiast/asr-words.json",
+  "segments": [
+    {
+      "index": 0,
+      "text": "游戏打得好，也能接单？",
+      "start": 0.0,
+      "end": 2.6,
+      "coverage": 0.6667
+    },
+    {
+      "index": 1,
+      "text": "接单无需平台押金，完善资料就出发！",
+      "start": 2.6,
+      "end": 8.04,
+      "coverage": 0.9333
+    },
+    {
+      "index": 2,
+      "text": "把擅长的游戏，整理成你的服务。",
+      "start": 8.66,
+      "end": 13.46,
+      "coverage": 1.0
+    },
+    {
+      "index": 3,
+      "text": "接到订单，按约定认真履约。",
+      "start": 13.46,
+      "end": 18.02,
+      "coverage": 0.7273
+    },
+    {
+      "index": 4,
+      "text": "需求在订单里聊清楚，沟通有记录。",
+      "start": 18.02,
+      "end": 23.7,
+      "coverage": 0.8571
+    },
+    {
+      "index": 5,
+      "text": "收入按规则结算，资金状态看得清。",
+      "start": 23.7,
+      "end": 29.3,
+      "coverage": 0.9286
+    },
+    {
+      "index": 6,
+      "text": "把爱好变成收入，从一单服务开始！",
+      "start": 29.3,
+      "end": 35.74,
+      "coverage": 0.8571
+    }
+  ],
+  "coverage_threshold": 0.75,
+  "canonicalization": "macOS Foundation繁转简、NFKC及12/7数字写法；不改原始证据或时间。",
+  "independent_window_evidence": [],
+  "reviewed_near_homophones": [
+    {
+      "id": "03-game-enthusiast",
+      "index": 0,
+      "text": "游戏打得好，也能接单？",
+      "audio_sha256": "115c0de3e6e82d5388e9db7b285cbdfa7cb2a6e42206ca2f3ff75922570850c6",
+      "evidence_file": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/extra-window-verification.json",
+      "evidence_sha256": "6f79b0cdcf5019ee584a3d4f5c660ed1dfc5f2b0ea21db86bc9e9cc7bfbd7238",
+      "evidence_index": 1,
+      "reason": "原small“大地好/解单”、独立base“打地号/截单”均保留完整9字对应，句首尾真实词齐全；打得好、接单为近音ASR误字，非正文缺句。",
+      "boundary_limit": "仅解决已完整一一映射句的近音字面覆盖差异；不豁免缺字、零时长、乱序或金额差异。"
+    },
+    {
+      "id": "03-game-enthusiast",
+      "index": 3,
+      "text": "接到订单，按约定认真履约。",
+      "audio_sha256": "115c0de3e6e82d5388e9db7b285cbdfa7cb2a6e42206ca2f3ff75922570850c6",
+      "evidence_file": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/extra-window-verification.json",
+      "evidence_sha256": "6f79b0cdcf5019ee584a3d4f5c660ed1dfc5f2b0ea21db86bc9e9cc7bfbd7238",
+      "evidence_index": 2,
+      "reason": "原small“解到订单按约订认真预约”，独立base“截到定单按约定认真律约”；base的律约与履约音节完整相近，全部11字一一映射，没有漏字、重复或补造时间。",
+      "boundary_limit": "仅解决已完整一一映射句的近音字面覆盖差异；不豁免缺字、零时长、乱序或金额差异。"
+    }
+  ],
+  "boundary_source": "每句首尾匹配字符所属的真实Whisper词起止；独立窗口替换保留来源，不按字符比例切分词，不插值，不均分时长。",
+  "timing_precision_note": "Whisper cross-attention/DTW估计值，原生时间格20毫秒；不是采样级声学真值。"
+}

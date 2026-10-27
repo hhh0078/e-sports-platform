@@ -1,0 +1,430 @@
+{
+  "id": "01-platform-tutorial",
+  "kind": "tutorial",
+  "voice": "Serena",
+  "single_generation_pass": true,
+  "source_audio_sha256": "54b45040249f74d3e9afe571313aabb76a7d016b94bb8fb74529d3fec3c73348",
+  "single_source_audio_sha256": "54b45040249f74d3e9afe571313aabb76a7d016b94bb8fb74529d3fec3c73348",
+  "source_duration_seconds": 47.68,
+  "original_video_sha256": "0ec1e74f4685505ace6eb8b22025afdf46f472396f91c2c071fa74885b5c9674",
+  "old_video_sha256": "0ec1e74f4685505ace6eb8b22025afdf46f472396f91c2c071fa74885b5c9674",
+  "alignment_sha256": "1b18506a264bc152f7702db212147d0234f73184b8b4cdb77d3c4c572de0ac1e",
+  "normalized_pcm_sha256": "a75ba225d44a4e3962ea955db8b45d2032c289feea0f4ecb885f5efc2347a083",
+  "narration_sha256": "ab6dbbddc5e26effa6e58e0502ff6426040f7811936c72098e0ba6c6af784f3c",
+  "global_gain_db": 4,
+  "global_gain_scope": "同一固定增益作用于整篇一次",
+  "global_tempo": 1,
+  "global_tempo_ratio": 1,
+  "resample_passes": 1,
+  "sentence_gain_applied": false,
+  "sentence_tts_applied": false,
+  "pitch_shift_applied": false,
+  "samples_preserved_in_order": true,
+  "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+  "source_sample_count": 2288640,
+  "preserved_sample_count": 2288640,
+  "inserted_samples": 37760,
+  "sample_rate": 48000,
+  "playback_rate": 1,
+  "fps": 30,
+  "frames": 1454,
+  "duration_seconds": 48.46666666666667,
+  "spans": [
+    {
+      "source_start": 0,
+      "source_end": 192910,
+      "output_start": 0,
+      "output_end": 193600,
+      "inserted_samples": 690,
+      "boundary_rms": 0.005909426157971318
+    },
+    {
+      "source_start": 192910,
+      "source_end": 457928,
+      "output_start": 193600,
+      "output_end": 459200,
+      "inserted_samples": 582,
+      "boundary_rms": 0.0010266502530236485
+    },
+    {
+      "source_start": 457928,
+      "source_end": 694215,
+      "output_start": 459200,
+      "output_end": 696000,
+      "inserted_samples": 513,
+      "boundary_rms": 0.00071200688336543
+    },
+    {
+      "source_start": 694215,
+      "source_end": 935806,
+      "output_start": 696000,
+      "output_end": 937600,
+      "inserted_samples": 9,
+      "boundary_rms": 0.0002566547673440088
+    },
+    {
+      "source_start": 935806,
+      "source_end": 1210400,
+      "output_start": 937600,
+      "output_end": 1212800,
+      "inserted_samples": 606,
+      "boundary_rms": 0.0001876996454326913
+    },
+    {
+      "source_start": 1210400,
+      "source_end": 1428469,
+      "output_start": 1212800,
+      "output_end": 1432000,
+      "inserted_samples": 1131,
+      "boundary_rms": 0.0017182654452755509
+    },
+    {
+      "source_start": 1428469,
+      "source_end": 1720323,
+      "output_start": 1432000,
+      "output_end": 1724800,
+      "inserted_samples": 946,
+      "boundary_rms": 0.00009225996033444148
+    },
+    {
+      "source_start": 1720323,
+      "source_end": 2026079,
+      "output_start": 1724800,
+      "output_end": 2032000,
+      "inserted_samples": 1444,
+      "boundary_rms": 0.00012786161149942233
+    },
+    {
+      "source_start": 2026079,
+      "source_end": 2288640,
+      "output_start": 2032000,
+      "output_end": 2326400,
+      "inserted_samples": 31839,
+      "boundary_rms": 0
+    }
+  ],
+  "boundaries": [
+    {
+      "sample": 0,
+      "rms": 0,
+      "asr_midpoint": 0
+    },
+    {
+      "sample": 192910,
+      "rms": 0.005909426157971318,
+      "asr_midpoint": 4
+    },
+    {
+      "sample": 457928,
+      "rms": 0.0010266502530236485,
+      "asr_midpoint": 9.54
+    },
+    {
+      "sample": 694215,
+      "rms": 0.00071200688336543,
+      "asr_midpoint": 14.46
+    },
+    {
+      "sample": 935806,
+      "rms": 0.0002566547673440088,
+      "asr_midpoint": 19.5
+    },
+    {
+      "sample": 1210400,
+      "rms": 0.0001876996454326913,
+      "asr_midpoint": 25.22
+    },
+    {
+      "sample": 1428469,
+      "rms": 0.0017182654452755509,
+      "asr_midpoint": 29.76
+    },
+    {
+      "sample": 1720323,
+      "rms": 0.00009225996033444148,
+      "asr_midpoint": 35.84
+    },
+    {
+      "sample": 2026079,
+      "rms": 0.00012786161149942233,
+      "asr_midpoint": 42.21
+    },
+    {
+      "sample": 2288640,
+      "rms": 0,
+      "asr_midpoint": 47.68
+    }
+  ],
+  "cues": [
+    {
+      "index": 0,
+      "text": "平台日常运营，从我的页面进入平台管理中心。",
+      "start": 0,
+      "end": 4,
+      "coverage": 1
+    },
+    {
+      "index": 1,
+      "text": "切换统计周期，查看真实订单金额和经营趋势。",
+      "start": 4,
+      "end": 9.554375,
+      "coverage": 0.9474
+    },
+    {
+      "index": 2,
+      "text": "打开用户管理，输入用户编号，快速定位资料。",
+      "start": 9.554375,
+      "end": 14.4865,
+      "coverage": 1
+    },
+    {
+      "index": 3,
+      "text": "点开用户详情，核对身份和手机验证状态。",
+      "start": 14.4865,
+      "end": 19.1771875,
+      "coverage": 1
+    },
+    {
+      "index": 4,
+      "text": "回到管理中心，进入图文审核，筛选待人工内容。",
+      "start": 19.897375,
+      "end": 25.137375,
+      "coverage": 1
+    },
+    {
+      "index": 5,
+      "text": "打开任务，先看完整内容，再决定是否通过。",
+      "start": 25.39,
+      "end": 29.8335625,
+      "coverage": 1
+    },
+    {
+      "index": 6,
+      "text": "确认内容符合要求后，点击通过，结果会保留记录。",
+      "start": 29.8335625,
+      "end": 35.5535625,
+      "coverage": 1
+    },
+    {
+      "index": 7,
+      "text": "公共信息里选择顶部提示，填写玩家首页要展示的内容。",
+      "start": 36.29327083333333,
+      "end": 41.97327083333333,
+      "coverage": 1
+    },
+    {
+      "index": 8,
+      "text": "保存公共信息后，返回玩家首页，查看提示是否生效。",
+      "start": 42.663354166666664,
+      "end": 47.78335416666667,
+      "coverage": 1
+    }
+  ],
+  "operations": [
+    {
+      "index": 0,
+      "id": "01",
+      "title": "进入管理中心",
+      "source_video_start": 0,
+      "source_video_end": 3.032,
+      "operation_seconds": 3.032,
+      "operation_speed": 1,
+      "output_start": 0,
+      "output_operation_end": 3.032,
+      "output_end": 4.033333333333333,
+      "output_frames": 121,
+      "held_end_frame_seconds": 1.0013333333333332
+    },
+    {
+      "index": 1,
+      "id": "02",
+      "title": "查看经营趋势",
+      "source_video_start": 4.8,
+      "source_video_end": 6.734999999999999,
+      "operation_seconds": 1.935,
+      "operation_speed": 1,
+      "output_start": 4.033333333333333,
+      "output_operation_end": 5.968333333333334,
+      "output_end": 9.566666666666666,
+      "output_frames": 166,
+      "held_end_frame_seconds": 3.598333333333333
+    },
+    {
+      "index": 2,
+      "id": "03",
+      "title": "查找用户",
+      "source_video_start": 12.8,
+      "source_video_end": 17.278,
+      "operation_seconds": 4.477999999999999,
+      "operation_speed": 1,
+      "output_start": 9.566666666666666,
+      "output_operation_end": 14.044666666666664,
+      "output_end": 14.5,
+      "output_frames": 148,
+      "held_end_frame_seconds": 0.4553333333333347
+    },
+    {
+      "index": 3,
+      "id": "04",
+      "title": "核对用户资料",
+      "source_video_start": 18.96666666666667,
+      "source_video_end": 20.88566666666667,
+      "operation_seconds": 1.9190000000000005,
+      "operation_speed": 1,
+      "output_start": 14.5,
+      "output_operation_end": 16.419,
+      "output_end": 19.533333333333335,
+      "output_frames": 151,
+      "held_end_frame_seconds": 3.1143333333333327
+    },
+    {
+      "index": 4,
+      "id": "05",
+      "title": "打开图文审核",
+      "source_video_start": 23.033333333333335,
+      "source_video_end": 26.047333333333334,
+      "operation_seconds": 3.014000000000001,
+      "operation_speed": 1,
+      "output_start": 19.533333333333335,
+      "output_operation_end": 22.547333333333334,
+      "output_end": 25.266666666666666,
+      "output_frames": 172,
+      "held_end_frame_seconds": 2.7193333333333323
+    },
+    {
+      "index": 5,
+      "id": "06",
+      "title": "查看完整内容",
+      "source_video_start": 27.833333333333336,
+      "source_video_end": 29.899333333333335,
+      "operation_seconds": 2.065999999999999,
+      "operation_speed": 1,
+      "output_start": 25.266666666666666,
+      "output_operation_end": 27.332666666666665,
+      "output_end": 29.833333333333332,
+      "output_frames": 137,
+      "held_end_frame_seconds": 2.5006666666666675
+    },
+    {
+      "index": 6,
+      "id": "07",
+      "title": "确认审核结果",
+      "source_video_start": 33.43333333333334,
+      "source_video_end": 35.93833333333333,
+      "operation_seconds": 2.504999999999999,
+      "operation_speed": 1,
+      "output_start": 29.833333333333332,
+      "output_operation_end": 32.33833333333333,
+      "output_end": 35.93333333333333,
+      "output_frames": 183,
+      "held_end_frame_seconds": 3.5950000000000006
+    },
+    {
+      "index": 7,
+      "id": "08",
+      "title": "编辑首页提示",
+      "source_video_start": 38,
+      "source_video_end": 43.068,
+      "operation_seconds": 5.067999999999998,
+      "operation_speed": 1,
+      "output_start": 35.93333333333333,
+      "output_operation_end": 41.00133333333333,
+      "output_end": 42.333333333333336,
+      "output_frames": 192,
+      "held_end_frame_seconds": 1.3320000000000025
+    },
+    {
+      "index": 8,
+      "id": "09",
+      "title": "保存并查看效果",
+      "source_video_start": 44.96666666666667,
+      "source_video_end": 51.07466666666667,
+      "operation_seconds": 6.108000000000004,
+      "operation_speed": 1,
+      "output_start": 42.333333333333336,
+      "output_operation_end": 48.44133333333334,
+      "output_end": 48.46666666666667,
+      "output_frames": 184,
+      "held_end_frame_seconds": 0.025333333333329655
+    }
+  ],
+  "generation_metadata": {
+    "sample_rate": 24000,
+    "samples": 1144320,
+    "duration_seconds": 47.68,
+    "peak": 0.44647216796875,
+    "rms": 0.048503194004297256,
+    "clipped_samples": 0,
+    "overall_safety_gain": 1,
+    "audio_sha256": "54b45040249f74d3e9afe571313aabb76a7d016b94bb8fb74529d3fec3c73348",
+    "id": "01-platform-tutorial",
+    "signature": "9aabc25756f7eae9248f5fcaeb6ce2ea0ecadef01a353ce11e09d52a3ea669e9",
+    "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+    "license": "Apache-2.0",
+    "source": "scripts/tutorial-voice-script.json",
+    "voice": "Serena",
+    "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+    "text": "平台日常运营，从我的页面进入平台管理中心。切换统计周期，查看真实订单金额和经营趋势。打开用户管理，输入用户编号，快速定位资料。点开用户详情，核对身份和手机验证状态。回到管理中心，进入图文审核，筛选待人工内容。打开任务，先看完整内容，再决定是否通过。确认内容符合要求后，点击通过，结果会保留记录。公共信息里选择顶部提示，填写玩家首页要展示的内容。保存公共信息后，返回玩家首页，查看提示是否生效。",
+    "segments": [
+      "平台日常运营，从我的页面进入平台管理中心。",
+      "切换统计周期，查看真实订单金额和经营趋势。",
+      "打开用户管理，输入用户编号，快速定位资料。",
+      "点开用户详情，核对身份和手机验证状态。",
+      "回到管理中心，进入图文审核，筛选待人工内容。",
+      "打开任务，先看完整内容，再决定是否通过。",
+      "确认内容符合要求后，点击通过，结果会保留记录。",
+      "公共信息里选择顶部提示，填写玩家首页要展示的内容。",
+      "保存公共信息后，返回玩家首页，查看提示是否生效。"
+    ],
+    "sampling_parameters": {
+      "temperature": 0.65,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repetition_penalty": 1.05,
+      "max_tokens": 2048,
+      "seed": 20261026
+    },
+    "token_limit": 2048,
+    "seed_scope": "one_fixed_seed_per_complete_article",
+    "api_calls_per_video": 1,
+    "non_streaming_result_count": 1,
+    "token_count": 597,
+    "natural_eos_before_limit": true,
+    "generation_seconds": 28.946587541955523,
+    "model_peak_memory_gb": 9.344541709,
+    "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。"
+  },
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "r_frame_rate": "30/1",
+        "avg_frame_rate": "30/1",
+        "duration": "48.466667",
+        "nb_frames": "1454"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "channels": 1,
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "duration": "48.466000",
+        "nb_frames": "2273"
+      }
+    ],
+    "format": {
+      "duration": "48.466667"
+    },
+    "max_volume_dbfs": -3,
+    "full_decode_passed": true,
+    "expected_frames": 1454,
+    "expected_seconds": 48.46666666666667
+  },
+  "video_sha256": "7939d2ce7288c439460457fc18fdbf324521753866ee1ce60a8a50d0ee123ebd"
+}

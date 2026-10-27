@@ -1,0 +1,206 @@
+{
+  "id": "03-game-enthusiast",
+  "kind": "ad",
+  "single_generation_pass": true,
+  "voice": "Serena",
+  "source_audio_sha256": "115c0de3e6e82d5388e9db7b285cbdfa7cb2a6e42206ca2f3ff75922570850c6",
+  "source_duration_seconds": 36.24,
+  "alignment_sha256": "7dc7b2c4c4d0d321c8721690c97b68b20944444e09c8ec1483057b16a4156f76",
+  "global_gain_db": 5.4,
+  "global_gain_scope": "同一固定增益应用整条音源，所有句子相同",
+  "global_tempo_ratio": 1.2284745762711866,
+  "sentence_gain_applied": false,
+  "sentence_tts_applied": false,
+  "pitch_shift_applied": false,
+  "samples_preserved_in_order": true,
+  "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+  "playback_rate": "广告轻运镜按句窗配时",
+  "frames": 900,
+  "duration_seconds": 30,
+  "spans": [
+    {
+      "source_start": 0,
+      "source_end": 104980,
+      "output_start": 0,
+      "output_end": 116800,
+      "inserted_samples": 11820,
+      "boundary_rms": 0.007754373380200877
+    },
+    {
+      "source_start": 104980,
+      "source_end": 326180,
+      "output_start": 116800,
+      "output_end": 339200,
+      "inserted_samples": 1200,
+      "boundary_rms": 0.0007546752933965611
+    },
+    {
+      "source_start": 326180,
+      "source_end": 525824,
+      "output_start": 339200,
+      "output_end": 539200,
+      "inserted_samples": 356,
+      "boundary_rms": 0.004474718700776207
+    },
+    {
+      "source_start": 525824,
+      "source_end": 703792,
+      "output_start": 539200,
+      "output_end": 726400,
+      "inserted_samples": 9232,
+      "boundary_rms": 0.007953213406390273
+    },
+    {
+      "source_start": 703792,
+      "source_end": 925906,
+      "output_start": 726400,
+      "output_end": 948800,
+      "inserted_samples": 286,
+      "boundary_rms": 0.003999824352508823
+    },
+    {
+      "source_start": 925906,
+      "source_end": 1147452,
+      "output_start": 948800,
+      "output_end": 1171200,
+      "inserted_samples": 854,
+      "boundary_rms": 0.007547255672431292
+    },
+    {
+      "source_start": 1147452,
+      "source_end": 1415650,
+      "output_start": 1171200,
+      "output_end": 1440000,
+      "inserted_samples": 602,
+      "boundary_rms": 0
+    }
+  ],
+  "cues": [
+    {
+      "index": 0,
+      "text": "游戏打得好，也能接单？",
+      "start": 0,
+      "end": 2.1159166666666667,
+      "coverage": 0.6667
+    },
+    {
+      "index": 1,
+      "text": "接单无需平台押金，完善资料就出发！",
+      "start": 2.1159166666666667,
+      "end": 6.789333333333333,
+      "coverage": 0.9333
+    },
+    {
+      "index": 2,
+      "text": "把擅长的游戏，整理成你的服务。",
+      "start": 7.318895833333333,
+      "end": 11.225229166666667,
+      "coverage": 1
+    },
+    {
+      "index": 3,
+      "text": "接到订单，按约定认真履约。",
+      "start": 11.225229166666667,
+      "end": 15.135979166666667,
+      "coverage": 0.7273
+    },
+    {
+      "index": 4,
+      "text": "需求在订单里聊清楚，沟通有记录。",
+      "start": 15.135979166666667,
+      "end": 19.758458333333333,
+      "coverage": 0.8571
+    },
+    {
+      "index": 5,
+      "text": "收入按规则结算，资金状态看得清。",
+      "start": 19.758458333333333,
+      "end": 24.321770833333332,
+      "coverage": 0.9286
+    },
+    {
+      "index": 6,
+      "text": "把爱好变成收入，从一单服务开始！",
+      "start": 24.321770833333332,
+      "end": 29.580541666666665,
+      "coverage": 0.8571
+    }
+  ],
+  "generation_metadata": {
+    "sample_rate": 24000,
+    "samples": 869760,
+    "duration_seconds": 36.24,
+    "peak": 0.38226318359375,
+    "rms": 0.0472819060087204,
+    "clipped_samples": 0,
+    "overall_safety_gain": 1,
+    "audio_sha256": "115c0de3e6e82d5388e9db7b285cbdfa7cb2a6e42206ca2f3ff75922570850c6",
+    "id": "03-game-enthusiast",
+    "text": "游戏打得好，也能接单？接单无需平台押金，完善资料就出发！把擅长的游戏，整理成你的服务。接到订单，按约定认真履约。需求在订单里聊清楚，沟通有记录。收入按规则结算，资金状态看得清。把爱好变成收入，从一单服务开始！",
+    "actual_generation_text": "游戏打得好，也能接单。接单无需平台押金，完善资料就出发。把擅长的游戏，整理成你的服务。接到订单，按约定认真履约。需求在订单里聊清楚，沟通有记录。收入按规则结算，资金状态看得清。把爱好变成收入，从一单服务开始。",
+    "punctuation_normalized": true,
+    "voice": "Serena",
+    "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。正常语速平实清晰地讲解，句尾干脆。",
+    "sampling_parameters": {
+      "temperature": 0.8,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repetition_penalty": 1.08,
+      "max_tokens": 2048,
+      "seed": 20261027
+    },
+    "token_limit": 1024,
+    "token_count": 453,
+    "generation_seconds": 22.200174166006036,
+    "api_calls_per_video": 1,
+    "signature": "054defd185e4b73d19f80a5dd84ef234beedc41f091ee1465c26f1d2f7393d1c",
+    "source": "scripts/marketing-voice-script.json",
+    "segments": [
+      "游戏打得好，也能接单？",
+      "接单无需平台押金，完善资料就出发！",
+      "把擅长的游戏，整理成你的服务。",
+      "接到订单，按约定认真履约。",
+      "需求在订单里聊清楚，沟通有记录。",
+      "收入按规则结算，资金状态看得清。",
+      "把爱好变成收入，从一单服务开始！"
+    ],
+    "seed_scope": "one_fixed_seed_per_complete_article",
+    "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+    "license": "Apache-2.0",
+    "natural_eos_before_limit": true,
+    "non_streaming_result_count": 1,
+    "model_peak_memory_gb": null,
+    "acceptance_note": "根代理批准36.24秒整篇源以不超过1.25的整体atempo配30秒；自然EOS且全文无遗漏，3句近音中本条2句显式复核，原字面覆盖率保留。",
+    "needs_whole_utterance_atempo": true,
+    "suggested_whole_atempo": 1.23,
+    "postprocess": "仅生成时整体安全降峰与PCM量化，原始完整时序保留；本WAV未裁词、未变速、未变调。"
+  },
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "avg_frame_rate": "30/1",
+        "nb_frames": "900"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "avg_frame_rate": "0/0",
+        "nb_frames": "1408"
+      }
+    ],
+    "format": {
+      "duration": "30.000000"
+    },
+    "max_volume_dbfs": -2.8
+  },
+  "normalized_pcm_sha256": "2c4c441917a7e25acd61d138a1544db37440cbabfdc502aa5df0736b77bc4ba1",
+  "narration_sha256": "6a33f96748cb76d49065e81315f17d07bc2a7fa7f2b8801520be480476cb959f",
+  "video_sha256": "06a18a76dcf520c5ea545d90d39f2ece00d3f6708a4d82586c1e383859f76621",
+  "original_video_sha256": "4bb2eec67716fff62b9e7bd1042c1011e5f283ea0a91cf2143878166db30a787"
+}

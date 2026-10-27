@@ -1,3 +1,4 @@
+/** 历史逐句制作入口：当前交付改用generate-consistent-voice.ts、align-consistent-voice.ts及render-consistent-videos.ts，避免重置每句话的音色。 */
 /** 文件作用：用本地Qwen3-TTS情绪模型生成四类受众逐镜头配音；TypeScript负责工具编排，Python仅调用MLX模型，不使用系统声音或真人克隆。 */
 import assert from 'node:assert/strict'
 import fs from 'node:fs'

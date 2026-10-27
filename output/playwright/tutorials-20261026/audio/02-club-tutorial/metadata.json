@@ -1,0 +1,397 @@
+{
+  "id": "02-club-tutorial",
+  "kind": "tutorial",
+  "voice": "Serena",
+  "single_generation_pass": true,
+  "source_audio_sha256": "32e42fffc98d5ec9ed8cc597e59a6f4fa6ba49f09b01a71bd7f3381cb67e0f37",
+  "single_source_audio_sha256": "32e42fffc98d5ec9ed8cc597e59a6f4fa6ba49f09b01a71bd7f3381cb67e0f37",
+  "source_duration_seconds": 54.8,
+  "original_video_sha256": "ac832888762c3d1b039e7b419941998a169384e528c570d859080932c480e5a9",
+  "old_video_sha256": "ac832888762c3d1b039e7b419941998a169384e528c570d859080932c480e5a9",
+  "alignment_sha256": "f7ea0a7b48ac37800357e5e9cfdbe9aeadec42e06f5f6408eeef82fce04d5617",
+  "normalized_pcm_sha256": "1740abd45079f4d9f057910e175e4e516403f0daea254fe642f2d038cad4d5b7",
+  "narration_sha256": "691bb5f271800045236958cdacc36340b4f90cec0afeb70e7f65e50cfa699199",
+  "global_gain_db": 3.8,
+  "global_gain_scope": "同一固定增益作用于整篇一次",
+  "global_tempo": 1,
+  "global_tempo_ratio": 1,
+  "resample_passes": 1,
+  "sentence_gain_applied": false,
+  "sentence_tts_applied": false,
+  "pitch_shift_applied": false,
+  "samples_preserved_in_order": true,
+  "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+  "source_sample_count": 2630400,
+  "preserved_sample_count": 2630400,
+  "inserted_samples": 8000,
+  "sample_rate": 48000,
+  "playback_rate": 1,
+  "fps": 30,
+  "frames": 1649,
+  "duration_seconds": 54.96666666666667,
+  "spans": [
+    {
+      "source_start": 0,
+      "source_end": 295196,
+      "output_start": 0,
+      "output_end": 296000,
+      "inserted_samples": 804,
+      "boundary_rms": 0.00010639290292263685
+    },
+    {
+      "source_start": 295196,
+      "source_end": 650719,
+      "output_start": 296000,
+      "output_end": 652800,
+      "inserted_samples": 1277,
+      "boundary_rms": 0.00026656337320125857
+    },
+    {
+      "source_start": 650719,
+      "source_end": 985941,
+      "output_start": 652800,
+      "output_end": 988800,
+      "inserted_samples": 778,
+      "boundary_rms": 0.00015463410717966592
+    },
+    {
+      "source_start": 985941,
+      "source_end": 1288842,
+      "output_start": 988800,
+      "output_end": 1292800,
+      "inserted_samples": 1099,
+      "boundary_rms": 0.00013853882509439
+    },
+    {
+      "source_start": 1288842,
+      "source_end": 1613685,
+      "output_start": 1292800,
+      "output_end": 1619200,
+      "inserted_samples": 1557,
+      "boundary_rms": 0.0001760335718406187
+    },
+    {
+      "source_start": 1613685,
+      "source_end": 1924799,
+      "output_start": 1619200,
+      "output_end": 1931200,
+      "inserted_samples": 886,
+      "boundary_rms": 0.00012075992428859571
+    },
+    {
+      "source_start": 1924799,
+      "source_end": 2254971,
+      "output_start": 1931200,
+      "output_end": 2262400,
+      "inserted_samples": 1028,
+      "boundary_rms": 0.00015618223469226713
+    },
+    {
+      "source_start": 2254971,
+      "source_end": 2630400,
+      "output_start": 2262400,
+      "output_end": 2638400,
+      "inserted_samples": 571,
+      "boundary_rms": 0
+    }
+  ],
+  "boundaries": [
+    {
+      "sample": 0,
+      "rms": 0,
+      "asr_midpoint": 0
+    },
+    {
+      "sample": 295196,
+      "rms": 0.00010639290292263685,
+      "asr_midpoint": 6.15
+    },
+    {
+      "sample": 650719,
+      "rms": 0.00026656337320125857,
+      "asr_midpoint": 13.56
+    },
+    {
+      "sample": 985941,
+      "rms": 0.00015463410717966592,
+      "asr_midpoint": 20.54
+    },
+    {
+      "sample": 1288842,
+      "rms": 0.00013853882509439,
+      "asr_midpoint": 26.85
+    },
+    {
+      "sample": 1613685,
+      "rms": 0.0001760335718406187,
+      "asr_midpoint": 33.620000000000005
+    },
+    {
+      "sample": 1924799,
+      "rms": 0.00012075992428859571,
+      "asr_midpoint": 40.099999999999994
+    },
+    {
+      "sample": 2254971,
+      "rms": 0.00015618223469226713,
+      "asr_midpoint": 46.980000000000004
+    },
+    {
+      "sample": 2630400,
+      "rms": 0,
+      "asr_midpoint": 54.8
+    }
+  ],
+  "cues": [
+    {
+      "index": 0,
+      "text": "在我的页面打开俱乐部中心，进入自己的管理控制台。",
+      "start": 0,
+      "end": 5.82,
+      "coverage": 1
+    },
+    {
+      "index": 1,
+      "text": "加入规则与装修里，可以核对抽成、押金和团队介绍。",
+      "start": 6.49675,
+      "end": 13.17675,
+      "coverage": 0.9048
+    },
+    {
+      "index": 2,
+      "text": "打开成员管理，搜索申请人，找到待审核的申请。",
+      "start": 14.003354166666666,
+      "end": 20.243354166666666,
+      "coverage": 0.9474
+    },
+    {
+      "index": 3,
+      "text": "核对申请人，点击审核，填写本次处理说明。",
+      "start": 20.9395625,
+      "end": 26.7595625,
+      "coverage": 0.9412
+    },
+    {
+      "index": 4,
+      "text": "确认处理后，申请人会成为俱乐部的认证成员。",
+      "start": 27.082458333333335,
+      "end": 33.28245833333333,
+      "coverage": 0.8421
+    },
+    {
+      "index": 5,
+      "text": "进入团队订单，打开订单详情，查看履约进度。",
+      "start": 34.154895833333335,
+      "end": 39.91489583333333,
+      "coverage": 1
+    },
+    {
+      "index": 6,
+      "text": "订单聊天保存沟通记录，管理员也能协助双方确认进度。",
+      "start": 40.53335416666667,
+      "end": 46.773354166666664,
+      "coverage": 1
+    },
+    {
+      "index": 7,
+      "text": "俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
+      "start": 47.47477083333333,
+      "end": 54.89477083333333,
+      "coverage": 0.913
+    }
+  ],
+  "operations": [
+    {
+      "index": 0,
+      "id": "01",
+      "title": "进入俱乐部控制台",
+      "source_video_start": 0,
+      "source_video_end": 3.1229999999999998,
+      "operation_seconds": 3.1229999999999998,
+      "operation_speed": 1,
+      "output_start": 0,
+      "output_operation_end": 3.1229999999999998,
+      "output_end": 6.166666666666667,
+      "output_frames": 185,
+      "held_end_frame_seconds": 3.043666666666667
+    },
+    {
+      "index": 1,
+      "id": "02",
+      "title": "查看加入规则",
+      "source_video_start": 8.733333333333333,
+      "source_video_end": 11.168333333333333,
+      "operation_seconds": 2.4349999999999996,
+      "operation_speed": 1,
+      "output_start": 6.166666666666667,
+      "output_operation_end": 8.601666666666667,
+      "output_end": 13.6,
+      "output_frames": 223,
+      "held_end_frame_seconds": 4.998333333333334
+    },
+    {
+      "index": 2,
+      "id": "03",
+      "title": "查找入会申请",
+      "source_video_start": 16.799999999999997,
+      "source_video_end": 21.270999999999997,
+      "operation_seconds": 4.470999999999999,
+      "operation_speed": 1,
+      "output_start": 13.6,
+      "output_operation_end": 18.070999999999998,
+      "output_end": 20.6,
+      "output_frames": 210,
+      "held_end_frame_seconds": 2.529000000000001
+    },
+    {
+      "index": 3,
+      "id": "04",
+      "title": "填写审核说明",
+      "source_video_start": 22.566666666666663,
+      "source_video_end": 25.959666666666664,
+      "operation_seconds": 3.392999999999999,
+      "operation_speed": 1,
+      "output_start": 20.6,
+      "output_operation_end": 23.993000000000002,
+      "output_end": 26.933333333333334,
+      "output_frames": 190,
+      "held_end_frame_seconds": 2.940333333333334
+    },
+    {
+      "index": 4,
+      "id": "05",
+      "title": "完成成员认证",
+      "source_video_start": 28.33333333333333,
+      "source_video_end": 30.35633333333333,
+      "operation_seconds": 2.0229999999999997,
+      "operation_speed": 1,
+      "output_start": 26.933333333333334,
+      "output_operation_end": 28.956333333333333,
+      "output_end": 33.733333333333334,
+      "output_frames": 204,
+      "held_end_frame_seconds": 4.777
+    },
+    {
+      "index": 5,
+      "id": "06",
+      "title": "查看团队订单",
+      "source_video_start": 33.599999999999994,
+      "source_video_end": 37.095,
+      "operation_seconds": 3.495000000000001,
+      "operation_speed": 1,
+      "output_start": 33.733333333333334,
+      "output_operation_end": 37.22833333333334,
+      "output_end": 40.233333333333334,
+      "output_frames": 195,
+      "held_end_frame_seconds": 3.004999999999999
+    },
+    {
+      "index": 6,
+      "id": "07",
+      "title": "协助订单沟通",
+      "source_video_start": 38.46666666666666,
+      "source_video_end": 44.58866666666666,
+      "operation_seconds": 6.122,
+      "operation_speed": 1,
+      "output_start": 40.233333333333334,
+      "output_operation_end": 46.355333333333334,
+      "output_end": 47.13333333333333,
+      "output_frames": 207,
+      "held_end_frame_seconds": 0.7780000000000005
+    },
+    {
+      "index": 7,
+      "id": "08",
+      "title": "查看组织资金",
+      "source_video_start": 44.599999999999994,
+      "source_video_end": 47.05199999999999,
+      "operation_seconds": 2.451999999999998,
+      "operation_speed": 1,
+      "output_start": 47.13333333333333,
+      "output_operation_end": 49.58533333333333,
+      "output_end": 54.96666666666667,
+      "output_frames": 235,
+      "held_end_frame_seconds": 5.381333333333335
+    }
+  ],
+  "generation_metadata": {
+    "sample_rate": 24000,
+    "samples": 1315200,
+    "duration_seconds": 54.8,
+    "peak": 0.458221435546875,
+    "rms": 0.04194801673293114,
+    "clipped_samples": 0,
+    "overall_safety_gain": 1,
+    "audio_sha256": "32e42fffc98d5ec9ed8cc597e59a6f4fa6ba49f09b01a71bd7f3381cb67e0f37",
+    "id": "02-club-tutorial",
+    "signature": "6b699d9c0aeea495f5ce4ac1e65938010accf1c52801513d57f2cee86ef7654d",
+    "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+    "license": "Apache-2.0",
+    "source": "scripts/tutorial-voice-script.json",
+    "voice": "Serena",
+    "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。完整讲完所有文字，不省略末字，最后一句自然收尾，稍作停顿。",
+    "text": "在我的页面打开俱乐部中心，进入自己的管理控制台。加入规则与装修里，可以核对抽成、押金和团队介绍。打开成员管理，搜索申请人，找到待审核的申请。核对申请人，点击审核，填写本次处理说明。确认处理后，申请人会成为俱乐部的认证成员。进入团队订单，打开订单详情，查看履约进度。订单聊天保存沟通记录，管理员也能协助双方确认进度。俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
+    "actual_generation_text": "在我的页面打开俱乐部中心，进入自己的管理控制台。加入规则与装修里，可以核对抽成、押金和团队介绍。打开成员管理，搜索申请人，找到待审核的申请。核对申请人，点击审核，填写本次处理说明。确认处理后，申请人会成为俱乐部的认证成员。进入团队订单，打开订单详情，查看履约进度。订单聊天保存沟通记录，管理员也能协助双方确认进度。俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
+    "punctuation_normalized": false,
+    "segments": [
+      "在我的页面打开俱乐部中心，进入自己的管理控制台。",
+      "加入规则与装修里，可以核对抽成、押金和团队介绍。",
+      "打开成员管理，搜索申请人，找到待审核的申请。",
+      "核对申请人，点击审核，填写本次处理说明。",
+      "确认处理后，申请人会成为俱乐部的认证成员。",
+      "进入团队订单，打开订单详情，查看履约进度。",
+      "订单聊天保存沟通记录，管理员也能协助双方确认进度。",
+      "俱乐部资金会分别展示押金、进行中佣金和待结算金额。"
+    ],
+    "sampling_parameters": {
+      "temperature": 0.75,
+      "top_p": 0.9,
+      "top_k": 50,
+      "repetition_penalty": 1.08,
+      "max_tokens": 2048,
+      "seed": 20261028
+    },
+    "token_limit": 2048,
+    "seed_scope": "one_fixed_seed_per_complete_article",
+    "api_calls_per_video": 1,
+    "non_streaming_result_count": 1,
+    "token_count": 685,
+    "natural_eos_before_limit": true,
+    "generation_seconds": 32.99530404107645,
+    "model_peak_memory_gb": 9.566582159,
+    "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。"
+  },
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "r_frame_rate": "30/1",
+        "avg_frame_rate": "30/1",
+        "duration": "54.966667",
+        "nb_frames": "1649"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "channels": 1,
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "duration": "54.966000",
+        "nb_frames": "2578"
+      }
+    ],
+    "format": {
+      "duration": "54.966667"
+    },
+    "max_volume_dbfs": -2.9,
+    "full_decode_passed": true,
+    "expected_frames": 1649,
+    "expected_seconds": 54.96666666666667
+  },
+  "video_sha256": "00d806e0d2a7a0e8b80cdc65048fade1e73fc7f7f243e0fae5c70634d54c77b8"
+}

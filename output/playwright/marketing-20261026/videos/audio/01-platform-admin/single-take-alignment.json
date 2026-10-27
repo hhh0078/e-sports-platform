@@ -1,0 +1,70 @@
+{
+  "video_id": "01-platform-admin",
+  "method": "whisper-independent-word-dtw-global-character-edit-alignment-v1",
+  "source_audio": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/01-platform-admin/narration.wav",
+  "audio_sha256": "0c47c733830b55b7b63556f04280b32bcd54df73d8a116ee2776ace60e895348",
+  "script_sha256": {
+    "/Users/Zhuanz/Desktop/三角洲/scripts/marketing-voice-script.json": "ae45509002e9f868e5c1fa35b76f2fdd67aeff7fe214c844837538a65d18929b",
+    "/Users/Zhuanz/Desktop/三角洲/scripts/tutorial-voice-script.json": "e9376717f37cca9029fcdaf963262a4e2ca0f8354d9103983e08a3e76e717bae"
+  },
+  "source_duration_seconds": 18.88,
+  "needs_review": false,
+  "raw_asr_path": "/Users/Zhuanz/Desktop/三角洲/.run/consistent-voice/01-platform-admin/asr-words.json",
+  "segments": [
+    {
+      "index": 0,
+      "text": "想做接单平台？",
+      "start": 0.0,
+      "end": 1.46,
+      "coverage": 1.0
+    },
+    {
+      "index": 1,
+      "text": "订单待办，一屏看清。",
+      "start": 1.98,
+      "end": 4.12,
+      "coverage": 1.0
+    },
+    {
+      "index": 2,
+      "text": "用户资料和权限，分开管理。",
+      "start": 4.54,
+      "end": 7.2,
+      "coverage": 1.0
+    },
+    {
+      "index": 3,
+      "text": "订单进度和售后，随时可查。",
+      "start": 7.2,
+      "end": 10.32,
+      "coverage": 0.9091
+    },
+    {
+      "index": 4,
+      "text": "轮播和公告，自己掌控。",
+      "start": 10.84,
+      "end": 12.94,
+      "coverage": 0.8889
+    },
+    {
+      "index": 5,
+      "text": "文章发布状态，集中管理。",
+      "start": 12.94,
+      "end": 15.66,
+      "coverage": 1.0
+    },
+    {
+      "index": 6,
+      "text": "开机电竞源码，搭建自己的平台。",
+      "start": 15.66,
+      "end": 18.8,
+      "coverage": 0.9231
+    }
+  ],
+  "coverage_threshold": 0.75,
+  "canonicalization": "macOS Foundation繁转简、NFKC及12/7数字写法；不改原始证据或时间。",
+  "independent_window_evidence": [],
+  "reviewed_near_homophones": [],
+  "boundary_source": "每句首尾匹配字符所属的真实Whisper词起止；独立窗口替换保留来源，不按字符比例切分词，不插值，不均分时长。",
+  "timing_precision_note": "Whisper cross-attention/DTW估计值，原生时间格20毫秒；不是采样级声学真值。"
+}

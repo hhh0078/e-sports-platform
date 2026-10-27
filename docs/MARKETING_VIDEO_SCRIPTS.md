@@ -3,7 +3,7 @@
 
 四条视频均为1080×1920、30fps、30秒H264 MP4，配中文情绪旁白与画面完整口播字幕，另附SRT与可复用旁白文件。素材来自本次真实H5界面截图，带iPhone展示边框；不是微信真机录屏。所有视频均标记“功能演示 · 演示数据”。
 
-固定节奏：0—3秒钩子，3—7.5、7.5—12、12—16.5、16.5—21、21—25.5秒各一项功能，25.5—30秒收尾。每次切换约0.4秒淡化，手机仅轻微运镜，画面和文案留在安全区。
+保留开场钩子、五项功能和收尾的七镜头结构，总长仍为30秒。具体镜头与字幕边界按整条连续旁白对齐；手机仅轻微运镜，画面和文案留在安全区。
 
 | 视频 | 前3秒钩子 | 五项功能 | 收尾 |
 | --- | --- | --- | --- |
@@ -12,14 +12,20 @@
 | 游戏爱好者 | 游戏打得好，也能接单？ | 接单无需平台押金、个人工作台、订单履约、订单沟通、余额结算 | 把爱好变成收入，从一单服务开始 |
 | 玩家 | 想找陪玩护航，预算不想拉满？低价找陪玩，护航按需选 | 多游戏服务、陪玩演示价格、约定进度、订单聊天、俱乐部主页 | 挑选合适队友，查看服务与价格 |
 
-配音的实际逐镜头文字、音色和情绪指令以 `scripts/marketing-voice-script.json` 为准，主标题保留完整受众钩子；少量口播使用更短的自然句，保证前三秒开场和完整收句。平台采用成熟男声、俱乐部采用温暖女声、游戏爱好者采用清爽年轻男声、玩家采用明亮女声，均由支持情绪指令的Qwen3-TTS 1.7B CustomVoice本地生成，不使用真人声音克隆。
+完整旁白文字以 `scripts/marketing-voice-script.json` 为准。四条宣传片与三条教程均使用Serena女声，每条一次整篇生成，保留语气上下文。整条统一响度及必要的整体语速调整，句间只在低能量静音处插入展示停顿；不逐句生成、逐句归一或逐句变调。原音、生成元数据与真实ASR对齐记录可追溯。
 
 游戏爱好者视频常驻小字“收入取决于实际成交 · 须完成资料核验”，押金镜头补充“须符合平台资料核验及交易规则”。不承诺必有订单、收益或无条件交易。
 
 玩家视频使用本次虚构服务的演示价格“¥12 / 小时”，常驻小字“演示价格，实际以服务详情为准”。不宣称全网最低价或平台所有服务均为该价格。
 
-运行方式：先完成截图与手机图合成，用 `frontend/node_modules/.bin/tsx scripts/generate-marketing-voice.ts` 生成逐镜头配音；再运行 `frontend/node_modules/.bin/tsx scripts/render-marketing-videos.ts` 烧录完整字幕，最后运行 `frontend/node_modules/.bin/tsx scripts/voice-marketing-videos.ts` 合流声音。脚本复用本机已装的Canvas、Playwright和编码工具，不增加依赖。可通过 `MARKETING_NODE_MODULES`、`MARKETING_FFMPEG`、`MARKETING_FFPROBE` 指定已有工具路径。
+当前声音管线：
 
-已有四条完整视频后，局部更新素材可使用 `MARKETING_VIDEO_IDS=03-game-enthusiast,04-player` 只重渲染指定视频；渲染结束先对无声中间成片做规格核验，随后需再次执行配音合流，避免静音中间文件覆盖最终有声视频。
+```sh
+frontend/node_modules/.bin/tsx scripts/generate-consistent-voice.ts
+frontend/node_modules/.bin/tsx scripts/align-consistent-voice.ts
+frontend/node_modules/.bin/tsx scripts/render-consistent-videos.ts --apply
+```
+
+同一整篇音源先独立ASR取得真实词边界，繁简、同值数字及近音误字保留可审计复核；缺字、乱序或无依据边界不进入成片。旧逐句脚本为历史制作工具。新渲染复用已验收画面，首次把原片和时间轴存入`.run/consistent-originals`，重跑需保留备份；全新检出可从`b386def`恢复该版原始画面与报告。
 
 交付目录为 `output/playwright/marketing-20261026/videos/`。每条视频由ffprobe验证H264、900帧、30fps、1080×1920与30秒，并从实际交付MP4解码提取0、3、8、15、24、29秒关键帧。报告保存为 `video-report.json`。这些验证不代表真实微信授权、支付、转账或收益验收。

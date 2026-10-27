@@ -1,227 +1,185 @@
 {
   "passed": true,
-  "duration_seconds": 30,
+  "method": "每条连续Serena整篇一次生成；统一resample、固定gain及可选整篇tempo处理后的连续PCM随后逐样本原序保留，仅在真实句间静音插零；未经逐句TTS、逐句gain或变调",
+  "single_generation_pass": true,
+  "voice": "Serena",
   "sample_rate": 48000,
-  "subtitles": "每条视频旁同名SRT，完整句子与七镜头同步",
-  "method": "真实音源固定增益统一音量，不变调、不挤压语速、不截话尾；AAC只编码一次，原H264视频码流copy合流。",
-  "checks": [
-    "全部28段有实际声音",
-    "每段完整放入镜头并保留句尾余量",
-    "PCM与实际MP4解码无削波",
-    "实际MP4含AAC音轨且每镜头有声",
-    "四条仍为900帧、30fps、1080×1920和30秒"
-  ],
+  "fps": 30,
+  "canonical_report": "consistent-voice-report.json",
   "results": [
     {
       "id": "01-platform-admin",
-      "probe": {
-        "programs": [],
-        "streams": [
-          {
-            "codec_name": "h264",
-            "codec_type": "video",
-            "width": 1080,
-            "height": 1920,
-            "avg_frame_rate": "30/1",
-            "duration": "30.000000",
-            "nb_frames": "900"
-          },
-          {
-            "codec_name": "aac",
-            "codec_type": "audio",
-            "sample_rate": "48000",
-            "channels": 1,
-            "avg_frame_rate": "0/0",
-            "duration": "29.994000",
-            "nb_frames": "1408"
-          }
-        ],
-        "format": {
-          "duration": "30.000000"
-        }
-      },
+      "kind": "ad",
+      "single_generation_pass": true,
       "voice": "Serena",
-      "segments": [
+      "source_audio_sha256": "0c47c733830b55b7b63556f04280b32bcd54df73d8a116ee2776ace60e895348",
+      "source_duration_seconds": 18.88,
+      "alignment_sha256": "b895a1dc3425be633f679596106a044b422ed4ca89827d10209d03acffff7490",
+      "global_gain_db": 8,
+      "global_gain_scope": "同一固定增益应用整条音源，所有句子相同",
+      "global_tempo_ratio": 1,
+      "sentence_gain_applied": false,
+      "sentence_tts_applied": false,
+      "pitch_shift_applied": false,
+      "samples_preserved_in_order": true,
+      "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+      "playback_rate": "广告轻运镜按句窗配时",
+      "frames": 900,
+      "duration_seconds": 30,
+      "spans": [
+        {
+          "source_start": 0,
+          "source_end": 82618,
+          "output_start": 0,
+          "output_end": 144000,
+          "inserted_samples": 61382,
+          "boundary_rms": 0.00041204852367546387
+        },
+        {
+          "source_start": 82618,
+          "source_end": 207881,
+          "output_start": 144000,
+          "output_end": 360000,
+          "inserted_samples": 90737,
+          "boundary_rms": 0.0003097383843142096
+        },
+        {
+          "source_start": 207881,
+          "source_end": 345693,
+          "output_start": 360000,
+          "output_end": 576000,
+          "inserted_samples": 78188,
+          "boundary_rms": 0.0003072130232598544
+        },
+        {
+          "source_start": 345693,
+          "source_end": 507839,
+          "output_start": 576000,
+          "output_end": 792000,
+          "inserted_samples": 53854,
+          "boundary_rms": 0.00025331045208526763
+        },
+        {
+          "source_start": 507839,
+          "source_end": 621965,
+          "output_start": 792000,
+          "output_end": 1008000,
+          "inserted_samples": 101874,
+          "boundary_rms": 0.007174771885848611
+        },
+        {
+          "source_start": 621965,
+          "source_end": 751835,
+          "output_start": 1008000,
+          "output_end": 1224000,
+          "inserted_samples": 86130,
+          "boundary_rms": 0.000336262192098871
+        },
+        {
+          "source_start": 751835,
+          "source_end": 906240,
+          "output_start": 1224000,
+          "output_end": 1440000,
+          "inserted_samples": 61595,
+          "boundary_rms": 0
+        }
+      ],
+      "cues": [
         {
           "index": 0,
           "text": "想做接单平台？",
-          "source": ".run/marketing-voice/01-platform-admin/0.wav",
-          "original_seconds": 1.52,
-          "trimmed_seconds": 1.49,
-          "slot_seconds": 3,
-          "start_seconds": 0.06,
-          "end_seconds": 1.55,
-          "gain_db": 7.370554132453938,
-          "levels": {
-            "seconds": 1.49,
-            "peak": 0.501068115234375,
-            "peak_dbfs": -6.002064641951009,
-            "active_rms": 0.09964302244210475,
-            "active_seconds": 1.4,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 1.45,
-            "longest_silence_seconds": 0.05,
-            "clipped_samples": 0
-          }
+          "start": 0,
+          "end": 1.46,
+          "coverage": 1
         },
         {
           "index": 1,
           "text": "订单待办，一屏看清。",
-          "source": ".run/marketing-voice/01-platform-admin/1.wav",
-          "original_seconds": 1.68,
-          "trimmed_seconds": 1.6400208333333333,
-          "slot_seconds": 4.5,
-          "start_seconds": 3.06,
-          "end_seconds": 4.700020833333333,
-          "gain_db": 2.359750074651536,
-          "levels": {
-            "seconds": 1.6400208333333333,
-            "peak": 0.61712646484375,
-            "peak_dbfs": -4.192516578140493,
-            "active_rms": 0.09967091343638776,
-            "active_seconds": 1.52,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 1.62,
-            "longest_silence_seconds": 0.05,
-            "clipped_samples": 0
-          }
+          "start": 3.2587916666666668,
+          "end": 5.398791666666667,
+          "coverage": 1
         },
         {
           "index": 2,
           "text": "用户资料和权限，分开管理。",
-          "source": ".run/marketing-voice/01-platform-admin/2.wav",
-          "original_seconds": 2.32,
-          "trimmed_seconds": 2.2800208333333334,
-          "slot_seconds": 4.5,
-          "start_seconds": 7.56,
-          "end_seconds": 9.840020833333334,
-          "gain_db": 4.166621598810442,
-          "levels": {
-            "seconds": 2.2800208333333334,
-            "peak": 0.6043701171875,
-            "peak_dbfs": -4.37394034600543,
-            "active_rms": 0.09893239093845002,
-            "active_seconds": 1.88,
-            "first_active_seconds": 0.04,
-            "last_active_seconds": 2.21,
-            "longest_silence_seconds": 0.29,
-            "clipped_samples": 0
-          }
+          "start": 7.709145833333333,
+          "end": 10.369145833333333,
+          "coverage": 1
         },
         {
           "index": 3,
           "text": "订单进度和售后，随时可查。",
-          "source": ".run/marketing-voice/01-platform-admin/3.wav",
-          "original_seconds": 2.8,
-          "trimmed_seconds": 2.7600208333333334,
-          "slot_seconds": 4.5,
-          "start_seconds": 12.06,
-          "end_seconds": 14.820020833333333,
-          "gain_db": 5.7942599423545165,
-          "levels": {
-            "seconds": 2.7600208333333334,
-            "peak": 0.69122314453125,
-            "peak_dbfs": -3.207634572217345,
-            "active_rms": 0.0966778182788064,
-            "active_seconds": 2.29,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.75,
-            "longest_silence_seconds": 0.41,
-            "clipped_samples": 0
-          }
+          "start": 10.369145833333333,
+          "end": 15.1180625,
+          "coverage": 0.9091
         },
         {
           "index": 4,
           "text": "轮播和公告，自己掌控。",
-          "source": ".run/marketing-voice/01-platform-admin/4.wav",
-          "original_seconds": 2.16,
-          "trimmed_seconds": 2.1200208333333332,
-          "slot_seconds": 4.5,
-          "start_seconds": 16.56,
-          "end_seconds": 18.680020833333334,
-          "gain_db": 1.9263894438129996,
-          "levels": {
-            "seconds": 2.1200208333333332,
-            "peak": 0.71417236328125,
-            "peak_dbfs": -2.9239391989857455,
-            "active_rms": 0.09873154616453465,
-            "active_seconds": 1.62,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.12,
-            "longest_silence_seconds": 0.44,
-            "clipped_samples": 0
-          }
+          "start": 16.760020833333332,
+          "end": 18.860020833333333,
+          "coverage": 0.8889
         },
         {
           "index": 5,
           "text": "文章发布状态，集中管理。",
-          "source": ".run/marketing-voice/01-platform-admin/5.wav",
-          "original_seconds": 3.52,
-          "trimmed_seconds": 3.480020833333333,
-          "slot_seconds": 4.5,
-          "start_seconds": 21.06,
-          "end_seconds": 24.540020833333333,
-          "gain_db": 6.464884157756103,
-          "levels": {
-            "seconds": 3.480020833333333,
-            "peak": 0.44451904296875,
-            "peak_dbfs": -7.0421925868293265,
-            "active_rms": 0.09907213482788116,
-            "active_seconds": 3.24,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 3.45,
-            "longest_silence_seconds": 0.11,
-            "clipped_samples": 0
-          }
+          "start": 18.860020833333333,
+          "end": 23.702395833333334,
+          "coverage": 1
         },
         {
           "index": 6,
           "text": "开机电竞源码，搭建自己的平台。",
-          "source": ".run/marketing-voice/01-platform-admin/6.wav",
-          "original_seconds": 2.72,
-          "trimmed_seconds": 2.6800208333333333,
-          "slot_seconds": 4.5,
-          "start_seconds": 25.56,
-          "end_seconds": 28.240020833333332,
-          "gain_db": 5.592993033152133,
-          "levels": {
-            "seconds": 2.6800208333333333,
-            "peak": 0.794342041015625,
-            "peak_dbfs": -1.9998490310736532,
-            "active_rms": 0.07665272016244186,
-            "active_seconds": 2.31,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.63,
-            "longest_silence_seconds": 0.27,
-            "clipped_samples": 0
-          }
+          "start": 23.702395833333334,
+          "end": 28.636770833333333,
+          "coverage": 0.9231
         }
       ],
-      "pcm": {
-        "seconds": 30,
-        "peak": 0.794342041015625,
-        "peak_dbfs": -1.9998490310736532,
-        "active_rms": 0.09546911985853362,
-        "active_seconds": 14.26,
-        "first_active_seconds": 0.11,
-        "last_active_seconds": 28.19,
-        "longest_silence_seconds": 2.92,
-        "clipped_samples": 0
+      "generation_metadata": {
+        "sample_rate": 24000,
+        "samples": 453120,
+        "duration_seconds": 18.88,
+        "peak": 0.269775390625,
+        "rms": 0.028795305639505386,
+        "clipped_samples": 0,
+        "overall_safety_gain": 1,
+        "audio_sha256": "0c47c733830b55b7b63556f04280b32bcd54df73d8a116ee2776ace60e895348",
+        "id": "01-platform-admin",
+        "signature": "0cf90df58ab480db24af4a4f52eaeb5737a31df108b0bd27c091dbba5373e111",
+        "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+        "license": "Apache-2.0",
+        "source": "scripts/marketing-voice-script.json",
+        "voice": "Serena",
+        "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+        "text": "想做接单平台？订单待办，一屏看清。用户资料和权限，分开管理。订单进度和售后，随时可查。轮播和公告，自己掌控。文章发布状态，集中管理。开机电竞源码，搭建自己的平台。",
+        "segments": [
+          "想做接单平台？",
+          "订单待办，一屏看清。",
+          "用户资料和权限，分开管理。",
+          "订单进度和售后，随时可查。",
+          "轮播和公告，自己掌控。",
+          "文章发布状态，集中管理。",
+          "开机电竞源码，搭建自己的平台。"
+        ],
+        "sampling_parameters": {
+          "temperature": 0.65,
+          "top_p": 0.9,
+          "top_k": 50,
+          "repetition_penalty": 1.05,
+          "max_tokens": 2048,
+          "seed": 20261026
+        },
+        "token_limit": 512,
+        "seed_scope": "one_fixed_seed_per_complete_article",
+        "api_calls_per_video": 1,
+        "non_streaming_result_count": 1,
+        "token_count": 237,
+        "natural_eos_before_limit": true,
+        "generation_seconds": 13.07587570801843,
+        "model_peak_memory_gb": 7.880539349,
+        "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。",
+        "seed_scope_note": "本样本是原工作进程首篇，生成前唯一一次固定seed初始化与篇前固定同一个seed等价；WAV未重新处理。"
       },
-      "decoded": {
-        "seconds": 29.993333333333332,
-        "peak": 0.7930908203125,
-        "peak_dbfs": -2.013541537327737,
-        "active_rms": 0.09542894922926468,
-        "active_seconds": 14.26,
-        "first_active_seconds": 0.11,
-        "last_active_seconds": 28.19,
-        "longest_silence_seconds": 2.92,
-        "clipped_samples": 0
-      }
-    },
-    {
-      "id": "02-club-admin",
       "probe": {
         "programs": [],
         "streams": [
@@ -231,205 +189,216 @@
             "width": 1080,
             "height": 1920,
             "avg_frame_rate": "30/1",
-            "duration": "30.000000",
             "nb_frames": "900"
           },
           {
             "codec_name": "aac",
             "codec_type": "audio",
             "sample_rate": "48000",
-            "channels": 1,
             "avg_frame_rate": "0/0",
-            "duration": "29.994000",
             "nb_frames": "1408"
           }
         ],
         "format": {
           "duration": "30.000000"
-        }
+        },
+        "max_volume_dbfs": -3.4
       },
+      "normalized_pcm_sha256": "afef7290b9d0f5ca40da3705ab41276d4466a9e32a7b1d91a3caef02b1309696",
+      "narration_sha256": "68a4a388082fa27ba2991ef27dd2f4bda46b416d35765f86e225de11312876e8",
+      "video_sha256": "15e20dd0698ac2ee33c2bf204366eebdc5b24014f629c26dde8c1153173add41",
+      "original_video_sha256": "deef8b545111f4a9939e41d7c6102f5efbe5d8e72b8e20a7819ab11d5d1782b0",
+      "audience": "平台管理员",
+      "hook": "想做自己的游戏接单平台？",
+      "seconds": 30,
+      "file": "videos/01-platform-admin.mp4",
+      "srt": "videos/01-platform-admin.srt",
+      "narration_audio": "videos/audio/01-platform-admin/narration.wav",
+      "metadata_file": "videos/audio/01-platform-admin/metadata.json",
+      "previews": [
+        "videos/qa/01-platform-admin/00s.png",
+        "videos/qa/01-platform-admin/03s.png",
+        "videos/qa/01-platform-admin/08s.png",
+        "videos/qa/01-platform-admin/15s.png",
+        "videos/qa/01-platform-admin/24s.png",
+        "videos/qa/01-platform-admin/29s.png"
+      ]
+    },
+    {
+      "id": "02-club-admin",
+      "kind": "ad",
+      "single_generation_pass": true,
       "voice": "Serena",
-      "segments": [
+      "source_audio_sha256": "5fc052b9792c250567918d80a6788d9fe1a2e829f09198649cbedf92f2a8de51",
+      "source_duration_seconds": 34.88,
+      "alignment_sha256": "43cf37c5244bee3cab7b6d519ffcbd378e225ce857dd13e3af926a3d767feeb8",
+      "global_gain_db": 1.2000000000000002,
+      "global_gain_scope": "同一固定增益应用整条音源，所有句子相同",
+      "global_tempo_ratio": 1.1823728813559322,
+      "sentence_gain_applied": false,
+      "sentence_tts_applied": false,
+      "pitch_shift_applied": false,
+      "samples_preserved_in_order": true,
+      "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+      "playback_rate": "广告轻运镜按句窗配时",
+      "frames": 900,
+      "duration_seconds": 30,
+      "spans": [
+        {
+          "source_start": 0,
+          "source_end": 206231,
+          "output_start": 0,
+          "output_end": 206400,
+          "inserted_samples": 169,
+          "boundary_rms": 0.00019809509012718094
+        },
+        {
+          "source_start": 206231,
+          "source_end": 407212,
+          "output_start": 206400,
+          "output_end": 411200,
+          "inserted_samples": 3819,
+          "boundary_rms": 0.00010436758889748069
+        },
+        {
+          "source_start": 407212,
+          "source_end": 609342,
+          "output_start": 411200,
+          "output_end": 616000,
+          "inserted_samples": 2670,
+          "boundary_rms": 0.00016950882479166473
+        },
+        {
+          "source_start": 609342,
+          "source_end": 810385,
+          "output_start": 616000,
+          "output_end": 820800,
+          "inserted_samples": 3757,
+          "boundary_rms": 0.00029324412649331817
+        },
+        {
+          "source_start": 810385,
+          "source_end": 1021957,
+          "output_start": 820800,
+          "output_end": 1033600,
+          "inserted_samples": 1228,
+          "boundary_rms": 0.000253739026829509
+        },
+        {
+          "source_start": 1021957,
+          "source_end": 1219420,
+          "output_start": 1033600,
+          "output_end": 1236800,
+          "inserted_samples": 5737,
+          "boundary_rms": 0.00683331197886079
+        },
+        {
+          "source_start": 1219420,
+          "source_end": 1416143,
+          "output_start": 1236800,
+          "output_end": 1440000,
+          "inserted_samples": 6477,
+          "boundary_rms": 0
+        }
+      ],
+      "cues": [
         {
           "index": 0,
           "text": "团队接单，怎么省心？",
-          "source": ".run/marketing-voice/02-club-admin/0.wav",
-          "original_seconds": 2.64,
-          "trimmed_seconds": 2.61,
-          "slot_seconds": 3,
-          "start_seconds": 0.06,
-          "end_seconds": 2.67,
-          "gain_db": 4.78865086777123,
-          "levels": {
-            "seconds": 2.61,
-            "peak": 0.575927734375,
-            "peak_dbfs": -4.792640141643577,
-            "active_rms": 0.0983686961911727,
-            "active_seconds": 2.16,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.59,
-            "longest_silence_seconds": 0.37,
-            "clipped_samples": 0
-          }
+          "start": 0.76125,
+          "end": 3.9585416666666666,
+          "coverage": 1
         },
         {
           "index": 1,
           "text": "专属主页，展示你的团队。",
-          "source": ".run/marketing-voice/02-club-admin/1.wav",
-          "original_seconds": 2.88,
-          "trimmed_seconds": 2.8400208333333334,
-          "slot_seconds": 4.5,
-          "start_seconds": 3.06,
-          "end_seconds": 5.9000208333333335,
-          "gain_db": 6.508778219051416,
-          "levels": {
-            "seconds": 2.8400208333333334,
-            "peak": 0.794342041015625,
-            "peak_dbfs": -1.9998490310736532,
-            "active_rms": 0.09699801390137287,
-            "active_seconds": 2.29,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.8,
-            "longest_silence_seconds": 0.45,
-            "clipped_samples": 0
-          }
+          "start": 4.638729166666667,
+          "end": 8.2081875,
+          "coverage": 0.9
         },
         {
           "index": 2,
           "text": "成员申请和团队订单，集中管理。",
-          "source": ".run/marketing-voice/02-club-admin/2.wav",
-          "original_seconds": 3.44,
-          "trimmed_seconds": 3.41,
-          "slot_seconds": 4.5,
-          "start_seconds": 7.56,
-          "end_seconds": 10.97,
-          "gain_db": 6.474665572373662,
-          "levels": {
-            "seconds": 3.41,
-            "peak": 0.635589599609375,
-            "peak_dbfs": -3.936464358595023,
-            "active_rms": 0.09684122313091476,
-            "active_seconds": 2.89,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 3.41,
-            "longest_silence_seconds": 0.34,
-            "clipped_samples": 0
-          }
+          "start": 8.846,
+          "end": 12.263208333333333,
+          "coverage": 1
         },
         {
           "index": 3,
           "text": "佣金、押金分开记。",
-          "source": ".run/marketing-voice/02-club-admin/3.wav",
-          "original_seconds": 2.32,
-          "trimmed_seconds": 2.29,
-          "slot_seconds": 4.5,
-          "start_seconds": 12.06,
-          "end_seconds": 14.35,
-          "gain_db": 5.82673991483468,
-          "levels": {
-            "seconds": 2.29,
-            "peak": 0.59454345703125,
-            "peak_dbfs": -4.516327919001456,
-            "active_rms": 0.09853041955780077,
-            "active_seconds": 1.71,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.21,
-            "longest_silence_seconds": 0.45,
-            "clipped_samples": 0
-          }
+          "start": 13.350770833333334,
+          "end": 16.581875,
+          "coverage": 0.7143
         },
         {
           "index": 4,
           "text": "订单独立聊天，团队一起协作。",
-          "source": ".run/marketing-voice/02-club-admin/4.wav",
-          "original_seconds": 4.08,
-          "trimmed_seconds": 4.040020833333333,
-          "slot_seconds": 4.5,
-          "start_seconds": 16.56,
-          "end_seconds": 20.600020833333332,
-          "gain_db": 4.252830463927928,
-          "levels": {
-            "seconds": 4.040020833333333,
-            "peak": 0.5908203125,
-            "peak_dbfs": -4.570891639746862,
-            "active_rms": 0.09908853124243963,
-            "active_seconds": 3.3,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 3.98,
-            "longest_silence_seconds": 0.54,
-            "clipped_samples": 0
-          }
+          "start": 17.539833333333334,
+          "end": 21.126208333333334,
+          "coverage": 1
         },
         {
           "index": 5,
           "text": "接单到履约，订单进度随时查看。",
-          "source": ".run/marketing-voice/02-club-admin/5.wav",
-          "original_seconds": 4.32,
-          "trimmed_seconds": 4.280020833333333,
-          "slot_seconds": 4.5,
-          "start_seconds": 21.06,
-          "end_seconds": 25.340020833333334,
-          "gain_db": 6.951069679057245,
-          "levels": {
-            "seconds": 4.280020833333333,
-            "peak": 0.65057373046875,
-            "peak_dbfs": -3.7340695417349274,
-            "active_rms": 0.09763888713648977,
-            "active_seconds": 3.42,
-            "first_active_seconds": 0.04,
-            "last_active_seconds": 4.28,
-            "longest_silence_seconds": 0.71,
-            "clipped_samples": 0
-          }
+          "start": 21.91304166666667,
+          "end": 25.600916666666667,
+          "coverage": 0.8462
         },
         {
           "index": 6,
           "text": "俱乐部入驻，也能独立部署。",
-          "source": ".run/marketing-voice/02-club-admin/6.wav",
-          "original_seconds": 2.08,
-          "trimmed_seconds": 2.05,
-          "slot_seconds": 4.5,
-          "start_seconds": 25.56,
-          "end_seconds": 27.61,
-          "gain_db": 6.1492639064318375,
-          "levels": {
-            "seconds": 2.05,
-            "peak": 0.549407958984375,
-            "peak_dbfs": -5.2021010694791805,
-            "active_rms": 0.09819285454396733,
-            "active_seconds": 1.95,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2,
-            "longest_silence_seconds": 0.05,
-            "clipped_samples": 0
-          }
+          "start": 25.600916666666667,
+          "end": 29.746645833333332,
+          "coverage": 0.8182
         }
       ],
-      "pcm": {
-        "seconds": 30,
-        "peak": 0.794342041015625,
-        "peak_dbfs": -1.9998490310736532,
-        "active_rms": 0.09793515226686145,
-        "active_seconds": 17.72,
-        "first_active_seconds": 0.11,
-        "last_active_seconds": 27.56,
-        "longest_silence_seconds": 2.44,
-        "clipped_samples": 0
+      "generation_metadata": {
+        "sample_rate": 24000,
+        "samples": 837120,
+        "duration_seconds": 34.88,
+        "peak": 0.615264892578125,
+        "rms": 0.04105115309357643,
+        "clipped_samples": 0,
+        "overall_safety_gain": 1,
+        "audio_sha256": "5fc052b9792c250567918d80a6788d9fe1a2e829f09198649cbedf92f2a8de51",
+        "id": "02-club-admin",
+        "text": "团队接单，怎么省心？专属主页，展示你的团队。成员申请和团队订单，集中管理。佣金、押金分开记。订单独立聊天，团队一起协作。接单到履约，订单进度随时查看。俱乐部入驻，也能独立部署。",
+        "voice": "Serena",
+        "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+        "sampling_parameters": {
+          "temperature": 0.65,
+          "top_p": 0.9,
+          "top_k": 50,
+          "repetition_penalty": 1.05,
+          "max_tokens": 2048,
+          "seed": 20261026
+        },
+        "token_limit": 512,
+        "token_count": 436,
+        "generation_seconds": 22.001770208007656,
+        "api_calls_per_video": 1,
+        "signature": "7fa69bcc495eada9429d73527728a20ef2964637f62685062c9dedd782b51985",
+        "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+        "license": "Apache-2.0",
+        "source": "scripts/marketing-voice-script.json",
+        "segments": [
+          "团队接单，怎么省心？",
+          "专属主页，展示你的团队。",
+          "成员申请和团队订单，集中管理。",
+          "佣金、押金分开记。",
+          "订单独立聊天，团队一起协作。",
+          "接单到履约，订单进度随时查看。",
+          "俱乐部入驻，也能独立部署。"
+        ],
+        "seed_scope": "one_fixed_seed_per_complete_article",
+        "natural_eos_before_limit": true,
+        "non_streaming_result_count": 1,
+        "model_peak_memory_gb": null,
+        "acceptance_note": "自然EOS；原34.5秒内部阈值放宽为36秒后，根代理明确接纳34.88秒整篇原件。WAV逐字节未变，不继承失败交付标记。",
+        "needs_whole_utterance_atempo": true,
+        "suggested_whole_atempo": 1.17,
+        "postprocess": "仅生成时统一必要降峰与PCM量化；原始时序保留，未裁词、未变速、未变调。最终广告可整篇保音调配时，不能逐句处理。"
       },
-      "decoded": {
-        "seconds": 29.993333333333332,
-        "peak": 0.79449462890625,
-        "peak_dbfs": -1.9981806889372475,
-        "active_rms": 0.09786607476102084,
-        "active_seconds": 17.72,
-        "first_active_seconds": 0.11,
-        "last_active_seconds": 27.56,
-        "longest_silence_seconds": 2.433333333333333,
-        "clipped_samples": 0
-      }
-    },
-    {
-      "id": "03-game-enthusiast",
       "probe": {
         "programs": [],
         "streams": [
@@ -439,205 +408,218 @@
             "width": 1080,
             "height": 1920,
             "avg_frame_rate": "30/1",
-            "duration": "30.000000",
             "nb_frames": "900"
           },
           {
             "codec_name": "aac",
             "codec_type": "audio",
             "sample_rate": "48000",
-            "channels": 1,
             "avg_frame_rate": "0/0",
-            "duration": "29.994000",
             "nb_frames": "1408"
           }
         ],
         "format": {
           "duration": "30.000000"
-        }
+        },
+        "max_volume_dbfs": -3.1
       },
+      "normalized_pcm_sha256": "00af4560fab260fd07d1babd4392ad54a8622bbc1647f9f278ee68ba6c8000ae",
+      "narration_sha256": "18e157f3dbc00e8e3a38bb04843066bc7e6b53625fdd68d948b5bba9eb6bda4d",
+      "video_sha256": "adfb8d85228036b87a11a5fa80805a2398df2879dea6c4dff7e5ddc6ca1f7817",
+      "original_video_sha256": "545e5afc51aae5a97bd4b7e8024db2744f0e8c334d5f25f7017d03997553aa85",
+      "audience": "俱乐部管理员",
+      "hook": "俱乐部接单，怎么管得更省心？",
+      "seconds": 30,
+      "file": "videos/02-club-admin.mp4",
+      "srt": "videos/02-club-admin.srt",
+      "narration_audio": "videos/audio/02-club-admin/narration.wav",
+      "metadata_file": "videos/audio/02-club-admin/metadata.json",
+      "previews": [
+        "videos/qa/02-club-admin/00s.png",
+        "videos/qa/02-club-admin/03s.png",
+        "videos/qa/02-club-admin/08s.png",
+        "videos/qa/02-club-admin/15s.png",
+        "videos/qa/02-club-admin/24s.png",
+        "videos/qa/02-club-admin/29s.png"
+      ]
+    },
+    {
+      "id": "03-game-enthusiast",
+      "kind": "ad",
+      "single_generation_pass": true,
       "voice": "Serena",
-      "segments": [
+      "source_audio_sha256": "115c0de3e6e82d5388e9db7b285cbdfa7cb2a6e42206ca2f3ff75922570850c6",
+      "source_duration_seconds": 36.24,
+      "alignment_sha256": "7dc7b2c4c4d0d321c8721690c97b68b20944444e09c8ec1483057b16a4156f76",
+      "global_gain_db": 5.4,
+      "global_gain_scope": "同一固定增益应用整条音源，所有句子相同",
+      "global_tempo_ratio": 1.2284745762711866,
+      "sentence_gain_applied": false,
+      "sentence_tts_applied": false,
+      "pitch_shift_applied": false,
+      "samples_preserved_in_order": true,
+      "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+      "playback_rate": "广告轻运镜按句窗配时",
+      "frames": 900,
+      "duration_seconds": 30,
+      "spans": [
+        {
+          "source_start": 0,
+          "source_end": 104980,
+          "output_start": 0,
+          "output_end": 116800,
+          "inserted_samples": 11820,
+          "boundary_rms": 0.007754373380200877
+        },
+        {
+          "source_start": 104980,
+          "source_end": 326180,
+          "output_start": 116800,
+          "output_end": 339200,
+          "inserted_samples": 1200,
+          "boundary_rms": 0.0007546752933965611
+        },
+        {
+          "source_start": 326180,
+          "source_end": 525824,
+          "output_start": 339200,
+          "output_end": 539200,
+          "inserted_samples": 356,
+          "boundary_rms": 0.004474718700776207
+        },
+        {
+          "source_start": 525824,
+          "source_end": 703792,
+          "output_start": 539200,
+          "output_end": 726400,
+          "inserted_samples": 9232,
+          "boundary_rms": 0.007953213406390273
+        },
+        {
+          "source_start": 703792,
+          "source_end": 925906,
+          "output_start": 726400,
+          "output_end": 948800,
+          "inserted_samples": 286,
+          "boundary_rms": 0.003999824352508823
+        },
+        {
+          "source_start": 925906,
+          "source_end": 1147452,
+          "output_start": 948800,
+          "output_end": 1171200,
+          "inserted_samples": 854,
+          "boundary_rms": 0.007547255672431292
+        },
+        {
+          "source_start": 1147452,
+          "source_end": 1415650,
+          "output_start": 1171200,
+          "output_end": 1440000,
+          "inserted_samples": 602,
+          "boundary_rms": 0
+        }
+      ],
+      "cues": [
         {
           "index": 0,
           "text": "游戏打得好，也能接单？",
-          "source": ".run/marketing-voice/03-game-enthusiast/0.wav",
-          "original_seconds": 2.772291666666667,
-          "trimmed_seconds": 2.7623125,
-          "slot_seconds": 3,
-          "start_seconds": 0.06,
-          "end_seconds": 2.8223125,
-          "gain_db": 4.526067761845837,
-          "levels": {
-            "seconds": 2.7623125,
-            "peak": 0.529693603515625,
-            "peak_dbfs": -5.519505429890676,
-            "active_rms": 0.09928799897388774,
-            "active_seconds": 2.11,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.71,
-            "longest_silence_seconds": 0.29,
-            "clipped_samples": 0
-          }
+          "start": 0,
+          "end": 2.1159166666666667,
+          "coverage": 0.6667
         },
         {
           "index": 1,
           "text": "接单无需平台押金，完善资料就出发！",
-          "source": ".run/marketing-voice/03-game-enthusiast/1.wav",
-          "original_seconds": 4.16,
-          "trimmed_seconds": 4.13,
-          "slot_seconds": 4.5,
-          "start_seconds": 3.06,
-          "end_seconds": 7.19,
-          "gain_db": 5.447599206540481,
-          "levels": {
-            "seconds": 4.13,
-            "peak": 0.73638916015625,
-            "peak_dbfs": -2.6578522610186415,
-            "active_rms": 0.0966875582434455,
-            "active_seconds": 3.37,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 4.13,
-            "longest_silence_seconds": 0.44,
-            "clipped_samples": 0
-          }
+          "start": 2.1159166666666667,
+          "end": 6.789333333333333,
+          "coverage": 0.9333
         },
         {
           "index": 2,
           "text": "把擅长的游戏，整理成你的服务。",
-          "source": ".run/marketing-voice/03-game-enthusiast/2.wav",
-          "original_seconds": 3.6,
-          "trimmed_seconds": 3.57,
-          "slot_seconds": 4.5,
-          "start_seconds": 7.56,
-          "end_seconds": 11.13,
-          "gain_db": 6.783540167818391,
-          "levels": {
-            "seconds": 3.57,
-            "peak": 0.496917724609375,
-            "peak_dbfs": -6.074310241673816,
-            "active_rms": 0.09923248059125707,
-            "active_seconds": 3.26,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 3.52,
-            "longest_silence_seconds": 0.21,
-            "clipped_samples": 0
-          }
+          "start": 7.318895833333333,
+          "end": 11.225229166666667,
+          "coverage": 1
         },
         {
           "index": 3,
           "text": "接到订单，按约定认真履约。",
-          "source": ".run/marketing-voice/03-game-enthusiast/3.wav",
-          "original_seconds": 2.56,
-          "trimmed_seconds": 2.520020833333333,
-          "slot_seconds": 4.5,
-          "start_seconds": 12.06,
-          "end_seconds": 14.580020833333334,
-          "gain_db": 3.99924676210302,
-          "levels": {
-            "seconds": 2.520020833333333,
-            "peak": 0.673065185546875,
-            "peak_dbfs": -3.4388574569058354,
-            "active_rms": 0.09915027662724876,
-            "active_seconds": 2.36,
-            "first_active_seconds": 0.04,
-            "last_active_seconds": 2.52,
-            "longest_silence_seconds": 0.11,
-            "clipped_samples": 0
-          }
+          "start": 11.225229166666667,
+          "end": 15.135979166666667,
+          "coverage": 0.7273
         },
         {
           "index": 4,
           "text": "需求在订单里聊清楚，沟通有记录。",
-          "source": ".run/marketing-voice/03-game-enthusiast/4.wav",
-          "original_seconds": 3.68,
-          "trimmed_seconds": 3.65,
-          "slot_seconds": 4.5,
-          "start_seconds": 16.56,
-          "end_seconds": 20.21,
-          "gain_db": 4.7906678303759875,
-          "levels": {
-            "seconds": 3.65,
-            "peak": 0.54296875,
-            "peak_dbfs": -5.304503301155089,
-            "active_rms": 0.09871669510553117,
-            "active_seconds": 3.13,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 3.64,
-            "longest_silence_seconds": 0.39,
-            "clipped_samples": 0
-          }
+          "start": 15.135979166666667,
+          "end": 19.758458333333333,
+          "coverage": 0.8571
         },
         {
           "index": 5,
           "text": "收入按规则结算，资金状态看得清。",
-          "source": ".run/marketing-voice/03-game-enthusiast/5.wav",
-          "original_seconds": 4.24275,
-          "trimmed_seconds": 4.24275,
-          "slot_seconds": 4.5,
-          "start_seconds": 21.06,
-          "end_seconds": 25.30275,
-          "gain_db": 5.956377765203486,
-          "levels": {
-            "seconds": 4.24275,
-            "peak": 0.6728515625,
-            "peak_dbfs": -3.4416146946437225,
-            "active_rms": 0.09859554330324453,
-            "active_seconds": 3.22,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 4.21,
-            "longest_silence_seconds": 0.54,
-            "clipped_samples": 0
-          }
+          "start": 19.758458333333333,
+          "end": 24.321770833333332,
+          "coverage": 0.9286
         },
         {
           "index": 6,
           "text": "把爱好变成收入，从一单服务开始！",
-          "source": ".run/marketing-voice/03-game-enthusiast/6.wav",
-          "original_seconds": 4.225083333333333,
-          "trimmed_seconds": 4.2050833333333335,
-          "slot_seconds": 4.5,
-          "start_seconds": 25.56,
-          "end_seconds": 29.765083333333333,
-          "gain_db": 8.627531877571148,
-          "levels": {
-            "seconds": 4.2050833333333335,
-            "peak": 0.509796142578125,
-            "peak_dbfs": -5.852069099711357,
-            "active_rms": 0.09776366527363815,
-            "active_seconds": 3.83,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 4.16,
-            "longest_silence_seconds": 0.26,
-            "clipped_samples": 0
-          }
+          "start": 24.321770833333332,
+          "end": 29.580541666666665,
+          "coverage": 0.8571
         }
       ],
-      "pcm": {
-        "seconds": 30,
-        "peak": 0.73638916015625,
-        "peak_dbfs": -2.6578522610186415,
-        "active_rms": 0.09839332839334305,
-        "active_seconds": 21.28,
-        "first_active_seconds": 0.11,
-        "last_active_seconds": 29.72,
-        "longest_silence_seconds": 2.03,
-        "clipped_samples": 0
+      "generation_metadata": {
+        "sample_rate": 24000,
+        "samples": 869760,
+        "duration_seconds": 36.24,
+        "peak": 0.38226318359375,
+        "rms": 0.0472819060087204,
+        "clipped_samples": 0,
+        "overall_safety_gain": 1,
+        "audio_sha256": "115c0de3e6e82d5388e9db7b285cbdfa7cb2a6e42206ca2f3ff75922570850c6",
+        "id": "03-game-enthusiast",
+        "text": "游戏打得好，也能接单？接单无需平台押金，完善资料就出发！把擅长的游戏，整理成你的服务。接到订单，按约定认真履约。需求在订单里聊清楚，沟通有记录。收入按规则结算，资金状态看得清。把爱好变成收入，从一单服务开始！",
+        "actual_generation_text": "游戏打得好，也能接单。接单无需平台押金，完善资料就出发。把擅长的游戏，整理成你的服务。接到订单，按约定认真履约。需求在订单里聊清楚，沟通有记录。收入按规则结算，资金状态看得清。把爱好变成收入，从一单服务开始。",
+        "punctuation_normalized": true,
+        "voice": "Serena",
+        "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。正常语速平实清晰地讲解，句尾干脆。",
+        "sampling_parameters": {
+          "temperature": 0.8,
+          "top_p": 0.9,
+          "top_k": 50,
+          "repetition_penalty": 1.08,
+          "max_tokens": 2048,
+          "seed": 20261027
+        },
+        "token_limit": 1024,
+        "token_count": 453,
+        "generation_seconds": 22.200174166006036,
+        "api_calls_per_video": 1,
+        "signature": "054defd185e4b73d19f80a5dd84ef234beedc41f091ee1465c26f1d2f7393d1c",
+        "source": "scripts/marketing-voice-script.json",
+        "segments": [
+          "游戏打得好，也能接单？",
+          "接单无需平台押金，完善资料就出发！",
+          "把擅长的游戏，整理成你的服务。",
+          "接到订单，按约定认真履约。",
+          "需求在订单里聊清楚，沟通有记录。",
+          "收入按规则结算，资金状态看得清。",
+          "把爱好变成收入，从一单服务开始！"
+        ],
+        "seed_scope": "one_fixed_seed_per_complete_article",
+        "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+        "license": "Apache-2.0",
+        "natural_eos_before_limit": true,
+        "non_streaming_result_count": 1,
+        "model_peak_memory_gb": null,
+        "acceptance_note": "根代理批准36.24秒整篇源以不超过1.25的整体atempo配30秒；自然EOS且全文无遗漏，3句近音中本条2句显式复核，原字面覆盖率保留。",
+        "needs_whole_utterance_atempo": true,
+        "suggested_whole_atempo": 1.23,
+        "postprocess": "仅生成时整体安全降峰与PCM量化，原始完整时序保留；本WAV未裁词、未变速、未变调。"
       },
-      "decoded": {
-        "seconds": 29.993333333333332,
-        "peak": 0.736541748046875,
-        "peak_dbfs": -2.656052636100142,
-        "active_rms": 0.0983227008407736,
-        "active_seconds": 21.28,
-        "first_active_seconds": 0.11,
-        "last_active_seconds": 29.72,
-        "longest_silence_seconds": 2.03,
-        "clipped_samples": 0
-      }
-    },
-    {
-      "id": "04-player",
       "probe": {
         "programs": [],
         "streams": [
@@ -647,202 +629,256 @@
             "width": 1080,
             "height": 1920,
             "avg_frame_rate": "30/1",
-            "duration": "30.000000",
             "nb_frames": "900"
           },
           {
             "codec_name": "aac",
             "codec_type": "audio",
             "sample_rate": "48000",
-            "channels": 1,
             "avg_frame_rate": "0/0",
-            "duration": "29.994000",
             "nb_frames": "1408"
           }
         ],
         "format": {
           "duration": "30.000000"
-        }
+        },
+        "max_volume_dbfs": -2.8
       },
-      "voice": "Vivian",
-      "segments": [
+      "normalized_pcm_sha256": "2c4c441917a7e25acd61d138a1544db37440cbabfdc502aa5df0736b77bc4ba1",
+      "narration_sha256": "6a33f96748cb76d49065e81315f17d07bc2a7fa7f2b8801520be480476cb959f",
+      "video_sha256": "06a18a76dcf520c5ea545d90d39f2ece00d3f6708a4d82586c1e383859f76621",
+      "original_video_sha256": "4bb2eec67716fff62b9e7bd1042c1011e5f283ea0a91cf2143878166db30a787",
+      "audience": "游戏爱好者",
+      "hook": "游戏打得好，也能接单？",
+      "seconds": 30,
+      "file": "videos/03-game-enthusiast.mp4",
+      "srt": "videos/03-game-enthusiast.srt",
+      "narration_audio": "videos/audio/03-game-enthusiast/narration.wav",
+      "metadata_file": "videos/audio/03-game-enthusiast/metadata.json",
+      "previews": [
+        "videos/qa/03-game-enthusiast/00s.png",
+        "videos/qa/03-game-enthusiast/03s.png",
+        "videos/qa/03-game-enthusiast/08s.png",
+        "videos/qa/03-game-enthusiast/15s.png",
+        "videos/qa/03-game-enthusiast/24s.png",
+        "videos/qa/03-game-enthusiast/29s.png"
+      ]
+    },
+    {
+      "id": "04-player",
+      "kind": "ad",
+      "single_generation_pass": true,
+      "voice": "Serena",
+      "source_audio_sha256": "4356147b3db3c4463bbecf45024d96a14479dc970f09a41c9870a02f0d7d5406",
+      "source_duration_seconds": 21.12,
+      "alignment_sha256": "b1329b148588d495461c9fe8d89e23618e854c5788228526d06444a8cd512fc8",
+      "global_gain_db": 6.800000000000001,
+      "global_gain_scope": "同一固定增益应用整条音源，所有句子相同",
+      "global_tempo_ratio": 1,
+      "sentence_gain_applied": false,
+      "sentence_tts_applied": false,
+      "pitch_shift_applied": false,
+      "samples_preserved_in_order": true,
+      "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+      "playback_rate": "广告轻运镜按句窗配时",
+      "frames": 900,
+      "duration_seconds": 30,
+      "spans": [
+        {
+          "source_start": 0,
+          "source_end": 165570,
+          "output_start": 0,
+          "output_end": 166400,
+          "inserted_samples": 830,
+          "boundary_rms": 0.00010863964919810543
+        },
+        {
+          "source_start": 165570,
+          "source_end": 359035,
+          "output_start": 166400,
+          "output_end": 379200,
+          "inserted_samples": 19335,
+          "boundary_rms": 0.0006756430867801936
+        },
+        {
+          "source_start": 359035,
+          "source_end": 495873,
+          "output_start": 379200,
+          "output_end": 592000,
+          "inserted_samples": 75962,
+          "boundary_rms": 0.00015984142964289524
+        },
+        {
+          "source_start": 495873,
+          "source_end": 663834,
+          "output_start": 592000,
+          "output_end": 804800,
+          "inserted_samples": 44839,
+          "boundary_rms": 0.0001488351285426324
+        },
+        {
+          "source_start": 663834,
+          "source_end": 755037,
+          "output_start": 804800,
+          "output_end": 1017600,
+          "inserted_samples": 121597,
+          "boundary_rms": 0.007818619248877882
+        },
+        {
+          "source_start": 755037,
+          "source_end": 841908,
+          "output_start": 1017600,
+          "output_end": 1228800,
+          "inserted_samples": 124329,
+          "boundary_rms": 0.00017549265907528897
+        },
+        {
+          "source_start": 841908,
+          "source_end": 1013760,
+          "output_start": 1228800,
+          "output_end": 1440000,
+          "inserted_samples": 39348,
+          "boundary_rms": 0
+        }
+      ],
+      "cues": [
         {
           "index": 0,
           "text": "陪玩护航，想省点？",
-          "source": ".run/marketing-voice/04-player/0.wav",
-          "original_seconds": 2.24,
-          "trimmed_seconds": 2.21,
-          "slot_seconds": 3,
-          "start_seconds": 0.06,
-          "end_seconds": 2.27,
-          "gain_db": -3.1277422593546786,
-          "levels": {
-            "seconds": 2.21,
-            "peak": 0.5723876953125,
-            "peak_dbfs": -4.846194217858123,
-            "active_rms": 0.10000000882201027,
-            "active_seconds": 1.82,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.19,
-            "longest_silence_seconds": 0.32,
-            "clipped_samples": 0
-          }
+          "start": 0,
+          "end": 2.84,
+          "coverage": 0.8571
         },
         {
           "index": 1,
           "text": "多款游戏，挑选合适队友。",
-          "source": ".run/marketing-voice/04-player/1.wav",
-          "original_seconds": 3.52,
-          "trimmed_seconds": 3.480020833333333,
-          "slot_seconds": 4.5,
-          "start_seconds": 3.06,
-          "end_seconds": 6.540020833333333,
-          "gain_db": -1.273687627425095,
-          "levels": {
-            "seconds": 3.480020833333333,
-            "peak": 0.623046875,
-            "peak_dbfs": -4.109585558372992,
-            "active_rms": 0.10000002769741077,
-            "active_seconds": 2.81,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 3.38,
-            "longest_silence_seconds": 0.52,
-            "clipped_samples": 0
-          }
+          "start": 4.0772916666666665,
+          "end": 7.137291666666667,
+          "coverage": 1
         },
         {
           "index": 2,
           "text": "陪玩演示价，每小时十二元！",
-          "source": ".run/marketing-voice/04-player/2.wav",
-          "original_seconds": 2.88,
-          "trimmed_seconds": 2.85,
-          "slot_seconds": 4.5,
-          "start_seconds": 7.56,
-          "end_seconds": 10.41,
-          "gain_db": 2.6203760326366288,
-          "levels": {
-            "seconds": 2.85,
-            "peak": 0.468170166015625,
-            "peak_dbfs": -6.591925300511522,
-            "active_rms": 0.09999999259344544,
-            "active_seconds": 2.33,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.8,
-            "longest_silence_seconds": 0.42,
-            "clipped_samples": 0
-          }
+          "start": 8.260104166666666,
+          "end": 10.460104166666667,
+          "coverage": 0.8182
         },
         {
           "index": 3,
           "text": "订单进度和约定，随时查看。",
-          "source": ".run/marketing-voice/04-player/3.wav",
-          "original_seconds": 2.8,
-          "trimmed_seconds": 2.77,
-          "slot_seconds": 4.5,
-          "start_seconds": 12.06,
-          "end_seconds": 14.83,
-          "gain_db": -0.13346308146081567,
-          "levels": {
-            "seconds": 2.77,
-            "peak": 0.370330810546875,
-            "peak_dbfs": -8.628203085835288,
-            "active_rms": 0.09999998859145166,
-            "active_seconds": 2.27,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 2.75,
-            "longest_silence_seconds": 0.35,
-            "clipped_samples": 0
-          }
+          "start": 12.622645833333333,
+          "end": 15.522645833333334,
+          "coverage": 0.9091
         },
         {
           "index": 4,
           "text": "先聊清需求。",
-          "source": ".run/marketing-voice/04-player/4.wav",
-          "original_seconds": 1.6,
-          "trimmed_seconds": 1.57,
-          "slot_seconds": 4.5,
-          "start_seconds": 16.56,
-          "end_seconds": 18.13,
-          "gain_db": 3.4816354306724713,
-          "levels": {
-            "seconds": 1.57,
-            "peak": 0.48846435546875,
-            "peak_dbfs": -6.223342448035565,
-            "active_rms": 0.0996573971224159,
-            "active_seconds": 1.46,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 1.51,
-            "longest_silence_seconds": 0.06,
-            "clipped_samples": 0
-          }
+          "start": 17.076791666666665,
+          "end": 18.516791666666666,
+          "coverage": 0.8
         },
         {
           "index": 5,
           "text": "也能选团队服务。",
-          "source": ".run/marketing-voice/04-player/5.wav",
-          "original_seconds": 3.28,
-          "trimmed_seconds": 3.25,
-          "slot_seconds": 4.5,
-          "start_seconds": 21.06,
-          "end_seconds": 24.31,
-          "gain_db": -1.9881931650247346,
-          "levels": {
-            "seconds": 3.25,
-            "peak": 0.399139404296875,
-            "peak_dbfs": -7.977507903656026,
-            "active_rms": 0.10016477028854634,
-            "active_seconds": 3.03,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 3.23,
-            "longest_silence_seconds": 0.12,
-            "clipped_samples": 0
-          }
+          "start": 21.4500625,
+          "end": 22.7500625,
+          "coverage": 1
         },
         {
           "index": 6,
           "text": "打开开机电竞，挑选游戏队友！",
-          "source": ".run/marketing-voice/04-player/6.wav",
-          "original_seconds": 3.44,
-          "trimmed_seconds": 3.41,
-          "slot_seconds": 4.5,
-          "start_seconds": 25.56,
-          "end_seconds": 28.97,
-          "gain_db": 0.35162371939741893,
-          "levels": {
-            "seconds": 3.41,
-            "peak": 0.473052978515625,
-            "peak_dbfs": -6.501804373887875,
-            "active_rms": 0.0999786063529247,
-            "active_seconds": 2.79,
-            "first_active_seconds": 0.05,
-            "last_active_seconds": 3.41,
-            "longest_silence_seconds": 0.54,
-            "clipped_samples": 0
-          }
+          "start": 25.86025,
+          "end": 29.16025,
+          "coverage": 1
         }
       ],
-      "pcm": {
-        "seconds": 30,
-        "peak": 0.623046875,
-        "peak_dbfs": -4.109585558372992,
-        "active_rms": 0.09999640761414132,
-        "active_seconds": 16.51,
-        "first_active_seconds": 0.11,
-        "last_active_seconds": 28.97,
-        "longest_silence_seconds": 3.04,
-        "clipped_samples": 0
+      "generation_metadata": {
+        "sample_rate": 24000,
+        "samples": 506880,
+        "duration_seconds": 21.12,
+        "peak": 0.325042724609375,
+        "rms": 0.03887677192687988,
+        "clipped_samples": 0,
+        "overall_safety_gain": 1,
+        "audio_sha256": "4356147b3db3c4463bbecf45024d96a14479dc970f09a41c9870a02f0d7d5406",
+        "id": "04-player",
+        "signature": "dea125128c820e47e2205a7a3486840d89df593de28fb7285832073ac26c7908",
+        "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+        "license": "Apache-2.0",
+        "source": "scripts/marketing-voice-script.json",
+        "voice": "Serena",
+        "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+        "text": "陪玩护航，想省点？多款游戏，挑选合适队友。陪玩演示价，每小时十二元！订单进度和约定，随时查看。先聊清需求。也能选团队服务。打开开机电竞，挑选游戏队友！",
+        "segments": [
+          "陪玩护航，想省点？",
+          "多款游戏，挑选合适队友。",
+          "陪玩演示价，每小时十二元！",
+          "订单进度和约定，随时查看。",
+          "先聊清需求。",
+          "也能选团队服务。",
+          "打开开机电竞，挑选游戏队友！"
+        ],
+        "sampling_parameters": {
+          "temperature": 0.65,
+          "top_p": 0.9,
+          "top_k": 50,
+          "repetition_penalty": 1.05,
+          "max_tokens": 2048,
+          "seed": 20261026
+        },
+        "token_limit": 512,
+        "seed_scope": "one_fixed_seed_per_complete_article",
+        "api_calls_per_video": 1,
+        "non_streaming_result_count": 1,
+        "token_count": 264,
+        "natural_eos_before_limit": true,
+        "generation_seconds": 13.342237957986072,
+        "model_peak_memory_gb": 7.546705899,
+        "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。"
       },
-      "decoded": {
-        "seconds": 29.993333333333332,
-        "peak": 0.6197509765625,
-        "peak_dbfs": -4.15565560454301,
-        "active_rms": 0.09991683472809257,
-        "active_seconds": 16.51,
-        "first_active_seconds": 0.11,
-        "last_active_seconds": 28.97,
-        "longest_silence_seconds": 3.04,
-        "clipped_samples": 0
-      }
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "avg_frame_rate": "30/1",
+            "nb_frames": "900"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "avg_frame_rate": "0/0",
+            "nb_frames": "1408"
+          }
+        ],
+        "format": {
+          "duration": "30.000000"
+        },
+        "max_volume_dbfs": -2.9
+      },
+      "normalized_pcm_sha256": "88e8e0df4f57a687e3288afc49b48c958879ece263cae07257e80b383dca1b41",
+      "narration_sha256": "6c291313fb07268ef04577786301014f1d84d0f0331270afadf0f148b1321552",
+      "video_sha256": "2ad0b01a3784f2cf037ddb3ccbace839c51ed6778b4666bfecfb191c80ec9d13",
+      "original_video_sha256": "c4a97b1ec142d494be0ebfcbff800fe317a42a756a75f68845b072a4fc2cffe3",
+      "audience": "玩家",
+      "hook": "想找陪玩护航，预算不想拉满？",
+      "seconds": 30,
+      "file": "videos/04-player.mp4",
+      "srt": "videos/04-player.srt",
+      "narration_audio": "videos/audio/04-player/narration.wav",
+      "metadata_file": "videos/audio/04-player/metadata.json",
+      "previews": [
+        "videos/qa/04-player/00s.png",
+        "videos/qa/04-player/03s.png",
+        "videos/qa/04-player/08s.png",
+        "videos/qa/04-player/15s.png",
+        "videos/qa/04-player/24s.png",
+        "videos/qa/04-player/29s.png"
+      ]
     }
   ]
 }

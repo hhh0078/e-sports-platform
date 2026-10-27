@@ -1,0 +1,2392 @@
+{
+  "说明": "文件作用：供完整项目功能流程图排版使用，每项能力附当前源码文件证据；不含密钥、会话或业务数据。",
+  "title": "开机电竞 · 完整项目功能与业务流程",
+  "generated_date": "2026-10-26",
+  "evidence_scope": "按当前前后端代码静态核对；源码具备接入能力，不等同于本次已完成真实微信支付、真机和到账验收。",
+  "counts": {
+    "groups": 6,
+    "features": 70,
+    "admin_modules": 17,
+    "admin_additional_capabilities": 3,
+    "registered_pages": 50
+  },
+  "groups": [
+    {
+      "id": "player",
+      "title": "玩家",
+      "description": "发现服务、发布需求、下单沟通、验收及售后。",
+      "features": [
+        {
+          "id": "p_browse",
+          "title": "多游戏服务筛选浏览",
+          "description": "按游戏、服务分类和关键词查找服务，支持价格及成交排序。",
+          "routes": [
+            "/pages/main/index"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/main/player/player.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：玩家常驻视图展示游戏选择、搜索排序和统一服务卡片，按设计图实现。 -->"
+            },
+            {
+              "file": "frontend/src/api/services.api.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：封装服务搜索、详情、发布编辑和暂停接口。 */"
+            }
+          ]
+        },
+        {
+          "id": "p_service",
+          "title": "服务详情与评价浏览",
+          "description": "查看封面图文、价格、服务方与保障标识，并浏览真实订单评价。",
+          "routes": [
+            "/pages/services/detail",
+            "/pages/services/reviews"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/services/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：以沉浸封面展示服务，紧凑呈现作者、约定和真实下单，文字保持独立图层。 -->"
+            },
+            {
+              "file": "backend/internal/app/catalog.go",
+              "line": 1,
+              "evidence": "// Package app 实现游戏主题、服务列表、发布审核与动态俱乐部认证展示。"
+            }
+          ]
+        },
+        {
+          "id": "p_request",
+          "title": "自定义需求预算发布",
+          "description": "写明游戏、服务目标和预算，付款后进入公开接单大厅等待认领。",
+          "routes": [
+            "/pages/requests/publish",
+            "/pages/requests/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/requests/publish.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：老板发布自定义游戏服务需求，确认预算后进入订单支付与公开接单流程。 -->"
+            },
+            {
+              "file": "backend/internal/app/orders.go",
+              "line": 1,
+              "evidence": "// Package app 处理订单创建与参与者视图，金额和身份始终由服务端确定。"
+            }
+          ]
+        },
+        {
+          "id": "p_order",
+          "title": "按服务下单确认约定",
+          "description": "选择服务数量并填写需求与验收标准，生成保留服务快照的订单。",
+          "routes": [
+            "/pages/orders/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/services/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：以沉浸封面展示服务，紧凑呈现作者、约定和真实下单，文字保持独立图层。 -->"
+            },
+            {
+              "file": "backend/internal/app/orders.go",
+              "line": 1,
+              "evidence": "// Package app 处理订单创建与参与者视图，金额和身份始终由服务端确定。"
+            }
+          ]
+        },
+        {
+          "id": "p_payment",
+          "title": "订单微信与余额支付",
+          "description": "核对订单金额后选择微信或钱包付款，付款结果以服务端核实为准。",
+          "routes": [
+            "/pages/orders/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/orders/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按交易阶段展示订单、服务约定和费用协商，独立聊天从底部入口进入，原资金及售后操作保持。 -->"
+            },
+            {
+              "file": "frontend/src/api/orders.api.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：封装订单履约、支付、消息、评价、证据与匿名接单大厅接口。 */"
+            }
+          ]
+        },
+        {
+          "id": "p_ordertrack",
+          "title": "订单进度与记录查看",
+          "description": "按买家或接单身份筛选订单，查看履约阶段、服务约定和交付记录。",
+          "routes": [
+            "/pages/main/index",
+            "/pages/orders/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/main/orders/orders.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按订单设计图展示双身份筛选与订单卡片，常驻主视图保留状态。 -->"
+            },
+            {
+              "file": "backend/internal/app/transitions.go",
+              "line": 1,
+              "evidence": "// Package app 以订单行锁保护接单、交付、退款和平台介入的状态流转。"
+            }
+          ]
+        },
+        {
+          "id": "p_chat",
+          "title": "订单独立聊天与证据",
+          "description": "交易双方在独立聊天室沟通，可发送文字和图片并保留履约证据。",
+          "routes": [
+            "/pages/orders/chat"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/orders/chat.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：承接原订单四方证据聊天，独立展示历史、增量消息、图片上传与受控签名续期。 -->"
+            },
+            {
+              "file": "backend/internal/app/messages.go",
+              "line": 1,
+              "evidence": "// Package app 提供四方订单沟通与完成后评价，消息证据不可编辑删除。"
+            },
+            {
+              "file": "backend/internal/app/evidence.go",
+              "line": 1,
+              "evidence": "// Package app 将订单图片证据保存在数据库，并通过短期签名链接授权显示。"
+            }
+          ]
+        },
+        {
+          "id": "p_review",
+          "title": "服务验收与真实评价",
+          "description": "核对服务方交付说明后确认完成，符合条件的已完成订单可评价。",
+          "routes": [
+            "/pages/orders/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/orders/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按交易阶段展示订单、服务约定和费用协商，独立聊天从底部入口进入，原资金及售后操作保持。 -->"
+            },
+            {
+              "file": "backend/internal/app/messages.go",
+              "line": 1,
+              "evidence": "// Package app 提供四方订单沟通与完成后评价，消息证据不可编辑删除。"
+            },
+            {
+              "file": "backend/internal/app/transitions.go",
+              "line": 1,
+              "evidence": "// Package app 以订单行锁保护接单、交付、退款和平台介入的状态流转。"
+            }
+          ]
+        },
+        {
+          "id": "p_refund",
+          "title": "退款协商与平台介入",
+          "description": "支持取消未接单订单、提出退款和补充证据，争议可提交平台处理。",
+          "routes": [
+            "/pages/orders/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/orders/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按交易阶段展示订单、服务约定和费用协商，独立聊天从底部入口进入，原资金及售后操作保持。 -->"
+            },
+            {
+              "file": "backend/internal/app/transitions.go",
+              "line": 1,
+              "evidence": "// Package app 以订单行锁保护接单、交付、退款和平台介入的状态流转。"
+            }
+          ]
+        },
+        {
+          "id": "p_profile",
+          "title": "玩家主页与资料完善",
+          "description": "维护头像昵称、简介与主页封面，公开主页展示服务及认证信息。",
+          "routes": [
+            "/pages/account/profile",
+            "/pages/community/players/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/account/profile.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：独立个人资料设置页，更新头像、昵称、简介与主页封面，并管理会话和手机号验证。 -->"
+            },
+            {
+              "file": "backend/internal/app/community.go",
+              "line": 1,
+              "evidence": "// Package app 提供公开玩家名片、个人资料编辑和俱乐部结构化装修校验。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "provider",
+      "title": "接单者",
+      "description": "同一账号也能提供服务，独立接单或选择俱乐部挂靠。",
+      "features": [
+        {
+          "id": "w_publish",
+          "title": "服务发布与图文预览",
+          "description": "编辑游戏服务、价格及封面文案，预览效果后保存并进入内容审核。",
+          "routes": [
+            "/pages/services/publish"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/services/publish.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：发布与编辑游戏服务，配置游戏封面、文字样式和俱乐部挂靠。 -->"
+            },
+            {
+              "file": "backend/internal/app/catalog.go",
+              "line": 1,
+              "evidence": "// Package app 实现游戏主题、服务列表、发布审核与动态俱乐部认证展示。"
+            }
+          ]
+        },
+        {
+          "id": "w_manage",
+          "title": "个人服务编辑与暂停",
+          "description": "在工作台查看本人服务，修改介绍和价格，暂停或恢复该服务上架。",
+          "routes": [
+            "/pages/main/index",
+            "/pages/services/publish"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/main/worker/worker.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按工作台设计图展示真实统计、统一服务卡片、接单大厅及挂靠选择。 -->"
+            },
+            {
+              "file": "frontend/src/api/services.api.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：封装服务搜索、详情、发布编辑和暂停接口。 */"
+            }
+          ]
+        },
+        {
+          "id": "w_jobs",
+          "title": "公开需求筛选与认领",
+          "description": "浏览玩家已付款需求，核对预算与目标后认领，服务端复核接单资格。",
+          "routes": [
+            "/pages/requests/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/requests/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：以公开白名单需求展示分享落地，接单仍经过微信登录、手机号与服务端资格校验。 -->"
+            },
+            {
+              "file": "backend/internal/app/transitions.go",
+              "line": 1,
+              "evidence": "// Package app 以订单行锁保护接单、交付、退款和平台介入的状态流转。"
+            }
+          ]
+        },
+        {
+          "id": "w_fulfill",
+          "title": "接单开始交付全流程",
+          "description": "按订单依次接受、开始服务和提交交付，等待玩家核对并确认完成。",
+          "routes": [
+            "/pages/orders/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/orders/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按交易阶段展示订单、服务约定和费用协商，独立聊天从底部入口进入，原资金及售后操作保持。 -->"
+            },
+            {
+              "file": "backend/internal/app/transitions.go",
+              "line": 1,
+              "evidence": "// Package app 以订单行锁保护接单、交付、退款和平台介入的状态流转。"
+            }
+          ]
+        },
+        {
+          "id": "w_adjust",
+          "title": "加减价协商与补退款",
+          "description": "履约中可协商调整费用，经双方确认后补款或退差，并保留协商记录。",
+          "routes": [
+            "/pages/orders/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/OrderAdjustments.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计统一展示订单费用记录与双方协商，使用独立补款/原路退款及只读管理证据。 -->"
+            },
+            {
+              "file": "backend/internal/app/order_adjustments.go",
+              "line": 1,
+              "evidence": "// Package app 在订单统一锁内处理双方调价确认、过期和证据，资金成功前不修改净价。"
+            }
+          ]
+        },
+        {
+          "id": "w_income",
+          "title": "接单收入与资金查询",
+          "description": "查看订单进行中收入、待结算与可提现金额，按流水核对资金变化。",
+          "routes": [
+            "/pages/account/wallet"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/account/wallet.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计展示真实钱包分区、资金原单与自愿平台押金，所有资金变化由服务端记账。 -->"
+            },
+            {
+              "file": "backend/internal/app/wallet_core.go",
+              "line": 1,
+              "evidence": "// Package app 以用户事务锁、整数分校验和不可变业务流水保护钱包资金一致性。"
+            }
+          ]
+        },
+        {
+          "id": "w_affiliate",
+          "title": "独立接单与俱乐部挂靠",
+          "description": "可独立提供服务，也可申请俱乐部认证，认领需求时选择有效挂靠。",
+          "routes": [
+            "/pages/requests/detail",
+            "/pages/community/clubs/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/requests/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：以公开白名单需求展示分享落地，接单仍经过微信登录、手机号与服务端资格校验。 -->"
+            },
+            {
+              "file": "backend/internal/app/clubs.go",
+              "line": 1,
+              "evidence": "// Package app 实现多俱乐部隔离、挂靠审核、组织认证及历史订单权限。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "club",
+      "title": "俱乐部",
+      "description": "组织入驻、成员认证、团队协作与独立资金管理。",
+      "features": [
+        {
+          "id": "c_discovery",
+          "title": "俱乐部发现与公开主页",
+          "description": "浏览团队介绍、覆盖游戏、认证成员与服务，通过公开主页了解团队。",
+          "routes": [
+            "/pages/community/clubs/index",
+            "/pages/community/clubs/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：公开俱乐部装修主页、认证成员与加入规则，同时保留负责人审核和团队订单协作。 -->"
+            },
+            {
+              "file": "backend/internal/app/clubs.go",
+              "line": 1,
+              "evidence": "// Package app 实现多俱乐部隔离、挂靠审核、组织认证及历史订单权限。"
+            }
+          ]
+        },
+        {
+          "id": "c_create",
+          "title": "俱乐部创建与平台认证",
+          "description": "先保存团队草稿，按平台规则缴纳所需押金，再提交平台审核认证。",
+          "routes": [
+            "/pages/community/clubs/index"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/index.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：发现俱乐部、查看个人挂靠并申请创建新的电竞俱乐部。 -->"
+            },
+            {
+              "file": "backend/internal/app/clubs.go",
+              "line": 1,
+              "evidence": "// Package app 实现多俱乐部隔离、挂靠审核、组织认证及历史订单权限。"
+            }
+          ]
+        },
+        {
+          "id": "c_decorate",
+          "title": "俱乐部装修与游戏覆盖",
+          "description": "负责人维护团队封面、图文介绍和覆盖游戏，保存后进入内容审核。",
+          "routes": [
+            "/pages/community/clubs/console",
+            "/pages/community/clubs/edit"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/console.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：提供俱乐部俱乐部控制台，将佣金押金、成员、团队订单和装修拆分为清晰入口。 -->"
+            },
+            {
+              "file": "frontend/src/pages/community/clubs/edit.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：俱乐部负责人编辑封面、图文介绍、覆盖游戏及加入门槛，图文审核与组织认证独立处理。 -->"
+            }
+          ]
+        },
+        {
+          "id": "c_rules",
+          "title": "入会门槛与团队抽成",
+          "description": "设置成员押金、考核要求、加入说明和团队佣金，申请人确认规则。",
+          "routes": [
+            "/pages/community/clubs/edit"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/edit.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：俱乐部负责人编辑封面、图文介绍、覆盖游戏及加入门槛，图文审核与组织认证独立处理。 -->"
+            },
+            {
+              "file": "backend/internal/app/clubs.go",
+              "line": 1,
+              "evidence": "// Package app 实现多俱乐部隔离、挂靠审核、组织认证及历史订单权限。"
+            }
+          ]
+        },
+        {
+          "id": "c_members",
+          "title": "成员申请考核与审核",
+          "description": "处理加入申请并记录审核说明，按考核要求认证、拒绝或移除成员。",
+          "routes": [
+            "/pages/community/clubs/detail",
+            "/pages/community/clubs/members/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：公开俱乐部装修主页、认证成员与加入规则，同时保留负责人审核和团队订单协作。 -->"
+            },
+            {
+              "file": "backend/internal/app/clubs.go",
+              "line": 1,
+              "evidence": "// Package app 实现多俱乐部隔离、挂靠审核、组织认证及历史订单权限。"
+            }
+          ]
+        },
+        {
+          "id": "c_scoped",
+          "title": "成员资料与范围账单",
+          "description": "查看成员本组织订单、收入和托管押金，成员详情不暴露全局钱包。",
+          "routes": [
+            "/pages/community/clubs/members/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/ManagedPersonCenter.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：复用平台用户与组织成员详情的安全身份、真实分页记录和管理弹层；两种数据范围始终显式隔离。 -->"
+            },
+            {
+              "file": "backend/internal/app/club_members_management.go",
+              "line": 1,
+              "evidence": "// Package app 为俱乐部管理者提供成员资料、组织内收入和托管押金视图，严格排除个人充值与组织外资金。"
+            }
+          ]
+        },
+        {
+          "id": "c_deputy",
+          "title": "负责人副管理员协作",
+          "description": "负责人可授撤组织副管理员，管理权限按实时身份及成员关系校验。",
+          "routes": [
+            "/pages/community/clubs/members/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/ManagedPersonCenter.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：复用平台用户与组织成员详情的安全身份、真实分页记录和管理弹层；两种数据范围始终显式隔离。 -->"
+            },
+            {
+              "file": "backend/internal/app/management_permissions.go",
+              "line": 1,
+              "evidence": "// Package app 持久化平台及俱乐部副管理员权限，授权关系与组织成员绑定且不信任客户端角色。"
+            }
+          ]
+        },
+        {
+          "id": "c_orders",
+          "title": "团队订单与履约协助",
+          "description": "管理者查看挂靠产生的团队订单，进入订单聊天协助沟通与争议处理。",
+          "routes": [
+            "/pages/community/clubs/detail",
+            "/pages/orders/chat"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：公开俱乐部装修主页、认证成员与加入规则，同时保留负责人审核和团队订单协作。 -->"
+            },
+            {
+              "file": "backend/internal/app/messages.go",
+              "line": 1,
+              "evidence": "// Package app 提供四方订单沟通与完成后评价，消息证据不可编辑删除。"
+            }
+          ]
+        },
+        {
+          "id": "c_funds",
+          "title": "俱乐部佣金与提现管理",
+          "description": "组织佣金按进行中、结算中和可提现展示，提现收款绑定俱乐部负责人。",
+          "routes": [
+            "/pages/community/clubs/funds"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/funds.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：负责人管理俱乐部独立佣金、来源审查提现及俱乐部缴给平台的押金。 -->"
+            },
+            {
+              "file": "backend/internal/app/club_finance.go",
+              "line": 1,
+              "evidence": "// Package app 隔离成员俱乐部押金、组织平台押金与俱乐部佣金，付款和原路退款复用已核验的微信资金状态机。"
+            }
+          ]
+        },
+        {
+          "id": "c_deposit",
+          "title": "成员押金缴纳与退还",
+          "description": "成员依加入规则缴纳托管押金，可查询支付进度并按条件申请退还。",
+          "routes": [
+            "/pages/community/clubs/deposit"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/deposit.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：用户查看和缴退自己在指定俱乐部的成员押金，展示平台托管及原路退还规则。 -->"
+            },
+            {
+              "file": "backend/internal/app/wallet_deposit_refunds.go",
+              "line": 1,
+              "evidence": "// Package app 按原押金充值来源分笔退还，申请即移除有效押金，外部结果未知时持续冻结并可按原退款号补偿。"
+            }
+          ]
+        },
+        {
+          "id": "c_contact",
+          "title": "团队客服与联系方式",
+          "description": "维护团队客服二维码、电话与微信号，公开主页提供可用的联络入口。",
+          "routes": [
+            "/pages/community/clubs/edit"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/community/clubs/edit.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：俱乐部负责人编辑封面、图文介绍、覆盖游戏及加入门槛，图文审核与组织认证独立处理。 -->"
+            },
+            {
+              "file": "frontend/src/components/ContactSupport.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：共享平台与俱乐部业务客服入口，原生微信客服、二维码、电话和微信号均由用户主动选择。 -->"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "platform",
+      "title": "平台后台",
+      "description": "经营总览、17个独立模块，以及资金审核和交易规则。",
+      "features": [
+        {
+          "id": "a_dashboard",
+          "title": "经营总览与周期统计",
+          "description": "查看注册、订单、待办和服务成交趋势，支持七天、三十天及自定义周期。",
+          "routes": [
+            "/pages/manage/index"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/index.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行图实现平台管理员控制台，集中真实经营摘要、待办、可选周期交易曲线与独立管理入口。 -->"
+            },
+            {
+              "file": "backend/internal/app/analytics.go",
+              "line": 1,
+              "evidence": "// Package app 按上海自然日统计有真实资金来源与可靠发生时间的服务交易，充值、押金及提现不进入成交额。"
+            }
+          ]
+        },
+        {
+          "id": "a_public",
+          "title": "公共信息与轮播运营",
+          "description": "统一配置平台和游戏轮播、首页公告、四页提示及服务需求注意事项。",
+          "routes": [
+            "/pages/manage/content/index",
+            "/pages/manage/content/banner"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/content/index.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：管理员分栏配置平台/游戏轮播、首页公告、四页提示及多行注意事项，按修订号保存并保留冲突草稿。 -->"
+            },
+            {
+              "file": "backend/internal/app/public_content.go",
+              "line": 1,
+              "evidence": "// Package app 提供独立公共信息读取、管理员配置与当前游戏轮播解析，写入使用标准后置审核事务。"
+            }
+          ]
+        },
+        {
+          "id": "a_articles",
+          "title": "文章草稿发布与管理",
+          "description": "编辑安全Markdown文章、预览正文并管理发布状态，更新内容进入审核。",
+          "routes": [
+            "/pages/manage/articles/index",
+            "/pages/manage/articles/edit"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/articles/edit.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计维护Markdown文章，保留版本冲突草稿并使用服务端安全预览和官方用途上传。 -->"
+            },
+            {
+              "file": "backend/internal/app/articles.go",
+              "line": 1,
+              "evidence": "// Package app 提供管理员Markdown文章维护与访客发布内容查询，草稿隐藏、图文审核和安全渲染相互独立。"
+            }
+          ]
+        },
+        {
+          "id": "a_moderation",
+          "title": "图文审核队列与处置",
+          "description": "查看完整待审图文，人工通过或拒绝并填写原因，也可重试模型审核。",
+          "routes": [
+            "/pages/manage/moderation"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/moderation.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计提供平台图文人工审核，独立展示待审任务、内容详情和可追溯处理结果。 -->"
+            },
+            {
+              "file": "backend/internal/app/moderation_admin.go",
+              "line": 1,
+              "evidence": "// Package app 提供管理员字段级图文待审列表、人工决定、AI重试与鉴权原图预览。"
+            }
+          ]
+        },
+        {
+          "id": "a_users",
+          "title": "用户资料权限与风控",
+          "description": "搜索用户、编辑基础资料、冻结账号及授撤副管理员，并查看订单资金。",
+          "routes": [
+            "/pages/manage/users",
+            "/pages/manage/users/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/ManagedPersonCenter.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：复用平台用户与组织成员详情的安全身份、真实分页记录和管理弹层；两种数据范围始终显式隔离。 -->"
+            },
+            {
+              "file": "backend/internal/app/admin_users.go",
+              "line": 1,
+              "evidence": "// Package app 提供安全用户摘要、资料管理和关联记录只读分页，资金与微信身份不接受管理表单覆盖。"
+            }
+          ]
+        },
+        {
+          "id": "a_services",
+          "title": "服务状态审核与下架",
+          "description": "按状态搜索服务，查看发布者和详情，处理通过、拒绝与暂停上架。",
+          "routes": [
+            "/pages/manage/services"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/services.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：独立审核服务，按服务端状态搜索分页，保留通过、拒绝、下架及详情入口。 -->"
+            },
+            {
+              "file": "backend/internal/app/admin.go",
+              "line": 1,
+              "evidence": "// Package app 提供小程序内管理后台，全部写入操作带服务端权限与审计。"
+            }
+          ]
+        },
+        {
+          "id": "a_clubs",
+          "title": "俱乐部审批与认证管理",
+          "description": "审核俱乐部申请、授予或撤销平台认证，并查看团队主页、成员和订单。",
+          "routes": [
+            "/pages/manage/clubs"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/clubs.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：独立处理俱乐部审核与平台认证，并提供公开主页、成员和团队订单入口。 -->"
+            },
+            {
+              "file": "backend/internal/app/admin.go",
+              "line": 1,
+              "evidence": "// Package app 提供小程序内管理后台，全部写入操作带服务端权限与审计。"
+            }
+          ]
+        },
+        {
+          "id": "a_orders",
+          "title": "平台订单与售后裁决",
+          "description": "检索订单和售后记录，审阅双方证据，按实际情况裁决退款或继续履约。",
+          "routes": [
+            "/pages/manage/orders"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/orders.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：独立查询订单与售后记录，复用既有订单详情处理聊天室、证据和平台裁定。 -->"
+            },
+            {
+              "file": "backend/internal/app/transitions.go",
+              "line": 1,
+              "evidence": "// Package app 以订单行锁保护接单、交付、退款和平台介入的状态流转。"
+            }
+          ]
+        },
+        {
+          "id": "a_games",
+          "title": "游戏分类主题素材配置",
+          "description": "维护游戏分类、主题颜色、图标和封面素材，管理展示顺序与可见状态。",
+          "routes": [
+            "/pages/manage/games"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/games.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：独立配置游戏主题、服务分类和多封面素材，使用官方弹层保留完整游戏编辑流程。 -->"
+            },
+            {
+              "file": "backend/internal/app/admin.go",
+              "line": 1,
+              "evidence": "// Package app 提供小程序内管理后台，全部写入操作带服务端权限与审计。"
+            }
+          ]
+        },
+        {
+          "id": "a_transfer",
+          "title": "微信商家转账参数配置",
+          "description": "维护获批转账场景、报备字段及回调信息，为收入提现提供通道配置。",
+          "routes": [
+            "/pages/manage/wallet"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/wallet.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：管理员查看提现列表并进入来源审核，独立维护不含密钥的商家转账公开配置。 -->"
+            },
+            {
+              "file": "backend/internal/app/wallet_settings.go",
+              "line": 1,
+              "evidence": "// Package app 提供管理员钱包配置与提现资质校验，服务收入转账场景必须由真实商户自行开通。"
+            }
+          ]
+        },
+        {
+          "id": "a_payment",
+          "title": "微信支付商户安全配置",
+          "description": "管理商户公开参数、证书和密钥配置状态，秘密字段加密保存且不回显。",
+          "routes": [
+            "/pages/manage/settings?tab=payment"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/settings.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：小程序内的管理员协议版本及微信支付配置入口，秘密仅在本次填写时保留，保存或离开后清空。 -->"
+            },
+            {
+              "file": "backend/internal/app/payment_settings.go",
+              "line": 1,
+              "evidence": "// Package app 加密保存管理员支付配置，并以只读内存快照向交易流程提供线程安全的配置。"
+            }
+          ]
+        },
+        {
+          "id": "a_agreements",
+          "title": "用户协议隐私版本管理",
+          "description": "维护用户协议和隐私政策内容及版本，登录时记录用户主动同意的版本。",
+          "routes": [
+            "/pages/manage/settings?tab=agreements",
+            "/pages/account/agreements"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/settings.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：小程序内的管理员协议版本及微信支付配置入口，秘密仅在本次填写时保留，保存或离开后清空。 -->"
+            },
+            {
+              "file": "backend/internal/app/wechat_auth.go",
+              "line": 1,
+              "evidence": "// Package app 以微信官方凭据换取短期身份票据，并在明确同意当前协议后建立登录会话。"
+            }
+          ]
+        },
+        {
+          "id": "a_platform",
+          "title": "平台名称与基础公告",
+          "description": "维护平台展示名称和基础公告，保存后的公共配置用于前台统一展示。",
+          "routes": [
+            "/pages/manage/platform"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/platform.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计独立编辑平台名称与公告，保护管理员会话并刷新公共配置。 -->"
+            },
+            {
+              "file": "backend/internal/app/admin.go",
+              "line": 1,
+              "evidence": "// Package app 提供小程序内管理后台，全部写入操作带服务端权限与审计。"
+            }
+          ]
+        },
+        {
+          "id": "a_audit",
+          "title": "管理员操作日志审计",
+          "description": "分页搜索平台管理操作记录，核对操作者、业务对象及具体处理说明。",
+          "routes": [
+            "/pages/manage/audit"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/audit.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：只读查询真实管理员操作记录，提供服务端搜索分页而不允许编辑或删除审计。 -->"
+            },
+            {
+              "file": "backend/internal/app/admin_search.go",
+              "line": 1,
+              "evidence": "// Package app 为管理列表生成白名单搜索条件，先在数据库搜索再分页且参数全部绑定。"
+            }
+          ]
+        },
+        {
+          "id": "a_ai",
+          "title": "图文审核模型接入配置",
+          "description": "配置兼容模型接口、提示词和审核选项，可由服务端测试已保存连接。",
+          "routes": [
+            "/pages/manage/ai"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/ai.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计管理AI兼容接口与审核提示词，密钥仅本次输入保留，连接测试完全由后端执行。 -->"
+            },
+            {
+              "file": "backend/internal/app/ai_settings.go",
+              "line": 1,
+              "evidence": "// Package app 管理加密的电竞内容审核配置，秘密不回显且不进入客户端缓存。"
+            }
+          ]
+        },
+        {
+          "id": "a_messages",
+          "title": "平台消息群发定向通知",
+          "description": "平台管理员向指定账号或有效用户群发站内消息，发送结果保留记录。",
+          "routes": [
+            "/pages/manage/messages"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/messages.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计供平台管理员定向或广播纯文本消息，确认范围后发送并隔离旧会话回调。 -->"
+            },
+            {
+              "file": "backend/internal/app/inbox.go",
+              "line": 1,
+              "evidence": "// Package app 保存用户未读系统通知，已读后仅删除本人服务器副本，不影响订单聊天证据。"
+            }
+          ]
+        },
+        {
+          "id": "a_support",
+          "title": "平台在线客服渠道配置",
+          "description": "维护业务客服二维码、电话和微信号，配合小程序官方客服入口接待。",
+          "routes": [
+            "/pages/manage/support"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/support.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计独立配置平台业务客服，仅修改客服三字段并通过官方接口裁剪压缩二维码。 -->"
+            },
+            {
+              "file": "frontend/src/components/ContactSupport.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：共享平台与俱乐部业务客服入口，原生微信客服、二维码、电话和微信号均由用户主动选择。 -->"
+            }
+          ]
+        },
+        {
+          "id": "a_subscribe",
+          "title": "微信订阅模板发送管理",
+          "description": "同步官方模板、配置六类业务映射，查看发送记录并安全重试可重试项。",
+          "routes": [
+            "/pages/manage/subscriptions"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/subscriptions.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：独立管理微信场景模板、安全字段映射、发送记录和安全重试，普通用户不可访问。 -->"
+            },
+            {
+              "file": "backend/internal/app/subscription_admin.go",
+              "line": 1,
+              "evidence": "// Package app 提供平台管理员独立模板配置和发送记录管理，普通用户不能读取或触发他人通知。"
+            }
+          ]
+        },
+        {
+          "id": "a_fund_audit",
+          "title": "个人组织提现资金审核",
+          "description": "集中处理个人和组织提现，逐笔查看付款来源、资金占用并审核转账。",
+          "routes": [
+            "/pages/manage/finance/index",
+            "/pages/manage/finance/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/finance/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计逐笔展示提现来源核验，复核通过后才发起转账，处理中只沿原申请同步。 -->"
+            },
+            {
+              "file": "backend/internal/app/wallet_withdrawals.go",
+              "line": 1,
+              "evidence": "// Package app 先冻结可提现服务收入，再通过微信商家转账的核验终态扣除或解冻，未知外部结果持续冻结。"
+            }
+          ]
+        },
+        {
+          "id": "a_rules",
+          "title": "平台费率与押金规则",
+          "description": "配置自由和挂靠订单抽成及平台押金门槛，单笔订单按规则锁定费率。",
+          "routes": [
+            "/pages/manage/finance/settings"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/finance/settings.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计编辑两档平台抽成及两类平台最低押金，所有转换以整数基点和整数分提交。 -->"
+            },
+            {
+              "file": "backend/internal/app/financial_settings.go",
+              "line": 1,
+              "evidence": "// Package app 管理抽成与俱乐部平台押金配置，并在每笔订单中冻结整数分分账快照。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "finance",
+      "title": "资金与风控",
+      "description": "区分资金用途与付款来源，保留订单、权限和证据安全边界。",
+      "features": [
+        {
+          "id": "f_wallet",
+          "title": "个人资产分区与资金流水",
+          "description": "充值、可提现收入、进行中、结算中和冻结分开记账，流水可逐条核对。",
+          "routes": [
+            "/pages/account/wallet"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/account/wallet.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计展示真实钱包分区、资金原单与自愿平台押金，所有资金变化由服务端记账。 -->"
+            },
+            {
+              "file": "backend/internal/app/wallet_core.go",
+              "line": 1,
+              "evidence": "// Package app 以用户事务锁、整数分校验和不可变业务流水保护钱包资金一致性。"
+            }
+          ]
+        },
+        {
+          "id": "f_topup",
+          "title": "钱包充值与消费余额管理",
+          "description": "通过微信充值并查询原支付单，充值余额仅能用于消费，不支持提现。",
+          "routes": [
+            "/pages/account/wallet"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/lib/use-wallet.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：管理钱包真实数据、原单恢复和资金提交生命周期，切号与隐藏时隔离私人内容及收款凭据。 */"
+            },
+            {
+              "file": "backend/internal/app/wallet_topups.go",
+              "line": 1,
+              "evidence": "// Package app 为充值余额和独立平台押金建立幂等支付意图，只有已验证付款才能增加资金。"
+            }
+          ]
+        },
+        {
+          "id": "f_settlement",
+          "title": "七天售后期与订单分账",
+          "description": "订单锁定平台与俱乐部费率，验收后保留七天售后期再释放可提收入。",
+          "routes": [
+            "/pages/account/wallet"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/OrderSettlement.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：统一显示订单冻结的抽成与净收入，所有金额取自服务端快照，旧账不猜测。 -->"
+            },
+            {
+              "file": "backend/internal/app/wallet_escrow.go",
+              "line": 1,
+              "evidence": "// Package app 将真实付款逐单托管，并在售后期结束后把服务收入释放至可提现余额。"
+            }
+          ]
+        },
+        {
+          "id": "f_withdraw",
+          "title": "收入提现与收款确认",
+          "description": "可提现收入提交申请，经平台审核发起转账，收款人按微信要求确认。",
+          "routes": [
+            "/pages/account/wallet",
+            "/pages/community/clubs/funds"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/FundsProgress.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：统一展示三类押金付款、退款与组织提现的原单进度和恢复入口。 -->"
+            },
+            {
+              "file": "backend/internal/app/wallet_withdrawals.go",
+              "line": 1,
+              "evidence": "// Package app 先冻结可提现服务收入，再通过微信商家转账的核验终态扣除或解冻，未知外部结果持续冻结。"
+            }
+          ]
+        },
+        {
+          "id": "f_deposits",
+          "title": "自愿平台押金与资格展示",
+          "description": "自由接单无需平台押金，自愿缴纳达标后展示保障标识，符合条件可原路退还。",
+          "routes": [
+            "/pages/account/wallet",
+            "/pages/community/clubs/funds"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/DepositBadge.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：统一三类实缴押金徽标，按服务端有效金额展示实心安全图标与可选金额。 -->"
+            },
+            {
+              "file": "backend/internal/app/wallet_deposit_refunds.go",
+              "line": 1,
+              "evidence": "// Package app 按原押金充值来源分笔退还，申请即移除有效押金，外部结果未知时持续冻结并可按原退款号补偿。"
+            }
+          ]
+        },
+        {
+          "id": "f_refund",
+          "title": "原路退款与资金状态同步",
+          "description": "订单退款及押金退还追溯原付款，未知结果沿用原单同步，避免重复处理。",
+          "routes": [
+            "/pages/orders/detail",
+            "/pages/account/wallet"
+          ],
+          "sources": [
+            {
+              "file": "backend/internal/app/wechatpay_notify.go",
+              "line": 1,
+              "evidence": "// Package app 验签解密微信支付通知，并在数据库事务中幂等更新付款与退款记录。"
+            },
+            {
+              "file": "backend/internal/app/wallet_deposit_refunds.go",
+              "line": 1,
+              "evidence": "// Package app 按原押金充值来源分笔退还，申请即移除有效押金，外部结果未知时持续冻结并可按原退款号补偿。"
+            }
+          ]
+        },
+        {
+          "id": "f_sources",
+          "title": "提现逐笔来源与占用追溯",
+          "description": "提现审核关联原订单、付款凭证和分配金额，缺失可靠来源不能自动出款。",
+          "routes": [
+            "/pages/manage/finance/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/manage/finance/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按先行设计逐笔展示提现来源核验，复核通过后才发起转账，处理中只沿原申请同步。 -->"
+            },
+            {
+              "file": "backend/internal/app/financial_sources.go",
+              "line": 1,
+              "evidence": "// Package app 逐笔记录已核验付款根、资金批次与不可变分配，余额消费、结算及提现始终保留原始来源。"
+            }
+          ]
+        },
+        {
+          "id": "f_permissions",
+          "title": "多角色分权与隐私隔离",
+          "description": "平台根副管理员与组织负责人分级授权，私有资料按账号和组织范围读取。",
+          "routes": [
+            "/pages/manage/users/detail",
+            "/pages/community/clubs/members/detail"
+          ],
+          "sources": [
+            {
+              "file": "backend/internal/app/management_permissions.go",
+              "line": 1,
+              "evidence": "// Package app 持久化平台及俱乐部副管理员权限，授权关系与组织成员绑定且不信任客户端角色。"
+            },
+            {
+              "file": "backend/internal/app/club_members_management.go",
+              "line": 1,
+              "evidence": "// Package app 为俱乐部管理者提供成员资料、组织内收入和托管押金视图，严格排除个人充值与组织外资金。"
+            }
+          ]
+        },
+        {
+          "id": "f_moderation",
+          "title": "内容后置审核与安全投影",
+          "description": "图文保存后进入模型或人工队列，违规展示受限，交易原始证据隔离保留。",
+          "routes": [
+            "/pages/manage/moderation"
+          ],
+          "sources": [
+            {
+              "file": "backend/internal/app/moderation_registry.go",
+              "line": 1,
+              "evidence": "// Package app 使用服务端硬编码登记所有用户图文字段，禁止客户端指定数据库表或JSON路径。"
+            },
+            {
+              "file": "backend/internal/app/moderation_projection.go",
+              "line": 1,
+              "evidence": "// Package app 统一屏蔽被拒绝的交易图文展示，同时保留数据库原始证据和资金幂等事实。"
+            }
+          ]
+        },
+        {
+          "id": "f_callbacks",
+          "title": "支付回调校验与幂等记账",
+          "description": "校验微信签名、商户和金额，支付退款回调及重试均复用业务原单。",
+          "routes": [],
+          "sources": [
+            {
+              "file": "backend/internal/app/wechatpay_notify.go",
+              "line": 1,
+              "evidence": "// Package app 验签解密微信支付通知，并在数据库事务中幂等更新付款与退款记录。"
+            },
+            {
+              "file": "backend/internal/app/wallet_routes.go",
+              "line": 1,
+              "evidence": "// Package app 注册钱包、管理员转账审核和官方通知路由，所有资金接口均经过本人或平台管理员身份校验。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "foundation",
+      "title": "内容与基础能力",
+      "description": "同账号双向交易，登录、消息、分享及小程序体验完整衔接。",
+      "features": [
+        {
+          "id": "b_auth",
+          "title": "微信登录协议手机号授权",
+          "description": "微信登录后同一账号可发单与接单，主动同意协议并在交易前完成手机号授权。",
+          "routes": [
+            "/pages/account/login"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/account/login.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：以游戏爱好者自由接单为入口，明确取得协议同意后登录，并提供可跳过的头像昵称完善。 -->"
+            },
+            {
+              "file": "backend/internal/app/wechat_auth.go",
+              "line": 1,
+              "evidence": "// Package app 以微信官方凭据换取短期身份票据，并在明确同意当前协议后建立登录会话。"
+            }
+          ]
+        },
+        {
+          "id": "b_inbox",
+          "title": "系统消息收件与本地已读",
+          "description": "消息中心接收平台与业务通知，打开后持久保存正文和已读状态再确认。",
+          "routes": [
+            "/pages/account/messages/index",
+            "/pages/account/messages/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/account/messages/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：仅展示当前账号本机保存的消息全文，已读落盘成功才确认删除远端，正文不执行HTML。 -->"
+            },
+            {
+              "file": "frontend/src/lib/messages-cache.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：按账号保存系统消息全文与已读状态，核验持久化成功后才允许确认删除远端。 */"
+            },
+            {
+              "file": "backend/internal/app/inbox.go",
+              "line": 1,
+              "evidence": "// Package app 保存用户未读系统通知，已读后仅删除本人服务器副本，不影响订单聊天证据。"
+            }
+          ]
+        },
+        {
+          "id": "b_subscribe",
+          "title": "六类业务微信订阅提醒",
+          "description": "按原生授权发送新单、退款、接单结果、入会、争议和组织申请六类提醒。",
+          "routes": [
+            "/pages/account/subscriptions"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/account/subscriptions.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：提供本人微信消息偏好和明确授权入口，不把接收开关伪装成永久订阅权限。 -->"
+            },
+            {
+              "file": "backend/internal/app/subscription_events.go",
+              "line": 1,
+              "evidence": "// Package app 登记用户确认的六类微信订阅事件，禁止将退款申请模板用于到账或其它业务。"
+            }
+          ]
+        },
+        {
+          "id": "b_articles",
+          "title": "公开文章搜索与安全阅读",
+          "description": "文章中心可搜索和阅读当前已发布安全正文，未公开内容不对访客展示。",
+          "routes": [
+            "/pages/content/articles/index",
+            "/pages/content/articles/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/content/articles/detail.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：访客读取当前已发布文章的安全正文，隐藏或失效时撤下旧内容。 -->"
+            },
+            {
+              "file": "backend/internal/app/articles.go",
+              "line": 1,
+              "evidence": "// Package app 提供管理员Markdown文章维护与访客发布内容查询，草稿隐藏、图文审核和安全渲染相互独立。"
+            }
+          ]
+        },
+        {
+          "id": "b_operations",
+          "title": "首页轮播公告与多页提示",
+          "description": "运营图片独立叠加文案并可跳转业务，公告按版本展示，四页提示统一配置。",
+          "routes": [
+            "/pages/main/index"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/ContentCarousel.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：原图区域内的独立图片/纯文字轮播，实测安全带与稳定最大高度保证所有字幕可读。 -->"
+            },
+            {
+              "file": "frontend/src/components/HomeAnnouncement.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：首页真实公告浮层，展示成功后才确认版本已读，按账号隔离并与强制更新提示互斥。 -->"
+            },
+            {
+              "file": "backend/internal/app/public_content.go",
+              "line": 1,
+              "evidence": "// Package app 提供独立公共信息读取、管理员配置与当前游戏轮播解析，写入使用标准后置审核事务。"
+            }
+          ]
+        },
+        {
+          "id": "b_sharing",
+          "title": "好友朋友圈与小程序海报",
+          "description": "首页、服务、需求、玩家和团队可分享，生成包含真实小程序码的海报。",
+          "routes": [
+            "/pages/shares/create",
+            "/pages/shares/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/ShareEntry.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：五类公开内容共享两种分享方式，访客可直接分享好友，仅生成个人海报时登录。 -->"
+            },
+            {
+              "file": "backend/internal/app/shares.go",
+              "line": 1,
+              "evidence": "// Package app 持久保存公开分享目标并实时生成脱敏元数据，二维码映射不依赖临时缓存。"
+            },
+            {
+              "file": "backend/internal/app/shares_wechat.go",
+              "line": 1,
+              "evidence": "// Package app 生成并缓存真实微信小程序码，严格验证上游图片且不将错误JSON伪装成二维码。"
+            }
+          ]
+        },
+        {
+          "id": "b_media",
+          "title": "图片选取裁剪与安全上传",
+          "description": "头像封面按用途选取裁剪和压缩，后端校验格式、归属并创建图文审核。",
+          "routes": [
+            "/pages/account/profile",
+            "/pages/services/publish"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/lib/media.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：按展示用途调用官方媒体裁剪压缩，复核大小后交给业务上传接口。 */"
+            },
+            {
+              "file": "backend/internal/app/media.go",
+              "line": 1,
+              "evidence": "// Package app 校验并托管用户主动公开的头像和主页图片，与订单私密证据隔离。"
+            },
+            {
+              "file": "backend/internal/app/evidence.go",
+              "line": 1,
+              "evidence": "// Package app 将订单图片证据保存在数据库，并通过短期签名链接授权显示。"
+            }
+          ]
+        },
+        {
+          "id": "b_drafts",
+          "title": "服务需求分账号草稿恢复",
+          "description": "服务发布编辑和需求表单按账号及对象保存草稿，下次进入可恢复或放弃。",
+          "routes": [
+            "/pages/services/publish",
+            "/pages/requests/publish"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/lib/publish-draft.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：按账号、发布类型和编辑对象隔离本机表单草稿，负责白名单、恢复确认、延迟保存及成功后的条件清理。 */"
+            },
+            {
+              "file": "frontend/src/pages/requests/publish.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：老板发布自定义游戏服务需求，确认预算后进入订单支付与公开接单流程。 -->"
+            }
+          ]
+        },
+        {
+          "id": "b_refresh",
+          "title": "列表刷新分页与多游戏主题",
+          "description": "四个主视图保留浏览状态，列表支持下拉和触底加载，游戏切换同步主题。",
+          "routes": [
+            "/pages/main/index"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/pages/main/index.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：唯一主页面常驻四个业务视图和一个底部导航，切换不重建页面。 -->"
+            },
+            {
+              "file": "frontend/src/lib/native-page-refresh.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：为原生滚动的二级页面统一注册下拉刷新与触底事件，管理动画、并发及页面隐藏后的交互状态。 */"
+            },
+            {
+              "file": "frontend/src/lib/navigation.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：维护唯一主页面的标签状态、深链归一化及二级页面返回导航。 */"
+            }
+          ]
+        },
+        {
+          "id": "b_update",
+          "title": "微信版本更新与重启确认",
+          "description": "使用微信更新管理，下载完成后提示确认，并等待资金操作结束再重启。",
+          "routes": [],
+          "sources": [
+            {
+              "file": "frontend/src/lib/update-manager.ts",
+              "line": 1,
+              "evidence": "/** 文件作用：绑定一次微信官方版本更新，协调公告与更新原生弹框，并在资金完整业务任务结束后才允许重启。 */"
+            },
+            {
+              "file": "frontend/src/App.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：启动时恢复平台状态，准备微信登录票据，并加载统一设计变量。 -->"
+            }
+          ]
+        },
+        {
+          "id": "b_support",
+          "title": "平台与俱乐部客服联络",
+          "description": "玩家可联系官方在线客服，或通过平台和团队展示的二维码、电话联络。",
+          "routes": [
+            "/pages/main/index",
+            "/pages/community/clubs/detail"
+          ],
+          "sources": [
+            {
+              "file": "frontend/src/components/ContactSupport.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：共享平台与俱乐部业务客服入口，原生微信客服、二维码、电话和微信号均由用户主动选择。 -->"
+            },
+            {
+              "file": "frontend/src/pages/main/me/me.vue",
+              "line": 1,
+              "evidence": "<!-- 文件作用：按个人中心设计图呈现身份、真实统计、订单与账户入口，访客完整显示零数据。 -->"
+            }
+          ]
+        },
+        {
+          "id": "b_cache",
+          "title": "公共资料缓存与实时校验",
+          "description": "公共展示资料缓存并随修改失效，账户权限、订单和资金始终实时核验。",
+          "routes": [],
+          "sources": [
+            {
+              "file": "backend/internal/app/public_cache.go",
+              "line": 1,
+              "evidence": "// Package app 为公开静态资料提供一天Redis缓存；鉴权、交易及最终审核投影不进入缓存。"
+            },
+            {
+              "file": "backend/internal/app/public_cache_outbox.go",
+              "line": 1,
+              "evidence": "// Package app 以事务内持久失效队列和事务外Redis generation刷新恢复公开静态缓存，避免旧回填与丢失失效。"
+            },
+            {
+              "file": "docs/PUBLIC_CACHE.md",
+              "line": 1,
+              "evidence": "# 公共静态数据缓存与默认运营内容"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "admin_module_inventory": [
+    {
+      "feature_id": "a_public",
+      "title": "公共信息与轮播运营",
+      "routes": [
+        "/pages/manage/content/index",
+        "/pages/manage/content/banner"
+      ]
+    },
+    {
+      "feature_id": "a_articles",
+      "title": "文章草稿发布与管理",
+      "routes": [
+        "/pages/manage/articles/index",
+        "/pages/manage/articles/edit"
+      ]
+    },
+    {
+      "feature_id": "a_moderation",
+      "title": "图文审核队列与处置",
+      "routes": [
+        "/pages/manage/moderation"
+      ]
+    },
+    {
+      "feature_id": "a_users",
+      "title": "用户资料权限与风控",
+      "routes": [
+        "/pages/manage/users",
+        "/pages/manage/users/detail"
+      ]
+    },
+    {
+      "feature_id": "a_services",
+      "title": "服务状态审核与下架",
+      "routes": [
+        "/pages/manage/services"
+      ]
+    },
+    {
+      "feature_id": "a_clubs",
+      "title": "俱乐部审批与认证管理",
+      "routes": [
+        "/pages/manage/clubs"
+      ]
+    },
+    {
+      "feature_id": "a_orders",
+      "title": "平台订单与售后裁决",
+      "routes": [
+        "/pages/manage/orders"
+      ]
+    },
+    {
+      "feature_id": "a_games",
+      "title": "游戏分类主题素材配置",
+      "routes": [
+        "/pages/manage/games"
+      ]
+    },
+    {
+      "feature_id": "a_transfer",
+      "title": "微信商家转账参数配置",
+      "routes": [
+        "/pages/manage/wallet"
+      ]
+    },
+    {
+      "feature_id": "a_payment",
+      "title": "微信支付商户安全配置",
+      "routes": [
+        "/pages/manage/settings?tab=payment"
+      ]
+    },
+    {
+      "feature_id": "a_agreements",
+      "title": "用户协议隐私版本管理",
+      "routes": [
+        "/pages/manage/settings?tab=agreements",
+        "/pages/account/agreements"
+      ]
+    },
+    {
+      "feature_id": "a_platform",
+      "title": "平台名称与基础公告",
+      "routes": [
+        "/pages/manage/platform"
+      ]
+    },
+    {
+      "feature_id": "a_audit",
+      "title": "管理员操作日志审计",
+      "routes": [
+        "/pages/manage/audit"
+      ]
+    },
+    {
+      "feature_id": "a_ai",
+      "title": "图文审核模型接入配置",
+      "routes": [
+        "/pages/manage/ai"
+      ]
+    },
+    {
+      "feature_id": "a_messages",
+      "title": "平台消息群发定向通知",
+      "routes": [
+        "/pages/manage/messages"
+      ]
+    },
+    {
+      "feature_id": "a_support",
+      "title": "平台在线客服渠道配置",
+      "routes": [
+        "/pages/manage/support"
+      ]
+    },
+    {
+      "feature_id": "a_subscribe",
+      "title": "微信订阅模板发送管理",
+      "routes": [
+        "/pages/manage/subscriptions"
+      ]
+    }
+  ],
+  "admin_additional_capabilities": [
+    "a_dashboard",
+    "a_fund_audit",
+    "a_rules"
+  ],
+  "flows": [
+    {
+      "id": "service_order",
+      "title": "服务交易主流程",
+      "nodes": [
+        {
+          "feature_id": "b_auth",
+          "title": "微信登录协议手机号授权",
+          "description": "微信身份换取服务端会话，主动同意协议，交易前通过官方手机号授权。"
+        },
+        {
+          "feature_id": "p_browse",
+          "title": "多游戏服务筛选浏览",
+          "description": "按游戏、服务分类和关键词查找服务，支持价格及成交排序。"
+        },
+        {
+          "feature_id": "p_service",
+          "title": "服务详情与评价浏览",
+          "description": "查看封面图文、价格、服务方与保障标识，并浏览真实订单评价。"
+        },
+        {
+          "feature_id": "p_order",
+          "title": "按服务下单确认约定",
+          "description": "选择服务数量并填写需求与验收标准，生成保留服务快照的订单。"
+        },
+        {
+          "feature_id": "p_payment",
+          "title": "订单微信与余额支付",
+          "description": "核对订单金额后选择微信或钱包付款，付款结果以服务端核实为准。"
+        },
+        {
+          "feature_id": "w_fulfill",
+          "title": "接单开始交付全流程",
+          "description": "按订单依次接受、开始服务和提交交付，等待玩家核对并确认完成。"
+        },
+        {
+          "feature_id": "p_review",
+          "title": "服务验收与真实评价",
+          "description": "核对服务方交付说明后确认完成，符合条件的已完成订单可评价。"
+        },
+        {
+          "feature_id": "f_settlement",
+          "title": "七天售后期与订单分账",
+          "description": "验收收入先进入待结算，七天且无售后后按订单锁定费率完成分账。"
+        },
+        {
+          "feature_id": "f_withdraw",
+          "title": "收入提现与收款确认",
+          "description": "可提现收入提交申请，经平台审核发起转账，收款人按微信要求确认。"
+        }
+      ]
+    },
+    {
+      "id": "public_request",
+      "title": "公开需求认领流程",
+      "nodes": [
+        {
+          "feature_id": "b_auth",
+          "title": "微信登录协议手机号授权",
+          "description": "微信身份换取服务端会话，主动同意协议，交易前通过官方手机号授权。"
+        },
+        {
+          "feature_id": "p_request",
+          "title": "自定义需求预算发布",
+          "description": "写明游戏、服务目标和预算，付款后进入公开接单大厅等待认领。"
+        },
+        {
+          "feature_id": "p_payment",
+          "title": "订单微信与余额支付",
+          "description": "核对订单金额后选择微信或钱包付款，付款结果以服务端核实为准。"
+        },
+        {
+          "feature_id": "w_jobs",
+          "title": "公开需求筛选与认领",
+          "description": "浏览玩家已付款需求，核对预算与目标后认领，服务端复核接单资格。"
+        },
+        {
+          "feature_id": "w_affiliate",
+          "title": "独立接单与俱乐部挂靠",
+          "description": "可独立提供服务，也可申请俱乐部认证，认领需求时选择有效挂靠。"
+        },
+        {
+          "feature_id": "w_fulfill",
+          "title": "接单开始交付全流程",
+          "description": "按订单依次接受、开始服务和提交交付，等待玩家核对并确认完成。"
+        },
+        {
+          "feature_id": "p_review",
+          "title": "服务验收与真实评价",
+          "description": "核对服务方交付说明后确认完成，符合条件的已完成订单可评价。"
+        },
+        {
+          "feature_id": "f_settlement",
+          "title": "七天售后期与订单分账",
+          "description": "验收收入先进入待结算，七天且无售后后按订单锁定费率完成分账。"
+        }
+      ]
+    },
+    {
+      "id": "refund_dispute",
+      "title": "退款争议处理分支",
+      "nodes": [
+        {
+          "feature_id": "p_refund",
+          "title": "退款协商与平台介入",
+          "description": "支持取消未接单订单、提出退款和补充证据，争议可提交平台处理。"
+        },
+        {
+          "feature_id": "p_chat",
+          "title": "订单独立聊天与证据",
+          "description": "交易双方在独立聊天室沟通，可发送文字和图片并保留履约证据。"
+        },
+        {
+          "feature_id": "a_orders",
+          "title": "平台订单与售后裁决",
+          "description": "检索订单和售后记录，审阅双方证据，按实际情况裁决退款或继续履约。"
+        },
+        {
+          "feature_id": "f_refund",
+          "title": "原路退款与资金状态同步",
+          "description": "订单退款及押金退还追溯原付款，未知结果沿用原单同步，避免重复处理。"
+        }
+      ]
+    },
+    {
+      "id": "club_entry",
+      "title": "组织入驻成员认证",
+      "nodes": [
+        {
+          "feature_id": "c_create",
+          "title": "俱乐部创建与平台认证",
+          "description": "提交团队资料，按平台规则缴纳所需押金，再由管理员审核认证。"
+        },
+        {
+          "feature_id": "a_rules",
+          "title": "平台费率与押金规则",
+          "description": "配置自由和挂靠订单抽成及平台押金门槛，单笔订单按规则锁定费率。"
+        },
+        {
+          "feature_id": "a_clubs",
+          "title": "俱乐部审批与认证管理",
+          "description": "审核俱乐部申请、授予或撤销平台认证，并查看团队主页、成员和订单。"
+        },
+        {
+          "feature_id": "c_decorate",
+          "title": "俱乐部装修与游戏覆盖",
+          "description": "负责人维护团队封面、图文介绍和覆盖游戏，保存后进入内容审核。"
+        },
+        {
+          "feature_id": "c_rules",
+          "title": "入会门槛与团队抽成",
+          "description": "设置成员押金、考核要求、加入说明和团队佣金，申请人确认规则。"
+        },
+        {
+          "feature_id": "w_affiliate",
+          "title": "独立接单与俱乐部挂靠",
+          "description": "可独立提供服务，也可申请俱乐部认证，认领需求时选择有效挂靠。"
+        },
+        {
+          "feature_id": "c_deposit",
+          "title": "成员押金缴纳与退还",
+          "description": "成员依加入规则缴纳托管押金，可查询支付进度并按条件申请退还。"
+        },
+        {
+          "feature_id": "c_members",
+          "title": "成员申请考核与审核",
+          "description": "处理加入申请并记录审核说明，按考核要求认证、拒绝或移除成员。"
+        },
+        {
+          "feature_id": "c_orders",
+          "title": "团队订单与履约协助",
+          "description": "管理者查看挂靠产生的团队订单，进入订单聊天协助沟通与争议处理。"
+        },
+        {
+          "feature_id": "c_funds",
+          "title": "俱乐部佣金与提现管理",
+          "description": "组织佣金按进行中、结算中和可提现展示，提现收款绑定俱乐部负责人。"
+        }
+      ]
+    },
+    {
+      "id": "withdraw_audit",
+      "title": "提现资金审核流程",
+      "nodes": [
+        {
+          "feature_id": "f_wallet",
+          "title": "个人资产分区与资金流水",
+          "description": "充值、可提现收入、进行中、结算中和冻结分开记账，流水可逐条核对。"
+        },
+        {
+          "feature_id": "f_settlement",
+          "title": "七天售后期与订单分账",
+          "description": "验收收入先进入待结算，七天且无售后后按订单锁定费率完成分账。"
+        },
+        {
+          "feature_id": "f_withdraw",
+          "title": "收入提现与收款确认",
+          "description": "可提现收入提交申请，经平台审核发起转账，收款人按微信要求确认。"
+        },
+        {
+          "feature_id": "a_fund_audit",
+          "title": "个人组织提现资金审核",
+          "description": "集中处理个人和组织提现，逐笔查看付款来源、资金占用并审核转账。"
+        },
+        {
+          "feature_id": "f_sources",
+          "title": "提现逐笔来源与占用追溯",
+          "description": "提现审核关联原订单、付款凭证和分配金额，缺失可靠来源不能自动出款。"
+        },
+        {
+          "feature_id": "a_transfer",
+          "title": "微信商家转账参数配置",
+          "description": "维护获批转账场景、报备字段及回调信息，为收入提现提供通道配置。"
+        },
+        {
+          "feature_id": "f_callbacks",
+          "title": "支付回调校验与幂等记账",
+          "description": "校验微信签名、商户和金额，支付退款回调及重试均复用业务原单。"
+        }
+      ]
+    },
+    {
+      "id": "content_review",
+      "title": "运营内容审核流转",
+      "nodes": [
+        {
+          "feature_id": "a_public",
+          "title": "公共信息与轮播运营",
+          "description": "统一配置平台和游戏轮播、首页公告、四页提示及服务需求注意事项。"
+        },
+        {
+          "feature_id": "a_articles",
+          "title": "文章草稿发布与管理",
+          "description": "编辑安全Markdown文章、预览正文并管理发布状态，更新内容进入审核。"
+        },
+        {
+          "feature_id": "f_moderation",
+          "title": "内容后置审核与安全投影",
+          "description": "图文保存后进入模型或人工队列，违规展示受限，交易原始证据隔离保留。"
+        },
+        {
+          "feature_id": "a_ai",
+          "title": "图文审核模型接入配置",
+          "description": "配置兼容模型接口、提示词和审核选项，可由服务端测试已保存连接。"
+        },
+        {
+          "feature_id": "a_moderation",
+          "title": "图文审核队列与处置",
+          "description": "查看完整待审图文，人工通过或拒绝并填写原因，也可重试模型审核。"
+        },
+        {
+          "feature_id": "b_operations",
+          "title": "首页轮播公告与多页提示",
+          "description": "运营图片独立叠加文案并可跳转业务，公告按版本展示，四页提示统一配置。"
+        },
+        {
+          "feature_id": "b_articles",
+          "title": "公开文章搜索与安全阅读",
+          "description": "文章中心可搜索和阅读当前已发布安全正文，未公开内容不对访客展示。"
+        }
+      ]
+    }
+  ],
+  "cross_role_links": [
+    {
+      "from": "w_publish",
+      "to": "p_browse",
+      "label": "服务可见后供玩家选择",
+      "type": "cross_role"
+    },
+    {
+      "from": "p_request",
+      "to": "w_jobs",
+      "label": "已付款需求进入接单大厅",
+      "type": "cross_role"
+    },
+    {
+      "from": "p_order",
+      "to": "w_fulfill",
+      "label": "服务付款后由服务方接受履约",
+      "type": "cross_role"
+    },
+    {
+      "from": "w_fulfill",
+      "to": "p_review",
+      "label": "提交交付后由买家验收",
+      "type": "cross_role"
+    },
+    {
+      "from": "p_chat",
+      "to": "c_orders",
+      "label": "挂靠组织管理者协助沟通",
+      "type": "cross_role"
+    },
+    {
+      "from": "p_refund",
+      "to": "a_orders",
+      "label": "退款分歧可升级平台处理",
+      "type": "cross_role"
+    },
+    {
+      "from": "w_adjust",
+      "to": "p_payment",
+      "label": "加价同意后独立补款",
+      "type": "branch"
+    },
+    {
+      "from": "w_adjust",
+      "to": "f_refund",
+      "label": "减价同意后按原资金退差",
+      "type": "branch"
+    },
+    {
+      "from": "w_affiliate",
+      "to": "c_members",
+      "label": "入会申请由负责人审核",
+      "type": "cross_role"
+    },
+    {
+      "from": "c_create",
+      "to": "a_clubs",
+      "label": "组织申请由平台审批",
+      "type": "cross_role"
+    },
+    {
+      "from": "c_members",
+      "to": "c_scoped",
+      "label": "按成员所在组织范围管理",
+      "type": "sequence"
+    },
+    {
+      "from": "c_deputy",
+      "to": "c_scoped",
+      "label": "副管理仅管理本组织成员",
+      "type": "permission"
+    },
+    {
+      "from": "c_orders",
+      "to": "c_funds",
+      "label": "团队订单按锁定佣金记账",
+      "type": "financial"
+    },
+    {
+      "from": "p_review",
+      "to": "f_settlement",
+      "label": "确认后进入七天售后待结算",
+      "type": "financial"
+    },
+    {
+      "from": "f_settlement",
+      "to": "w_income",
+      "label": "收入状态反馈接单者",
+      "type": "financial"
+    },
+    {
+      "from": "f_settlement",
+      "to": "c_funds",
+      "label": "组织佣金与个人收入分别记账",
+      "type": "financial"
+    },
+    {
+      "from": "f_withdraw",
+      "to": "a_fund_audit",
+      "label": "提现申请进入平台来源审核",
+      "type": "cross_role"
+    },
+    {
+      "from": "a_fund_audit",
+      "to": "a_transfer",
+      "label": "通过后按转账配置执行",
+      "type": "financial"
+    },
+    {
+      "from": "a_public",
+      "to": "b_operations",
+      "label": "后台配置驱动前台运营展示",
+      "type": "cross_role"
+    },
+    {
+      "from": "a_articles",
+      "to": "b_articles",
+      "label": "已发布安全文章公开阅读",
+      "type": "cross_role"
+    },
+    {
+      "from": "a_messages",
+      "to": "b_inbox",
+      "label": "站内消息送达用户收件箱",
+      "type": "cross_role"
+    },
+    {
+      "from": "a_subscribe",
+      "to": "b_subscribe",
+      "label": "官方模板驱动六类授权提醒",
+      "type": "cross_role"
+    },
+    {
+      "from": "a_rules",
+      "to": "f_deposits",
+      "label": "规则决定平台押金门槛",
+      "type": "financial"
+    },
+    {
+      "from": "a_users",
+      "to": "f_permissions",
+      "label": "根副管理员按权限操作",
+      "type": "permission"
+    },
+    {
+      "from": "a_ai",
+      "to": "f_moderation",
+      "label": "有配置时使用真实模型审核",
+      "type": "review"
+    },
+    {
+      "from": "f_moderation",
+      "to": "a_moderation",
+      "label": "异常或无模型转人工",
+      "type": "review"
+    },
+    {
+      "from": "a_support",
+      "to": "b_support",
+      "label": "客服配置用于平台联络",
+      "type": "cross_role"
+    },
+    {
+      "from": "c_contact",
+      "to": "b_support",
+      "label": "团队联系方式用于组织联络",
+      "type": "cross_role"
+    },
+    {
+      "from": "f_callbacks",
+      "to": "a_dashboard",
+      "label": "可靠支付退款时间形成统计",
+      "type": "financial"
+    },
+    {
+      "from": "b_sharing",
+      "to": "p_service",
+      "label": "分享落地复核目标可见性",
+      "type": "growth"
+    }
+  ],
+  "flow_notes": {
+    "service_order": "聊天贯穿交易；已付款公开需求与按服务下单为两种入口，接受和开始服务是独立真实动作。",
+    "refund_dispute": "接单者可同意或拒绝退款；买家可补充证据申请平台介入，裁决可退款或继续履约。",
+    "club_entry": "平台押金仅按当前规则缴纳；成员申请与托管押金按组织规则办理，非个人自由接单门槛。",
+    "withdraw_audit": "冻结分配来源后审核，转账仍需获批商户能力及本人微信确认，回调核实后才算到账。",
+    "content_review": "用户服务、运营内容和文章是并列待审核来源；模型审核与人工审核为分支，并非必须依次完成。"
+  },
+  "non_claims": [
+    "个人平台押金自愿，不影响发布服务或自由接单。",
+    "充值余额只用于消费，不能直接提现。",
+    "成员托管押金、组织佣金与个人资产分开记账。",
+    "不将开发体验身份、本地支付、假码或演示经营数据当作生产验收。",
+    "图文后置审核与服务上架状态、俱乐部认证状态各自独立。"
+  ],
+  "registered_page_coverage": {
+    "pages/main/index": [
+      "p_browse",
+      "p_ordertrack",
+      "w_manage",
+      "b_operations",
+      "b_refresh",
+      "b_support"
+    ],
+    "pages/services/detail": [
+      "p_service"
+    ],
+    "pages/services/publish": [
+      "w_publish",
+      "w_manage",
+      "b_media",
+      "b_drafts"
+    ],
+    "pages/requests/publish": [
+      "p_request",
+      "b_drafts"
+    ],
+    "pages/orders/detail": [
+      "p_order",
+      "p_payment",
+      "p_ordertrack",
+      "p_review",
+      "p_refund",
+      "w_fulfill",
+      "w_adjust",
+      "f_refund"
+    ],
+    "pages/account/login": [
+      "b_auth"
+    ],
+    "pages/account/profile": [
+      "p_profile",
+      "b_media"
+    ],
+    "pages/account/wallet": [
+      "w_income",
+      "f_wallet",
+      "f_topup",
+      "f_settlement",
+      "f_withdraw",
+      "f_deposits",
+      "f_refund"
+    ],
+    "pages/account/agreements": [
+      "a_agreements"
+    ],
+    "pages/community/clubs/index": [
+      "c_discovery",
+      "c_create"
+    ],
+    "pages/community/clubs/detail": [
+      "w_affiliate",
+      "c_discovery",
+      "c_members",
+      "c_orders",
+      "b_support"
+    ],
+    "pages/community/clubs/edit": [
+      "c_decorate",
+      "c_rules",
+      "c_contact"
+    ],
+    "pages/community/players/detail": [
+      "p_profile"
+    ],
+    "pages/manage/index": [
+      "a_dashboard"
+    ],
+    "pages/manage/settings": [
+      "a_payment",
+      "a_agreements"
+    ],
+    "pages/manage/wallet": [
+      "a_transfer"
+    ],
+    "pages/manage/users": [
+      "a_users"
+    ],
+    "pages/manage/services": [
+      "a_services"
+    ],
+    "pages/manage/clubs": [
+      "a_clubs"
+    ],
+    "pages/manage/orders": [
+      "a_orders"
+    ],
+    "pages/manage/games": [
+      "a_games"
+    ],
+    "pages/manage/audit": [
+      "a_audit"
+    ],
+    "pages/manage/platform": [
+      "a_platform"
+    ],
+    "pages/account/messages/index": [
+      "b_inbox"
+    ],
+    "pages/account/messages/detail": [
+      "b_inbox"
+    ],
+    "pages/manage/moderation": [
+      "a_moderation",
+      "f_moderation"
+    ],
+    "pages/manage/ai": [
+      "a_ai"
+    ],
+    "pages/manage/messages": [
+      "a_messages"
+    ],
+    "pages/community/clubs/console": [
+      "c_decorate"
+    ],
+    "pages/community/clubs/funds": [
+      "c_funds",
+      "f_withdraw",
+      "f_deposits"
+    ],
+    "pages/community/clubs/deposit": [
+      "c_deposit"
+    ],
+    "pages/manage/finance/index": [
+      "a_fund_audit"
+    ],
+    "pages/manage/finance/detail": [
+      "a_fund_audit",
+      "f_sources"
+    ],
+    "pages/manage/finance/settings": [
+      "a_rules"
+    ],
+    "pages/manage/support": [
+      "a_support"
+    ],
+    "pages/shares/create": [
+      "b_sharing"
+    ],
+    "pages/shares/detail": [
+      "b_sharing"
+    ],
+    "pages/requests/detail": [
+      "p_request",
+      "w_jobs",
+      "w_affiliate"
+    ],
+    "pages/account/subscriptions": [
+      "b_subscribe"
+    ],
+    "pages/manage/subscriptions": [
+      "a_subscribe"
+    ],
+    "pages/content/articles/index": [
+      "b_articles"
+    ],
+    "pages/content/articles/detail": [
+      "b_articles"
+    ],
+    "pages/manage/articles/index": [
+      "a_articles"
+    ],
+    "pages/manage/articles/edit": [
+      "a_articles"
+    ],
+    "pages/manage/content/index": [
+      "a_public"
+    ],
+    "pages/manage/content/banner": [
+      "a_public"
+    ],
+    "pages/orders/chat": [
+      "p_chat",
+      "c_orders"
+    ],
+    "pages/services/reviews": [
+      "p_service"
+    ],
+    "pages/manage/users/detail": [
+      "a_users",
+      "f_permissions"
+    ],
+    "pages/community/clubs/members/detail": [
+      "c_members",
+      "c_scoped",
+      "c_deputy",
+      "f_permissions"
+    ]
+  },
+  "source_route_inventory": [
+    "backend/internal/app/server.go:249",
+    "backend/internal/app/wallet_routes.go:7",
+    "backend/internal/app/admin_users.go:65",
+    "backend/internal/app/public_content.go:167",
+    "backend/internal/app/order_adjustment_models.go:76",
+    "backend/internal/app/subscriptions.go:325",
+    "backend/internal/app/shares.go:54"
+  ],
+  "overview_flows": [
+    {
+      "id": "trade",
+      "title": "服务与需求的交易闭环",
+      "nodes": [
+        {
+          "title": "发现服务与需求",
+          "description": "按游戏挑选服务，也可发布明确预算的公开需求。"
+        },
+        {
+          "title": "登录下单与支付",
+          "description": "同意协议、绑定手机号，填写验收标准后确认付款。"
+        },
+        {
+          "title": "接单协作与沟通",
+          "description": "独立或俱乐部服务方接单，在订单聊天室确认约定。"
+        },
+        {
+          "title": "开始履约并交付",
+          "description": "按订单开始服务，保留沟通证据，提交完成说明。"
+        },
+        {
+          "title": "玩家验收与售后",
+          "description": "核对成果后确认完成并评价，问题可协商或申请介入。"
+        },
+        {
+          "title": "收入结算与提现",
+          "description": "验收后进入七天售后期，无争议再按规则释放可提收入。"
+        }
+      ]
+    },
+    {
+      "id": "funds",
+      "title": "资金从付款到提现的去向",
+      "nodes": [
+        {
+          "title": "付款记录与托管",
+          "description": "支付结果由服务端核实，保留原付款与业务单据。"
+        },
+        {
+          "title": "锁定交易费率",
+          "description": "按订单锁定平台及俱乐部抽成，佣金与押金分别记账。"
+        },
+        {
+          "title": "验收后待结算",
+          "description": "完成订单后保留七天售后期，期间仍可按规则协商。"
+        },
+        {
+          "title": "释放可提收入",
+          "description": "无退款争议且满足结算条件后，收入转为可提现。"
+        },
+        {
+          "title": "申请与平台审核",
+          "description": "个人或组织发起提现，平台逐笔核对资金来源和占用。"
+        },
+        {
+          "title": "转账确认与同步",
+          "description": "审核后按微信规则转账，查询原单并由收款人确认。"
+        }
+      ]
+    },
+    {
+      "id": "aftercare",
+      "title": "售后与异常处理分支",
+      "nodes": [
+        {
+          "title": "发起退款与举证",
+          "description": "在订单中填写申请理由，双方补充沟通和履约证据。"
+        },
+        {
+          "title": "双方协商处理",
+          "description": "服务方同意或拒绝退款，用户可补充理由继续协商。"
+        },
+        {
+          "title": "平台核对与裁决",
+          "description": "争议升级后由平台审阅证据，裁决退款或继续履约。"
+        },
+        {
+          "title": "原路处理与查单",
+          "description": "退款追溯原付款，未知结果复用原单同步，保留记录。"
+        }
+      ]
+    }
+  ]
+}

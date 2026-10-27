@@ -1,215 +1,456 @@
 {
   "passed": true,
-  "kind": "real-ui-recording",
-  "source": "当前H5真实页面连续录屏；数据为隔离环境演示，不代表微信真机或真实资金交易。",
-  "playback": "按原录屏时间范围剪辑，操作始终1x；旁白需要额外时间时只延长步骤末帧。",
-  "canvas": {
-    "width": 1080,
-    "height": 1920
-  },
+  "method": "每条连续Serena整篇一次生成；统一resample、固定gain及可选整篇tempo处理后的连续PCM随后逐样本原序保留，仅在真实句间静音插零；未经逐句TTS、逐句gain或变调",
+  "single_generation_pass": true,
+  "voice": "Serena",
+  "sample_rate": 48000,
   "fps": 30,
-  "voice_root": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-voice",
-  "frame_license": "https://tryhoverify.com/tools/device-frames/license/",
-  "rendered_ids": [
-    "03-order-tutorial"
-  ],
+  "canonical_report": "consistent-voice-report.json",
   "results": [
     {
       "id": "01-platform-tutorial",
-      "title": "平台管理员 · 运营上手",
-      "audience": "平台管理员",
-      "file": "videos/01-platform-tutorial.mp4",
-      "srt": "videos/01-platform-tutorial.srt",
-      "narration_audio": "audio/01-platform-tutorial/narration.wav",
+      "kind": "tutorial",
+      "voice": "Serena",
+      "single_generation_pass": true,
+      "source_audio_sha256": "54b45040249f74d3e9afe571313aabb76a7d016b94bb8fb74529d3fec3c73348",
+      "single_source_audio_sha256": "54b45040249f74d3e9afe571313aabb76a7d016b94bb8fb74529d3fec3c73348",
+      "source_duration_seconds": 47.68,
+      "original_video_sha256": "0ec1e74f4685505ace6eb8b22025afdf46f472396f91c2c071fa74885b5c9674",
+      "old_video_sha256": "0ec1e74f4685505ace6eb8b22025afdf46f472396f91c2c071fa74885b5c9674",
+      "alignment_sha256": "1b18506a264bc152f7702db212147d0234f73184b8b4cdb77d3c4c572de0ac1e",
+      "normalized_pcm_sha256": "a75ba225d44a4e3962ea955db8b45d2032c289feea0f4ecb885f5efc2347a083",
+      "narration_sha256": "ab6dbbddc5e26effa6e58e0502ff6426040f7811936c72098e0ba6c6af784f3c",
+      "global_gain_db": 4,
+      "global_gain_scope": "同一固定增益作用于整篇一次",
+      "global_tempo": 1,
+      "global_tempo_ratio": 1,
+      "resample_passes": 1,
+      "sentence_gain_applied": false,
+      "sentence_tts_applied": false,
+      "pitch_shift_applied": false,
+      "samples_preserved_in_order": true,
+      "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+      "source_sample_count": 2288640,
+      "preserved_sample_count": 2288640,
+      "inserted_samples": 37760,
+      "sample_rate": 48000,
       "playback_rate": 1,
-      "seconds": 51.93333333333334,
-      "raw": "raw/01-platform-tutorial.webm",
-      "raw_media": {
+      "fps": 30,
+      "frames": 1454,
+      "duration_seconds": 48.46666666666667,
+      "spans": [
+        {
+          "source_start": 0,
+          "source_end": 192910,
+          "output_start": 0,
+          "output_end": 193600,
+          "inserted_samples": 690,
+          "boundary_rms": 0.005909426157971318
+        },
+        {
+          "source_start": 192910,
+          "source_end": 457928,
+          "output_start": 193600,
+          "output_end": 459200,
+          "inserted_samples": 582,
+          "boundary_rms": 0.0010266502530236485
+        },
+        {
+          "source_start": 457928,
+          "source_end": 694215,
+          "output_start": 459200,
+          "output_end": 696000,
+          "inserted_samples": 513,
+          "boundary_rms": 0.00071200688336543
+        },
+        {
+          "source_start": 694215,
+          "source_end": 935806,
+          "output_start": 696000,
+          "output_end": 937600,
+          "inserted_samples": 9,
+          "boundary_rms": 0.0002566547673440088
+        },
+        {
+          "source_start": 935806,
+          "source_end": 1210400,
+          "output_start": 937600,
+          "output_end": 1212800,
+          "inserted_samples": 606,
+          "boundary_rms": 0.0001876996454326913
+        },
+        {
+          "source_start": 1210400,
+          "source_end": 1428469,
+          "output_start": 1212800,
+          "output_end": 1432000,
+          "inserted_samples": 1131,
+          "boundary_rms": 0.0017182654452755509
+        },
+        {
+          "source_start": 1428469,
+          "source_end": 1720323,
+          "output_start": 1432000,
+          "output_end": 1724800,
+          "inserted_samples": 946,
+          "boundary_rms": 0.00009225996033444148
+        },
+        {
+          "source_start": 1720323,
+          "source_end": 2026079,
+          "output_start": 1724800,
+          "output_end": 2032000,
+          "inserted_samples": 1444,
+          "boundary_rms": 0.00012786161149942233
+        },
+        {
+          "source_start": 2026079,
+          "source_end": 2288640,
+          "output_start": 2032000,
+          "output_end": 2326400,
+          "inserted_samples": 31839,
+          "boundary_rms": 0
+        }
+      ],
+      "boundaries": [
+        {
+          "sample": 0,
+          "rms": 0,
+          "asr_midpoint": 0
+        },
+        {
+          "sample": 192910,
+          "rms": 0.005909426157971318,
+          "asr_midpoint": 4
+        },
+        {
+          "sample": 457928,
+          "rms": 0.0010266502530236485,
+          "asr_midpoint": 9.54
+        },
+        {
+          "sample": 694215,
+          "rms": 0.00071200688336543,
+          "asr_midpoint": 14.46
+        },
+        {
+          "sample": 935806,
+          "rms": 0.0002566547673440088,
+          "asr_midpoint": 19.5
+        },
+        {
+          "sample": 1210400,
+          "rms": 0.0001876996454326913,
+          "asr_midpoint": 25.22
+        },
+        {
+          "sample": 1428469,
+          "rms": 0.0017182654452755509,
+          "asr_midpoint": 29.76
+        },
+        {
+          "sample": 1720323,
+          "rms": 0.00009225996033444148,
+          "asr_midpoint": 35.84
+        },
+        {
+          "sample": 2026079,
+          "rms": 0.00012786161149942233,
+          "asr_midpoint": 42.21
+        },
+        {
+          "sample": 2288640,
+          "rms": 0,
+          "asr_midpoint": 47.68
+        }
+      ],
+      "cues": [
+        {
+          "index": 0,
+          "text": "平台日常运营，从我的页面进入平台管理中心。",
+          "start": 0,
+          "end": 4,
+          "coverage": 1
+        },
+        {
+          "index": 1,
+          "text": "切换统计周期，查看真实订单金额和经营趋势。",
+          "start": 4,
+          "end": 9.554375,
+          "coverage": 0.9474
+        },
+        {
+          "index": 2,
+          "text": "打开用户管理，输入用户编号，快速定位资料。",
+          "start": 9.554375,
+          "end": 14.4865,
+          "coverage": 1
+        },
+        {
+          "index": 3,
+          "text": "点开用户详情，核对身份和手机验证状态。",
+          "start": 14.4865,
+          "end": 19.1771875,
+          "coverage": 1
+        },
+        {
+          "index": 4,
+          "text": "回到管理中心，进入图文审核，筛选待人工内容。",
+          "start": 19.897375,
+          "end": 25.137375,
+          "coverage": 1
+        },
+        {
+          "index": 5,
+          "text": "打开任务，先看完整内容，再决定是否通过。",
+          "start": 25.39,
+          "end": 29.8335625,
+          "coverage": 1
+        },
+        {
+          "index": 6,
+          "text": "确认内容符合要求后，点击通过，结果会保留记录。",
+          "start": 29.8335625,
+          "end": 35.5535625,
+          "coverage": 1
+        },
+        {
+          "index": 7,
+          "text": "公共信息里选择顶部提示，填写玩家首页要展示的内容。",
+          "start": 36.29327083333333,
+          "end": 41.97327083333333,
+          "coverage": 1
+        },
+        {
+          "index": 8,
+          "text": "保存公共信息后，返回玩家首页，查看提示是否生效。",
+          "start": 42.663354166666664,
+          "end": 47.78335416666667,
+          "coverage": 1
+        }
+      ],
+      "operations": [
+        {
+          "index": 0,
+          "id": "01",
+          "title": "进入管理中心",
+          "source_video_start": 0,
+          "source_video_end": 3.032,
+          "operation_seconds": 3.032,
+          "operation_speed": 1,
+          "output_start": 0,
+          "output_operation_end": 3.032,
+          "output_end": 4.033333333333333,
+          "output_frames": 121,
+          "held_end_frame_seconds": 1.0013333333333332
+        },
+        {
+          "index": 1,
+          "id": "02",
+          "title": "查看经营趋势",
+          "source_video_start": 4.8,
+          "source_video_end": 6.734999999999999,
+          "operation_seconds": 1.935,
+          "operation_speed": 1,
+          "output_start": 4.033333333333333,
+          "output_operation_end": 5.968333333333334,
+          "output_end": 9.566666666666666,
+          "output_frames": 166,
+          "held_end_frame_seconds": 3.598333333333333
+        },
+        {
+          "index": 2,
+          "id": "03",
+          "title": "查找用户",
+          "source_video_start": 12.8,
+          "source_video_end": 17.278,
+          "operation_seconds": 4.477999999999999,
+          "operation_speed": 1,
+          "output_start": 9.566666666666666,
+          "output_operation_end": 14.044666666666664,
+          "output_end": 14.5,
+          "output_frames": 148,
+          "held_end_frame_seconds": 0.4553333333333347
+        },
+        {
+          "index": 3,
+          "id": "04",
+          "title": "核对用户资料",
+          "source_video_start": 18.96666666666667,
+          "source_video_end": 20.88566666666667,
+          "operation_seconds": 1.9190000000000005,
+          "operation_speed": 1,
+          "output_start": 14.5,
+          "output_operation_end": 16.419,
+          "output_end": 19.533333333333335,
+          "output_frames": 151,
+          "held_end_frame_seconds": 3.1143333333333327
+        },
+        {
+          "index": 4,
+          "id": "05",
+          "title": "打开图文审核",
+          "source_video_start": 23.033333333333335,
+          "source_video_end": 26.047333333333334,
+          "operation_seconds": 3.014000000000001,
+          "operation_speed": 1,
+          "output_start": 19.533333333333335,
+          "output_operation_end": 22.547333333333334,
+          "output_end": 25.266666666666666,
+          "output_frames": 172,
+          "held_end_frame_seconds": 2.7193333333333323
+        },
+        {
+          "index": 5,
+          "id": "06",
+          "title": "查看完整内容",
+          "source_video_start": 27.833333333333336,
+          "source_video_end": 29.899333333333335,
+          "operation_seconds": 2.065999999999999,
+          "operation_speed": 1,
+          "output_start": 25.266666666666666,
+          "output_operation_end": 27.332666666666665,
+          "output_end": 29.833333333333332,
+          "output_frames": 137,
+          "held_end_frame_seconds": 2.5006666666666675
+        },
+        {
+          "index": 6,
+          "id": "07",
+          "title": "确认审核结果",
+          "source_video_start": 33.43333333333334,
+          "source_video_end": 35.93833333333333,
+          "operation_seconds": 2.504999999999999,
+          "operation_speed": 1,
+          "output_start": 29.833333333333332,
+          "output_operation_end": 32.33833333333333,
+          "output_end": 35.93333333333333,
+          "output_frames": 183,
+          "held_end_frame_seconds": 3.5950000000000006
+        },
+        {
+          "index": 7,
+          "id": "08",
+          "title": "编辑首页提示",
+          "source_video_start": 38,
+          "source_video_end": 43.068,
+          "operation_seconds": 5.067999999999998,
+          "operation_speed": 1,
+          "output_start": 35.93333333333333,
+          "output_operation_end": 41.00133333333333,
+          "output_end": 42.333333333333336,
+          "output_frames": 192,
+          "held_end_frame_seconds": 1.3320000000000025
+        },
+        {
+          "index": 8,
+          "id": "09",
+          "title": "保存并查看效果",
+          "source_video_start": 44.96666666666667,
+          "source_video_end": 51.07466666666667,
+          "operation_seconds": 6.108000000000004,
+          "operation_speed": 1,
+          "output_start": 42.333333333333336,
+          "output_operation_end": 48.44133333333334,
+          "output_end": 48.46666666666667,
+          "output_frames": 184,
+          "held_end_frame_seconds": 0.025333333333329655
+        }
+      ],
+      "generation_metadata": {
+        "sample_rate": 24000,
+        "samples": 1144320,
+        "duration_seconds": 47.68,
+        "peak": 0.44647216796875,
+        "rms": 0.048503194004297256,
+        "clipped_samples": 0,
+        "overall_safety_gain": 1,
+        "audio_sha256": "54b45040249f74d3e9afe571313aabb76a7d016b94bb8fb74529d3fec3c73348",
+        "id": "01-platform-tutorial",
+        "signature": "9aabc25756f7eae9248f5fcaeb6ce2ea0ecadef01a353ce11e09d52a3ea669e9",
+        "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+        "license": "Apache-2.0",
+        "source": "scripts/tutorial-voice-script.json",
+        "voice": "Serena",
+        "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+        "text": "平台日常运营，从我的页面进入平台管理中心。切换统计周期，查看真实订单金额和经营趋势。打开用户管理，输入用户编号，快速定位资料。点开用户详情，核对身份和手机验证状态。回到管理中心，进入图文审核，筛选待人工内容。打开任务，先看完整内容，再决定是否通过。确认内容符合要求后，点击通过，结果会保留记录。公共信息里选择顶部提示，填写玩家首页要展示的内容。保存公共信息后，返回玩家首页，查看提示是否生效。",
+        "segments": [
+          "平台日常运营，从我的页面进入平台管理中心。",
+          "切换统计周期，查看真实订单金额和经营趋势。",
+          "打开用户管理，输入用户编号，快速定位资料。",
+          "点开用户详情，核对身份和手机验证状态。",
+          "回到管理中心，进入图文审核，筛选待人工内容。",
+          "打开任务，先看完整内容，再决定是否通过。",
+          "确认内容符合要求后，点击通过，结果会保留记录。",
+          "公共信息里选择顶部提示，填写玩家首页要展示的内容。",
+          "保存公共信息后，返回玩家首页，查看提示是否生效。"
+        ],
+        "sampling_parameters": {
+          "temperature": 0.65,
+          "top_p": 0.9,
+          "top_k": 50,
+          "repetition_penalty": 1.05,
+          "max_tokens": 2048,
+          "seed": 20261026
+        },
+        "token_limit": 2048,
+        "seed_scope": "one_fixed_seed_per_complete_article",
+        "api_calls_per_video": 1,
+        "non_streaming_result_count": 1,
+        "token_count": 597,
+        "natural_eos_before_limit": true,
+        "generation_seconds": 28.946587541955523,
+        "model_peak_memory_gb": 9.344541709,
+        "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。"
+      },
+      "probe": {
         "programs": [],
         "streams": [
           {
-            "codec_name": "vp8",
+            "codec_name": "h264",
             "codec_type": "video",
-            "width": 786,
-            "height": 1518,
-            "avg_frame_rate": "25/1"
+            "width": 1080,
+            "height": 1920,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "duration": "48.466667",
+            "nb_frames": "1454"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 1,
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "duration": "48.466000",
+            "nb_frames": "2273"
           }
         ],
         "format": {
-          "duration": "37.160000"
-        }
+          "duration": "48.466667"
+        },
+        "max_volume_dbfs": -3,
+        "full_decode_passed": true,
+        "expected_frames": 1454,
+        "expected_seconds": 48.46666666666667
       },
+      "video_sha256": "7939d2ce7288c439460457fc18fdbf324521753866ee1ce60a8a50d0ee123ebd",
+      "audience": "平台管理员",
+      "title": "平台管理员 · 运营上手",
+      "seconds": 48.46666666666667,
+      "raw": "raw/01-platform-tutorial.webm",
+      "raw_clean": "raw-clean/01-platform-tutorial.webm",
       "content_crop": {
         "x": 0,
         "y": 0,
         "width": 393,
         "height": 759
       },
-      "raw_clean": "raw-clean/01-platform-tutorial.webm",
-      "steps": [
-        {
-          "id": "01",
-          "title": "进入管理中心",
-          "narration": "平台日常运营，从我的页面进入平台管理中心。",
-          "raw_start": 0.322717041015625,
-          "raw_end": 3.354717041015625,
-          "operation_seconds": 3.032,
-          "voice_seconds": 4.48,
-          "hold_seconds": 1.7679999999999998,
-          "start": 0,
-          "end": 4.8,
-          "frames": 144,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-0.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-0.wav"
-        },
-        {
-          "id": "02",
-          "title": "查看经营趋势",
-          "narration": "切换统计周期，查看真实订单金额和经营趋势。",
-          "raw_start": 3.431717041015625,
-          "raw_end": 5.366717041015625,
-          "operation_seconds": 1.935,
-          "voice_seconds": 7.68,
-          "hold_seconds": 6.0649999999999995,
-          "start": 4.8,
-          "end": 12.8,
-          "frames": 240,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-1.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-1.wav"
-        },
-        {
-          "id": "03",
-          "title": "查找用户",
-          "narration": "打开用户管理，输入用户编号，快速定位资料。",
-          "raw_start": 5.465717041015625,
-          "raw_end": 9.943717041015624,
-          "operation_seconds": 4.477999999999999,
-          "voice_seconds": 5.84,
-          "hold_seconds": 1.688666666666668,
-          "start": 12.8,
-          "end": 18.96666666666667,
-          "frames": 185,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-2.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-2.wav"
-        },
-        {
-          "id": "04",
-          "title": "核对用户资料",
-          "narration": "点开用户详情，核对身份和手机验证状态。",
-          "raw_start": 9.999717041015625,
-          "raw_end": 11.918717041015626,
-          "operation_seconds": 1.9190000000000005,
-          "voice_seconds": 3.76,
-          "hold_seconds": 2.147666666666666,
-          "start": 18.96666666666667,
-          "end": 23.033333333333335,
-          "frames": 122,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-3.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-3.wav"
-        },
-        {
-          "id": "05",
-          "title": "打开图文审核",
-          "narration": "回到管理中心，进入图文审核，筛选待人工内容。",
-          "raw_start": 14.082717041015625,
-          "raw_end": 17.096717041015626,
-          "operation_seconds": 3.014000000000001,
-          "voice_seconds": 4.48,
-          "hold_seconds": 1.7859999999999987,
-          "start": 23.033333333333335,
-          "end": 27.833333333333336,
-          "frames": 144,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-4.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-4.wav"
-        },
-        {
-          "id": "06",
-          "title": "查看完整内容",
-          "narration": "打开任务，先看完整内容，再决定是否通过。",
-          "raw_start": 17.459717041015626,
-          "raw_end": 19.525717041015625,
-          "operation_seconds": 2.065999999999999,
-          "voice_seconds": 5.28,
-          "hold_seconds": 3.5340000000000007,
-          "start": 27.833333333333336,
-          "end": 33.43333333333334,
-          "frames": 168,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-5.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-5.wav"
-        },
-        {
-          "id": "07",
-          "title": "确认审核结果",
-          "narration": "确认内容符合要求后，点击通过，结果会保留记录。",
-          "raw_start": 19.642717041015626,
-          "raw_end": 22.147717041015625,
-          "operation_seconds": 2.504999999999999,
-          "voice_seconds": 4.24,
-          "hold_seconds": 2.0616666666666674,
-          "start": 33.43333333333334,
-          "end": 38,
-          "frames": 137,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-6.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-6.wav"
-        },
-        {
-          "id": "08",
-          "title": "编辑首页提示",
-          "narration": "公共信息里选择顶部提示，填写玩家首页要展示的内容。",
-          "raw_start": 23.939717041015626,
-          "raw_end": 29.007717041015624,
-          "operation_seconds": 5.067999999999998,
-          "voice_seconds": 6.64,
-          "hold_seconds": 1.898666666666669,
-          "start": 38,
-          "end": 44.96666666666667,
-          "frames": 209,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-7.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-7.wav"
-        },
-        {
-          "id": "09",
-          "title": "保存并查看效果",
-          "narration": "保存公共信息后，返回玩家首页，查看提示是否生效。",
-          "raw_start": 29.056717041015624,
-          "raw_end": 35.16471704101563,
-          "operation_seconds": 6.108000000000004,
-          "voice_seconds": 6.64,
-          "hold_seconds": 0.8586666666666627,
-          "start": 44.96666666666667,
-          "end": 51.93333333333334,
-          "frames": 209,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-8.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/01-platform-tutorial/step-8.wav"
-        }
-      ],
-      "verified": {
-        "media": {
-          "programs": [],
-          "streams": [
-            {
-              "codec_name": "h264",
-              "codec_type": "video",
-              "width": 1080,
-              "height": 1920,
-              "avg_frame_rate": "30/1",
-              "nb_frames": "1558"
-            },
-            {
-              "codec_name": "aac",
-              "codec_type": "audio",
-              "sample_rate": "48000",
-              "channels": 1,
-              "avg_frame_rate": "0/0",
-              "nb_frames": "2436"
-            }
-          ],
-          "format": {
-            "duration": "51.933333"
-          }
-        },
-        "max_volume_dbfs": -2
-      },
+      "file": "videos/01-platform-tutorial.mp4",
+      "srt": "videos/01-platform-tutorial.srt",
+      "narration_audio": "audio/01-platform-tutorial/narration.wav",
+      "metadata_file": "audio/01-platform-tutorial/metadata.json",
       "previews": [
         "videos/qa/01-platform-tutorial/01-01.png",
         "videos/qa/01-platform-tutorial/02-02.png",
@@ -224,185 +465,415 @@
     },
     {
       "id": "02-club-tutorial",
-      "title": "俱乐部管理员 · 团队协作",
-      "audience": "俱乐部管理员",
-      "file": "videos/02-club-tutorial.mp4",
-      "srt": "videos/02-club-tutorial.srt",
-      "narration_audio": "audio/02-club-tutorial/narration.wav",
+      "kind": "tutorial",
+      "voice": "Serena",
+      "single_generation_pass": true,
+      "source_audio_sha256": "32e42fffc98d5ec9ed8cc597e59a6f4fa6ba49f09b01a71bd7f3381cb67e0f37",
+      "single_source_audio_sha256": "32e42fffc98d5ec9ed8cc597e59a6f4fa6ba49f09b01a71bd7f3381cb67e0f37",
+      "source_duration_seconds": 54.8,
+      "original_video_sha256": "ac832888762c3d1b039e7b419941998a169384e528c570d859080932c480e5a9",
+      "old_video_sha256": "ac832888762c3d1b039e7b419941998a169384e528c570d859080932c480e5a9",
+      "alignment_sha256": "f7ea0a7b48ac37800357e5e9cfdbe9aeadec42e06f5f6408eeef82fce04d5617",
+      "normalized_pcm_sha256": "1740abd45079f4d9f057910e175e4e516403f0daea254fe642f2d038cad4d5b7",
+      "narration_sha256": "691bb5f271800045236958cdacc36340b4f90cec0afeb70e7f65e50cfa699199",
+      "global_gain_db": 3.8,
+      "global_gain_scope": "同一固定增益作用于整篇一次",
+      "global_tempo": 1,
+      "global_tempo_ratio": 1,
+      "resample_passes": 1,
+      "sentence_gain_applied": false,
+      "sentence_tts_applied": false,
+      "pitch_shift_applied": false,
+      "samples_preserved_in_order": true,
+      "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+      "source_sample_count": 2630400,
+      "preserved_sample_count": 2630400,
+      "inserted_samples": 8000,
+      "sample_rate": 48000,
       "playback_rate": 1,
-      "seconds": 50.26666666666666,
-      "raw": "raw/02-club-tutorial.webm",
-      "raw_media": {
+      "fps": 30,
+      "frames": 1649,
+      "duration_seconds": 54.96666666666667,
+      "spans": [
+        {
+          "source_start": 0,
+          "source_end": 295196,
+          "output_start": 0,
+          "output_end": 296000,
+          "inserted_samples": 804,
+          "boundary_rms": 0.00010639290292263685
+        },
+        {
+          "source_start": 295196,
+          "source_end": 650719,
+          "output_start": 296000,
+          "output_end": 652800,
+          "inserted_samples": 1277,
+          "boundary_rms": 0.00026656337320125857
+        },
+        {
+          "source_start": 650719,
+          "source_end": 985941,
+          "output_start": 652800,
+          "output_end": 988800,
+          "inserted_samples": 778,
+          "boundary_rms": 0.00015463410717966592
+        },
+        {
+          "source_start": 985941,
+          "source_end": 1288842,
+          "output_start": 988800,
+          "output_end": 1292800,
+          "inserted_samples": 1099,
+          "boundary_rms": 0.00013853882509439
+        },
+        {
+          "source_start": 1288842,
+          "source_end": 1613685,
+          "output_start": 1292800,
+          "output_end": 1619200,
+          "inserted_samples": 1557,
+          "boundary_rms": 0.0001760335718406187
+        },
+        {
+          "source_start": 1613685,
+          "source_end": 1924799,
+          "output_start": 1619200,
+          "output_end": 1931200,
+          "inserted_samples": 886,
+          "boundary_rms": 0.00012075992428859571
+        },
+        {
+          "source_start": 1924799,
+          "source_end": 2254971,
+          "output_start": 1931200,
+          "output_end": 2262400,
+          "inserted_samples": 1028,
+          "boundary_rms": 0.00015618223469226713
+        },
+        {
+          "source_start": 2254971,
+          "source_end": 2630400,
+          "output_start": 2262400,
+          "output_end": 2638400,
+          "inserted_samples": 571,
+          "boundary_rms": 0
+        }
+      ],
+      "boundaries": [
+        {
+          "sample": 0,
+          "rms": 0,
+          "asr_midpoint": 0
+        },
+        {
+          "sample": 295196,
+          "rms": 0.00010639290292263685,
+          "asr_midpoint": 6.15
+        },
+        {
+          "sample": 650719,
+          "rms": 0.00026656337320125857,
+          "asr_midpoint": 13.56
+        },
+        {
+          "sample": 985941,
+          "rms": 0.00015463410717966592,
+          "asr_midpoint": 20.54
+        },
+        {
+          "sample": 1288842,
+          "rms": 0.00013853882509439,
+          "asr_midpoint": 26.85
+        },
+        {
+          "sample": 1613685,
+          "rms": 0.0001760335718406187,
+          "asr_midpoint": 33.620000000000005
+        },
+        {
+          "sample": 1924799,
+          "rms": 0.00012075992428859571,
+          "asr_midpoint": 40.099999999999994
+        },
+        {
+          "sample": 2254971,
+          "rms": 0.00015618223469226713,
+          "asr_midpoint": 46.980000000000004
+        },
+        {
+          "sample": 2630400,
+          "rms": 0,
+          "asr_midpoint": 54.8
+        }
+      ],
+      "cues": [
+        {
+          "index": 0,
+          "text": "在我的页面打开俱乐部中心，进入自己的管理控制台。",
+          "start": 0,
+          "end": 5.82,
+          "coverage": 1
+        },
+        {
+          "index": 1,
+          "text": "加入规则与装修里，可以核对抽成、押金和团队介绍。",
+          "start": 6.49675,
+          "end": 13.17675,
+          "coverage": 0.9048
+        },
+        {
+          "index": 2,
+          "text": "打开成员管理，搜索申请人，找到待审核的申请。",
+          "start": 14.003354166666666,
+          "end": 20.243354166666666,
+          "coverage": 0.9474
+        },
+        {
+          "index": 3,
+          "text": "核对申请人，点击审核，填写本次处理说明。",
+          "start": 20.9395625,
+          "end": 26.7595625,
+          "coverage": 0.9412
+        },
+        {
+          "index": 4,
+          "text": "确认处理后，申请人会成为俱乐部的认证成员。",
+          "start": 27.082458333333335,
+          "end": 33.28245833333333,
+          "coverage": 0.8421
+        },
+        {
+          "index": 5,
+          "text": "进入团队订单，打开订单详情，查看履约进度。",
+          "start": 34.154895833333335,
+          "end": 39.91489583333333,
+          "coverage": 1
+        },
+        {
+          "index": 6,
+          "text": "订单聊天保存沟通记录，管理员也能协助双方确认进度。",
+          "start": 40.53335416666667,
+          "end": 46.773354166666664,
+          "coverage": 1
+        },
+        {
+          "index": 7,
+          "text": "俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
+          "start": 47.47477083333333,
+          "end": 54.89477083333333,
+          "coverage": 0.913
+        }
+      ],
+      "operations": [
+        {
+          "index": 0,
+          "id": "01",
+          "title": "进入俱乐部控制台",
+          "source_video_start": 0,
+          "source_video_end": 3.1229999999999998,
+          "operation_seconds": 3.1229999999999998,
+          "operation_speed": 1,
+          "output_start": 0,
+          "output_operation_end": 3.1229999999999998,
+          "output_end": 6.166666666666667,
+          "output_frames": 185,
+          "held_end_frame_seconds": 3.043666666666667
+        },
+        {
+          "index": 1,
+          "id": "02",
+          "title": "查看加入规则",
+          "source_video_start": 8.733333333333333,
+          "source_video_end": 11.168333333333333,
+          "operation_seconds": 2.4349999999999996,
+          "operation_speed": 1,
+          "output_start": 6.166666666666667,
+          "output_operation_end": 8.601666666666667,
+          "output_end": 13.6,
+          "output_frames": 223,
+          "held_end_frame_seconds": 4.998333333333334
+        },
+        {
+          "index": 2,
+          "id": "03",
+          "title": "查找入会申请",
+          "source_video_start": 16.799999999999997,
+          "source_video_end": 21.270999999999997,
+          "operation_seconds": 4.470999999999999,
+          "operation_speed": 1,
+          "output_start": 13.6,
+          "output_operation_end": 18.070999999999998,
+          "output_end": 20.6,
+          "output_frames": 210,
+          "held_end_frame_seconds": 2.529000000000001
+        },
+        {
+          "index": 3,
+          "id": "04",
+          "title": "填写审核说明",
+          "source_video_start": 22.566666666666663,
+          "source_video_end": 25.959666666666664,
+          "operation_seconds": 3.392999999999999,
+          "operation_speed": 1,
+          "output_start": 20.6,
+          "output_operation_end": 23.993000000000002,
+          "output_end": 26.933333333333334,
+          "output_frames": 190,
+          "held_end_frame_seconds": 2.940333333333334
+        },
+        {
+          "index": 4,
+          "id": "05",
+          "title": "完成成员认证",
+          "source_video_start": 28.33333333333333,
+          "source_video_end": 30.35633333333333,
+          "operation_seconds": 2.0229999999999997,
+          "operation_speed": 1,
+          "output_start": 26.933333333333334,
+          "output_operation_end": 28.956333333333333,
+          "output_end": 33.733333333333334,
+          "output_frames": 204,
+          "held_end_frame_seconds": 4.777
+        },
+        {
+          "index": 5,
+          "id": "06",
+          "title": "查看团队订单",
+          "source_video_start": 33.599999999999994,
+          "source_video_end": 37.095,
+          "operation_seconds": 3.495000000000001,
+          "operation_speed": 1,
+          "output_start": 33.733333333333334,
+          "output_operation_end": 37.22833333333334,
+          "output_end": 40.233333333333334,
+          "output_frames": 195,
+          "held_end_frame_seconds": 3.004999999999999
+        },
+        {
+          "index": 6,
+          "id": "07",
+          "title": "协助订单沟通",
+          "source_video_start": 38.46666666666666,
+          "source_video_end": 44.58866666666666,
+          "operation_seconds": 6.122,
+          "operation_speed": 1,
+          "output_start": 40.233333333333334,
+          "output_operation_end": 46.355333333333334,
+          "output_end": 47.13333333333333,
+          "output_frames": 207,
+          "held_end_frame_seconds": 0.7780000000000005
+        },
+        {
+          "index": 7,
+          "id": "08",
+          "title": "查看组织资金",
+          "source_video_start": 44.599999999999994,
+          "source_video_end": 47.05199999999999,
+          "operation_seconds": 2.451999999999998,
+          "operation_speed": 1,
+          "output_start": 47.13333333333333,
+          "output_operation_end": 49.58533333333333,
+          "output_end": 54.96666666666667,
+          "output_frames": 235,
+          "held_end_frame_seconds": 5.381333333333335
+        }
+      ],
+      "generation_metadata": {
+        "sample_rate": 24000,
+        "samples": 1315200,
+        "duration_seconds": 54.8,
+        "peak": 0.458221435546875,
+        "rms": 0.04194801673293114,
+        "clipped_samples": 0,
+        "overall_safety_gain": 1,
+        "audio_sha256": "32e42fffc98d5ec9ed8cc597e59a6f4fa6ba49f09b01a71bd7f3381cb67e0f37",
+        "id": "02-club-tutorial",
+        "signature": "6b699d9c0aeea495f5ce4ac1e65938010accf1c52801513d57f2cee86ef7654d",
+        "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+        "license": "Apache-2.0",
+        "source": "scripts/tutorial-voice-script.json",
+        "voice": "Serena",
+        "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。完整讲完所有文字，不省略末字，最后一句自然收尾，稍作停顿。",
+        "text": "在我的页面打开俱乐部中心，进入自己的管理控制台。加入规则与装修里，可以核对抽成、押金和团队介绍。打开成员管理，搜索申请人，找到待审核的申请。核对申请人，点击审核，填写本次处理说明。确认处理后，申请人会成为俱乐部的认证成员。进入团队订单，打开订单详情，查看履约进度。订单聊天保存沟通记录，管理员也能协助双方确认进度。俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
+        "actual_generation_text": "在我的页面打开俱乐部中心，进入自己的管理控制台。加入规则与装修里，可以核对抽成、押金和团队介绍。打开成员管理，搜索申请人，找到待审核的申请。核对申请人，点击审核，填写本次处理说明。确认处理后，申请人会成为俱乐部的认证成员。进入团队订单，打开订单详情，查看履约进度。订单聊天保存沟通记录，管理员也能协助双方确认进度。俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
+        "punctuation_normalized": false,
+        "segments": [
+          "在我的页面打开俱乐部中心，进入自己的管理控制台。",
+          "加入规则与装修里，可以核对抽成、押金和团队介绍。",
+          "打开成员管理，搜索申请人，找到待审核的申请。",
+          "核对申请人，点击审核，填写本次处理说明。",
+          "确认处理后，申请人会成为俱乐部的认证成员。",
+          "进入团队订单，打开订单详情，查看履约进度。",
+          "订单聊天保存沟通记录，管理员也能协助双方确认进度。",
+          "俱乐部资金会分别展示押金、进行中佣金和待结算金额。"
+        ],
+        "sampling_parameters": {
+          "temperature": 0.75,
+          "top_p": 0.9,
+          "top_k": 50,
+          "repetition_penalty": 1.08,
+          "max_tokens": 2048,
+          "seed": 20261028
+        },
+        "token_limit": 2048,
+        "seed_scope": "one_fixed_seed_per_complete_article",
+        "api_calls_per_video": 1,
+        "non_streaming_result_count": 1,
+        "token_count": 685,
+        "natural_eos_before_limit": true,
+        "generation_seconds": 32.99530404107645,
+        "model_peak_memory_gb": 9.566582159,
+        "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。"
+      },
+      "probe": {
         "programs": [],
         "streams": [
           {
-            "codec_name": "vp8",
+            "codec_name": "h264",
             "codec_type": "video",
-            "width": 786,
-            "height": 1518,
-            "avg_frame_rate": "25/1"
+            "width": 1080,
+            "height": 1920,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "duration": "54.966667",
+            "nb_frames": "1649"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 1,
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "duration": "54.966000",
+            "nb_frames": "2578"
           }
         ],
         "format": {
-          "duration": "32.440000"
-        }
+          "duration": "54.966667"
+        },
+        "max_volume_dbfs": -2.9,
+        "full_decode_passed": true,
+        "expected_frames": 1649,
+        "expected_seconds": 54.96666666666667
       },
+      "video_sha256": "00d806e0d2a7a0e8b80cdc65048fade1e73fc7f7f243e0fae5c70634d54c77b8",
+      "audience": "俱乐部管理员",
+      "title": "俱乐部管理员 · 团队协作",
+      "seconds": 54.96666666666667,
+      "raw": "raw/02-club-tutorial.webm",
+      "raw_clean": "raw-clean/02-club-tutorial.webm",
       "content_crop": {
         "x": 0,
         "y": 0,
         "width": 393,
         "height": 759
       },
-      "raw_clean": "raw-clean/02-club-tutorial.webm",
-      "steps": [
-        {
-          "id": "01",
-          "title": "进入俱乐部控制台",
-          "narration": "在我的页面打开俱乐部中心，进入自己的管理控制台。",
-          "raw_start": 0.327443115234375,
-          "raw_end": 3.450443115234375,
-          "operation_seconds": 3.1229999999999998,
-          "voice_seconds": 8.4,
-          "hold_seconds": 5.610333333333333,
-          "start": 0,
-          "end": 8.733333333333333,
-          "frames": 262,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-0.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-0.wav"
-        },
-        {
-          "id": "02",
-          "title": "查看加入规则",
-          "narration": "加入规则与装修里，可以核对抽成、押金和团队介绍。",
-          "raw_start": 3.520443115234375,
-          "raw_end": 5.955443115234375,
-          "operation_seconds": 2.4349999999999996,
-          "voice_seconds": 7.76,
-          "hold_seconds": 5.631666666666667,
-          "start": 8.733333333333333,
-          "end": 16.799999999999997,
-          "frames": 242,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-1.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-1.wav"
-        },
-        {
-          "id": "03",
-          "title": "查找入会申请",
-          "narration": "打开成员管理，搜索申请人，找到待审核的申请。",
-          "raw_start": 7.092443115234375,
-          "raw_end": 11.563443115234374,
-          "operation_seconds": 4.470999999999999,
-          "voice_seconds": 5.44,
-          "hold_seconds": 1.2956666666666674,
-          "start": 16.799999999999997,
-          "end": 22.566666666666663,
-          "frames": 173,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-2.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-2.wav"
-        },
-        {
-          "id": "04",
-          "title": "填写审核说明",
-          "narration": "核对申请人，点击审核，填写本次处理说明。",
-          "raw_start": 11.683443115234375,
-          "raw_end": 15.076443115234374,
-          "operation_seconds": 3.392999999999999,
-          "voice_seconds": 5.44,
-          "hold_seconds": 2.3736666666666677,
-          "start": 22.566666666666663,
-          "end": 28.33333333333333,
-          "frames": 173,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-3.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-3.wav"
-        },
-        {
-          "id": "05",
-          "title": "完成成员认证",
-          "narration": "确认处理后，申请人会成为俱乐部的认证成员。",
-          "raw_start": 15.249443115234374,
-          "raw_end": 17.272443115234374,
-          "operation_seconds": 2.0229999999999997,
-          "voice_seconds": 4.96,
-          "hold_seconds": 3.243666666666667,
-          "start": 28.33333333333333,
-          "end": 33.599999999999994,
-          "frames": 158,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-4.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-4.wav"
-        },
-        {
-          "id": "06",
-          "title": "查看团队订单",
-          "narration": "进入团队订单，打开订单详情，查看履约进度。",
-          "raw_start": 18.426443115234374,
-          "raw_end": 21.921443115234375,
-          "operation_seconds": 3.495000000000001,
-          "voice_seconds": 4.56,
-          "hold_seconds": 1.3716666666666653,
-          "start": 33.599999999999994,
-          "end": 38.46666666666666,
-          "frames": 146,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-5.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-5.wav"
-        },
-        {
-          "id": "07",
-          "title": "协助订单沟通",
-          "narration": "订单聊天保存沟通记录，管理员也能协助双方确认进度。",
-          "raw_start": 21.995443115234377,
-          "raw_end": 28.117443115234376,
-          "operation_seconds": 6.122,
-          "voice_seconds": 4.88,
-          "hold_seconds": 0.011333333333333862,
-          "start": 38.46666666666666,
-          "end": 44.599999999999994,
-          "frames": 184,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-6.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-6.wav"
-        },
-        {
-          "id": "08",
-          "title": "查看组织资金",
-          "narration": "俱乐部资金会分别展示押金、进行中佣金和待结算金额。",
-          "raw_start": 28.192443115234376,
-          "raw_end": 30.644443115234374,
-          "operation_seconds": 2.451999999999998,
-          "voice_seconds": 5.36,
-          "hold_seconds": 3.214666666666669,
-          "start": 44.599999999999994,
-          "end": 50.26666666666666,
-          "frames": 170,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-7.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/02-club-tutorial/step-7.wav"
-        }
-      ],
-      "verified": {
-        "media": {
-          "programs": [],
-          "streams": [
-            {
-              "codec_name": "h264",
-              "codec_type": "video",
-              "width": 1080,
-              "height": 1920,
-              "avg_frame_rate": "30/1",
-              "nb_frames": "1508"
-            },
-            {
-              "codec_name": "aac",
-              "codec_type": "audio",
-              "sample_rate": "48000",
-              "channels": 1,
-              "avg_frame_rate": "0/0",
-              "nb_frames": "2358"
-            }
-          ],
-          "format": {
-            "duration": "50.266667"
-          }
-        },
-        "max_volume_dbfs": -2
-      },
+      "file": "videos/02-club-tutorial.mp4",
+      "srt": "videos/02-club-tutorial.srt",
+      "narration_audio": "audio/02-club-tutorial/narration.wav",
+      "metadata_file": "audio/02-club-tutorial/metadata.json",
       "previews": [
         "videos/qa/02-club-tutorial/01-01.png",
         "videos/qa/02-club-tutorial/02-02.png",
@@ -416,245 +887,553 @@
     },
     {
       "id": "03-order-tutorial",
-      "title": "玩家与接单者 · 完整订单",
-      "audience": "玩家与游戏爱好者",
-      "file": "videos/03-order-tutorial.mp4",
-      "srt": "videos/03-order-tutorial.srt",
-      "narration_audio": "audio/03-order-tutorial/narration.wav",
+      "kind": "tutorial",
+      "voice": "Serena",
+      "single_generation_pass": true,
+      "source_audio_sha256": "77303e12fe04428a720b096e57ac46e31e1403734a3d5ebfab3451e22af0b7f0",
+      "single_source_audio_sha256": "77303e12fe04428a720b096e57ac46e31e1403734a3d5ebfab3451e22af0b7f0",
+      "source_duration_seconds": 85.04,
+      "original_video_sha256": "c232bab5a121e73df674de26a8f4aae78a64160394ba9e4a7fe0048ee7ac5754",
+      "old_video_sha256": "c232bab5a121e73df674de26a8f4aae78a64160394ba9e4a7fe0048ee7ac5754",
+      "alignment_sha256": "63208960456e1ae41110fb50c211e1cccf32b76ce3932d50c2ec0c3ed1a93c47",
+      "normalized_pcm_sha256": "50b760f39944ee2e4f46ddd600afe3d74f497926fe5189fb4244360141146ab5",
+      "narration_sha256": "ba7f3c1581db5859e967d61c117cfb9d71ecb56ea22756453425d338d19ba1fa",
+      "global_gain_db": 3.2,
+      "global_gain_scope": "同一固定增益作用于整篇一次",
+      "global_tempo": 1,
+      "global_tempo_ratio": 1,
+      "resample_passes": 1,
+      "sentence_gain_applied": false,
+      "sentence_tts_applied": false,
+      "pitch_shift_applied": false,
+      "samples_preserved_in_order": true,
+      "preserved_sample_scope": "统一resample、固定gain及可选整篇tempo处理后的连续PCM，随后逐样本原序保留，仅在真实句间静音插零；不表示24k原始字节未经处理",
+      "source_sample_count": 4081920,
+      "preserved_sample_count": 4081920,
+      "inserted_samples": 10880,
+      "sample_rate": 48000,
       "playback_rate": 1,
-      "seconds": 80.86666666666667,
-      "raw": "raw/03-order-tutorial.webm",
-      "raw_media": {
+      "fps": 30,
+      "frames": 2558,
+      "duration_seconds": 85.26666666666667,
+      "spans": [
+        {
+          "source_start": 0,
+          "source_end": 254934,
+          "output_start": 0,
+          "output_end": 256000,
+          "inserted_samples": 1066,
+          "boundary_rms": 0.00009931897235407212
+        },
+        {
+          "source_start": 254934,
+          "source_end": 600958,
+          "output_start": 256000,
+          "output_end": 603200,
+          "inserted_samples": 1176,
+          "boundary_rms": 0.000047990448183045004
+        },
+        {
+          "source_start": 600958,
+          "source_end": 887545,
+          "output_start": 603200,
+          "output_end": 891200,
+          "inserted_samples": 1413,
+          "boundary_rms": 0.0001963241523642324
+        },
+        {
+          "source_start": 887545,
+          "source_end": 1188870,
+          "output_start": 891200,
+          "output_end": 1193600,
+          "inserted_samples": 1075,
+          "boundary_rms": 0.00018720799298106564
+        },
+        {
+          "source_start": 1188870,
+          "source_end": 1541728,
+          "output_start": 1193600,
+          "output_end": 1547200,
+          "inserted_samples": 742,
+          "boundary_rms": 0.00010794087946423446
+        },
+        {
+          "source_start": 1541728,
+          "source_end": 1863843,
+          "output_start": 1547200,
+          "output_end": 1870400,
+          "inserted_samples": 1085,
+          "boundary_rms": 0.00005320556902955083
+        },
+        {
+          "source_start": 1863843,
+          "source_end": 2218075,
+          "output_start": 1870400,
+          "output_end": 2225600,
+          "inserted_samples": 968,
+          "boundary_rms": 0.0000714751171586214
+        },
+        {
+          "source_start": 2218075,
+          "source_end": 2582400,
+          "output_start": 2225600,
+          "output_end": 2590400,
+          "inserted_samples": 475,
+          "boundary_rms": 0.00010420944904896693
+        },
+        {
+          "source_start": 2582400,
+          "source_end": 2909693,
+          "output_start": 2590400,
+          "output_end": 2918400,
+          "inserted_samples": 707,
+          "boundary_rms": 0.00012011552308126035
+        },
+        {
+          "source_start": 2909693,
+          "source_end": 3300950,
+          "output_start": 2918400,
+          "output_end": 3310400,
+          "inserted_samples": 743,
+          "boundary_rms": 0.000079078714187006
+        },
+        {
+          "source_start": 3300950,
+          "source_end": 3666704,
+          "output_start": 3310400,
+          "output_end": 3676800,
+          "inserted_samples": 646,
+          "boundary_rms": 0.000059847400958955834
+        },
+        {
+          "source_start": 3666704,
+          "source_end": 4081920,
+          "output_start": 3676800,
+          "output_end": 4092800,
+          "inserted_samples": 784,
+          "boundary_rms": 0
+        }
+      ],
+      "boundaries": [
+        {
+          "sample": 0,
+          "rms": 0,
+          "asr_midpoint": 0
+        },
+        {
+          "sample": 254934,
+          "rms": 0.00009931897235407212,
+          "asr_midpoint": 5.3100000000000005
+        },
+        {
+          "sample": 600958,
+          "rms": 0.000047990448183045004,
+          "asr_midpoint": 12.52
+        },
+        {
+          "sample": 887545,
+          "rms": 0.0001963241523642324,
+          "asr_midpoint": 18.490000000000002
+        },
+        {
+          "sample": 1188870,
+          "rms": 0.00018720799298106564,
+          "asr_midpoint": 24.77
+        },
+        {
+          "sample": 1541728,
+          "rms": 0.00010794087946423446,
+          "asr_midpoint": 32.120000000000005
+        },
+        {
+          "sample": 1863843,
+          "rms": 0.00005320556902955083,
+          "asr_midpoint": 38.83
+        },
+        {
+          "sample": 2218075,
+          "rms": 0.0000714751171586214,
+          "asr_midpoint": 46.21
+        },
+        {
+          "sample": 2582400,
+          "rms": 0.00010420944904896693,
+          "asr_midpoint": 53.8
+        },
+        {
+          "sample": 2909693,
+          "rms": 0.00012011552308126035,
+          "asr_midpoint": 60.620000000000005
+        },
+        {
+          "sample": 3300950,
+          "rms": 0.000079078714187006,
+          "asr_midpoint": 68.77
+        },
+        {
+          "sample": 3666704,
+          "rms": 0.000059847400958955834,
+          "asr_midpoint": 76.38999999999999
+        },
+        {
+          "sample": 4081920,
+          "rms": 0,
+          "asr_midpoint": 85.04
+        }
+      ],
+      "cues": [
+        {
+          "index": 0,
+          "text": "玩家先查看服务详情，确认价格、介绍和服务方。",
+          "start": 0,
+          "end": 4.82,
+          "coverage": 1
+        },
+        {
+          "index": 1,
+          "text": "填写区服、预约时间和验收标准，双方更容易对齐预期。",
+          "start": 5.822208333333333,
+          "end": 11.862208333333333,
+          "coverage": 0.9545
+        },
+        {
+          "index": 2,
+          "text": "核对金额后确认下单，系统会生成一笔待付款订单。",
+          "start": 13.246708333333334,
+          "end": 18.106708333333334,
+          "coverage": 0.9048
+        },
+        {
+          "index": 3,
+          "text": "订单内选择支付方式。这次演示使用本地测试支付。",
+          "start": 18.996145833333333,
+          "end": 24.456145833333334,
+          "coverage": 0.9524
+        },
+        {
+          "index": 4,
+          "text": "确认支付后，订单进入待接单状态，正式交易以微信结果为准。",
+          "start": 25.258541666666666,
+          "end": 31.698541666666667,
+          "coverage": 0.96
+        },
+        {
+          "index": 5,
+          "text": "打开订单聊天，把集合时间和服务需求留在订单里。",
+          "start": 32.754,
+          "end": 38.274,
+          "coverage": 1
+        },
+        {
+          "index": 6,
+          "text": "切到接单者视角，核对需求后，点击接受订单。",
+          "start": 39.636604166666665,
+          "end": 45.596604166666665,
+          "coverage": 0.9444
+        },
+        {
+          "index": 7,
+          "text": "双方确认后，点击开始服务，订单进度同步更新。",
+          "start": 47.116770833333334,
+          "end": 53.19677083333333,
+          "coverage": 1
+        },
+        {
+          "index": 8,
+          "text": "服务过程中在订单聊天同步进度，方便双方核对。",
+          "start": 54.72666666666667,
+          "end": 60.06666666666667,
+          "coverage": 0.95
+        },
+        {
+          "index": 9,
+          "text": "完成服务后提交交付，写清完成内容，等待玩家验收。",
+          "start": 61.52139583333334,
+          "end": 68.14139583333333,
+          "coverage": 1
+        },
+        {
+          "index": 10,
+          "text": "玩家核对交付说明，确认符合约定后，验收并完成。",
+          "start": 69.776875,
+          "end": 75.516875,
+          "coverage": 1
+        },
+        {
+          "index": 11,
+          "text": "服务收入先进入结算中，保留七天售后期，再按规则转为可提现。",
+          "start": 77.67033333333333,
+          "end": 85.23033333333333,
+          "coverage": 0.9615
+        }
+      ],
+      "operations": [
+        {
+          "index": 0,
+          "id": "01",
+          "title": "选择服务",
+          "source_video_start": 0,
+          "source_video_end": 1.956,
+          "operation_seconds": 1.956,
+          "operation_speed": 1,
+          "output_start": 0,
+          "output_operation_end": 1.956,
+          "output_end": 5.333333333333333,
+          "output_frames": 160,
+          "held_end_frame_seconds": 3.377333333333333
+        },
+        {
+          "index": 1,
+          "id": "02",
+          "title": "写清需求",
+          "source_video_start": 5.5,
+          "source_video_end": 8.849,
+          "operation_seconds": 3.3489999999999998,
+          "operation_speed": 1,
+          "output_start": 5.333333333333333,
+          "output_operation_end": 8.682333333333332,
+          "output_end": 12.566666666666666,
+          "output_frames": 217,
+          "held_end_frame_seconds": 3.8843333333333336
+        },
+        {
+          "index": 2,
+          "id": "03",
+          "title": "创建订单",
+          "source_video_start": 11.8,
+          "source_video_end": 14.233,
+          "operation_seconds": 2.4330000000000007,
+          "operation_speed": 1,
+          "output_start": 12.566666666666666,
+          "output_operation_end": 14.999666666666666,
+          "output_end": 18.566666666666666,
+          "output_frames": 180,
+          "held_end_frame_seconds": 3.5669999999999993
+        },
+        {
+          "index": 3,
+          "id": "04",
+          "title": "选择支付方式",
+          "source_video_start": 16.766666666666666,
+          "source_video_end": 19.738666666666667,
+          "operation_seconds": 2.9720000000000013,
+          "operation_speed": 1,
+          "output_start": 18.566666666666666,
+          "output_operation_end": 21.538666666666668,
+          "output_end": 24.866666666666667,
+          "output_frames": 189,
+          "held_end_frame_seconds": 3.3279999999999985
+        },
+        {
+          "index": 4,
+          "id": "05",
+          "title": "完成测试支付",
+          "source_video_start": 21.966666666666665,
+          "source_video_end": 24.233666666666664,
+          "operation_seconds": 2.2669999999999995,
+          "operation_speed": 1,
+          "output_start": 24.866666666666667,
+          "output_operation_end": 27.133666666666667,
+          "output_end": 32.233333333333334,
+          "output_frames": 221,
+          "held_end_frame_seconds": 5.099666666666667
+        },
+        {
+          "index": 5,
+          "id": "06",
+          "title": "订单内沟通",
+          "source_video_start": 34.199999999999996,
+          "source_video_end": 39.907,
+          "operation_seconds": 5.707000000000001,
+          "operation_speed": 1,
+          "output_start": 32.233333333333334,
+          "output_operation_end": 37.940333333333335,
+          "output_end": 38.96666666666667,
+          "output_frames": 202,
+          "held_end_frame_seconds": 1.0263333333333327
+        },
+        {
+          "index": 6,
+          "id": "07",
+          "title": "接单者接受订单",
+          "source_video_start": 39.93333333333333,
+          "source_video_end": 44.02133333333333,
+          "operation_seconds": 4.088000000000001,
+          "operation_speed": 1,
+          "output_start": 38.96666666666667,
+          "output_operation_end": 43.05466666666667,
+          "output_end": 46.36666666666667,
+          "output_frames": 222,
+          "held_end_frame_seconds": 3.3119999999999994
+        },
+        {
+          "index": 7,
+          "id": "08",
+          "title": "开始服务",
+          "source_video_start": 45.03333333333333,
+          "source_video_end": 48.63933333333333,
+          "operation_seconds": 3.6060000000000016,
+          "operation_speed": 1,
+          "output_start": 46.36666666666667,
+          "output_operation_end": 49.97266666666667,
+          "output_end": 53.96666666666667,
+          "output_frames": 228,
+          "held_end_frame_seconds": 3.993999999999998
+        },
+        {
+          "index": 8,
+          "id": "09",
+          "title": "同步履约进度",
+          "source_video_start": 51.266666666666666,
+          "source_video_end": 57.34166666666667,
+          "operation_seconds": 6.074999999999999,
+          "operation_speed": 1,
+          "output_start": 53.96666666666667,
+          "output_operation_end": 60.04166666666667,
+          "output_end": 60.8,
+          "output_frames": 205,
+          "held_end_frame_seconds": 0.7583333333333337
+        },
+        {
+          "index": 9,
+          "id": "10",
+          "title": "提交交付说明",
+          "source_video_start": 57.36666666666667,
+          "source_video_end": 64.16566666666668,
+          "operation_seconds": 6.799000000000007,
+          "operation_speed": 1,
+          "output_start": 60.8,
+          "output_operation_end": 67.599,
+          "output_end": 68.96666666666667,
+          "output_frames": 245,
+          "held_end_frame_seconds": 1.3676666666666595
+        },
+        {
+          "index": 10,
+          "id": "11",
+          "title": "玩家核对并验收",
+          "source_video_start": 64.16666666666667,
+          "source_video_end": 68.71066666666667,
+          "operation_seconds": 4.543999999999997,
+          "operation_speed": 1,
+          "output_start": 68.96666666666667,
+          "output_operation_end": 73.51066666666667,
+          "output_end": 76.6,
+          "output_frames": 229,
+          "held_end_frame_seconds": 3.089333333333337
+        },
+        {
+          "index": 11,
+          "id": "12",
+          "title": "查看待结算收入",
+          "source_video_start": 69.43333333333334,
+          "source_video_end": 71.45233333333334,
+          "operation_seconds": 2.0189999999999984,
+          "operation_speed": 1,
+          "output_start": 76.6,
+          "output_operation_end": 78.619,
+          "output_end": 85.26666666666667,
+          "output_frames": 260,
+          "held_end_frame_seconds": 6.647666666666668
+        }
+      ],
+      "generation_metadata": {
+        "sample_rate": 24000,
+        "samples": 2040960,
+        "duration_seconds": 85.04,
+        "peak": 0.48834228515625,
+        "rms": 0.05002744868397713,
+        "clipped_samples": 0,
+        "overall_safety_gain": 1,
+        "audio_sha256": "77303e12fe04428a720b096e57ac46e31e1403734a3d5ebfab3451e22af0b7f0",
+        "id": "03-order-tutorial",
+        "signature": "90914ed1fbac89802f66f237601e7ba1793ddcc9c88ac975efbec0d17b90dc2f",
+        "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
+        "license": "Apache-2.0",
+        "source": "scripts/tutorial-voice-script.json",
+        "voice": "Serena",
+        "instruct": "年轻清亮的女声，温暖自然。全篇保持同一音色，轻快利落，停顿简短，语调自然，带轻微笑意。",
+        "text": "玩家先查看服务详情，确认价格、介绍和服务方。填写区服、预约时间和验收标准，双方更容易对齐预期。核对金额后确认下单，系统会生成一笔待付款订单。订单内选择支付方式。这次演示使用本地测试支付。确认支付后，订单进入待接单状态，正式交易以微信结果为准。打开订单聊天，把集合时间和服务需求留在订单里。切到接单者视角，核对需求后，点击接受订单。双方确认后，点击开始服务，订单进度同步更新。服务过程中在订单聊天同步进度，方便双方核对。完成服务后提交交付，写清完成内容，等待玩家验收。玩家核对交付说明，确认符合约定后，验收并完成。服务收入先进入结算中，保留七天售后期，再按规则转为可提现。",
+        "segments": [
+          "玩家先查看服务详情，确认价格、介绍和服务方。",
+          "填写区服、预约时间和验收标准，双方更容易对齐预期。",
+          "核对金额后确认下单，系统会生成一笔待付款订单。",
+          "订单内选择支付方式。这次演示使用本地测试支付。",
+          "确认支付后，订单进入待接单状态，正式交易以微信结果为准。",
+          "打开订单聊天，把集合时间和服务需求留在订单里。",
+          "切到接单者视角，核对需求后，点击接受订单。",
+          "双方确认后，点击开始服务，订单进度同步更新。",
+          "服务过程中在订单聊天同步进度，方便双方核对。",
+          "完成服务后提交交付，写清完成内容，等待玩家验收。",
+          "玩家核对交付说明，确认符合约定后，验收并完成。",
+          "服务收入先进入结算中，保留七天售后期，再按规则转为可提现。"
+        ],
+        "sampling_parameters": {
+          "temperature": 0.65,
+          "top_p": 0.9,
+          "top_k": 50,
+          "repetition_penalty": 1.05,
+          "max_tokens": 2048,
+          "seed": 20261026
+        },
+        "token_limit": 2048,
+        "seed_scope": "one_fixed_seed_per_complete_article",
+        "api_calls_per_video": 1,
+        "non_streaming_result_count": 1,
+        "token_count": 1065,
+        "natural_eos_before_limit": true,
+        "generation_seconds": 57.88075337500777,
+        "model_peak_memory_gb": 14.816206437,
+        "postprocess": "整体必要降峰与16位PCM量化；原始时序保留，未剪词、未变速、未变调。"
+      },
+      "probe": {
         "programs": [],
         "streams": [
           {
-            "codec_name": "vp8",
+            "codec_name": "h264",
             "codec_type": "video",
-            "width": 786,
-            "height": 1518,
-            "avg_frame_rate": "25/1"
+            "width": 1080,
+            "height": 1920,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "duration": "85.266667",
+            "nb_frames": "2558"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 1,
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "duration": "85.266000",
+            "nb_frames": "3998"
           }
         ],
         "format": {
-          "duration": "60.680000"
-        }
+          "duration": "85.266667"
+        },
+        "max_volume_dbfs": -3,
+        "full_decode_passed": true,
+        "expected_frames": 2558,
+        "expected_seconds": 85.26666666666667
       },
+      "video_sha256": "68e4832cd0c52a7f0c10b07b6503e7483f5523a735d4f59b75bf1ecfc100f0c0",
+      "audience": "玩家与游戏爱好者",
+      "title": "玩家与接单者 · 完整订单",
+      "seconds": 85.26666666666667,
+      "raw": "raw/03-order-tutorial.webm",
+      "raw_clean": "raw-clean/03-order-tutorial.webm",
       "content_crop": {
         "x": 0,
         "y": 0,
         "width": 393,
         "height": 759
       },
-      "raw_clean": "raw-clean/03-order-tutorial.webm",
-      "steps": [
-        {
-          "id": "01",
-          "title": "选择服务",
-          "narration": "玩家先查看服务详情，确认价格、介绍和服务方。",
-          "raw_start": 0.331526123046875,
-          "raw_end": 2.287526123046875,
-          "operation_seconds": 1.956,
-          "voice_seconds": 5.2,
-          "hold_seconds": 3.544,
-          "start": 0,
-          "end": 5.5,
-          "frames": 165,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-0.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-0.wav"
-        },
-        {
-          "id": "02",
-          "title": "写清需求",
-          "narration": "填写区服、预约时间和验收标准，双方更容易对齐预期。",
-          "raw_start": 2.353526123046875,
-          "raw_end": 5.702526123046875,
-          "operation_seconds": 3.3489999999999998,
-          "voice_seconds": 6,
-          "hold_seconds": 2.951,
-          "start": 5.5,
-          "end": 11.8,
-          "frames": 189,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-1.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-1.wav"
-        },
-        {
-          "id": "03",
-          "title": "创建订单",
-          "narration": "核对金额后确认下单，系统会生成一笔待付款订单。",
-          "raw_start": 5.883526123046875,
-          "raw_end": 8.316526123046875,
-          "operation_seconds": 2.4330000000000007,
-          "voice_seconds": 4.64,
-          "hold_seconds": 2.533666666666666,
-          "start": 11.8,
-          "end": 16.766666666666666,
-          "frames": 149,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-2.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-2.wav"
-        },
-        {
-          "id": "04",
-          "title": "选择支付方式",
-          "narration": "订单内选择支付方式。这次演示使用本地测试支付。",
-          "raw_start": 8.401526123046875,
-          "raw_end": 11.373526123046876,
-          "operation_seconds": 2.9720000000000013,
-          "voice_seconds": 4.88,
-          "hold_seconds": 2.227999999999999,
-          "start": 16.766666666666666,
-          "end": 21.966666666666665,
-          "frames": 156,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-3.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-3.wav"
-        },
-        {
-          "id": "05",
-          "title": "完成测试支付",
-          "narration": "确认支付后，订单进入待接单状态，正式交易以微信结果为准。",
-          "raw_start": 11.447526123046876,
-          "raw_end": 13.714526123046875,
-          "operation_seconds": 2.2669999999999995,
-          "voice_seconds": 11.92,
-          "hold_seconds": 9.966333333333333,
-          "start": 21.966666666666665,
-          "end": 34.199999999999996,
-          "frames": 367,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-4.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-4.wav"
-        },
-        {
-          "id": "06",
-          "title": "订单内沟通",
-          "narration": "打开订单聊天，把集合时间和服务需求留在订单里。",
-          "raw_start": 13.782526123046875,
-          "raw_end": 19.489526123046875,
-          "operation_seconds": 5.707000000000001,
-          "voice_seconds": 5.2,
-          "hold_seconds": 0.026333333333332654,
-          "start": 34.199999999999996,
-          "end": 39.93333333333333,
-          "frames": 172,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-5.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-5.wav"
-        },
-        {
-          "id": "07",
-          "title": "接单者接受订单",
-          "narration": "切到接单者视角，核对需求后，点击接受订单。",
-          "raw_start": 22.153526123046873,
-          "raw_end": 26.241526123046874,
-          "operation_seconds": 4.088000000000001,
-          "voice_seconds": 4.8,
-          "hold_seconds": 1.0119999999999987,
-          "start": 39.93333333333333,
-          "end": 45.03333333333333,
-          "frames": 153,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-6.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-6.wav"
-        },
-        {
-          "id": "08",
-          "title": "开始服务",
-          "narration": "双方确认后，点击开始服务，订单进度同步更新。",
-          "raw_start": 26.349526123046875,
-          "raw_end": 29.955526123046877,
-          "operation_seconds": 3.6060000000000016,
-          "voice_seconds": 5.92,
-          "hold_seconds": 2.6273333333333317,
-          "start": 45.03333333333333,
-          "end": 51.266666666666666,
-          "frames": 187,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-7.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-7.wav"
-        },
-        {
-          "id": "09",
-          "title": "同步履约进度",
-          "narration": "服务过程中在订单聊天同步进度，方便双方核对。",
-          "raw_start": 30.022526123046877,
-          "raw_end": 36.097526123046876,
-          "operation_seconds": 6.074999999999999,
-          "voice_seconds": 4.64,
-          "hold_seconds": 0.025000000000000355,
-          "start": 51.266666666666666,
-          "end": 57.36666666666667,
-          "frames": 183,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-8.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-8.wav"
-        },
-        {
-          "id": "10",
-          "title": "提交交付说明",
-          "narration": "完成服务后提交交付，写清完成内容，等待玩家验收。",
-          "raw_start": 37.60852612304687,
-          "raw_end": 44.40752612304688,
-          "operation_seconds": 6.799000000000007,
-          "voice_seconds": 5.76,
-          "hold_seconds": 0.0009999999999932285,
-          "start": 57.36666666666667,
-          "end": 64.16666666666667,
-          "frames": 204,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-9.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-9.wav"
-        },
-        {
-          "id": "11",
-          "title": "玩家核对并验收",
-          "narration": "玩家核对交付说明，确认符合约定后，验收并完成。",
-          "raw_start": 48.372526123046875,
-          "raw_end": 52.91652612304687,
-          "operation_seconds": 4.543999999999997,
-          "voice_seconds": 4.96,
-          "hold_seconds": 0.7226666666666697,
-          "start": 64.16666666666667,
-          "end": 69.43333333333334,
-          "frames": 158,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-10.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-10.wav"
-        },
-        {
-          "id": "12",
-          "title": "查看待结算收入",
-          "narration": "服务收入先进入结算中，保留七天售后期，再按规则转为可提现。",
-          "raw_start": 56.662526123046874,
-          "raw_end": 58.68152612304687,
-          "operation_seconds": 2.0189999999999984,
-          "voice_seconds": 11.12,
-          "hold_seconds": 9.414333333333335,
-          "start": 69.43333333333334,
-          "end": 80.86666666666667,
-          "frames": 343,
-          "video": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-11.mp4",
-          "audio": "/Users/Zhuanz/Desktop/三角洲/.run/tutorial-render/03-order-tutorial/step-11.wav"
-        }
-      ],
-      "verified": {
-        "media": {
-          "programs": [],
-          "streams": [
-            {
-              "codec_name": "h264",
-              "codec_type": "video",
-              "width": 1080,
-              "height": 1920,
-              "avg_frame_rate": "30/1",
-              "nb_frames": "2426"
-            },
-            {
-              "codec_name": "aac",
-              "codec_type": "audio",
-              "sample_rate": "48000",
-              "channels": 1,
-              "avg_frame_rate": "0/0",
-              "nb_frames": "3792"
-            }
-          ],
-          "format": {
-            "duration": "80.866667"
-          }
-        },
-        "max_volume_dbfs": -2
-      },
+      "file": "videos/03-order-tutorial.mp4",
+      "srt": "videos/03-order-tutorial.srt",
+      "narration_audio": "audio/03-order-tutorial/narration.wav",
+      "metadata_file": "audio/03-order-tutorial/metadata.json",
       "previews": [
         "videos/qa/03-order-tutorial/01-01.png",
         "videos/qa/03-order-tutorial/02-02.png",
