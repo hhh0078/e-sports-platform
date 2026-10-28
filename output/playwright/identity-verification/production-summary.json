@@ -1,0 +1,88 @@
+{
+  "description": "开机电竞成年人身份核验生产部署的脱敏验收记录，不包含密钥、登录令牌或完整个人资料。",
+  "checked_at": "2026-10-28T07:58:11.316763+00:00",
+  "source_commit": "8022d052bb16473e3754203e96d2f2097f922906",
+  "api_image": "jijie-api:20261028-identity-8022d05",
+  "backup_dir": "/www/wwwroot/game.ai.58it.cn/.deploy-backups/pre-identity-activation-20261028-identity-8022d05-key-ready",
+  "backend_checks": {
+    "passed": 92,
+    "failed": 0
+  },
+  "identity_checks": {
+    "passed": 11,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "all_users_have_boolean_default_gate",
+        "passed": true
+      },
+      {
+        "name": "stored_key_encrypted_v1_no_plaintext",
+        "passed": true
+      },
+      {
+        "name": "provided_key_readback_matches",
+        "passed": true
+      },
+      {
+        "name": "no_temp_plaintext_or_master_env",
+        "passed": true
+      },
+      {
+        "name": "GET /api/me/identity visitor_denied",
+        "passed": true
+      },
+      {
+        "name": "POST /api/me/identity/verify visitor_denied",
+        "passed": true
+      },
+      {
+        "name": "GET /api/admin/identity-settings visitor_denied",
+        "passed": true
+      },
+      {
+        "name": "PUT /api/admin/identity-settings visitor_denied",
+        "passed": true
+      },
+      {
+        "name": "admin_put_supported_by_cors",
+        "passed": true
+      },
+      {
+        "name": "config_change_has_audit",
+        "passed": true
+      },
+      {
+        "name": "identity_flags_have_chinese_comments",
+        "passed": true
+      }
+    ]
+  },
+  "user_status_counts": {
+    "total": 63,
+    "boolean_flags": 63,
+    "default_restricted": 63,
+    "adult": 0
+  },
+  "database_and_redis_preserved": true,
+  "old_wallet_entries_preserved": true,
+  "identity_key": {
+    "stored_encrypted": true,
+    "provided_value_readback_matches": true,
+    "plaintext_temp_files_removed": true,
+    "editable_in_admin": true,
+    "admin_page": "pages/manage/identity"
+  },
+  "wechat": {
+    "appid": "wxd33b969516933076",
+    "uploaded": true,
+    "version": "1.0.2",
+    "bytes": 1672978,
+    "url_check": true,
+    "submitted_for_review": false,
+    "public_release": false,
+    "manual_action": "微信公众平台版本管理：提交1.0.2审核，审核通过后发布。工具站点安全策略禁止访问该管理后台。"
+  },
+  "real_identity_verification_executed": false,
+  "real_payment_executed": false
+}
