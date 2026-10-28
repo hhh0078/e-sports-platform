@@ -90,6 +90,7 @@ func TestIntegrationPhoneGateAndPrivateIdentity(t *testing.T) {
 	api.call("worker", "POST", "/me/phone/dev", map[string]string{"phone_number": "13800138000"}, 404, nil)
 	// 开发模式绑定的号码不被当作正式微信号码，官方验证过的用户仍能提交需求。
 	api.call("player", "POST", "/requests", map[string]any{}, 428, nil)
+	setTestAdultIdentity(t, api, "worker", true)
 	api.call("worker", "POST", "/requests", map[string]any{"game_id": "delta", "title": "已认证玩家组队需求", "requirements": "一起完成任务", "amount_cents": 2500}, 200, nil)
 }
 

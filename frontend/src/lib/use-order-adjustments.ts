@@ -6,6 +6,7 @@ import {token,errorMessage} from '../api/client'
 import {listOrderAdjustments,createOrderAdjustment,respondOrderAdjustment,payOrderAdjustment,syncOrderAdjustment} from '../api/adjustments.api'
 import {getWallet} from '../api/wallet.api'
 import {requirePhone} from './phone'
+import {requireIdentity} from './identity'
 import {requestWechatPayment} from './payment'
 import {beginFinancialActivity} from './update-manager'
 import {newWalletRequestID} from './wallet'
@@ -75,6 +76,7 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
         const requestID=creationRequest(cents);await createOrderAdjustment(order.id,{kind:kind.value,amount_cents:cents,reason:text,request_id:requestID});if(current(t,version))clearCreationRequest(requestID)
       }else if(action==='pay'){
         if(!record||!canPay(record))return;if(channel.value==='balance'&&(!wallet.value||wallet.value.spendable_cents<record.amount_cents))throw new Error('钱包余额不足，请选择微信支付');if(!(await requirePhone())||!current(t,version))return
+        if(!(await requireIdentity())||!current(t,version))return
         const result=await payOrderAdjustment(order.id,record.id,{channel:channel.value,...(channel.value==='balance'?{request_id:paymentRequest(record.id)}:{})});if(!current(t,version))return
         if(result.mode==='wechat'&&result.adjustment.status!=='completed'){
           if(!result.pay_params)throw new Error('缺少微信补款参数，请同步原补款单')

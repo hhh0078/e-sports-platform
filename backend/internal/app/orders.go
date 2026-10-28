@@ -34,6 +34,9 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 	if err = a.requireVerifiedPhone(r, u); err != nil {
 		return nil, err
 	}
+	if err = requireAdultIdentity(r.Context(), a.DB, u.ID); err != nil {
+		return nil, err
+	}
 	var in struct {
 		ServiceID    string `json:"service_id"`
 		Quantity     int    `json:"quantity"`
@@ -80,6 +83,9 @@ func (a *App) createOrder(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	if err = lockWalletUsers(r.Context(), tx, u.ID, s.ProviderID, clubWalletID(s.ClubID)); err != nil {
+		return nil, err
+	}
+	if err = requireAdultIdentity(r.Context(), tx, u.ID); err != nil {
 		return nil, err
 	}
 	if err = guardDepositRefunding(r.Context(), tx, u.ID, s.ProviderID); err != nil {
@@ -153,6 +159,9 @@ func (a *App) createRequest(w http.ResponseWriter, r *http.Request) (any, error)
 	if err = a.requireVerifiedPhone(r, u); err != nil {
 		return nil, err
 	}
+	if err = requireAdultIdentity(r.Context(), a.DB, u.ID); err != nil {
+		return nil, err
+	}
 	var in struct {
 		GameID       string `json:"game_id"`
 		Title        string `json:"title"`
@@ -190,6 +199,9 @@ func (a *App) createRequest(w http.ResponseWriter, r *http.Request) (any, error)
 		return nil, err
 	}
 	if err = lockWalletUsers(r.Context(), tx, u.ID); err != nil {
+		return nil, err
+	}
+	if err = requireAdultIdentity(r.Context(), tx, u.ID); err != nil {
 		return nil, err
 	}
 	if err = guardDepositRefunding(r.Context(), tx, u.ID); err != nil {
@@ -337,6 +349,9 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 	}
 	if o.Status != "pending_payment" || o.PaymentStatus != "unpaid" {
 		return nil, fail(409, "当前订单无法付款")
+	}
+	if err = requireAdultIdentity(r.Context(), tx, u.ID); err != nil {
+		return nil, err
 	}
 
 	if o.ClubID != "" {

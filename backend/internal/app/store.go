@@ -180,6 +180,9 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	if err = migratePublicContent(ctx, tx); err != nil {
 		return err
 	}
+	if err = migrateIdentityVerification(ctx, tx); err != nil {
+		return err
+	}
 	if err = migrateManagementPermissions(ctx, tx); err != nil {
 		return err
 	}

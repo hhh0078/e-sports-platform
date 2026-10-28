@@ -176,7 +176,7 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
-			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS")
+			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
 		}
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(204)
@@ -235,6 +235,7 @@ func (a *App) Handler() http.Handler {
 	mux.Handle("GET /static/avatars/", assets.AvatarHandler())
 	mux.Handle("GET /static/operations/", assets.OperationsHandler())
 	a.registerIdentityRoutes(mux)
+	a.registerIdentityVerificationRoutes(mux)
 	a.registerAdminCentersRoutes(mux)
 	a.registerPublicContentRoutes(mux)
 	a.registerPaymentSettingsRoutes(mux)

@@ -25,6 +25,7 @@
 </template>
 <script setup lang="ts">
 import { requirePhone } from '../../lib/phone'
+import { requireIdentity } from '../../lib/identity'
 import { ref, computed } from 'vue'
 import { onLoad, onUnload, onShareAppMessage, onShareTimeline, onShow, onHide, onResize } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
@@ -86,6 +87,7 @@ async function createOrder() {
   const session=currentSession();submitting.value=true
   try{
     if(!(await requirePhone())||!sameSession(session))return
+    if(!(await requireIdentity())||!sameSession(session))return
     if(!requirements.value.trim())return notify('请填写需求与验收标准')
     const order=await submitServiceOrder({service_id:id,quantity:quantity.value,requirements:requirements.value.trim()})
     if(sameSession(session))go('/pages/orders/detail?id='+order.id)

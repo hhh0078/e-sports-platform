@@ -23,6 +23,7 @@
 		</view>
 		<BottomNav v-if="!timelinePreview" :active="mainNavigation.tab" @change="selectMainTab" />
 		<PhoneVerification />
+		<IdentityVerification :remind="!timelinePreview" />
 		<TechSupportDialog :open="supportOpen" @close="supportOpen=false" />
 		<HomeAnnouncement v-if="!timelinePreview" :active="mainPageActive&&mainNavigation.tab==='player'" :announcement="publicContent?.announcement"/>
 	</view>
@@ -32,6 +33,7 @@
 	import { onLoad, onShareAppMessage, onShareTimeline, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 	import BottomNav from '../../components/BottomNav.vue'
 	import PhoneVerification from '../../components/PhoneVerification.vue'
+	import IdentityVerification from '../../components/IdentityVerification.vue'
 	import TechSupportFooter from '../../components/TechSupportFooter.vue'
 	import TechSupportDialog from '../../components/TechSupportDialog.vue'
 	import ContentTip from '../../components/ContentTip.vue'

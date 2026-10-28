@@ -3,7 +3,8 @@ import test from 'node:test'
 import type { TestContext } from 'node:test'
 import assert from 'node:assert/strict'
 import vm from 'node:vm'
-import { ref,computed,watch,nextTick,effectScope } from 'vue'
+import {readFileSync} from 'node:fs'
+import { ref,reactive,computed,watch,nextTick,effectScope } from 'vue'
 import { executable,pageScript,injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest } from './sfc-test'
 import { newWalletRequestID } from './wallet'
@@ -12,14 +13,14 @@ import { newWalletRequestID } from './wallet'
 function harness(t:TestContext){
   const pending:DeferredRequest[]=[],reads:string[]=[],notices:unknown[]=[],storage=new Map<string,string>(),hooks={hide:()=>{},unload:()=>{}}
   const state={user:{id:'A',role:'user'},devMode:true},order={id:'order-A',buyer_id:'A',provider_id:'B',status:'pending_payment',payment_status:'unpaid',amount_cents:1000,refund_status:'none'}
-  let rejectNative=false,nativeCalls=0
-  const context=vm.createContext({ref,computed,watch,nextTick,state,newWalletRequestID,init:async()=>{},sessionRevision:()=>0,requirePhone:async()=>true,token:()=>state.user.id,
+  let rejectNative=false,nativeCalls=0,identity=true,identityChecks=0
+  const context=vm.createContext({ref,reactive,computed,watch,nextTick,state,newWalletRequestID,init:async()=>{},sessionRevision:()=>0,requirePhone:async()=>true,requireIdentity:async()=>{identityChecks++;return identity},token:()=>state.user.id,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value)},notify:(value:unknown)=>notices.push(value),
     setInterval,clearInterval,onLoad:()=>{},onShow:()=>{},onHide:(callback:()=>void)=>{hooks.hide=callback},onUnload:(callback:()=>void)=>{hooks.unload=callback},
     requestWechatPayment:async()=>{nativeCalls++;if(rejectNative)throw new Error('用户取消')},
     /** 每一次支付及查款都由测试明确完成，GET仅返回当前真实状态夹具。 */
     api(path:string,method='GET',body:Record<string,unknown>={}){
-      if(method==='GET'&&path!=='/wallet'){reads.push(path);return Promise.resolve(path==='/orders/order-A'?{...order}:[])}
+      if(method==='GET'&&path!=='/wallet'&&path!=='/me/identity'){reads.push(path);return Promise.resolve(path==='/orders/order-A'?{...order}:[])}
       return new Promise((resolve,reject)=>pending.push({path,method,body,resolve,reject,taken:false}))
     },
   })
@@ -28,6 +29,10 @@ function harness(t:TestContext){
   context.page.order.value={...order}
   return{page:context.page,state,order,hooks,pending,reads,notices,storage,
     cancelNative(){rejectNative=true},nativeCalls:()=>nativeCalls,
+    /** 控制身份门禁结果，核对两种支付渠道发请求前均经过同一门禁。 */
+    setIdentity(value:boolean){identity=value},identityChecks:()=>identityChecks,
+    /** 身份专项用真实状态模块及真实GET接口替代默认门禁夹具。 */
+    useRealIdentity(){vm.runInContext('(function(){'+executable(readFileSync(new URL('./identity.ts',import.meta.url),'utf8'))+';globalThis.requireIdentity=requireIdentity;globalThis.identity={identityGate,finishIdentity}})()',context);return context.identity},
     /** 断言资金接口确实发出，避免空测试通过。 */
     take(path:string){const item=pending.find(row=>!row.taken&&row.path===path);assert.ok(item,'缺少请求 '+path);item.taken=true;return item},
   }
@@ -36,6 +41,23 @@ function harness(t:TestContext){
 async function flush(){await new Promise(resolve=>setImmediate(resolve))}
 /** 通过真实准备函数打开余额支付确认。 */
 async function prepareBalance(s:ReturnType<typeof harness>){const showing=s.page.prepare({id:'pay',label:'支付订单'});s.take('/wallet').resolve({spendable_cents:2000});await showing;s.page.paymentChannel.value='balance'}
+
+test('微信和余额付款的身份核验取消均不发起支付，重试重新经过门禁',async t=>{
+  for(const channel of ['wechat','balance'])await t.test(channel,async()=>{
+    const s=harness(t);await prepareBalance(s);s.page.paymentChannel.value=channel;s.setIdentity(false)
+    await s.page.execute();await s.page.execute();assert.equal(s.identityChecks(),2);assert.equal(s.pending.filter(row=>row.path.endsWith('/pay')).length,0);assert.equal(s.nativeCalls(),0);assert.equal(s.page.pendingAction.value.id,'pay')
+  })
+})
+
+test('真实身份GET返回未核验后微信和余额都不发pay，取消重试再次查库',async t=>{
+  for(const channel of ['wechat','balance'])await t.test(channel,async()=>{
+    const s=harness(t);await prepareBalance(s);s.page.paymentChannel.value=channel;const identity=s.useRealIdentity()
+    const first=s.page.execute();await flush();s.take('/me/identity').resolve({is_minor:true,verified:false});await flush();assert.equal(identity.identityGate.visible,true);assert.equal(s.pending.filter(row=>row.path.endsWith('/pay')).length,0)
+    identity.finishIdentity();await first
+    const retry=s.page.execute();await flush();const status=s.take('/me/identity');assert.equal(s.pending.filter(row=>row.path==='/me/identity').length,2);status.resolve({is_minor:false,verified:false});await flush();identity.finishIdentity();await retry
+    assert.equal(s.nativeCalls(),0);assert.equal(s.pending.filter(row=>row.path.endsWith('/pay')).length,0)
+  })
+})
 
 test('支付准备真正回填后端可用余额，旧弹层响应不覆盖新动作',async t=>{
   const s=harness(t);await prepareBalance(s);assert.equal(s.page.paymentWallet.value.spendable_cents,2000)

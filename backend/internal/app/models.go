@@ -4,6 +4,8 @@ package app
 import "encoding/json"
 
 type User struct {
+	// IsMinor 默认为未成年或尚未核验，仅成年人实名核验成功后才可置为假。
+	IsMinor       bool   `json:"is_minor"`
 	ProfileCover  string `json:"profile_cover"`
 	PhoneVerified bool   `json:"phone_verified"`
 	PhoneMasked   string `json:"phone_masked"`
@@ -22,7 +24,7 @@ type User struct {
 // UnmarshalJSON 兼容历史关闭或缺失的接单字段，读取时始终默认开启；冻结与手机号状态保持原值。
 func (u *User) UnmarshalJSON(data []byte) error {
 	type storedUser User
-	var value storedUser
+	value := storedUser{IsMinor: true}
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}

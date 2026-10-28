@@ -1,6 +1,6 @@
 /** 文件作用：封装平台管理员的审核、游戏配置、协议和支付配置接口。 */
 import { request, queryString } from './client'
-import type { Agreements, Game, ListQuery, Settings, PaymentSettings, PaymentSettingsInput, User, Service, Club, Order, Audit } from '../types/models'
+import type { Agreements, Game, ListQuery, Settings, PaymentSettings, PaymentSettingsInput, User, Service, Club, Order, Audit, IdentitySettings, IdentitySettingsInput } from '../types/models'
 /** 后台统计。 */
 export type AdminOverview = Record<string, number>
 /** 后台资源类型对应业务模型。 */
@@ -33,6 +33,10 @@ export function updateAgreements(body: Agreements): Promise<Agreements> { return
 export function getPaymentSettings(): Promise<PaymentSettings> { return request('/admin/payment-settings') }
 /** 保存商户配置；秘密为空表示保留已有配置。 */
 export function updatePaymentSettings(body: PaymentSettingsInput): Promise<PaymentSettings> { return request('/admin/payment-settings', 'PATCH', body) }
+/** 读取身份核验配置状态，服务端不会返回原始密钥。 */
+export function getIdentitySettings(): Promise<IdentitySettings> { return request('/admin/identity-settings') }
+/** 保存身份证核验密钥，空值保留服务端已加密保存的原密钥。 */
+export function saveIdentitySettings(body: IdentitySettingsInput): Promise<IdentitySettings> { return request('/admin/identity-settings', 'PUT', body) }
 
 /** 读取按上海自然日核实的服务成交与成功退款曲线，不包含充值和押金。 */
 export function getAdminAnalytics(query:{start?:string;end?:string}={}):Promise<import('../types/admin-analytics').AdminAnalytics>{return request('/admin/analytics'+queryString(query))}

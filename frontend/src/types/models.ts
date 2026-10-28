@@ -3,7 +3,15 @@
 /** 用户角色。 */
 export type UserRole = 'admin' | 'user' | 'player' | 'provider' | 'clubowner'
 /** 官方身份与公开个人资料。 */
-export interface User { platform_admin_role?: '' | 'root' | 'deputy'; id: string; nickname: string; avatar: string; bio: string; role: string; status: string; provider_enabled: boolean; profile_cover: string; phone_verified: boolean; phone_masked: string; created_at: string }
+export interface User { /** 是否按未成年状态限制交易；历史响应缺省时仍需本人实时核验。 */ is_minor?: boolean; platform_admin_role?: '' | 'root' | 'deputy'; id: string; nickname: string; avatar: string; bio: string; role: string; status: string; provider_enabled: boolean; profile_cover: string; phone_verified: boolean; phone_masked: string; created_at: string }
+/** 仅当前账号可查询的成年身份核验状态，不含真实姓名和身份证号码。 */
+export interface IdentityStatus { is_minor: boolean; verified: boolean; verified_at?: string }
+/** 管理端身份证核验配置，仅含固定接口地址和密钥保存状态。 */
+export interface IdentitySettings { has_api_key: boolean; configured: boolean; storage_available: boolean; api_url: string }
+/** 临时提交的身份证核验密钥；空值表示保留已保存密钥。 */
+export interface IdentitySettingsInput { api_key: string }
+/** 仅在本人主动同意后提交的姓名和证件信息。 */
+export interface IdentityVerificationInput { name: string; idcard: string; consent: true }
 /** 玩家主页允许公开展示的个人资料。 */
 export type PublicProfile = Pick<User, 'id' | 'nickname' | 'avatar' | 'bio' | 'profile_cover' | 'provider_enabled'> & { platform_deposit_cents?: number; club_deposits?: Array<{ club_id: string; club_name: string; amount_cents: number }> }
 /** 游戏及可配置主题。 */

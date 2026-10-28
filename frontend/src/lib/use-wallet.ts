@@ -6,6 +6,7 @@ import type { Wallet,WalletEntry,WalletTopup,WalletWithdrawal,WalletDepositRefun
 import { state,init,sessionRevision } from './store'
 import { token,errorMessage } from '../api/client'
 import { requirePhone } from './phone'
+import { requireIdentity } from './identity'
 import { go,notify } from './format'
 import { parseWalletAmount,newWalletRequestID } from './wallet'
 import { requestWechatPayment,confirmWechatTransfer } from './payment'
@@ -110,7 +111,7 @@ export function useWallet(){
   async function resumeTopup(record:WalletTopup){
     if(busy.value||!visible||!state.user)return
     const owner=session(),finishFinancial=beginFinancialActivity();busy.value=true
-    try{if(!(await requirePhone())||!same(owner)||!visible)return;await payTopup(owner,record.purpose,record.amount_cents,undefined,record.id);if(same(owner))await load()}
+    try{if(!(await requirePhone())||!same(owner)||!visible)return;if(!(await requireIdentity())||!same(owner)||!visible)return;await payTopup(owner,record.purpose,record.amount_cents,undefined,record.id);if(same(owner))await load()}
     catch(err){if(same(owner)&&visible)notify(err)}finally{busy.value=false;finishFinancial()}
   }
   /** 同一提交锁覆盖手机号与资金动作，错误或网络未知保持原请求号。 */
@@ -123,6 +124,7 @@ export function useWallet(){
       const requestName=userName.value.trim()
       if(kind==='withdrawal'&&cents>=200000&&!requestName)throw new Error('单笔提现达到2000元，请填写微信实名认证姓名')
       if(!(await requirePhone())||!same(owner)||!visible)return
+      if((kind==='balance'||kind==='deposit')&&(!(await requireIdentity())||!same(owner)||!visible))return
       const intent=intentID(owner.id,kind,cents)
       activeRequest={ownerID:owner.id,kind,cents,id:intent.id}
       if(kind==='balance'||kind==='deposit')await payTopup(owner,kind,cents,intent)

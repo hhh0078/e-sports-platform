@@ -49,6 +49,7 @@ func (a *App) seed(ctx context.Context) error {
 	if a.Config.DevMode {
 		users := []User{{ID: "player", Nickname: "云间旅人", Bio: "喜欢和靠谱的队友一起玩游戏", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "worker", Nickname: "北辰", Bio: "认真陪练，耐心沟通。本地示例打手，擅长战术配合与任务协作。", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "clubowner", Nickname: "山海主理人", Bio: "山海电竞俱乐部负责人，帮助每位队友找到适合自己的舞台。", Role: "user", Status: "active", ProviderEnabled: true}, {ID: "admin", Nickname: "开机电竞管理员", Bio: "平台运营与纠纷处理", Role: "admin", Status: "active", ProviderEnabled: true}, {ID: "outsider", Nickname: "自由玩家", Bio: "无挂靠也能接单，自由组队一起玩。", Role: "user", Status: "active", ProviderEnabled: true}}
 		for _, u := range users {
+			u.IsMinor = true
 			u.CreatedAt = now()
 			if err = seedInsert(ctx, tx, "users", u.ID, u); err != nil {
 				return err

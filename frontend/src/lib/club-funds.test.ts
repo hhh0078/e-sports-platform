@@ -13,14 +13,14 @@ import { parseWalletAmount } from './wallet'
 function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platform',summaryOnly=false){
   const storage=new Map<string,unknown>(),pending:DeferredRequest[]=[],notices:unknown[]=[],payments:Array<{resolve:()=>void;reject:(error:unknown)=>void}>=[]
   const hooks:PageLifecycle={load:()=>{},show:()=>{},hide:()=>{},unload:()=>{}}
-  const state=reactive({user:{id:'user-A'},ready:true});let revision=0,bottom=()=>{},clubOwner='user-A',confirmations=0
+  const state=reactive({user:{id:'user-A'},ready:true});let revision=0,bottom=()=>{},clubOwner='user-A',confirmations=0,identity=true,identityChecks=0
   const wallet={available_cents:10000,recharge_cents:0,pending_cents:0,ongoing_cents:0,settling_cents:0,withdrawal_frozen_cents:0,deposit_cents:0,deposit_refunding_cents:0,withdrawal_min_cents:1,dev_mode:true,currency:'CNY',settlement_hold_days:7}
   const deposits={platform:{amount_cents:100,refunding_cents:0,required_cents:10000,shortfall_cents:9900,qualified:false,can_manage:true},membership:{amount_cents:25,refunding_cents:0,required_cents:25}}
   const histories={entries:[] as unknown[],topups:[] as unknown[],refunds:[] as unknown[],withdrawals:[] as unknown[]}
   const reads:string[]=[];let nextReadFailure=''
   const context=vm.createContext({ref,reactive,computed,watch,state,onReachBottom:(callback:()=>void)=>{bottom=callback},init:async()=>{},sessionRevision:()=>revision,token:()=>state.user.id+'token',parseWalletAmount,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:unknown)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key)},
-    requirePhone:async()=>true,go:()=>{},notify:(value:unknown)=>notices.push(value),
+    requirePhone:async()=>true,requireIdentity:async()=>{identityChecks++;return identity},go:()=>{},notify:(value:unknown)=>notices.push(value),
     requestWechatPayment:()=>new Promise<void>((resolve,reject)=>payments.push({resolve,reject})),confirmWechatTransfer:async()=>{confirmations++},
     onLoad:(callback:PageLifecycle['load'])=>hooks.load=callback,onShow:(callback:()=>void)=>hooks.show=callback,onHide:(callback:()=>void)=>hooks.hide=callback,onUnload:(callback:()=>void)=>hooks.unload=callback,
     /** 资金写入与原单同步由用例逐个结束；读取返回明确组织归属。 */
@@ -39,6 +39,8 @@ function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platfor
     bottom(){bottom()},get confirmations(){return confirmations},setClubOwner(id:string){clubOwner=id},page:context.page,hooks,pending,storage,notices,payments,wallet,deposits,histories,reads,
     /** 让指定下一页读取失败，验证重试不会跳过历史。 */
     failRead(prefix:string){nextReadFailure=prefix},
+    /** 单独控制身份核验，验证成员和平台押金均在创建付款单前拦截。 */
+    setIdentity(value:boolean){identity=value},identityChecks:()=>identityChecks,
     /** 切换真实响应式身份并触发生产会话清理。 */
     switchUser(){revision++;state.user={id:'user-B'}},
     /** 取得确定发出的资金接口，缺失即失败。 */
@@ -47,6 +49,10 @@ function harness(t:TestContext,scope:'member_club'|'club_platform'='club_platfor
 }
 /** 排空组合函数请求和Vue侦听微任务。 */
 async function flush(){await new Promise(resolve=>setImmediate(resolve))}
+
+test('俱乐部平台和成员押金未完成身份核验时不创建付款单，继续付款也重查',async t=>{
+  for(const scope of ['member_club','club_platform'] as const)await t.test(scope,async()=>{const s=harness(t,scope);s.hooks.show();await flush();s.page.open('pay');s.page.amount.value='10';s.setIdentity(false);await s.page.submit();assert.equal(s.identityChecks(),1);assert.equal(s.pending.length,0);assert.equal(s.page.amount.value,'10');await s.page.resume({id:'original',user_id:'user-A',amount_cents:1000});assert.equal(s.identityChecks(),2);assert.equal(s.pending.length,0)})
+})
 
 test('组织押金付款绑定club_id和用途，未知响应保留原请求号',async t=>{
   const s=harness(t);s.hooks.show();await flush();s.page.open('pay');s.page.amount.value='10'

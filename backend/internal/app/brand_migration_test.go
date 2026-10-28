@@ -12,7 +12,7 @@ import (
 func TestDefaultBrandAgreements(t *testing.T) {
 	legacy, current := legacyDefaultAgreements(), defaultAgreements()
 	for _, pair := range [][2]agreementDocument{{legacy.UserAgreement, current.UserAgreement}, {legacy.PrivacyPolicy, current.PrivacyPolicy}} {
-		if pair[0].Version != "2026-10-22.2" || pair[1].Version != "2026-10-23.2" || pair[0].Version == pair[1].Version {
+		if pair[0].Version != "2026-10-22.2" || pair[1].Version != "2026-10-28.1" || pair[0].Version == pair[1].Version {
 			t.Fatal("品牌正文变更没有使用独立新版本")
 		}
 		if !strings.Contains(pair[0].Title, "集结") || !strings.Contains(pair[1].Title, "开机电竞") || strings.Contains(pair[1].Content, "集结") {

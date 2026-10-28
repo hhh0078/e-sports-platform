@@ -35,6 +35,8 @@ export function injectBusinessAPIs(context: vm.Context): void {
   context.onMounted ??= () => {}
   context.onBeforeUnmount ??= () => {}
   context.beginFinancialActivity ??= beginFinancialActivity
+  // 非实名专项夹具默认明确通过身份门禁；identity.test运行真实门禁与服务器结果。
+  context.requireIdentity ??= async () => true
   context.uni ??= {}
   context.uni.stopPullDownRefresh ??= () => {}
   context.ref ??= ref

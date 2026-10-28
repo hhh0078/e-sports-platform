@@ -34,6 +34,8 @@ function harness(){
   context.page.title.value='  三角洲双排陪练  ';context.page.requirements.value=' 晚上八点，耐心教学一小时 ';context.page.price.value='34.90'
   return{
     store:context.store,page:context.page,phone:context.phone,requests,notices,navigations,lifecycle,
+    /** 身份专项使用真实服务器预检，验证取消不会创建需求订单。 */
+    useRealIdentity(){vm.runInContext('(function(){'+executable(readFileSync(new URL('./identity.ts',import.meta.url),'utf8'))+';globalThis.requireIdentity=requireIdentity;globalThis.identity={identityGate,finishIdentity}})()',context);return context.identity},
     /** 只取得一次实际发出的请求，防止用例错误地忽略重复调用。 */
     take(path:string,method='GET'){const request=requests.find(item=>!item.taken&&item.path===path&&item.method===method);assert.ok(request,`缺少请求 ${method} ${path}`);request.taken=true;return request},
   }
@@ -47,6 +49,12 @@ async function authorize(subject:ReturnType<typeof harness>){const refreshing=su
 
 /** 通过真实登录流程改变令牌、用户和会话版本。 */
 async function switchAccount(subject:ReturnType<typeof harness>){const login=subject.store.login('B');subject.take('/auth/dev','POST').resolve({token:'token-B',user:{...accountB}});await login}
+
+test('真实身份未核验时取消不创建需求订单，标题和预算继续保留',async()=>{
+  const subject=harness(),identity=subject.useRealIdentity(),draft=[subject.page.title.value,subject.page.requirements.value,subject.page.price.value],submitting=subject.page.submit()
+  subject.take('/me').resolve({...accountA,phone_verified:true});await flush();subject.take('/me/identity').resolve({is_minor:true,verified:false});await flush();identity.finishIdentity();await submitting
+  assert.equal(subject.requests.filter(row=>row.path==='/requests').length,0);assert.deepEqual([subject.page.title.value,subject.page.requirements.value,subject.page.price.value],draft);assert.equal(subject.page.busy.value,false)
+})
 
 test('手机号授权前后连续提交只创建一笔需求订单',async()=>{
   const subject=harness(),first=subject.page.submit(),second=subject.page.submit()

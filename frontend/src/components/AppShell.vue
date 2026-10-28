@@ -5,6 +5,7 @@
     <PageHeader v-else :title="title || '开机电竞'" back />
     <view class="app-body"><slot name="header" /><slot /></view>
     <PhoneVerification />
+    <IdentityVerification />
   </view>
 </template>
 <script setup lang="ts">
@@ -13,6 +14,7 @@ import { pageTheme } from '../lib/store'
 import PageHeader from './PageHeader.vue'
 import FloatingBack from './FloatingBack.vue'
 import PhoneVerification from './PhoneVerification.vue'
+import IdentityVerification from './IdentityVerification.vue'
 const props = withDefaults(defineProps<{ title?: string; subtitle?: string; active?: string; back?: boolean; immersive?: boolean; hideNav?: boolean; gameId?: string }>(), { title: '', immersive: false })
 const themeStyle = computed(() => pageTheme(props.gameId))
 </script>

@@ -12,6 +12,7 @@ import { fundsIntentKey, mergeFundRecords } from './finance'
 import { newWalletRequestID, parseWalletAmount } from './wallet'
 import { requestWechatPayment, confirmWechatTransfer } from './payment'
 import { requirePhone } from './phone'
+import { requireIdentity } from './identity'
 import { go, notify } from './format'
 import { canConfirmClubTransfer,isClubManager } from './management-permissions'
 import { beginFinancialActivity } from './update-manager'
@@ -106,6 +107,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform', options: { 
       if(kind==='withdraw'&&!name)throw new Error('请填写俱乐部负责人微信实名认证姓名')
       if(kind==='refund'&&cents>(balance.value?.amount_cents||0))throw new Error('金额超过当前有效押金')
       if(!(await requirePhone())||!same(owner)||!visible)return
+      if(kind==='pay'&&(!(await requireIdentity())||!same(owner)||!visible))return
       const key=fundsIntentKey(owner.id,owner.clubID,scope+':'+kind,cents),requestID=String(uni.getStorageSync(key)||newWalletRequestID());uni.setStorageSync(key,requestID)
       activeRequest={ownerID:owner.id,clubID:owner.clubID,kind,cents,requestID}
       if(kind==='pay')await pay(owner,cents,requestID)
@@ -116,7 +118,7 @@ export function useClubFunds(scope: 'member_club' | 'club_platform', options: { 
     finally { if(action===actionVersion){activeRequest=null;busy.value=false};finishFinancial() }
   }
   /** 跨设备恢复未付款原单，不按相同金额新建付款。 */
-  async function resume(record:WalletTopup):Promise<void> { if(busy.value||!visible||!state.user)return;const owner=session();if(scope==='club_platform'&&record.user_id!==owner.id)return notify('仅原付款人可继续支付，请同步原付款单');const action=++actionVersion,finishFinancial=beginFinancialActivity();busy.value=true;try{if(!(await requirePhone())||!same(owner)||!visible)return;await pay(owner,record.amount_cents,record.request_id||'',record.id);if(same(owner)&&visible)await load()}catch(err){if(same(owner)&&visible)notify(err)}finally{if(action===actionVersion)busy.value=false;finishFinancial()} }
+  async function resume(record:WalletTopup):Promise<void> { if(busy.value||!visible||!state.user)return;const owner=session();if(scope==='club_platform'&&record.user_id!==owner.id)return notify('仅原付款人可继续支付，请同步原付款单');const action=++actionVersion,finishFinancial=beginFinancialActivity();busy.value=true;try{if(!(await requirePhone())||!same(owner)||!visible)return;if(!(await requireIdentity())||!same(owner)||!visible)return;await pay(owner,record.amount_cents,record.request_id||'',record.id);if(same(owner)&&visible)await load()}catch(err){if(same(owner)&&visible)notify(err)}finally{if(action===actionVersion)busy.value=false;finishFinancial()} }
   /** 同步原支付、退款或提现，微信待收款确认后仍查询实际终态。 */
   async function sync(kind:'payment'|'refund'|'withdraw',recordID:string,confirm=false):Promise<void> {
     if(busy.value||!visible||!state.user)return;const owner=session(),action=++actionVersion,finishFinancial=beginFinancialActivity();busy.value=true

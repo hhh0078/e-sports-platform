@@ -152,7 +152,7 @@ func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 		if avatarErr != nil {
 			return nil, fail(503, "默认头像暂时无法分配，请稍后重试")
 		}
-		u = User{ID: id, Nickname: "新队友", Avatar: avatar, Role: "user", Status: "active", ProviderEnabled: true, CreatedAt: now()}
+		u = User{ID: id, Nickname: "新队友", Avatar: avatar, Role: "user", Status: "active", ProviderEnabled: true, IsMinor: true, CreatedAt: now()}
 		userRaw, _ := json.Marshal(u)
 		inserted, insertErr := tx.Exec(r.Context(), "INSERT INTO users(id,data) VALUES($1,$2) ON CONFLICT(id) DO NOTHING", id, userRaw)
 		err = insertErr

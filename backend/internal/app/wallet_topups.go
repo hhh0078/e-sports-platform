@@ -38,6 +38,9 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 	if err = a.requireVerifiedPhone(r, u); err != nil {
 		return nil, err
 	}
+	if err = requireAdultIdentity(r.Context(), a.DB, u.ID); err != nil {
+		return nil, err
+	}
 	var in struct {
 		Purpose     string `json:"purpose"`
 		ClubID      string `json:"club_id"`
@@ -70,6 +73,9 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 		return nil, err
 	}
 	if err = lockWalletUsers(ctx, tx, u.ID, accountID); err != nil {
+		return nil, err
+	}
+	if err = requireAdultIdentity(ctx, tx, u.ID); err != nil {
 		return nil, err
 	}
 	if err = claimWalletRequest(ctx, tx, u.ID, in.RequestID, "topup", map[string]any{"purpose": in.Purpose, "amount_cents": in.AmountCents, "club_id": in.ClubID}); err != nil {
@@ -113,6 +119,12 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 func (a *App) walletTopupPayment(r *http.Request, u User, payment WalletTopup) (any, error) {
 	ctx := r.Context()
 	var err error
+	if payment.Status != "pending_payment" {
+		return map[string]any{"payment": payment, "mode": paymentMode(a.Config.DevMode)}, nil
+	}
+	if err = requireAdultIdentity(ctx, a.DB, u.ID); err != nil {
+		return nil, err
+	}
 	if a.Config.DevMode {
 		if err = a.applyWalletTopup(ctx, payment, wxTransaction{TransactionID: "DEV" + payment.ID}, true); err != nil {
 			return nil, err

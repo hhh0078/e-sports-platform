@@ -518,7 +518,7 @@ func TestIntegrationPostReviewDefaultAgreements(t *testing.T) {
 					t.Fatal("运营者协议被自动覆盖")
 				}
 			} else {
-				if current.UserAgreement.Version != "2026-10-23.2" || strings.Contains(current.UserAgreement.Content, "审核服务故障时暂停提交") || !strings.Contains(current.UserAgreement.Content, "隔离保留") || !strings.Contains(current.PrivacyPolicy.Content, "人工或AI") {
+				if current.UserAgreement.Version != defaultAgreements().UserAgreement.Version || strings.Contains(current.UserAgreement.Content, "审核服务故障时暂停提交") || !strings.Contains(current.UserAgreement.Content, "隔离保留") || !strings.Contains(current.PrivacyPolicy.Content, "人工或AI") {
 					t.Fatal("当前条款与后置审核行为不符")
 				}
 				history, err := get[agreementDocument](t.Context(), api.App.DB, "settings", agreementHistoryID("user", old.UserAgreement.Version), false)

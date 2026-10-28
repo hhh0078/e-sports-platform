@@ -94,6 +94,14 @@ Message 增加 `sender_role` (buyer/provider/club_admin/admin/system), `image_ur
 - POST `/admin/orders/{id}/retry-refund` `{}` -> Order，仅对真实支付、processing 且付款已核验订单重试既有退款号。不会生成第二个退款号；未知或异常结果仍冻结，可继续通过 sync-payment 查询。
 - PATCH `/admin/settings` `{announcement,site_name}`，GET `/admin/settings`。
 
+## 姓名身份证核验
+
+- GET `/me/identity` → `{is_minor,verified,verified_at?}`，仅当前登录用户。`is_minor` 默认 `true`，包括尚未核验；只有成年人二要素核验成功后置 `false`，支付仍需同时检查私密通过事实。
+- POST `/me/identity/verify` `{name,idcard,consent:true}` → 同上。先验证身份证和满18周岁；未成年返回403及 `code:"IDENTITY_UNDERAGE"`，不发起上游调用。非200业务码显示提供方 `msg`；不一致不能通过。
+- GET `/admin/identity-settings` → `{has_api_key,configured,storage_available,api_url}`，仅平台管理员，永不返回密钥。
+- PUT `/admin/identity-settings` `{api_key}` → 同上。空密钥保留，加密保存且审计不包含秘密。
+- 未核验用户发起下单、订单支付、补款、充值及押金付款返回428及 `code:"IDENTITY_REQUIRED"`。查询、退款及已确认收款回调保持原流程。详见[身份核验规则](IDENTITY_VERIFICATION.md)。
+
 ## 微信资金通知
 
 - POST `/payments/wechat/notify`：微信 APIv3 付款回调，先 RSA 验签和 AES-GCM 解密，再核验商户、AppID、买家、订单、金额、币种及唯一支付流水。

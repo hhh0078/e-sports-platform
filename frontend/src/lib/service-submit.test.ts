@@ -43,6 +43,8 @@ function harness(kind:PageKind,providerEnabled=true){
   else Object.assign(context.page.form,{game_id:'delta',title:' 三角洲陪练 ',description:'按约定时段双排教学，耐心沟通。',category:'陪练教学',price:'39.90',unit:'小时',cover_url:'/static/covers/official/delta-3.jpg',labels:[],tagsText:'耐心,教学',club_id:''})
   return{
     store:context.store,page:context.page,phone:context.phone,requests,notices,navigations,lifecycle,storage,creationPath:kind==='purchase'?'/orders':'/services',
+    /** 身份专项直接运行真实预检与门禁，拒绝后不能创建待付款订单。 */
+    useRealIdentity(){vm.runInContext('(function(){'+executable(readFileSync(new URL('./identity.ts',import.meta.url),'utf8'))+';globalThis.requireIdentity=requireIdentity;globalThis.identity={identityGate,finishIdentity}})()',context);return context.identity},
     /** 使用官方注册的窗口生命周期同步实际宽度，不直接修改页面内部ref。 */
     resizeWindow(width:number){viewportWidth=width;resizeCallbacks.forEach(callback=>callback())},
     /** 比较取消、失败和旧会话后仍保留的原始表单内容。 */
@@ -57,6 +59,13 @@ async function flush(){await new Promise(resolve=>setImmediate(resolve))}
 
 /** 通过真实登录使用户、令牌和会话版本同时变化。 */
 async function switchAccount(subject:ReturnType<typeof harness>){const changing=subject.store.login('B');subject.take('/auth/dev','POST').resolve({token:'token-B',user:{...accountB}});await changing}
+
+test('服务下单经真实身份查库发现未核验，关闭弹框不创建订单且保留需求',async()=>{
+  const subject=harness('purchase'),identity=subject.useRealIdentity(),draft=subject.draft(),submitting=subject.page.submit()
+  subject.take('/me').resolve({...accountA,phone_verified:true});await flush();subject.take('/me/identity').resolve({is_minor:true,verified:false});await flush()
+  assert.equal(identity.identityGate.visible,true);identity.finishIdentity();await submitting
+  assert.equal(subject.requests.filter(row=>row.path==='/orders').length,0);assert.equal(subject.draft(),draft);assert.equal(subject.page.busy.value,false)
+})
 
 test('服务下单和发布的手机号读取失败均被捕获并保留草稿',async t=>{
   for(const kind of ['purchase','publish'] as const)await t.test(kind,async()=>{

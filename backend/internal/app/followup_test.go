@@ -15,7 +15,7 @@ func TestIntegrationPaymentConfigDoesNotLockCancellation(t *testing.T) {
 	api := newTestAPI(t)
 	var o Order
 	api.call("player", "POST", "/orders", map[string]any{"service_id": "delta-service-1", "quantity": 1}, 200, &o)
-	if err := put(t.Context(), api.App.DB, "identities", "player", map[string]string{"openid": "private-openid"}); err != nil {
+	if err := put(t.Context(), api.App.DB, "identities", "player", testVerifiedWechatIdentity("private-openid")); err != nil {
 		t.Fatal(err)
 	}
 	t.Setenv("WECHAT_PAY_MCH_ID", "")

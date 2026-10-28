@@ -6,6 +6,7 @@
     <view class="avatar-editor"><button class="profile-avatar" :disabled="!state.user||saving||uploading" aria-label="选择微信头像" open-type="chooseAvatar" @chooseavatar="chooseWechatAvatar" @click="pickAvatarForWeb"><image class="avatar-image" v-if="form.avatar" :src="assetUrl(form.avatar)" mode="aspectFill"/><Icon v-else name="user" :size="28"/><view class="camera-badge"><Icon name="photo" :size="12"/></view></button><view class="avatar-copy"><button class="text-btn change-avatar" open-type="chooseAvatar" :disabled="!state.user||saving||uploading" @chooseavatar="chooseWechatAvatar" @click="pickAvatarForWeb">微信头像<Icon name="arrow" :size="12"/></button><button class="text-btn change-avatar" :disabled="!state.user||saving||uploading" @click="upload('avatar')">{{uploading?'图片处理中…':'选择图片'}}<Icon name="arrow" :size="12"/></button><text class="hint">头像1:1，自动裁剪压缩</text></view></view>
     <view class="form-section profile-fields"><view class="field"><text class="field-label">昵称</text><input v-model="form.nickname" :disabled="!state.user" type="nickname" class="input" maxlength="24" placeholder="2—24个字的玩家昵称"/></view><view class="field"><view class="field-heading"><text class="field-label">一句话介绍</text><text class="field-count">{{form.bio.length}} / 300</text></view><textarea v-model="form.bio" :disabled="!state.user" class="input bio-input" maxlength="300" placeholder="擅长什么游戏，哪些时段在线？"/></view></view>
     <view class="profile-setting"><text class="field-label">手机号验证</text><button class="settings-row" :disabled="!state.user" @click="verifyPhone"><Icon name="phone" :size="20"/><text class="settings-value">{{state.user?.phone_verified?'已验证 '+(state.user.phone_masked||'手机号'):'验证后可下单和发布'}}</text><Icon name="arrow" :size="13"/></button></view>
+    <view class="profile-setting"><text class="field-label">身份核验</text><button class="settings-row" :disabled="!state.user||saving||uploading" @click="verifyUserIdentity"><Icon name="shield" :size="20"/><text class="settings-value">{{state.user?.is_minor===false?'已核验':'未核验 · 点击核验'}}</text><Icon name="arrow" :size="13"/></button><text class="hint">完成身份核验后才能下单支付</text></view>
     <button class="settings-row wallet-entry" @click="go(state.user?'/pages/account/wallet':'/pages/account/login?next='+encodeURIComponent('/pages/account/wallet'))"><Icon name="wallet" :size="20"/><text class="settings-value">我的钱包</text><Icon name="arrow" :size="13"/></button>
 
     <view class="form-section cover-settings"><view class="field-heading"><text class="field-label">个人主页封面</text><button class="text-btn" :disabled="!state.user||uploading||saving" @click="upload('profile_cover')">{{form.profile_cover?'更换封面':'选择封面'}}<Icon name="arrow" :size="12"/></button></view><view v-if="form.profile_cover" class="profile-cover"><image class="profile-cover-image" :src="assetUrl(form.profile_cover)" mode="aspectFill"/></view><text v-else class="cover-empty">未设置个人主页封面 · 16:9</text></view>
@@ -23,6 +24,7 @@ import { getMe, updateProfile } from '../../api/users.api'
 import { token, errorMessage, errorStatus, isCancelled } from '../../api/client'
 import { chooseUploadImage } from '../../lib/media'
 import { requirePhone } from '../../lib/phone'
+import { requireIdentity } from '../../lib/identity'
 import { go, notify, assetUrl } from '../../lib/format'
 const form=reactive({nickname:'',bio:'',avatar:'',profile_cover:''}),error=ref(''),saving=ref(false),uploading=ref(false)
 let version=0,visible=true,disposed=false,savedForm='',loadedSession: ReturnType<typeof currentSession> | null=null
@@ -52,6 +54,8 @@ async function saveProfile(){if(saving.value||uploading.value||!state.user)retur
 function cancel(){resetForm();notify('未保存的修改已取消')}
 /** 请求手机号验证或显示已完成验证的脱敏号码。 */
 async function verifyPhone(){if(!state.user||!visible)return;if(state.user.phone_verified)return notify('已验证 '+(state.user.phone_masked||'手机号'));const session=currentSession();try{await requirePhone()}catch(err){if(visible&&sameSession(session))notify(err)}}
+/** 主动核验同样读取实时身份，不展示真实姓名或完整身份证。 */
+async function verifyUserIdentity():Promise<void>{if(!state.user||!visible||saving.value||uploading.value)return;const session=currentSession();try{if(await requireIdentity())if(visible&&sameSession(session))notify('身份已核验')}catch(err){if(visible&&sameSession(session))notify(err)}}
 /** 撤销当前会话，迟到回调不能退出后来登录的账号。 */
 async function signOut(){if(saving.value)return;version++;saving.value=true;try{await logout();if(!state.user&&!token()){resetForm();go('/pages/main/index?tab=me')}}catch(err){notify(err)}finally{saving.value=false}}
 /** 原生选图返回时保留当前草稿，仅在身份变化或没有未保存内容时刷新。 */

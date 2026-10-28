@@ -15,14 +15,14 @@ function harness(t:TestContext){
   const storage=new Map<string,string>([['jijie_token','token-A']]),pending:DeferredRequest[]=[],notices:unknown[]=[],payments:Array<{success:()=>void;fail:(error:unknown)=>void}>=[]
   const hooks={show:()=>{},hide:()=>{},unload:()=>{}}
   let revision=0,bottom=()=>{}
-  let phone=async()=>true
+  let phone=async()=>true,identity=true,identityChecks=0
   const histories:{entries:unknown[];topups:unknown[];withdrawals:unknown[];refunds:unknown[]}={entries:[],topups:[],withdrawals:[],refunds:[]}
   const reads:string[]=[];let nextReadFailure=''
   const state=reactive({user:{id:'A',phone_verified:true},ready:true})
   const balance={deposit_required_cents:0,deposit_shortfall_cents:0,deposit_qualified:false,available_cents:10000,recharge_cents:0,spendable_cents:10000,pending_cents:0,withdrawal_frozen_cents:0,deposit_cents:0,deposit_refunding_cents:0,settlement_hold_days:7,dev_mode:true,currency:'CNY'}
   const context=vm.createContext({reactive,ref,computed,watch,state,onReachBottom:(callback:()=>void)=>{bottom=callback},init:async()=>{},sessionRevision:()=>revision,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value),removeStorageSync:(key:string)=>storage.delete(key),requestPayment:(options:typeof payments[number])=>payments.push(options)},
-    token:()=>storage.get('jijie_token'),notify:(value:unknown)=>notices.push(value),go:()=>{},requirePhone:()=>phone(),
+    token:()=>storage.get('jijie_token'),notify:(value:unknown)=>notices.push(value),go:()=>{},requirePhone:()=>phone(),requireIdentity:async()=>{identityChecks++;return identity},
     onShow:(callback:()=>void)=>{hooks.show=callback},onHide:(callback:()=>void)=>{hooks.hide=callback},onUnload:(callback:()=>void)=>{hooks.unload=callback},
     /** 查询默认返回合法空列表，资金写入和查单逐个受控。 */
     api(path:string,method='GET',body:Record<string,unknown>={}){
@@ -43,6 +43,8 @@ function harness(t:TestContext){
     failRead(prefix:string){nextReadFailure=prefix},
     /** 控制手机号原生授权前后的页面生命周期。 */
     setPhone(callback:()=>Promise<boolean>){phone=callback},
+    /** 身份门禁取消不创建资金意图，重复支付必须重新预检。 */
+    setIdentity(value:boolean){identity=value},identityChecks:()=>identityChecks,
     /** 真实会话变化触发watch清理，不直接操作页面内部状态。 */
     switchAccount(){revision++;storage.set('jijie_token','token-B');state.user={id:'B',phone_verified:true}},
     /** 读取实际发出的接口，不存在则让测试立即失败。 */
@@ -53,6 +55,10 @@ function harness(t:TestContext){
 async function flush(){await new Promise(resolve=>setImmediate(resolve))}
 const topup={id:'topup-A',purpose:'balance',amount_cents:1000,status:'pending_payment',refunded_cents:0,created_at:''}
 const params={timeStamp:'1',nonceStr:'x',package:'prepay_id=test',signType:'RSA',paySign:'signature'}
+
+test('钱包充值和个人押金必须先通过身份门禁，取消保留金额且不创建支付单',async t=>{
+  for(const kind of ['balance','deposit'])await t.test(kind,async()=>{const s=harness(t);s.hooks.show();await flush();s.page.open(kind);s.page.amount.value='10';s.setIdentity(false);await s.page.submit();assert.equal(s.identityChecks(),1);assert.equal(s.pending.length,0);assert.equal(s.page.amount.value,'10');await s.page.resumeTopup(topup);assert.equal(s.identityChecks(),2);assert.equal(s.pending.length,0)})
+})
 
 test('钱包金额严格拒绝负数、指数、超额与多余小数',()=>{
   assert.equal(parseWalletAmount('12.34'),1234);assert.equal(parseWalletAmount('1'),100)

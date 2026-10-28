@@ -96,6 +96,7 @@ func newTestAPIWithDefaults(t *testing.T, keepDefaults bool) *testAPI {
 		api.call("", "POST", "/auth/dev", map[string]any{"user_id": id}, 200, &result)
 		api.Tokens[id] = result.Token
 		api.call(id, "POST", "/me/phone/dev", map[string]string{"phone_number": "13800138000"}, 200, nil)
+		setTestAdultIdentity(t, api, id, true)
 	}
 	return api
 }

@@ -44,8 +44,8 @@ func legacyBrandAgreements() agreementSet {
 	return v
 }
 
-// defaultAgreements 以独立版本说明先保存后审核、人工兜底及交易违规原件受限隔离，不修改旧版本。
-func defaultAgreements() agreementSet {
+// legacyModerationAgreements 保留图文后置审核版本的默认文本，避免更改已发布版本的含义。
+func legacyModerationAgreements() agreementSet {
 	v := legacyBrandAgreements()
 	for _, doc := range []*agreementDocument{&v.UserAgreement, &v.PrivacyPolicy} {
 		doc.Version = "2026-10-23.2"
@@ -53,6 +53,19 @@ func defaultAgreements() agreementSet {
 	}
 	v.UserAgreement.Content = strings.Replace(v.UserAgreement.Content, "用户提交的文字和图片需通过内容审核；审核拒绝会说明原因，审核服务故障时暂停提交。", "用户提交的文字和图片在格式、归属与业务权限校验后先保存或发布，再进入后置图文审核。平台管理员可人工审核；配置AI后可由AI辅助审核，未配置、超时或AI故障时继续等待人工处理，不阻断已保存业务。审核拒绝会说明原因并通知提交人；对应公开文字将被替换，公开违规图片将移除。订单、聊天、调价及售后原始材料不因此改写资金事实；违规交易原件从普通展示中屏蔽并隔离保留，仅供平台管理员处理争议和合规查证。", 1)
 	v.PrivacyPolicy.Content = strings.Replace(v.PrivacyPolicy.Content, "会发送给运营者在后台配置的AI服务。", "在提交成功后进入人工或AI图文审核。仅在运营者配置可用AI时，必要的待审文字和实际图片字节才发送给相应AI服务；未配置或服务故障时等待人工审核，不阻断已保存业务。公开违规图片会移除，违规文字会替换；交易原始材料隔离保留，仅限平台管理员按职责查证，普通参与者不再看到违规原文或原图。", 1)
+	return v
+}
+
+// defaultAgreements 以新版本说明成年人交易门槛及姓名身份证二要素核验的实际处理范围。
+func defaultAgreements() agreementSet {
+	v := legacyModerationAgreements()
+	for _, doc := range []*agreementDocument{&v.UserAgreement, &v.PrivacyPolicy} {
+		doc.Version = "2026-10-28.1"
+		doc.UpdatedAt = "2026-10-28T00:00:00Z"
+	}
+	v.UserAgreement.Content = strings.Replace(v.UserAgreement.Content, "未成年人应遵守游戏防沉迷规定，并在监护人指导和授权下使用。", "平台下单支付服务仅向已完成身份核验且年满18周岁的用户提供。未核验用户可继续浏览；下单、付款、补款、充值和缴纳押金前须通过成年人姓名与身份证核验。未满18周岁无法发起核验或使用上述交易服务，请退出平台。", 1)
+	v.PrivacyPolicy.Content = strings.Replace(v.PrivacyPolicy.Content, "三、交易信息", "三、身份核验与交易信息", 1)
+	v.PrivacyPolicy.Content = strings.Replace(v.PrivacyPolicy.Content, "我们保存服务、订单、支付渠道结果", "在你单独同意并主动提交身份核验时，平台先根据身份证出生日期判断年龄；未满18周岁不向外部核验服务发送请求。成年用户本次输入的姓名和身份证号经服务端发送至山东省云鹊网络科技有限公司提供的XXAPI二要素核验接口（https://v2.xxapi.cn/api/idCardCheck），仅用于核验姓名与证件是否一致。平台不保存完整姓名或完整身份证号，仅保存必要的通过状态、时间、核验来源、请求摘要、脱敏信息及本次同意时间，公开资料不展示这些私密记录。拒绝提交仍可浏览，无法下单支付。\n我们保存服务、订单、支付渠道结果", 1)
 	return v
 }
 

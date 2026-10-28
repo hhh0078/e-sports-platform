@@ -179,6 +179,9 @@ func (a *App) payOrderAdjustment(w http.ResponseWriter, r *http.Request) (any, e
 	if v.Status == "completed" {
 		return map[string]any{"adjustment": v, "order": o, "mode": paymentMode(a.Config.DevMode)}, nil
 	}
+	if e = requireAdultIdentity(r.Context(), tx, u.ID); e != nil {
+		return nil, e
+	}
 	if !contains([]string{"awaiting_payment", "paying"}, v.Status) || !v.BuyerAgreed || !v.ProviderAgreed || o.ActiveAdjustmentID != v.ID {
 		return nil, fail(409, "方案尚未双方同意、已过期或资金状态不符")
 	}

@@ -43,6 +43,7 @@ import { requestWechatPayment } from '../../lib/payment'
 import { beginFinancialActivity } from '../../lib/update-manager'
 import { newWalletRequestID } from '../../lib/wallet'
 import { requirePhone } from '../../lib/phone'
+import { requireIdentity } from '../../lib/identity'
 import { state, init, sessionRevision } from '../../lib/store'
 import { money, time, statusLabel, notify, assetUrl, go } from '../../lib/format'
 /** 订单状态操作及确认表单配置。 */
@@ -125,6 +126,7 @@ function balanceRequestID():string {const key='jijie_order_balance_request:'+sta
 /** 调用统一付款工具后查询服务端实付状态；本地回调不代表付款成功。 */
 async function payCurrentOrder(session: ReturnType<typeof currentSession>):Promise<boolean>{
   if(!(await requirePhone())||!sameSession(session)||!visible)return false
+  if(!(await requireIdentity())||!sameSession(session)||!visible)return false
   if(paymentChannel.value==='balance'&&(!paymentWallet.value||paymentWallet.value.spendable_cents<(order.value?.amount_cents||0)))throw new Error('钱包余额不足，请充值或选择微信支付')
   const result=await payOrder(id.value,{channel:paymentChannel.value,...(paymentChannel.value==='balance'?{request_id:balanceRequestID()}:{})})
   if(!sameSession(session))return false

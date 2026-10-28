@@ -15,6 +15,7 @@
 </template>
 <script setup lang="ts">
 import { requirePhone } from '../../lib/phone'
+import { requireIdentity } from '../../lib/identity'
 /** 文件作用：校验自定义需求与整数分预算并创建待支付订单。 */
 import { ref,watch,nextTick,computed } from 'vue'
 import { onLoad,onShow,onHide,onUnload } from '@dcloudio/uni-app'
@@ -46,6 +47,7 @@ async function submit(){
   busy.value=true;error.value=''
   try{
     if(!(await requirePhone())||!sameSession(session))return
+    if(!(await requireIdentity())||!sameSession(session))return
     const cents=Math.round(Number(price.value)*100)
     if(!title.value.trim()||!requirements.value.trim())return notify('请写明需求标题和验收标准')
     if(!/^\d+(\.\d{1,2})?$/.test(price.value)||cents<100||cents>1000000)return notify('预算应为1至10000元，最多两位小数')

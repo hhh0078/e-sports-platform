@@ -195,6 +195,12 @@
       }
     },
     {
+      "path": "pages/manage/identity",
+      "style": {
+        "navigationBarTitleText": "身份核验配置"
+      }
+    },
+    {
       "path": "pages/manage/messages",
       "style": {
         "navigationBarTitleText": "发送消息"

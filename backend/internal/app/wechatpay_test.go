@@ -329,5 +329,5 @@ func TestWXCloseAbsentOrderRequiresSignature(t *testing.T) {
 
 // testVerifiedWechatIdentity 仅为支付协议回归构造独立测试身份，真实手机兑换由手机号专项测试覆盖。
 func testVerifiedWechatIdentity(openid string) map[string]string {
-	return map[string]string{"openid": openid, "phone_number": "13800138000", "phone_country_code": "86", "phone_source": "wechat", "phone_verified_at": now()}
+	return map[string]string{"openid": openid, "phone_number": "13800138000", "phone_country_code": "86", "phone_source": "wechat", "phone_verified_at": now(), "identity_source": "xxapi", "identity_adult": "true", "identity_verified_at": now()}
 }

@@ -92,6 +92,10 @@ func TestIntegrationWechatTicketAndAgreementVersions(t *testing.T) {
 	if !login.FirstLogin {
 		t.Fatal("首次新建用户应返回first_login")
 	}
+	var isMinor bool
+	if err := api.App.DB.QueryRow(t.Context(), "SELECT (data->>'is_minor')::boolean FROM users WHERE id=$1", login.User.ID).Scan(&isMinor); err != nil || !isMinor || !login.User.IsMinor {
+		t.Fatal("新微信用户必须持久化默认未成年标记")
+	}
 	var providerEnabled bool
 	if err := api.App.DB.QueryRow(t.Context(), "SELECT (data->>'provider_enabled')::boolean FROM users WHERE id=$1", login.User.ID).Scan(&providerEnabled); err != nil || !providerEnabled {
 		t.Fatal("新微信用户必须持久化默认开启的接单身份")

@@ -14,7 +14,7 @@ export interface UpdateRuntime {
   showToast?(options: { title: string; icon: 'none'; duration: number }): unknown
 }
 /** 公告和更新共享唯一系统弹框槽。 */
-export type SystemPromptKind = 'announcement' | 'update'
+export type SystemPromptKind = 'announcement' | 'update' | 'identity'
 /** 外部只读状态不会暴露支付参数、业务号或用户资料。 */
 export interface UpdatePromptState { ready: boolean; prompting: boolean; applying: boolean; deferred: boolean; financialBusy: boolean; background: boolean; owner: SystemPromptKind | null }
 
@@ -41,12 +41,12 @@ export function beginFinancialActivity(): () => void {
 }
 
 /**
- * 抢占唯一公告／更新系统弹框槽，更新准备好时优先于尚未打开的公告。
+ * 抢占唯一系统弹框槽；身份强制门禁允许在自身资金任务中等待核验，避免资金锁死等。
  * @param kind - 可信组件声明的弹框类型。
  * @returns 释放句柄或null；关闭、隐藏和卸载都应幂等释放公告句柄。
  */
 export function acquireSystemPrompt(kind: SystemPromptKind): (() => void) | null {
-  if (!visible || promptOwner || financialTasks.size || applying || kind === 'announcement' && ready && !suspended) return null
+  if (!visible || promptOwner || kind !== 'identity' && financialTasks.size || applying || kind === 'announcement' && ready && !suspended) return null
   const lease = ++promptLease; promptOwner = kind; scheduleUpdate()
   let released = false
   return () => { if (released) return; released = true; if (lease === promptLease) { promptOwner = null; scheduleUpdate() } }

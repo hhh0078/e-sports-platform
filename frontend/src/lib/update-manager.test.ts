@@ -42,6 +42,13 @@ test('资金busy期间ready延后，确认时新增资金任务也必须结束�
   later(); h.flush(); assert.equal(h.applies(), 1); assert.equal(h.modals.length, 1)
 })
 
+test('身份强制核验在资金锁下可占空槽，核验期间微信更新不能抢占',()=>{
+  const h=harness(),finish=h.subject.beginFinancialActivity(),release=h.subject.acquireSystemPrompt('identity');assert.ok(release)
+  h.callbacks.ready[0]();h.flush();assert.equal(h.modals.length,0);assert.equal(h.subject.acquireSystemPrompt('announcement'),null)
+  finish();h.flush();assert.equal(h.modals.length,0);assert.equal(h.subject.getUpdatePromptState().owner,'identity')
+  release();release();h.flush();assert.equal(h.modals.length,1);assert.equal(h.subject.getUpdatePromptState().owner,'update')
+})
+
 test('现有公告先结束，ready优先于尚未打开公告，旧释放句柄不能关闭新的弹框槽', () => {
   const h = harness(), first = h.subject.acquireSystemPrompt('announcement'); assert.ok(first)
   h.callbacks.ready[0](); h.flush(); assert.equal(h.modals.length, 0)
