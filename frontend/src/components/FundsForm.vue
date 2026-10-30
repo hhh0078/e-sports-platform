@@ -2,7 +2,7 @@
 <template>
   <FinancePopup :opened="opened" :title="title" :busy="busy" @close="emit('close')"><view class="funds-form-sheet">
     <text class="funds-form-note">{{ description }}</text>
-    <view class="funds-amount-field"><text>¥</text><input class="funds-amount-input" type="digit" maxlength="12" placeholder="0.00" :value="amount" :disabled="busy" @input="changeAmount"/></view>
+    <view class="funds-amount-field"><text>{{amountPrefix}}</text><input class="funds-amount-input" type="digit" maxlength="12" placeholder="0.00" :value="amount" :disabled="busy" @input="changeAmount"/></view>
     <view v-if="nameRequired" class="field"><text class="field-label">{{ nameLabel }}</text><input class="input" :value="userName" maxlength="40" :disabled="busy" placeholder="仅用于本次官方转账实名核验" @input="changeName"/></view>
     <text v-if="error" class="funds-form-error">{{ error }}</text>
     <view class="action-footer funds-form-actions"><button class="text-btn" :disabled="busy" @click="emit('close')">取消</button><button class="btn" :disabled="busy" @click="emit('submit')">{{ busy?'处理中…':'确认'+title }}</button></view>
@@ -10,7 +10,7 @@
 </template>
 <script setup lang="ts">
 import FinancePopup from './FinancePopup.vue'
-withDefaults(defineProps<{opened:boolean;title:string;description:string;amount:string;userName?:string;nameRequired?:boolean;nameLabel?:string;error?:string;busy?:boolean}>(),{userName:'',nameRequired:false,nameLabel:'微信实名认证姓名',error:'',busy:false})
+withDefaults(defineProps<{opened:boolean;title:string;amountPrefix?:string;description:string;amount:string;userName?:string;nameRequired?:boolean;nameLabel?:string;error?:string;busy?:boolean}>(),{amountPrefix:'¥',userName:'',nameRequired:false,nameLabel:'微信实名认证姓名',error:'',busy:false})
 const emit=defineEmits<{'update:amount':[value:string];'update:userName':[value:string];close:[];submit:[]}>()
 /** 从跨端原生输入事件中读取已缩窄的字符串，异常事件不清空草稿。 */
 function inputValue(event:unknown):string|undefined{if(!event||typeof event!=='object'||!('detail' in event))return;const detail=event.detail;if(detail&&typeof detail==='object'&&'value' in detail&&typeof detail.value==='string')return detail.value}

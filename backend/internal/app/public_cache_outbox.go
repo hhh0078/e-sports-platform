@@ -19,8 +19,8 @@ CREATE OR REPLACE FUNCTION enqueue_public_cache_invalidation() RETURNS trigger L
 DECLARE relevant boolean := true;
 BEGIN
  IF TG_TABLE_NAME='settings' THEN
-  IF TG_OP='DELETE' THEN relevant := OLD.id IN ('platform','agreements','financial','ai-private','public-content-v1');
-  ELSE relevant := NEW.id IN ('platform','agreements','financial','ai-private','public-content-v1'); END IF;
+  IF TG_OP='DELETE' THEN relevant := OLD.id IN ('platform','agreements','financial','ai-private','public-content-v1','commerce-private');
+  ELSE relevant := NEW.id IN ('platform','agreements','financial','ai-private','public-content-v1','commerce-private'); END IF;
  ELSIF TG_TABLE_NAME='evidence' THEN
   IF TG_OP='INSERT' THEN relevant := false;
   ELSIF TG_OP='DELETE' THEN relevant := COALESCE(OLD.data->>'public','false')='true';
@@ -98,7 +98,7 @@ func publicCacheWriteRequest(r *http.Request) bool {
 		return false
 	}
 	switch r.Pattern {
-	case "POST /api/admin/games", "PATCH /api/admin/games/{id}", "PATCH /api/admin/settings", "PATCH /api/admin/agreements", "PATCH /api/admin/financial-settings", "PATCH /api/admin/ai-settings", "PATCH /api/admin/public-content", "POST /api/admin/articles", "PATCH /api/admin/articles/{id}", "POST /api/admin/moderation/{id}/decision":
+	case "POST /api/admin/games", "PATCH /api/admin/games/{id}", "PATCH /api/admin/settings", "PATCH /api/admin/agreements", "PATCH /api/admin/financial-settings", "PATCH /api/admin/ai-settings", "PATCH /api/admin/commerce-settings", "PATCH /api/admin/public-content", "POST /api/admin/articles", "PATCH /api/admin/articles/{id}", "POST /api/admin/moderation/{id}/decision":
 		return true
 	}
 	return false

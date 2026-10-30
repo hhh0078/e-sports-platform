@@ -156,7 +156,11 @@ func validatePaymentDraft(v paymentSettings) error {
 
 // runtimePaymentConfig 构造完整的商户配置，未填齐或无效的配置绝不进入真实扣款流程。
 func (a *App) runtimePaymentConfig(v paymentSettings) (wxPayConfig, error) {
-	c := wxPayConfig{AppID: a.Config.WechatAppID, MerchantID: v.MerchantID, Serial: v.CertificateSerial, PublicKeyID: v.PublicKeyID, APIKey: v.APIKey, NotifyURL: v.NotifyURL, RefundNotifyURL: v.RefundNotifyURL}
+	appID := a.Config.WechatAppID
+	if appID == "" {
+		appID = a.commerceSettings().OfficialAppID
+	}
+	c := wxPayConfig{AppID: appID, MerchantID: v.MerchantID, Serial: v.CertificateSerial, PublicKeyID: v.PublicKeyID, APIKey: v.APIKey, NotifyURL: v.NotifyURL, RefundNotifyURL: v.RefundNotifyURL}
 	if c.AppID == "" || c.MerchantID == "" || c.Serial == "" || c.PublicKeyID == "" || len(c.APIKey) != 32 || !validNotifyURL(c.NotifyURL) || !validNotifyURL(c.RefundNotifyURL) {
 		return c, fail(503, "微信支付配置不完整，未产生扣款")
 	}

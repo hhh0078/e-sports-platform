@@ -136,6 +136,16 @@ func (a *App) orderAdjustments(w http.ResponseWriter, r *http.Request) (any, err
 	if e != nil {
 		return nil, e
 	}
+	for i := range items {
+		if items[i].PaymentChannel == "" {
+			p, pe := get[OrderPayment](r.Context(), tx, "order_payments", adjustmentPaymentID(items[i].ID), false)
+			if pe == nil {
+				items[i].PaymentChannel = p.Channel
+			} else if !missing(pe) {
+				return nil, pe
+			}
+		}
+	}
 	return items, tx.Commit(r.Context())
 }
 

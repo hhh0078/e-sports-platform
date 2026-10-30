@@ -18,6 +18,7 @@
         <view class="settings-actions"><button class="text-btn" :disabled="busy" @click="restoreAgreements">取消修改</button><button class="btn" :disabled="busy||!loaded" @click="saveAgreements">{{ busy?'正在发布…':'发布协议版本' }}</button></view>
       </template>
       <template v-else>
+        <CommerceConfig/>
         <view class="payment-status"><view class="status-icon"><Icon :name="paymentStatus.configured?'shield':'settings'" :size="26"/></view><view><text>{{ paymentStatus.configured?'支付配置已就绪':'支付配置尚未完整' }}</text><text>{{ paymentStatus.configured?'真实交易仍需微信 AppID 与商户权限匹配':'可以先保存已准备好的资料，缺项时不会发起真实扣款' }}</text></view></view>
         <view v-if="!paymentStatus.storage_available" class="subtle-note">服务器尚未启用支付资料的加密保存，请按项目部署说明完成配置后再保存。当前页面仍可查看已配置状态。</view>
         <view v-if="state.devMode" class="subtle-note">本地开发环境仍使用测试支付；填写配置不会把测试订单变成真实扣款。</view>
@@ -44,6 +45,7 @@ import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import Icon from '../../components/Icon.vue'
+import CommerceConfig from '../../components/CommerceConfig.vue'
 import { state, init, sessionRevision } from '../../lib/store'
 import { getAdminAgreements, getPaymentSettings, updateAgreements, updatePaymentSettings } from '../../api/admin.api'
 import type { Agreements, PaymentSettings, PaymentSettingsInput } from '../../types/models'

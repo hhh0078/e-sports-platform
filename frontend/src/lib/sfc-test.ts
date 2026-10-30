@@ -55,7 +55,7 @@ export function injectBusinessAPIs(context: vm.Context): void {
   context.errorMessage = (error: unknown) => typeof error === 'object' && error !== null ? 'message' in error ? String(error.message) : 'errMsg' in error ? String(error.errMsg) : '操作失败，请重试' : String(error || '操作失败，请重试')
   context.errorStatus = (error: unknown) => typeof error === 'object' && error !== null && 'status' in error ? error.status : undefined
   context.isCancelled = (error: unknown) => typeof error === 'object' && error !== null && 'cancelled' in error && error.cancelled === true
-  for (const name of ['auth', 'games', 'services', 'users', 'orders', 'clubs', 'admin', 'wallet', 'messages', 'ai', 'finance', 'management']) vm.runInContext(executable(readFileSync(new URL('../api/' + name + '.api.ts', import.meta.url), 'utf8')), context)
+  for (const name of ['auth', 'games', 'services', 'users', 'orders', 'clubs', 'admin', 'wallet', 'messages', 'ai', 'finance', 'management', 'commerce']) vm.runInContext(executable(readFileSync(new URL('../api/' + name + '.api.ts', import.meta.url), 'utf8')), context)
   vm.runInContext(executable(readFileSync(new URL('./finance.ts', import.meta.url), 'utf8')), context)
   vm.runInContext(executable(readFileSync(new URL('./management-permissions.ts', import.meta.url), 'utf8')), context)
   vm.runInContext('const revokeSession = signOut', context)

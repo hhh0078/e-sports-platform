@@ -3,12 +3,10 @@ package app
 
 import (
 	"context"
-	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"io"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -16,8 +14,11 @@ import (
 )
 
 type wechatTicket struct {
-	OpenID string `json:"openid"`
-	AppID  string `json:"appid"`
+	OpenID     string `json:"openid"`
+	AppID      string `json:"appid"`
+	UnionID    string `json:"unionid,omitempty"`
+	SessionKey string `json:"session_key,omitempty"`
+	Channel    string `json:"channel,omitempty"`
 }
 
 // wechatConfigured 检查官方服务凭证，缺失时不降级为模拟微信身份。
@@ -80,23 +81,16 @@ func (a *App) wechatPrepare(w http.ResponseWriter, r *http.Request) (any, error)
 	if !length(in.Code, 1, 256) {
 		return nil, fail(400, "微信登录凭证无效")
 	}
-	query := url.Values{"appid": {a.Config.WechatAppID}, "secret": {a.Config.WechatSecret}, "js_code": {in.Code}, "grant_type": {"authorization_code"}}
-	var wx struct {
-		OpenID  string `json:"openid"`
-		ErrCode int    `json:"errcode"`
-	}
-	if err := a.wechatJSON(r.Context(), "GET", "https://api.weixin.qq.com/sns/jscode2session?"+query.Encode(), nil, &wx); err != nil {
+	wx, err := a.exchangeMiniProgramCode(r.Context(), in.Code)
+	if err != nil {
 		return nil, err
-	}
-	if wx.ErrCode != 0 || !length(wx.OpenID, 1, 128) {
-		return nil, fail(401, "微信登录凭证已失效或小程序未获授权，请重新登录")
 	}
 	agreements, err := readAgreements(r.Context(), a.DB)
 	if err != nil {
 		return nil, err
 	}
 	ticket := newID() + newID()
-	raw, _ := json.Marshal(wechatTicket{OpenID: wx.OpenID, AppID: a.Config.WechatAppID})
+	raw, _ := json.Marshal(wechatTicket{OpenID: wx.OpenID, AppID: a.Config.WechatAppID, UnionID: wx.UnionID, SessionKey: wx.SessionKey, Channel: "mini_program"})
 	if err = a.Redis.Set(r.Context(), a.redisKey("wechat-ticket:"+ticket), raw, 5*time.Minute).Err(); err != nil {
 		return nil, fail(503, "登录服务暂时不可用")
 	}
@@ -105,9 +99,6 @@ func (a *App) wechatPrepare(w http.ResponseWriter, r *http.Request) (any, error)
 
 // wechatLogin 在条款校验通过后原子消费官方身份票据，并合并私密资料及同意记录。
 func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
-	if err := a.wechatConfigured(); err != nil {
-		return nil, err
-	}
 	if err := a.loginRate(r); err != nil {
 		return nil, err
 	}
@@ -140,11 +131,13 @@ func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, fail(503, "登录服务暂时不可用")
 	}
 	var identity wechatTicket
-	if json.Unmarshal([]byte(raw), &identity) != nil || identity.OpenID == "" || identity.AppID != a.Config.WechatAppID {
+	if json.Unmarshal([]byte(raw), &identity) != nil || identity.OpenID == "" || !a.validWechatTicket(identity) {
 		return nil, fail(401, "微信身份凭据无效")
 	}
-	hash := sha256.Sum256([]byte(identity.AppID + ":" + identity.OpenID))
-	id := "wx_" + hex.EncodeToString(hash[:16])
+	id, err := resolveWechatUserID(r.Context(), tx, identity)
+	if err != nil {
+		return nil, err
+	}
 	firstLogin := false
 	u, err := get[User](r.Context(), tx, "users", id, false)
 	if missing(err) {
@@ -171,16 +164,33 @@ func (a *App) wechatLogin(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, fail(403, "账号已被停用")
 	}
 	fields := consentFields(in.consentInput)
-	fields["openid"] = identity.OpenID
-	fields["appid"] = identity.AppID
+	if identity.Channel == "official_account" {
+		fields["official_openid"] = identity.OpenID
+		fields["official_appid"] = identity.AppID
+	} else {
+		fields["openid"] = identity.OpenID
+		fields["appid"] = identity.AppID
+	}
+	if identity.UnionID != "" {
+		fields["wechat_unionid"] = identity.UnionID
+	}
 	if err = mergeIdentity(r.Context(), tx, id, fields); err != nil {
 		return nil, err
 	}
-	if err = bootstrapWechatAdmin(r.Context(), tx, &u, identity.OpenID); err != nil {
+	if identity.Channel != "official_account" {
+		if err = bootstrapWechatAdmin(r.Context(), tx, &u, identity.OpenID); err != nil {
+			return nil, err
+		}
+	} else if err = bootstrapOfficialAdmin(r.Context(), tx, &u, identity); err != nil {
 		return nil, err
 	}
 	if err = tx.Commit(r.Context()); err != nil {
 		return nil, err
+	}
+	if identity.Channel != "official_account" && identity.SessionKey != "" {
+		if err = a.storeWechatSession(r.Context(), id, wechatSession{AppID: identity.AppID, OpenID: identity.OpenID, SessionKey: identity.SessionKey}); err != nil {
+			return nil, err
+		}
 	}
 	session, err := a.session(r.Context(), u)
 	if err == nil {
@@ -194,6 +204,10 @@ func (a *App) registerIdentityRoutes(mux *http.ServeMux) {
 	routes := map[string]func(http.ResponseWriter, *http.Request) (any, error){
 		"GET /api/agreements": a.agreements, "GET /api/admin/agreements": a.adminAgreements, "PATCH /api/admin/agreements": a.saveAgreements,
 		"POST /api/auth/wechat/prepare": a.wechatPrepare, "POST /api/me/phone/wechat": a.bindWechatPhone, "POST /api/me/phone/dev": a.bindDevPhone,
+		"POST /api/auth/official/start": a.officialLoginStart, "POST /api/auth/official/prepare": a.officialLoginPrepare,
+		"POST /api/auth/official/js-sdk": a.officialJSSDK,
+		"POST /api/auth/wechat/session":  a.refreshWechatSession,
+		"POST /api/me/phone/sms/send":    a.sendPhoneSMS, "POST /api/me/phone/sms/verify": a.verifyPhoneSMS,
 	}
 	for path, handler := range routes {
 		mux.HandleFunc(path, a.wrap(handler))

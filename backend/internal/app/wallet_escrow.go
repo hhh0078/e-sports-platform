@@ -21,7 +21,11 @@ func accountWalletPayment(ctx context.Context, q querier, o *Order, channel, req
 	}
 	s := settlementForOrder(*o)
 	e := WalletEscrow{FundingVersion: 1, OrderID: o.ID, BuyerID: o.BuyerID, ProviderID: o.ProviderID, AmountCents: o.AmountCents, Channel: channel, Status: "holding", CreatedAt: now()}
-	if channel == "balance" {
+	if channel == "virtual" {
+		if err = accountVirtualCoins(ctx, q, o.BuyerID, requestID, o.ID, o.AmountCents); err != nil {
+			return err
+		}
+	} else if channel == "balance" {
 		wallet, err := lockedWallet(ctx, q, o.BuyerID)
 		if err != nil {
 			return err
@@ -62,7 +66,7 @@ func accountWalletPayment(ctx context.Context, q querier, o *Order, channel, req
 				}
 			}
 		}
-	} else {
+	} else if channel != "virtual" {
 		transaction := o.PaymentTransactionID
 		if channel == "dev" {
 			transaction = "DEVORDER" + o.ID

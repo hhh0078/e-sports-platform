@@ -13,11 +13,11 @@ import { newWalletRequestID } from './wallet'
 function harness(t:TestContext){
   const pending:DeferredRequest[]=[],reads:string[]=[],notices:unknown[]=[],storage=new Map<string,string>(),hooks={hide:()=>{},unload:()=>{}}
   const state={user:{id:'A',role:'user'},devMode:true},order={id:'order-A',buyer_id:'A',provider_id:'B',status:'pending_payment',payment_status:'unpaid',amount_cents:1000,refund_status:'none'}
-  let rejectNative=false,nativeCalls=0,identity=true,identityChecks=0
+  let rejectNative=false,nativeCalls=0,identity=true,identityChecks=0,virtualSessions=0
   const context=vm.createContext({ref,reactive,computed,watch,nextTick,state,newWalletRequestID,init:async()=>{},sessionRevision:()=>0,requirePhone:async()=>true,requireIdentity:async()=>{identityChecks++;return identity},token:()=>state.user.id,
     uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>storage.set(key,value)},notify:(value:unknown)=>notices.push(value),
     setInterval,clearInterval,onLoad:()=>{},onShow:()=>{},onHide:(callback:()=>void)=>{hooks.hide=callback},onUnload:(callback:()=>void)=>{hooks.unload=callback},
-    requestWechatPayment:async()=>{nativeCalls++;if(rejectNative)throw new Error('用户取消')},
+    paymentPlatform:()=> 'android',prepareVirtualPayment:async()=>{virtualSessions++},requestWechatPayment:async()=>{nativeCalls++;if(rejectNative)throw new Error('用户取消')},
     /** 每一次支付及查款都由测试明确完成，GET仅返回当前真实状态夹具。 */
     api(path:string,method='GET',body:Record<string,unknown>={}){
       if(method==='GET'&&path!=='/wallet'&&path!=='/me/identity'){reads.push(path);return Promise.resolve(path==='/orders/order-A'?{...order}:[])}
@@ -25,10 +25,10 @@ function harness(t:TestContext){
     },
   })
   injectBusinessAPIs(context)
-  const scope=effectScope();scope.run(()=>vm.runInContext(executable(pageScript('orders/detail.vue'))+"\nvisible=true;id.value='order-A';globalThis.page={order,prepare,execute,pendingAction,paymentWallet,paymentChannel,walletError,actions,busy,reviews,canReview,reviewText,actionNote,submitReview,refreshOrder,adjustmentsView}",context));t.after(()=>scope.stop())
+  const scope=effectScope();scope.run(()=>vm.runInContext(executable(pageScript('orders/detail.vue'))+"\nvisible=true;id.value='order-A';globalThis.page={order,prepare,execute,pendingAction,paymentWallet,paymentChannel,walletError,actions,busy,reviews,canReview,reviewText,actionNote,submitReview,refreshOrder,adjustmentsView,paymentQuote,quoteError,quoteLoading}",context));t.after(()=>scope.stop())
   context.page.order.value={...order}
   return{page:context.page,state,order,hooks,pending,reads,notices,storage,
-    cancelNative(){rejectNative=true},nativeCalls:()=>nativeCalls,
+    cancelNative(){rejectNative=true},nativeCalls:()=>nativeCalls,virtualSessions:()=>virtualSessions,
     /** 控制身份门禁结果，核对两种支付渠道发请求前均经过同一门禁。 */
     setIdentity(value:boolean){identity=value},identityChecks:()=>identityChecks,
     /** 身份专项用真实状态模块及真实GET接口替代默认门禁夹具。 */
@@ -102,4 +102,29 @@ test('评价与后端统一500字上限，超长不提交，合法内容只提�
 test('订单下拉只读取订单评价及原费用记录，保留评价和协商草稿并不加载聊天',async t=>{
   const s=harness(t);s.page.reviewText.value='评价草稿';s.page.actionNote.value='售后协商草稿';let adjustmentReads=0;s.page.adjustmentsView.value={refresh:async()=>{adjustmentReads++}}
   await s.page.refreshOrder();assert.deepEqual(s.reads.sort(),['/orders/order-A','/orders/order-A/reviews']);assert.equal(adjustmentReads,1);assert.equal(s.page.reviewText.value,'评价草稿');assert.equal(s.page.actionNote.value,'售后协商草稿');assert.equal(s.pending.length,0)
+})
+
+
+test('虚拟付款先展示权威报价，刷新服务端会话后仍只同步原订单',async t=>{
+  const s=harness(t);Object.assign(s.state,{devMode:false,commerce:{mode:'mini_program'}})
+  const opening=s.page.prepare({id:'pay',label:'支付订单'});const quote={service_cents:1000,fee_cents:100,total_cents:1100,topup_cents:900,coin_balance_cents:200,fee_bearer:'buyer',fee_bps:1000,platform:'android'}
+  s.take('/payments/virtual/quote').resolve(quote);await opening;assert.equal(s.page.paymentQuote.value.total_cents,1100);assert.equal(s.pending.some(row=>row.path==='/wallet'),false)
+  const paying=s.page.execute();await flush();const request=s.take('/orders/order-A/pay');assert.equal(request.body.quoted_total_cents,1100);assert.equal(request.body.quoted_topup_cents,900);assert.equal(request.body.platform,'android');assert.equal(s.virtualSessions(),1)
+  request.resolve({mode:'virtual',order:{...s.order},virtual_params:{mode:'short_series_coin',signData:'signed',paySig:'pay',signature:'session-signature'}});await flush();assert.equal(s.nativeCalls(),1);assert.equal(s.page.order.value.payment_status,'unpaid')
+  s.take('/orders/order-A/sync-payment').resolve({...s.order,payment_status:'paid',status:'open'});await paying;assert.equal(s.page.pendingAction.value,null)
+})
+test('虚拟报价失败或旧账号报价迟到时不发起付款',async t=>{
+  const s=harness(t);Object.assign(s.state,{devMode:false,commerce:{mode:'mini_program'}})
+  const opening=s.page.prepare({id:'pay',label:'支付订单'});s.take('/payments/virtual/quote').reject(new Error('当前价格不支持整金币'));await opening;await s.page.execute();assert.equal(s.virtualSessions(),0);assert.equal(s.pending.some(row=>row.path.endsWith('/pay')),false)
+  const retry=s.page.prepare({id:'pay',label:'支付订单'});const response=s.take('/payments/virtual/quote');s.state.user.id='C';response.resolve({total_cents:1000});await retry;assert.equal(s.page.paymentQuote.value,null);assert.equal(s.nativeCalls(),0)
+})
+
+test('旧虚拟订单在公众号模式退款前刷新本人小程序会话，管理员不代刷',async t=>{
+  const buyer=harness(t);Object.assign(buyer.state,{commerce:{mode:'official_account'}});Object.assign(buyer.page.order.value,{payment_channel:'virtual',payment_status:'paid',status:'open'});await buyer.page.prepare({id:'cancel',label:'取消订单'});const cancelling=buyer.page.execute();await flush();assert.equal(buyer.virtualSessions(),1);const action=buyer.take('/orders/order-A/actions');action.resolve({...buyer.page.order.value,status:'cancelled'});await cancelling
+  const admin=harness(t);Object.assign(admin.state.user,{id:'platform-admin',role:'admin'});Object.assign(admin.page.order.value,{payment_channel:'virtual',payment_status:'paid',refund_status:'processing'});await admin.page.prepare({id:'sync_payment',label:'同步资金状态'});const syncing=admin.page.execute();await flush();assert.equal(admin.virtualSessions(),0);admin.take('/orders/order-A/sync-payment').resolve({...admin.page.order.value});await syncing
+})
+
+test('历史普通微信意图优先于新小程序模式，历史虚拟意图优先于新公众号模式',async t=>{
+  const ordinary=harness(t);Object.assign(ordinary.state,{devMode:false,commerce:{mode:'mini_program'}});ordinary.page.order.value.payment_channel='wechat';const oldOpening=ordinary.page.prepare({id:'pay',label:'支付订单'});ordinary.take('/wallet').resolve({spendable_cents:1000});await oldOpening;assert.equal(ordinary.page.paymentQuote.value,null)
+  const virtual=harness(t);Object.assign(virtual.state,{devMode:false,commerce:{mode:'official_account'}});virtual.page.order.value.payment_channel='virtual';const virtualOpening=virtual.page.prepare({id:'pay',label:'支付订单'});const quote=virtual.take('/payments/virtual/quote');assert.equal(quote.body.order_id,'order-A');quote.resolve({service_cents:1000,total_cents:1000,topup_cents:1000,coin_balance_cents:0,fee_cents:0});await virtualOpening;assert.equal(virtual.page.paymentQuote.value.total_cents,1000)
 })

@@ -118,7 +118,7 @@ func appendWalletEntry(ctx context.Context, q querier, wallet *Wallet, entry Wal
 	pairs := []struct {
 		value *int64
 		delta int64
-	}{{&wallet.RechargeCents, entry.RechargeDelta}, {&wallet.AvailableCents, entry.AvailableDelta}, {&wallet.PendingCents, entry.PendingDelta}, {&wallet.WithdrawalFrozenCents, entry.WithdrawalFrozenDelta}, {&wallet.DepositCents, entry.DepositDelta}, {&wallet.DepositRefundingCents, entry.DepositRefundingDelta}}
+	}{{&wallet.VirtualCoinCents, entry.VirtualDelta}, {&wallet.RechargeCents, entry.RechargeDelta}, {&wallet.AvailableCents, entry.AvailableDelta}, {&wallet.PendingCents, entry.PendingDelta}, {&wallet.WithdrawalFrozenCents, entry.WithdrawalFrozenDelta}, {&wallet.DepositCents, entry.DepositDelta}, {&wallet.DepositRefundingCents, entry.DepositRefundingDelta}}
 	for _, pair := range pairs {
 		value, addErr := checkedWalletAmount(*pair.value, pair.delta)
 		if addErr != nil {
@@ -258,5 +258,5 @@ func (a *App) walletSummaryValue(ctx context.Context, wallet Wallet, clubID stri
 	if clubID != "" {
 		depositRequired = 0
 	}
-	return map[string]any{"withdrawal_min_cents": minimum, "withdrawal_name_required": nameRequired, "daily_withdrawal_available": daily, "available_cents": wallet.AvailableCents, "recharge_cents": wallet.RechargeCents, "spendable_cents": spendable, "pending_cents": wallet.PendingCents, "ongoing_cents": ongoing, "settling_cents": settling, "withdrawal_frozen_cents": wallet.WithdrawalFrozenCents, "deposit_cents": wallet.DepositCents, "deposit_refunding_cents": wallet.DepositRefundingCents, "deposit_required_cents": depositRequired, "deposit_shortfall_cents": depositShortfall(wallet.DepositCents, depositRequired), "deposit_qualified": qualifiedPlatformDeposit(wallet, depositRequired) > 0, "currency": "CNY", "settlement_hold_days": 7, "dev_mode": a.Config.DevMode, "club_id": clubID}, nil
+	return map[string]any{"withdrawal_min_cents": minimum, "withdrawal_name_required": nameRequired, "daily_withdrawal_available": daily, "available_cents": wallet.AvailableCents, "virtual_coin_cents": wallet.VirtualCoinCents, "recharge_cents": wallet.RechargeCents, "spendable_cents": spendable, "pending_cents": wallet.PendingCents, "ongoing_cents": ongoing, "settling_cents": settling, "withdrawal_frozen_cents": wallet.WithdrawalFrozenCents, "deposit_cents": wallet.DepositCents, "deposit_refunding_cents": wallet.DepositRefundingCents, "deposit_required_cents": depositRequired, "deposit_shortfall_cents": depositShortfall(wallet.DepositCents, depositRequired), "deposit_qualified": qualifiedPlatformDeposit(wallet, depositRequired) > 0, "currency": "CNY", "settlement_hold_days": 7, "dev_mode": a.Config.DevMode, "club_id": clubID}, nil
 }

@@ -12,6 +12,9 @@ import (
 
 // paymentOwnsEscrowLot 以不可变收款根或余额支付分配凭证区分每笔原单的托管批次。
 func paymentOwnsEscrowLot(ctx context.Context, q querier, p OrderPayment, l FundingLot) (bool, error) {
+	if p.Channel == "virtual" {
+		return l.MovementID == walletKey("fund-move", "virtual-pay:"+virtualConsumptionID(p.OrderID, p.AdjustmentID)), nil
+	}
 	if p.Channel == "balance" {
 		prefix := "adjustment-pay:" + p.ID + ":"
 		if p.Kind == "base" {
@@ -60,6 +63,9 @@ func planOrderRefunds(ctx context.Context, q querier, o Order, adjustmentID, gro
 		}
 		if take <= 0 {
 			break
+		}
+		if p.Channel == "virtual" && take%100 != 0 {
+			return fail(409, "官方1:1金币小数退币精度未核实，当前退款金额须为整金币，未舍入退款额")
 		}
 		part := OrderPartRefund{ID: walletKey("order-part-refund", group, p.ID), OrderID: o.ID, AdjustmentID: adjustmentID, GroupID: group, PaymentID: p.ID, RefundNo: "OR" + strings.ToUpper(walletKey(group, p.ID)[:60]), AmountCents: take, Status: "queued", Reason: reason, Sources: []FundingPart{}, CreatedAt: now(), UpdatedAt: now()}
 		need := take
@@ -133,13 +139,19 @@ func consumeOrderRefundSource(ctx context.Context, q querier, o Order, p OrderPa
 			return 0, 0, e
 		}
 		m := FundingMovement{ID: mid, Inputs: []FundingPart{{l.ID, part.AmountCents}}, Outputs: []FundingPart{}, CreatedAt: now()}
-		if p.Channel == "balance" {
-			if l.ReturnBucket == "recharge" {
-				recharge += part.AmountCents
-			} else if l.ReturnBucket == "available" {
-				income += part.AmountCents
+		if p.Channel == "balance" || p.Channel == "virtual" {
+			if p.Channel == "virtual" {
+				if l.ReturnBucket != "virtual_recharge" {
+					return 0, 0, fail(409, "金币退款来源分区不匹配")
+				}
 			} else {
-				return 0, 0, fail(409, "余额退款缺少原始资金分区")
+				if l.ReturnBucket == "recharge" {
+					recharge += part.AmountCents
+				} else if l.ReturnBucket == "available" {
+					income += part.AmountCents
+				} else {
+					return 0, 0, fail(409, "余额退款缺少原始资金分区")
+				}
 			}
 			parent, e := get[FundingLot](ctx, q, "fund_lots", l.ParentID, false)
 			if e != nil {
@@ -210,6 +222,12 @@ func (a *App) processOrderRefunds(ctx context.Context, orderID, group string) er
 		if e = tx.Commit(ctx); e != nil {
 			return e
 		}
+		if p.Channel == "virtual" {
+			if e = a.processVirtualPartRefund(ctx, p, part); e != nil {
+				return e
+			}
+			continue
+		}
 		if p.Channel == "balance" || a.Config.DevMode && p.Channel == "dev" {
 			v := wxRefund{OrderNo: p.OrderNo, OutRefundNo: part.RefundNo, TransactionID: p.TransactionID, Status: "SUCCESS"}
 			v.Amount.Total = p.AmountCents
@@ -220,7 +238,7 @@ func (a *App) processOrderRefunds(ctx context.Context, orderID, group string) er
 			}
 			continue
 		}
-		c, e := a.loadWXPay()
+		c, e := a.loadWXPayForApp(p.AppID)
 		if e != nil {
 			return e
 		}
@@ -288,7 +306,13 @@ func (a *App) applyOrderPartRefund(ctx context.Context, c wxPayConfig, v wxRefun
 	if e != nil {
 		return e
 	}
-	if (!trustedLocal && (c.MerchantID != p.MerchantID || c.AppID != p.AppID || v.MerchantID != p.MerchantID)) || trustedLocal && p.Channel != "balance" && !(a.Config.DevMode && p.Channel == "dev") || v.OrderNo != p.OrderNo || v.TransactionID != p.TransactionID || v.Amount.Total != p.AmountCents || v.Amount.Refund != r.AmountCents || v.Amount.Currency != "CNY" {
+	if !trustedLocal {
+		c, e = a.loadWXPayForApp(p.AppID)
+		if e != nil {
+			return e
+		}
+	}
+	if (!trustedLocal && (c.MerchantID != p.MerchantID || c.AppID != p.AppID || v.MerchantID != p.MerchantID)) || trustedLocal && p.Channel != "balance" && p.Channel != "virtual" && !(a.Config.DevMode && p.Channel == "dev") || v.OrderNo != p.OrderNo || v.TransactionID != p.TransactionID || v.Amount.Total != p.AmountCents || v.Amount.Refund != r.AmountCents || v.Amount.Currency != "CNY" {
 		return fail(400, "退款原支付、商户或部分金额不匹配")
 	}
 	status := v.RefundStatus
@@ -335,6 +359,11 @@ func (a *App) applyOrderPartRefund(ctx context.Context, c wxPayConfig, v wxRefun
 			return e
 		}
 		if e = appendWalletEntry(ctx, tx, &wallet, WalletEntry{Kind: "order_part_balance_refund", ReferenceID: r.ID, AmountCents: r.AmountCents, RechargeDelta: recharge, AvailableDelta: income, Note: "订单调价或售后退款，恢复原支付余额分区"}); e != nil {
+			return e
+		}
+	}
+	if p.Channel == "virtual" {
+		if e = applyVirtualRefundBalance(ctx, tx, p, r); e != nil {
 			return e
 		}
 	}

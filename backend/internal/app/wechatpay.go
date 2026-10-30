@@ -39,6 +39,9 @@ func (e *wxAPIError) Unwrap() error { return fail(502, e.Error()) }
 
 // loadWXPay 读取已加密落库的只读快照，未使用管理配置时兼容环境变量部署。
 func (a *App) loadWXPay() (wxPayConfig, error) {
+	if c := a.commerceSettings(); c.Mode == "official_account" && c.OfficialAppID != "" {
+		return a.loadWXPayForApp(c.OfficialAppID)
+	}
 	a.paymentConfigMu.RLock()
 	snapshot := a.paymentConfig
 	a.paymentConfigMu.RUnlock()
@@ -147,9 +150,12 @@ func (a *App) prepay(r *http.Request, u User, o Order) (any, error) {
 	if err := requireLiveOrder(o); err != nil {
 		return nil, err
 	}
-	c, err := a.loadWXPay()
+	c, err := a.loadWXPayForApp(o.PaymentAppID)
 	if err != nil {
 		return nil, err
+	}
+	if o.PaymentMerchantID != "" && (o.PaymentMerchantID != c.MerchantID || o.PaymentAppID != c.AppID) {
+		return nil, fail(409, "原支付商户配置已变化，禁止改换商户重新预支付")
 	}
 	if o.PayOpenID == "" {
 		return nil, fail(409, "请先用微信登录后再付款")
@@ -171,7 +177,7 @@ func (a *App) prepay(r *http.Request, u User, o Order) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"order": o, "mode": "wechat", "pay_params": map[string]string{"timeStamp": stamp, "nonceStr": nonce, "package": pack, "signType": "RSA", "paySign": signature}}, nil
+	return map[string]any{"order": o, "mode": "wechat", "pay_params": map[string]string{"appId": c.AppID, "timeStamp": stamp, "nonceStr": nonce, "package": pack, "signType": "RSA", "paySign": signature}}, nil
 }
 
 // refund 用稳定退款单号申请全额退款，成功资源经幂等入账并保留官方时间后才返回 true。
@@ -179,7 +185,7 @@ func (a *App) refund(ctx context.Context, o Order, reason string) (bool, error) 
 	if err := requireLiveOrder(o); err != nil {
 		return false, err
 	}
-	c, err := a.loadWXPay()
+	c, err := a.loadWXPayForApp(o.PaymentAppID)
 	if err != nil {
 		return false, err
 	}
@@ -225,9 +231,12 @@ func (a *App) closePayment(ctx context.Context, o Order) error {
 	if err := requireLiveOrder(o); err != nil {
 		return err
 	}
-	c, err := a.loadWXPay()
+	c, err := a.loadWXPayForApp(o.PaymentAppID)
 	if err != nil {
 		return err
+	}
+	if o.PaymentMerchantID != "" && (o.PaymentMerchantID != c.MerchantID || o.PaymentAppID != c.AppID) {
+		return fail(409, "原支付商户配置已变化，不能关闭其他商户原单后取消本地订单")
 	}
 	err = a.wxRequest(ctx, c, "POST", "/v3/pay/transactions/out-trade-no/"+url.PathEscape(o.OrderNo)+"/close", map[string]string{"mchid": c.MerchantID}, nil)
 	var businessError *wxAPIError

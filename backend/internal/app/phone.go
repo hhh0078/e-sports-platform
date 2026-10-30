@@ -169,8 +169,11 @@ func (a *App) requireVerifiedPhone(r *http.Request, u User) error {
 	if err != nil && !missing(err) {
 		return err
 	}
-	if identity["phone_verified_at"] == "" || !phoneDigits.MatchString(identity["phone_number"]) || (!a.Config.DevMode && identity["phone_source"] != "wechat") {
+	if identity["phone_verified_at"] == "" || !phoneDigits.MatchString(identity["phone_number"]) || (!a.Config.DevMode && !trustedPhoneSource(identity["phone_source"])) {
 		return fail(428, "请先授权验证手机号，再发布服务、需求或下单")
 	}
 	return nil
 }
+
+// trustedPhoneSource 仅接受服务端已完成的微信官方号码兑换或真实腾讯云短信验证来源。
+func trustedPhoneSource(source string) bool { return source == "wechat" || source == "sms_tencent" }

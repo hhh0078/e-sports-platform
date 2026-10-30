@@ -142,6 +142,7 @@ type ClubMember struct {
 	CreatedAt                string `json:"created_at"`
 }
 type Order struct {
+	HasVirtualPayment               bool            `json:"has_virtual_payment"`
 	AdjustmentVersion               int             `json:"adjustment_version,omitempty"`
 	OriginalAmountCents             int64           `json:"original_amount_cents,omitempty"`
 	PaidTotalCents                  int64           `json:"paid_total_cents,omitempty"`

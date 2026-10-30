@@ -28,3 +28,8 @@ Use case: ui-mockup. Edit the attached Chinese390x844 mini-program design to app
 ## 输入聚焦稳定性（2026-10-26）
 
 沿用`settings.png`的开放式表单设计和原字段顺序，共用规则见[输入控件聚焦依据](../../INPUT_FOCUS.md)。商户号、证书序列号、公钥ID、回调URL及密码输入在聚焦前后保持固定外高，去除原生单行控件上下padding与固定行高的叠加；多行协议／PEM文本保留原padding、行高和高度。不得因任意单行输入聚焦而重新排列同页其他字段，底部字段仍保留正常键盘避让。验收使用320／390实际聚焦截图和节点测量，不在测试中保存任何支付密钥。
+
+
+## 2026-10-30 双模式支付
+
+本轮先行布局及状态规则见 [settings.commerce.design.md](settings.commerce.design.md) 与同名前缀 `.commerce.png`。金币、人民币及费用分别展示；公众号手机号短信和无服务配置提示复用登录设计变体。

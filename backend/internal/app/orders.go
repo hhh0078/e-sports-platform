@@ -306,8 +306,11 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	var in struct {
-		Channel   string `json:"channel"`
-		RequestID string `json:"request_id"`
+		Channel     string `json:"channel"`
+		RequestID   string `json:"request_id"`
+		Platform    string `json:"platform"`
+		QuotedTotal int64  `json:"quoted_total_cents"`
+		QuotedTopup int64  `json:"quoted_topup_cents"`
 	}
 	if r.ContentLength != 0 {
 		if err = decode(r, &in); err != nil {
@@ -345,6 +348,9 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 		if o.PaymentChannel == "balance" {
 			mode = "balance"
 		}
+		if o.PaymentChannel == "virtual" {
+			mode = "virtual"
+		}
 		return map[string]any{"order": o, "mode": mode}, nil
 	}
 	if o.Status != "pending_payment" || o.PaymentStatus != "unpaid" {
@@ -369,6 +375,26 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 			return nil, fail(409, "服务已暂停，请取消订单")
 		}
 	}
+	if a.useVirtualPayment(o) {
+		if in.Channel == "balance" {
+			return nil, fail(409, "小程序服务订单须使用官方金币，人民币余额不能代替虚拟支付")
+		}
+		p, e := a.prepareVirtualConsumption(r.Context(), tx, u, o, "", in.Platform, virtualClientIP(r), o.AmountCents, in.QuotedTotal, in.QuotedTopup)
+		if e != nil {
+			return nil, e
+		}
+		o.PaymentChannel = "virtual"
+		o.PaymentAppID = p.AppID
+		o.PaymentMerchantID = "virtual:" + p.OfferID
+		o.PayOpenID = p.OpenID
+		if e = put(r.Context(), tx, "orders", o.ID, o); e != nil {
+			return nil, e
+		}
+		if e = tx.Commit(r.Context()); e != nil {
+			return nil, e
+		}
+		return a.virtualOrderPayment(r, u, p)
+	}
 	if in.Channel == "balance" {
 		if !a.Config.DevMode && o.PayOpenID != "" {
 			return nil, fail(409, "该订单已发起微信支付，请先同步原付款；需更换余额支付时请取消原订单后重新下单")
@@ -391,14 +417,22 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 		return map[string]any{"order": o, "mode": "balance"}, tx.Commit(r.Context())
 	}
 	if !a.Config.DevMode {
-		if _, e := a.loadWXPay(); e != nil {
+		c, e := a.loadWXPayForApp(o.PaymentAppID)
+		if e != nil {
 			return nil, e
 		}
-		identity, e := get[map[string]string](r.Context(), tx, "identities", u.ID, false)
-		if e != nil || identity["openid"] == "" {
-			return nil, fail(503, "请先通过微信登录后使用微信支付")
+		if o.PaymentMerchantID != "" && (o.PaymentMerchantID != c.MerchantID || o.PaymentAppID != c.AppID) {
+			return nil, fail(409, "原订单支付商户已变更，请恢复原商户核查，禁止换商户重复付款")
 		}
-		o.PayOpenID = identity["openid"]
+		if o.PayOpenID == "" {
+			openid, e := a.paymentOpenID(r.Context(), tx, u.ID, c.AppID)
+			if e != nil {
+				return nil, e
+			}
+			o.PayOpenID = openid
+		}
+		o.PaymentAppID = c.AppID
+		o.PaymentMerchantID = c.MerchantID
 		if err = put(r.Context(), tx, "orders", o.ID, o); err != nil {
 			return nil, err
 		}

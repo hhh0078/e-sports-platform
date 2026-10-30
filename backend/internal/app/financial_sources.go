@@ -269,6 +269,11 @@ func verifyFundingLot(ctx context.Context, q querier, l FundingLot, dev bool, se
 	if !dev && r.Channel == "dev" {
 		return fail(409, "模拟资金禁止真实提现")
 	}
+	if r.Channel == "virtual" {
+		if e = verifyVirtualConsumptionLot(ctx, q, l); e != nil {
+			return e
+		}
+	}
 	if l.ParentID != "" {
 		parent, e := get[FundingLot](ctx, q, "fund_lots", l.ParentID, false)
 		if e != nil || parent.ReceiptID != l.ReceiptID {
@@ -323,6 +328,12 @@ func verifyFundingLot(ctx context.Context, q querier, l FundingLot, dev bool, se
 		if e != nil || p.TransactionID != r.TransactionID || p.AmountCents != r.AmountCents || p.Purpose != "balance" || p.Status != "paid" || p.MerchantID != r.MerchantID || p.AppID != r.AppID {
 			return fail(409, "充值收款凭证未能核对")
 		}
+		if r.Channel == "virtual" {
+			proof, e := get[virtualTransaction](ctx, q, "virtual_transactions", p.ID, false)
+			if e != nil || p.Channel != "virtual" || p.RefundedCents > 0 || proof.ReconciliationRequired || proof.CashRefundCents > 0 || validateVirtualCashOrder(p, proof.Order) != nil || proof.Order.WXOrderID != r.TransactionID {
+				return fail(409, "虚拟充值现金来源已退款、待核账或无法核验，禁止消费或提现")
+			}
+		}
 	case "order":
 		o, e := get[Order](ctx, q, "orders", r.PaymentID, false)
 		if e != nil || baseOrderAmount(o) != r.AmountCents || o.PaymentStatus != "paid" || o.PaymentChannel != r.Channel || (r.Channel != "dev" && (o.PaymentTransactionID != r.TransactionID || o.PaymentMerchantID != r.MerchantID || o.PaymentAppID != r.AppID)) {
@@ -374,7 +385,7 @@ func auditWithdrawalSources(ctx context.Context, q querier, v WalletWithdrawal, 
 			issues = append(issues, e.Error())
 		}
 		r, _ := get[FundingReceipt](ctx, q, "fund_receipts", l.ReceiptID, false)
-		if !dev && (r.MerchantID == "" || r.AppID == "" || r.MerchantID != v.MerchantID || r.AppID != v.AppID) {
+		if !dev && (r.MerchantID == "" || r.AppID == "" || r.Channel != "virtual" && r.MerchantID != v.MerchantID) {
 			issues = append(issues, "原收款商户或小程序与本次出款账户不一致")
 		}
 		sources = append(sources, withdrawalSource{l.ID, l.OrderID, r.PaymentID, amount, r.Channel})

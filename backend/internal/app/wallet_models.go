@@ -3,6 +3,7 @@ package app
 
 // Wallet 按用途隔离充值款、可提现收入、待结算收入、提现冻结与押金，不以展示总额作为可用资金。
 type Wallet struct {
+	VirtualCoinCents      int64  `json:"virtual_coin_cents"`
 	UserID                string `json:"user_id"`
 	RechargeCents         int64  `json:"recharge_cents"`
 	AvailableCents        int64  `json:"available_cents"`
@@ -15,6 +16,7 @@ type Wallet struct {
 
 // WalletEntry 保存各资金分区的实际变动；业务唯一编号保证重放不会重复记账。
 type WalletEntry struct {
+	VirtualDelta          int64  `json:"virtual_delta"`
 	ID                    string `json:"id"`
 	UserID                string `json:"user_id"`
 	Kind                  string `json:"kind"`
@@ -49,6 +51,9 @@ type WalletEscrow struct {
 
 // WalletTopup 保存充值付款意图和微信核验结果；私密支付标识只在服务端使用。
 type WalletTopup struct {
+	Channel       string `json:"channel,omitempty"`
+	OfferID       string `json:"offer_id,omitempty"`
+	VirtualEnv    int    `json:"virtual_env,omitempty"`
 	AccountID     string `json:"account_id,omitempty"`
 	ClubID        string `json:"club_id,omitempty"`
 	MerchantID    string `json:"merchant_id,omitempty"`

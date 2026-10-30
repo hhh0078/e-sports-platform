@@ -47,7 +47,7 @@ func conversionHash(value any) (string, error) {
 	return reviewHash(string(raw)), nil
 }
 
-// conversionOwner 校验真实管理员及微信手机号，仅在进程内部读取私密身份。
+// conversionOwner 校验真实管理员、独立微信身份和可信手机号来源，仅在进程内部读取私密身份。
 func conversionOwner(ctx context.Context, q querier, id string, lock bool) (User, error) {
 	u, err := get[User](ctx, q, "users", id, lock)
 	if err != nil {
@@ -57,8 +57,9 @@ func conversionOwner(ctx context.Context, q querier, id string, lock bool) (User
 		return u, fmt.Errorf("转换接单人必须是有效的真实平台管理员")
 	}
 	i, err := get[map[string]string](ctx, q, "identities", id, lock)
-	if err != nil || i["openid"] == "" || !phoneDigits.MatchString(i["phone_number"]) || i["phone_verified_at"] == "" || i["phone_source"] != "wechat" {
-		return u, fmt.Errorf("转换接单人缺少真实微信或微信手机号验证")
+	wechatIdentity := i["openid"] != "" || i["official_openid"] != "" && i["official_appid"] != ""
+	if err != nil || !wechatIdentity || !phoneDigits.MatchString(i["phone_number"]) || i["phone_verified_at"] == "" || !trustedPhoneSource(i["phone_source"]) {
+		return u, fmt.Errorf("转换接单人缺少真实微信身份或手机号验证")
 	}
 	if !length(u.Bio, 2, 300) {
 		return u, fmt.Errorf("转换接单人需要有效的个人简介")

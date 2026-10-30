@@ -30,7 +30,7 @@
 				<view v-if="error" class="login-error"><text class="login-error-copy">{{error}}</text><button
 						v-if="!agreements" class="retry-login" @click="load">重新加载</button></view>
 				<button class="btn login-primary" :disabled="!!submitting||loading" @click="realLogin">
-					<Icon name="weixin" :size="23" /><text>{{submitting?'正在登录…':loading?'正在准备…':'一键登录'}}</text>
+					<Icon name="weixin" :size="23" /><text>{{submitting?'正在登录…':loading?'正在准备…':officialLoginLabel()}}</text>
 				</button>
 				<view class="consent-line"><checkbox-group @change="changeConsent"><label
 							class="consent-checkbox-label">
@@ -101,7 +101,8 @@
 	import AppShell from '../../components/AppShell.vue'
 	import Icon from '../../components/Icon.vue'
 	import { state, init, login, prepareWechatLogin, wechatLogin, sessionRevision, lastLoginWasNew } from '../../lib/store'
-	import { getAgreements, listDevAccounts } from '../../api/auth.api'
+	import { getAgreements, listDevAccounts, startOfficialLogin, prepareOfficialLogin } from '../../api/auth.api'
+	import { rememberOfficialAuthorization,takeOfficialCallback } from '../../lib/official-auth'
 	import { updateProfile } from '../../api/users.api'
 	import type { User, Agreements, Consent } from '../../types/models'
 	import { token, errorMessage, errorStatus, isCancelled } from '../../api/client'
@@ -109,12 +110,22 @@
 	import { go, notify, assetUrl } from '../../lib/format'
 	const accounts = ref<User[]>([]), agreements = ref<Agreements | null>(null), loading = ref(true), error = ref(''), submitting = ref(''), accepted = ref(false), devOpen = ref(false), profileOffer = ref(false), profileBusy = ref(false)
 	const draft = reactive({ nickname: '', avatar: '' })
+	/** H5采用公众号授权文案，小程序继续允许原身份登录查看历史资金。 */
+	function officialLoginLabel():string{return typeof document!=='undefined'&&state.commerce?.mode==='official_account'?'微信授权登录':'一键登录'}
 	/** 复用已核验的三款官方游戏图片，仅作为独立主视觉。 */
 	const loginCovers = ['/static/covers/official/delta-3.jpg', '/static/covers/official/honor-1.jpg', '/static/covers/official/peace-1.jpg']
 	const accountDescriptions : Record<string, string> = { player: '玩家 · 下单与验收', worker: '打手 · 发布服务与交付', clubowner: '俱乐部管理员', admin: '平台管理与纠纷处理', outsider: '独立玩家 · 自由接单' }
 	let next = '/pages/main/index?tab=me', operation = 0, disposed = false
 	/** 加载当前协议版本，任何重新加载都要求再次主动勾选。 */
-	async function load() { loading.value = true; error.value = ''; accepted.value = false; try { await init(); agreements.value = await getAgreements(); if (state.devMode) accounts.value = await listDevAccounts() || [] } catch (err) { error.value = errorMessage(err) } finally { loading.value = false } }
+	async function load() { loading.value = true; error.value = ''; accepted.value = false; try { await init(); agreements.value = await getAgreements(); if (state.devMode) accounts.value = await listDevAccounts() || []; await finishOfficialAuthorization() } catch (err) { error.value = errorMessage(err) } finally { loading.value = false } }
+	/** 回跳凭据只在当前标签页兑换一次，使用授权前主动同意的协议版本。 */
+	async function finishOfficialAuthorization():Promise<void>{
+		// #ifdef H5
+		const callback=takeOfficialCallback();if(!callback)return
+		const current=++operation,revision=sessionRevision();submitting.value='official'
+		try{const prepared=await prepareOfficialLogin(callback.code,callback.state);if(disposed||current!==operation||revision!==sessionRevision())return;agreements.value=prepared.agreements;if(prepared.agreements.user_agreement.version!==callback.consent.user_agreement_version||prepared.agreements.privacy_policy.version!==callback.consent.privacy_policy_version){accepted.value=false;error.value='协议已更新，请阅读后重新勾选。';return}if(prepared.return_path.startsWith('/pages/')&&!prepared.return_path.startsWith('/pages/account/login'))next=prepared.return_path;const user=await wechatLogin(prepared.ticket,callback.consent);if(current===operation&&!disposed)offerProfile(user)}finally{if(current===operation)submitting.value=''}
+		// #endif
+	}
 	/** 只接受复选框的明确勾选事件，不因点击登录按钮默认同意。 */
 	function changeConsent(event : { detail : { value : string[] } }) { accepted.value = (event.detail.value || []).includes('accepted') }
 	/** 打开公开协议全文，阅读后返回仍需用户自行选择。 */
@@ -134,7 +145,10 @@
 		const agreementSnapshot : Consent = { ...agreed }
 		// #ifdef H5
 		if (state.devMode) { devOpen.value = true; return }
-		notify('请在微信小程序内登录'); return
+		if(state.commerce?.mode!=='official_account'){notify('当前为小程序模式，请在微信小程序内登录');return}
+		const officialCurrent=++operation;submitting.value='official';error.value=''
+		try{if(!/micromessenger/i.test(navigator.userAgent))throw new Error('请在微信内打开公众号页面登录');const started=await startOfficialLogin(next,agreementSnapshot);if(officialCurrent!==operation||disposed)return;rememberOfficialAuthorization(started.url,agreementSnapshot);window.location.assign(started.url)}catch(err){if(officialCurrent===operation)await loginFailed(err)}finally{if(officialCurrent===operation)submitting.value=''}
+		return
 		// #endif
 		// #ifdef MP-WEIXIN
 		const current = ++operation, revision = sessionRevision(); submitting.value = 'wechat'; error.value = ''

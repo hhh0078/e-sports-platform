@@ -3,9 +3,13 @@
 import { init, initPublic, prepareWechatLogin } from './lib/store'
 import { isTimelinePreview } from './lib/sharing'
 import { initializeUpdateManager, setUpdateAppVisible } from './lib/update-manager'
+import { routeOfficialCallback } from './lib/official-auth'
 export default {
   /** 启动后获取官方临时身份，建立会话仍需用户明确同意协议。 */
   onLaunch(): void {
+    // #ifdef H5
+    routeOfficialCallback()
+    // #endif
     // #ifdef MP-WEIXIN
     initializeUpdateManager()
     // #endif

@@ -9,7 +9,7 @@ import { requirePhone } from './phone'
 import { requireIdentity } from './identity'
 import { go,notify } from './format'
 import { parseWalletAmount,newWalletRequestID } from './wallet'
-import { requestWechatPayment,confirmWechatTransfer } from './payment'
+import { requestWechatPayment,confirmWechatTransfer,prepareVirtualPayment,paymentPlatform } from './payment'
 import { mergeFundRecords } from './finance'
 import { beginFinancialActivity } from './update-manager'
 /** 钱包弹层对应的唯一资金意图。 */
@@ -86,20 +86,23 @@ export function useWallet(){
   }
   /** 错误重试沿用失败的刷新或追加意图，不能用旧hasMore推断请求类型。 */
   async function retryFailed():Promise<void>{if(loading.value||busy.value||operation.value)return;await load(lastFailedAppend)}
-  const filteredEntries=computed(()=>entries.value.filter(entry=>filter.value==='all'||(filter.value==='deposit'?!!entry.deposit_delta||!!entry.deposit_refunding_delta:filter.value==='withdrawal'?/withdraw/.test(entry.kind):/topup|recharge/.test(entry.kind)&&!!entry.recharge_delta)))
+  const filteredEntries=computed(()=>entries.value.filter(entry=>filter.value==='all'||(filter.value==='deposit'?!!entry.deposit_delta||!!entry.deposit_refunding_delta:filter.value==='withdrawal'?/withdraw/.test(entry.kind):/topup|recharge/.test(entry.kind)&&(!!entry.recharge_delta||!!entry.virtual_delta))))
   /** 弹层每次显式打开才初始化草稿，不在错误时丢弃输入。 */
   function open(kind:WalletOperation){if(busy.value)return;if(!state.user){go('/pages/account/login?next='+encodeURIComponent('/pages/account/wallet'));return}operation.value=kind;amount.value=kind==='refund'&&wallet.value?String(wallet.value.deposit_cents/100):kind==='deposit'&&wallet.value?.deposit_shortfall_cents?(wallet.value.deposit_shortfall_cents/100).toFixed(2):'';userName.value='';formError.value=''}
   /** 用户关闭普通表单时释放姓名，处理中保持交易锁。 */
   function close(){if(busy.value)return;operation.value=null;userName.value='';formError.value=''}
   /** 创建充值/押金支付并查原单，微信本地回调不会修改余额。 */
-  async function payTopup(owner:ReturnType<typeof session>,kind:WalletTopup['purpose'],cents:number,intent?:ReturnType<typeof intentID>,originalID?:string){
+  async function payTopup(owner:ReturnType<typeof session>,kind:WalletTopup['purpose'],cents:number,intent?:ReturnType<typeof intentID>,originalID?:string,originalVirtual=false){
     if(!originalID&&!intent)throw new Error('付款原请求缺失，请重新打开付款单')
-    const result=originalID?await payWalletTopup(originalID):await createWalletTopup({purpose:kind,amount_cents:cents,request_id:intent!.id})
+    const virtual=kind==='balance'&&!state.devMode&&(originalVirtual||state.commerce?.mode==='mini_program')
+    if(virtual){await prepareVirtualPayment(true);if(!same(owner)||!visible)return}
+    const platform=virtual?{platform:paymentPlatform()}:{}
+    const result=originalID?await payWalletTopup(originalID,platform):await createWalletTopup({purpose:kind,amount_cents:cents,request_id:intent!.id,...platform})
     if(!same(owner)||!visible)return
     let nativeError:unknown
-    if(result.payment.status==='pending_payment'&&result.mode==='wechat'){
-      if(!result.pay_params)throw new Error('微信支付参数缺失，请从原付款单同步状态')
-      try{await requestWechatPayment(result.pay_params)}catch(err){nativeError=err}
+    if(result.payment.status==='pending_payment'&&(result.mode==='wechat'||result.mode==='virtual')){
+      const params=result.mode==='virtual'?result.virtual_params:result.pay_params
+      if(params){try{await requestWechatPayment(params)}catch(err){nativeError=err}}else if(result.mode==='wechat')throw new Error('微信支付参数缺失，请从原付款单同步状态')
     }
     if(!same(owner))return
     const payment=await syncWalletTopup(result.payment.id)
@@ -111,7 +114,7 @@ export function useWallet(){
   async function resumeTopup(record:WalletTopup){
     if(busy.value||!visible||!state.user)return
     const owner=session(),finishFinancial=beginFinancialActivity();busy.value=true
-    try{if(!(await requirePhone())||!same(owner)||!visible)return;if(!(await requireIdentity())||!same(owner)||!visible)return;await payTopup(owner,record.purpose,record.amount_cents,undefined,record.id);if(same(owner))await load()}
+    try{if(!(await requirePhone())||!same(owner)||!visible)return;if(!(await requireIdentity())||!same(owner)||!visible)return;await payTopup(owner,record.purpose,record.amount_cents,undefined,record.id,record.channel==='virtual');if(same(owner))await load()}
     catch(err){if(same(owner)&&visible)notify(err)}finally{busy.value=false;finishFinancial()}
   }
   /** 同一提交锁覆盖手机号与资金动作，错误或网络未知保持原请求号。 */

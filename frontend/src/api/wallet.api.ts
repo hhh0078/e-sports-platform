@@ -9,11 +9,11 @@ export function getWallet():Promise<Wallet>{return request('/wallet')}
 /** 分页读取不可变流水。 */
 export function listWalletEntries(query:{limit?:number;offset?:number}={}):Promise<WalletEntry[]>{return request('/wallet/entries'+queryString(query))}
 /** 使用稳定请求号建立充值或押金支付单。 */
-export function createWalletTopup(body:{purpose:WalletTopupPurpose;club_id?:string;amount_cents:number;request_id:string}):Promise<WalletTopupPayment>{return request('/wallet/topups','POST',body)}
+export function createWalletTopup(body:{purpose:WalletTopupPurpose;club_id?:string;amount_cents:number;request_id:string;platform?:'android'|'ios'}):Promise<WalletTopupPayment>{return request('/wallet/topups','POST',body)}
 /** 查看最近付款单。 */
 export function listWalletTopups(query:WalletHistoryQuery={}):Promise<WalletTopup[]>{return request('/wallet/topups'+queryString(query))}
 /** 跨设备恢复本人未付款原单，沿用服务端已绑定单号。 */
-export function payWalletTopup(id:string):Promise<WalletTopupPayment>{return request('/wallet/topups/'+encodeURIComponent(id)+'/pay','POST',{})}
+export function payWalletTopup(id:string,body:{platform?:'android'|'ios'}={}):Promise<WalletTopupPayment>{return request('/wallet/topups/'+encodeURIComponent(id)+'/pay','POST',body)}
 /** 按原付款单查询微信实际支付结果。 */
 export function syncWalletTopup(id:string):Promise<WalletTopup>{return request('/wallet/topups/'+encodeURIComponent(id)+'/sync','POST',{})}
 /** 冻结可提现收入并提交提现审核，实名不持久化。 */

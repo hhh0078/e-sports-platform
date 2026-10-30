@@ -72,7 +72,11 @@ func accountAdjustmentPayment(ctx context.Context, q querier, o *Order, v *Order
 	if e := adjustmentEligible(*o, "increase"); e != nil {
 		return e
 	}
-	if channel == "balance" {
+	if channel == "virtual" {
+		if e := accountVirtualCoins(ctx, q, o.BuyerID, virtualConsumptionID(o.ID, v.ID), o.ID, p.AmountCents); e != nil {
+			return e
+		}
+	} else if channel == "balance" {
 		wallet, e := lockedWallet(ctx, q, o.BuyerID)
 		if e != nil {
 			return e
@@ -102,7 +106,7 @@ func accountAdjustmentPayment(ctx context.Context, q querier, o *Order, v *Order
 				}
 			}
 		}
-	} else {
+	} else if channel != "virtual" {
 		if e := addFundingRoot(ctx, q, "order_payment", p.ID, p.TransactionID, p.AmountCents, channel, "escrow:"+o.ID, "escrow", o.ID, p.MerchantID, p.AppID); e != nil {
 			return e
 		}
@@ -140,8 +144,11 @@ func (a *App) payOrderAdjustment(w http.ResponseWriter, r *http.Request) (any, e
 		return nil, e
 	}
 	var in struct {
-		Channel   string `json:"channel"`
-		RequestID string `json:"request_id"`
+		Channel     string `json:"channel"`
+		RequestID   string `json:"request_id"`
+		Platform    string `json:"platform"`
+		QuotedTotal int64  `json:"quoted_total_cents"`
+		QuotedTopup int64  `json:"quoted_topup_cents"`
 	}
 	if e = decode(r, &in); e != nil {
 		return nil, e
@@ -177,7 +184,11 @@ func (a *App) payOrderAdjustment(w http.ResponseWriter, r *http.Request) (any, e
 		return nil, fail(404, "补款方案不存在")
 	}
 	if v.Status == "completed" {
-		return map[string]any{"adjustment": v, "order": o, "mode": paymentMode(a.Config.DevMode)}, nil
+		mode := paymentMode(a.Config.DevMode)
+		if v.PaymentChannel == "virtual" {
+			mode = "virtual"
+		}
+		return map[string]any{"adjustment": v, "order": o, "mode": mode}, nil
 	}
 	if e = requireAdultIdentity(r.Context(), tx, u.ID); e != nil {
 		return nil, e
@@ -197,15 +208,41 @@ func (a *App) payOrderAdjustment(w http.ResponseWriter, r *http.Request) (any, e
 	p, e := get[OrderPayment](r.Context(), tx, "order_payments", adjustmentPaymentID(v.ID), true)
 	if missing(e) {
 		p = OrderPayment{ID: adjustmentPaymentID(v.ID), OrderID: o.ID, AdjustmentID: v.ID, BuyerID: o.BuyerID, Kind: "supplement", Channel: in.Channel, AmountCents: v.AmountCents, Status: "pending_payment", OrderNo: "OA" + strings.ToUpper(walletKey(v.ID)[:30]), RequestID: in.RequestID, CreatedAt: now(), UpdatedAt: now()}
+		if !a.Config.DevMode && a.commerceSettings().Mode == "mini_program" {
+			if in.Channel == "balance" {
+				return nil, fail(409, "小程序补款须使用官方金币")
+			}
+			p.Channel = "virtual"
+		}
 		e = nil
-	} else if e == nil && (p.Channel != in.Channel && !(a.Config.DevMode && p.Channel == "dev" && in.Channel == "wechat") || in.Channel == "balance" && p.RequestID != in.RequestID) {
+	} else if e == nil && (p.Channel != in.Channel && !(p.Channel == "virtual" && in.Channel == "wechat") && !(a.Config.DevMode && p.Channel == "dev" && in.Channel == "wechat") || in.Channel == "balance" && p.RequestID != in.RequestID) {
 		return nil, fail(409, "已存在其他支付渠道或请求号的补款，请先同步原单")
 	}
 	if e != nil {
 		return nil, e
 	}
 	v.Status = "paying"
+	v.PaymentChannel = p.Channel
 	v.UpdatedAt = now()
+	if p.Channel == "virtual" {
+		cons, e := a.prepareVirtualConsumption(r.Context(), tx, u, o, v.ID, in.Platform, virtualClientIP(r), p.AmountCents, in.QuotedTotal, in.QuotedTopup)
+		if e != nil {
+			return nil, e
+		}
+		p.AppID = cons.AppID
+		p.PayOpenID = cons.OpenID
+		p.MerchantID = "virtual:" + cons.OfferID
+		if e = put(r.Context(), tx, "order_payments", p.ID, p); e != nil {
+			return nil, e
+		}
+		if e = put(r.Context(), tx, "order_adjustments", v.ID, v); e != nil {
+			return nil, e
+		}
+		if e = tx.Commit(r.Context()); e != nil {
+			return nil, e
+		}
+		return a.virtualOrderPayment(r, u, cons)
+	}
 	if in.Channel == "balance" {
 		if e = claimWalletRequest(r.Context(), tx, u.ID, in.RequestID, "order_adjustment_payment", map[string]any{"adjustment_id": v.ID, "amount_cents": p.AmountCents}); e != nil {
 			return nil, e
@@ -223,7 +260,7 @@ func (a *App) payOrderAdjustment(w http.ResponseWriter, r *http.Request) (any, e
 		}
 		return map[string]any{"adjustment": v, "order": o, "mode": "dev"}, tx.Commit(r.Context())
 	}
-	c, e := a.loadWXPay()
+	c, e := a.loadWXPayForApp(p.AppID)
 	if e != nil {
 		return nil, e
 	}
@@ -235,14 +272,14 @@ func (a *App) payOrderAdjustment(w http.ResponseWriter, r *http.Request) (any, e
 		return nil, fail(409, "补款支付会话正在创建，请稍候同步原单")
 	}
 	v.PaymentCreatingUntil = time.Now().Add(2 * time.Minute).UTC().Format(time.RFC3339Nano)
-	identity, e := get[map[string]string](r.Context(), tx, "identities", u.ID, false)
-	if e != nil || identity["openid"] == "" {
-		return nil, fail(409, "请使用微信登录后补款")
+	openid, e := a.paymentOpenID(r.Context(), tx, u.ID, c.AppID)
+	if e != nil {
+		return nil, e
 	}
-	if p.PayOpenID != "" && (p.PayOpenID != identity["openid"] || p.AppID != c.AppID || p.MerchantID != c.MerchantID) {
+	if p.PayOpenID != "" && (p.PayOpenID != openid || p.AppID != c.AppID || p.MerchantID != c.MerchantID) {
 		return nil, fail(409, "原补款商户或付款身份已变化，请同步原单")
 	}
-	p.PayOpenID = identity["openid"]
+	p.PayOpenID = openid
 	p.MerchantID = c.MerchantID
 	p.AppID = c.AppID
 	if p.ExpiresAt == "" {
@@ -301,7 +338,7 @@ func (a *App) prepayOrderPart(ctx context.Context, c wxPayConfig, p OrderPayment
 	if e != nil {
 		return nil, e
 	}
-	return map[string]string{"timeStamp": stamp, "nonceStr": nonce, "package": pack, "signType": "RSA", "paySign": sign}, nil
+	return map[string]string{"appId": c.AppID, "timeStamp": stamp, "nonceStr": nonce, "package": pack, "signType": "RSA", "paySign": sign}, nil
 }
 
 // applyAdjustmentWXPayment 严格核对补款原单；重复通知不重复增加收入。
@@ -404,7 +441,21 @@ func (a *App) syncOrderAdjustment(w http.ResponseWriter, r *http.Request) (any, 
 		if e != nil {
 			return nil, e
 		}
-		c, e := a.loadWXPay()
+		if p.Channel == "virtual" {
+			cons, e := get[virtualConsumption](r.Context(), a.DB, "virtual_consumptions", virtualConsumptionID(o.ID, v.ID), false)
+			if e != nil {
+				return nil, e
+			}
+			if deadline, pe := time.Parse(time.RFC3339Nano, v.ExpiresAt); pe == nil && !time.Now().Before(deadline) && cons.Status == "awaiting_funds" {
+				if e = a.expireVirtualAdjustment(r.Context(), o.ID, v.ID); e != nil {
+					return nil, e
+				}
+			} else if e = a.syncVirtualConsumption(r.Context(), cons); e != nil {
+				return nil, e
+			}
+			return get[OrderAdjustment](r.Context(), a.DB, "order_adjustments", v.ID, false)
+		}
+		c, e := a.loadWXPayForApp(p.AppID)
 		if e != nil {
 			return nil, e
 		}

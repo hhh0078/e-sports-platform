@@ -20,7 +20,7 @@ type querier interface {
 	QueryRow(context.Context, string, ...any) pgx.Row
 }
 
-var tables = []string{"users", "articles", "announcement_receipts", "games", "services", "clubs", "members", "club_deputies", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits", "order_adjustments", "order_payments", "order_refunds", "shares", "moderation_tasks", "moderation_targets", "subscription_deliveries", "subscription_authorizations", "subscription_preferences", "subscription_receipts", "subscription_callbacks"}
+var tables = []string{"users", "articles", "announcement_receipts", "games", "services", "clubs", "members", "club_deputies", "orders", "messages", "reviews", "audit", "settings", "evidence", "identities", "wallets", "wallet_entries", "wallet_escrows", "wallet_topups", "wallet_withdrawals", "wallet_deposit_refunds", "wallet_requests", "inbox", "inbox_receipts", "fund_receipts", "fund_lots", "fund_movements", "fund_audits", "order_adjustments", "order_payments", "order_refunds", "shares", "moderation_tasks", "moderation_targets", "subscription_deliveries", "subscription_authorizations", "subscription_preferences", "subscription_receipts", "subscription_callbacks", "virtual_transactions", "virtual_consumptions"}
 
 // now 返回统一的 UTC 时间文本。
 func now() string { return time.Now().UTC().Format(time.RFC3339Nano) }
@@ -158,6 +158,8 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	for table, label := range map[string]string{"order_adjustments": "订单加减价协商与双方确认", "order_payments": "原单及补款不可变收款事实和退款预留", "order_refunds": "按原交易的退款执行分笔", "shares": "永久公开分享目标与分享人映射"} {
 		names[table] = label
 	}
+	names["virtual_transactions"] = "微信虚拟支付现金充值核验与退款事实"
+	names["virtual_consumptions"] = "微信官方金币消费及退币幂等记录"
 	for _, table := range tables {
 		sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (id TEXT PRIMARY KEY, data JSONB NOT NULL); COMMENT ON TABLE %s IS '%s'; COMMENT ON COLUMN %s.id IS '领域记录唯一标识'; COMMENT ON COLUMN %s.data IS '经过服务端类型和边界验证的完整领域数据';", table, table, names[table], table, table)
 		if _, err = tx.Exec(ctx, sql); err != nil {
@@ -183,6 +185,13 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	if err = migrateIdentityVerification(ctx, tx); err != nil {
 		return err
 	}
+	// 两个微信入口的身份均由服务端兑换，唯一约束阻止同一官方身份关联多个资金账户。
+	if _, err = tx.Exec(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS identities_unionid_unique ON identities ((data->>'wechat_unionid')) WHERE COALESCE(data->>'wechat_unionid','')<>'';
+COMMENT ON INDEX identities_unionid_unique IS '已由微信服务端核实的跨入口UnionID唯一归属';
+CREATE UNIQUE INDEX IF NOT EXISTS identities_official_openid_unique ON identities ((data->>'official_appid'),(data->>'official_openid')) WHERE COALESCE(data->>'official_openid','')<>'';
+COMMENT ON INDEX identities_official_openid_unique IS '公众号AppID与OpenID组合的唯一账号归属';`); err != nil {
+		return err
+	}
 	if err = migrateManagementPermissions(ctx, tx); err != nil {
 		return err
 	}
@@ -193,6 +202,9 @@ func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 	if err = migrateWallet(ctx, tx); err != nil {
+		return err
+	}
+	if err = migrateVirtualPayments(ctx, tx); err != nil {
 		return err
 	}
 	if err = migrateSupportContactComments(ctx, tx); err != nil {

@@ -241,6 +241,10 @@ func (a *App) processDepositRefund(ctx context.Context, snapshot WalletDepositRe
 			}
 			continue
 		}
+		c, err = a.loadWXPayForApp(p.AppID)
+		if err != nil {
+			return err
+		}
 		var result wxRefund
 		if !first {
 			err = a.wxRequest(ctx, c, "GET", "/v3/refund/domestic/refunds/"+url.PathEscape(part.RefundNo), nil, &result)
@@ -311,6 +315,12 @@ func (a *App) applyDepositRefund(ctx context.Context, c wxPayConfig, result wxRe
 	p, err := get[WalletTopup](ctx, tx, "wallet_topups", part.TopupID, true)
 	if err != nil {
 		return err
+	}
+	if !dev {
+		c, err = a.loadWXPayForApp(p.AppID)
+		if err != nil {
+			return err
+		}
 	}
 	clubSource := v.Scope == "club_platform" && p.Purpose == "club_platform" && v.ClubID != "" && p.ClubID == v.ClubID && refundAccount(v) == clubDepositAccount(v.ClubID)
 	expectedPurpose := v.Scope

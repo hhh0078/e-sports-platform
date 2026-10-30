@@ -35,7 +35,7 @@ func (a *App) withdrawalResponse(v WalletWithdrawal, own bool) any {
 	out := map[string]any{}
 	json.Unmarshal(raw, &out)
 	if own && v.Status == "wait_user_confirm" && pack != "" {
-		if c, err := a.loadWXPay(); err == nil && (v.MerchantID == "" || v.MerchantID == c.MerchantID && v.AppID == c.AppID) {
+		if c, err := a.loadWXPayForApp(v.AppID); err == nil && (v.MerchantID == "" || v.MerchantID == c.MerchantID && v.AppID == c.AppID) {
 			out["confirmation"] = map[string]string{"mch_id": c.MerchantID, "app_id": c.AppID, "package_info": pack}
 		}
 	}
@@ -254,9 +254,18 @@ func (a *App) executeWalletWithdrawal(w http.ResponseWriter, r *http.Request) (a
 	if contains([]string{"success", "failed", "rejected"}, before.Status) {
 		return before, nil
 	}
+	if !a.Config.DevMode {
+		if err = a.refreshVirtualFunding(ctx, "withdrawal:"+before.ID, "withdrawal"); err != nil {
+			return nil, err
+		}
+	}
 	var c wxPayConfig
 	if !a.Config.DevMode {
 		if _, c, err = a.readyWalletTransfer(ctx); err != nil {
+			return nil, err
+		}
+		c, err = a.loadWXPayForApp(before.AppID)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -423,7 +432,7 @@ func (a *App) syncWalletWithdrawal(w http.ResponseWriter, r *http.Request) (any,
 		}
 	}
 	if !a.Config.DevMode && contains([]string{"processing", "wait_user_confirm"}, v.Status) {
-		c, e := a.loadWXPay()
+		c, e := a.loadWXPayForApp(v.AppID)
 		if e != nil {
 			return nil, e
 		}

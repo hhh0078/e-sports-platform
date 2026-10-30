@@ -8,6 +8,7 @@ import (
 
 // OrderAdjustment 保存双方明确确认的差额方案；不包含微信身份、签名或支付密钥。
 type OrderAdjustment struct {
+	PaymentChannel       string `json:"payment_channel,omitempty"`
 	ID                   string `json:"id"`
 	OrderID              string `json:"order_id"`
 	Kind                 string `json:"kind"`

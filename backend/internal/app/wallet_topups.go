@@ -56,12 +56,6 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 	if !contains([]string{"balance", "deposit", "club_platform", "member_club"}, in.Purpose) || in.AmountCents < 1 || in.AmountCents > 10000000 || in.Purpose == "balance" && in.AmountCents < 100 {
 		return nil, fail(400, "充值用途或金额无效，余额充值至少1元，押金须为正数且不超过100000元")
 	}
-	var paymentConfig wxPayConfig
-	if !a.Config.DevMode {
-		if paymentConfig, err = a.loadWXPay(); err != nil {
-			return nil, err
-		}
-	}
 	ctx := r.Context()
 	tx, err := a.DB.Begin(ctx)
 	if err != nil {
@@ -92,14 +86,24 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 			return nil, e
 		}
 		payment = WalletTopup{AccountID: accountID, ClubID: in.ClubID, ID: id, UserID: u.ID, RequestID: in.RequestID, Purpose: in.Purpose, AmountCents: in.AmountCents, Status: "pending_payment", OrderNo: "WT" + strings.ToUpper(id[:30]), CreatedAt: now(), UpdatedAt: now()}
-		if !a.Config.DevMode {
-			identity, e := get[map[string]string](ctx, tx, "identities", u.ID, false)
-			if e != nil || identity["openid"] == "" {
-				return nil, fail(503, "请先通过微信登录后充值")
+		if !a.Config.DevMode && in.Purpose == "balance" && a.commerceSettings().Mode == "mini_program" {
+			payment, err = a.newVirtualTopup(ctx, tx, u, id, in.RequestID, in.AmountCents)
+			if err != nil {
+				return nil, err
 			}
-			payment.PayOpenID = identity["openid"]
+		} else if !a.Config.DevMode {
+			paymentConfig, e := a.loadWXPay()
+			if e != nil {
+				return nil, e
+			}
+			openid, e := a.paymentOpenID(ctx, tx, u.ID, paymentConfig.AppID)
+			if e != nil {
+				return nil, e
+			}
+			payment.PayOpenID = openid
 			payment.MerchantID = paymentConfig.MerchantID
 			payment.AppID = paymentConfig.AppID
+			payment.Channel = "wechat"
 		}
 		if err = put(ctx, tx, "wallet_topups", id, payment); err != nil {
 			return nil, err
@@ -117,6 +121,9 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 
 // walletTopupPayment 基于已保存的原充值流水继续支付，客户端丢失幂等键也不会创建另一笔充值。
 func (a *App) walletTopupPayment(r *http.Request, u User, payment WalletTopup) (any, error) {
+	if payment.Channel == "virtual" {
+		return a.virtualTopupPayment(r, u, payment)
+	}
 	ctx := r.Context()
 	var err error
 	if payment.Status != "pending_payment" {
@@ -135,14 +142,14 @@ func (a *App) walletTopupPayment(r *http.Request, u User, payment WalletTopup) (
 	if payment.Status != "pending_payment" {
 		return map[string]any{"payment": payment, "mode": "wechat"}, nil
 	}
-	c, err := a.loadWXPay()
+	c, err := a.loadWXPayForApp(payment.AppID)
 	if err != nil {
 		return nil, err
 	}
 	if payment.MerchantID != "" && (payment.MerchantID != c.MerchantID || payment.AppID != c.AppID) {
 		return nil, fail(409, "支付商户配置已变更，请联系平台核查原充值意图，勿重新付款")
 	}
-	result, err := a.prepay(r, u, Order{ID: payment.ID, OrderNo: payment.OrderNo, Title: map[string]string{"balance": "开机电竞钱包充值", "deposit": "开机电竞自愿平台押金", "club_platform": "俱乐部平台押金", "member_club": "俱乐部成员托管押金"}[payment.Purpose], AmountCents: payment.AmountCents, PayOpenID: payment.PayOpenID})
+	result, err := a.prepay(r, u, Order{ID: payment.ID, OrderNo: payment.OrderNo, Title: map[string]string{"balance": "开机电竞钱包充值", "deposit": "开机电竞自愿平台押金", "club_platform": "俱乐部平台押金", "member_club": "俱乐部成员托管押金"}[payment.Purpose], AmountCents: payment.AmountCents, PayOpenID: payment.PayOpenID, PaymentAppID: payment.AppID, PaymentMerchantID: payment.MerchantID})
 	if err != nil {
 		return nil, err
 	}
@@ -166,6 +173,9 @@ func (a *App) applyWalletTopup(ctx context.Context, snapshot WalletTopup, v wxTr
 	p, err := get[WalletTopup](ctx, tx, "wallet_topups", snapshot.ID, true)
 	if err != nil {
 		return err
+	}
+	if p.Channel == "virtual" {
+		return fail(409, "虚拟金币充值不能通过普通微信回调入账")
 	}
 	if !dev && ((p.MerchantID != "" && (p.MerchantID != v.MerchantID || p.AppID != v.AppID)) || p.AmountCents != v.Amount.Total || p.PayOpenID == "" || p.PayOpenID != v.Payer.OpenID || p.OrderNo != v.OrderNo) {
 		return fail(400, "充值金额或付款人不匹配")
@@ -245,8 +255,14 @@ func (a *App) syncWalletTopup(w http.ResponseWriter, r *http.Request) (any, erro
 			return nil, err
 		}
 	}
+	if p.Channel == "virtual" {
+		if err = a.syncVirtualTopup(r.Context(), p); err != nil {
+			return nil, err
+		}
+		return get[WalletTopup](r.Context(), a.DB, "wallet_topups", p.ID, false)
+	}
 	if !a.Config.DevMode && p.Status == "pending_payment" {
-		c, e := a.loadWXPay()
+		c, e := a.loadWXPayForApp(p.AppID)
 		if e != nil {
 			return nil, e
 		}

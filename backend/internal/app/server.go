@@ -38,6 +38,7 @@ type App struct {
 	reviewWorkerWG           sync.WaitGroup
 	paymentConfigMu          sync.RWMutex
 	paymentConfig            *paymentConfigState
+	commerceConfig           *commerceSettings
 	DB                       *pgxpool.Pool
 	Redis                    *redis.Client
 	Config                   Config
@@ -105,6 +106,10 @@ func New(ctx context.Context, cfg Config) (*App, error) {
 			a.Close()
 			return nil, err
 		}
+	}
+	if err = a.loadCommerceSettings(ctx); err != nil {
+		a.Close()
+		return nil, err
 	}
 	if err = a.loadPaymentSettings(ctx); err != nil {
 		a.Close()
@@ -239,6 +244,8 @@ func (a *App) Handler() http.Handler {
 	a.registerAdminCentersRoutes(mux)
 	a.registerPublicContentRoutes(mux)
 	a.registerPaymentSettingsRoutes(mux)
+	a.registerCommerceSettingsRoutes(mux)
+	a.registerVirtualPaymentRoutes(mux)
 	a.registerWalletRoutes(mux)
 	a.registerAIRoutes(mux)
 	a.registerModerationRoutes(mux)
@@ -308,6 +315,10 @@ func publicValue(value any) any {
 		}
 		return out
 	case Order:
+		// 旧版预支付意图只保存私密付款人，公开渠道用于准确恢复旧单，不暴露身份本身。
+		if v.PaymentChannel == "" && v.PayOpenID != "" {
+			v.PaymentChannel = "wechat"
+		}
 		v.PaymentMerchantID = ""
 		v.PaymentAppID = ""
 		v.WalletRequestID = ""

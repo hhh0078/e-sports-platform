@@ -23,6 +23,8 @@ func productionWalletAPI(t *testing.T) (*testAPI, wxPayConfig, *rsa.PrivateKey) 
 	configurePayEnvironment(t, c)
 	api.App.Config.DevMode = false
 	api.App.Config.WechatAppID = c.AppID
+	// 本夹具只验证普通微信协议；小程序虚拟支付由独立金币夹具覆盖。
+	api.App.commerceConfig = &commerceSettings{Mode: "official_account", FeeBearer: "platform", OfficialAppID: c.AppID}
 	for _, id := range []string{"player", "worker", "outsider", "admin"} {
 		identity, err := get[map[string]string](t.Context(), api.App.DB, "identities", id, false)
 		if err != nil {

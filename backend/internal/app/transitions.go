@@ -218,7 +218,12 @@ func (a *App) action(w http.ResponseWriter, r *http.Request) (any, error) {
 		if u.ID != o.BuyerID {
 			return nil, fail(403, "只有买家可以取消订单")
 		}
-		if err = a.closePayment(r.Context(), o); err != nil {
+		if before.PaymentChannel == "virtual" {
+			err = cancelVirtualPayment(r.Context(), tx, o)
+		} else {
+			err = a.closePayment(r.Context(), o)
+		}
+		if err != nil {
 			return nil, err
 		}
 	}

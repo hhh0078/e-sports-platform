@@ -11,7 +11,7 @@ func (a *App) prepareRemoteRefund(o *Order, before Order) error {
 	if err := requireLiveOrder(*o); err != nil {
 		return err
 	}
-	if _, err := a.loadWXPay(); err != nil {
+	if _, err := a.loadWXPayForApp(before.PaymentAppID); err != nil {
 		return err
 	}
 	if before.PaymentTransactionID == "" {
@@ -37,7 +37,7 @@ func (a *App) submitRemoteRefund(ctx context.Context, o Order, reason string) (O
 		return o, nil
 	}
 	if done {
-		c, e := a.loadWXPay()
+		c, e := a.loadWXPayForApp(o.PaymentAppID)
 		if e != nil {
 			return o, e
 		}

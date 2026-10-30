@@ -25,3 +25,8 @@ Use case: ui-mockup. PRECISE LOCAL EDIT of the attached existing Chinese390x844 
 ## 2026-10-23 重复登录修正
 
 仅服务端first_login明确为true的新注册账号显示可跳过资料弹层。老用户保留已有头像昵称直接回到目标页，不能因默认头像或历史资料被当作新用户。保留用户已修改的模板、文案和排版。
+
+
+## 2026-10-30 双模式支付
+
+本轮先行布局及状态规则见 [login.commerce.design.md](login.commerce.design.md) 与同名前缀 `.commerce.png`。金币、人民币及费用分别展示；公众号手机号短信和无服务配置提示复用登录设计变体。

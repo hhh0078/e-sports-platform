@@ -11,3 +11,8 @@
 ## 完整局部编辑提示词
 
 Use case: ui-mockup. PreciseLOCALeditofattachedChinese390x844design. Preserveallunrelatedstyle/fields/layout/gameart/safeareas,approved#0a1110darknaturalgreenand#8de8b6mint, thinseparatorsandcentredofficialicons. No newfeatures, no giantcards, no Englishdecoration/no bluepurplegradient. AllnewtextindependentUI,nobakedgameart. Exact390:844portraitflatUI,noframe/nooutside margins. AddONLYaPAYMENTCONFIRMATIONmodalasavariant, keeporderpagebehinddarktranslucentmaskwithoutredesign. Modalreadablecentered/bottomsheetcharcoalwith12pxcornersand16pxinsets. Title确认支付 andamount¥68.00. Twoclear mutually-exclusive officialradiolinerows: 微信支付 selected; 钱包余额 unselectedwithsmall 可用余额¥0.00 (ifinsufficientdisablewithclear余额不足,donotfakefunds). Smallhelper 充值余额仅可消费，不能提现. No amountinput,paylater,bankcards,newcredits,orcombinedpartialpayment. One44pxmint 确认支付 button andquiet取消text, avoidsafebottomarea. Actualmodalonlyforpending-paymentbuyer;backgroundstatusisdimmedreference,notpermissiontopayaworkingorder. RadioselectiondoesNOTpayuntilconfirm; balanceisbackendspendableamount notimaginarygrant. Keepallotherpagevisualpartsunchanged.
+
+
+## 2026-10-30 双模式支付
+
+本轮先行布局及状态规则见 [detail-payment.commerce.design.md](detail-payment.commerce.design.md) 与同名前缀 `.commerce.png`。金币、人民币及费用分别展示；公众号手机号短信和无服务配置提示复用登录设计变体。

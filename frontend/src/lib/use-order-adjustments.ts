@@ -7,7 +7,9 @@ import {listOrderAdjustments,createOrderAdjustment,respondOrderAdjustment,payOrd
 import {getWallet} from '../api/wallet.api'
 import {requirePhone} from './phone'
 import {requireIdentity} from './identity'
-import {requestWechatPayment} from './payment'
+import {requestWechatPayment,prepareVirtualPayment,paymentPlatform} from './payment'
+import {getVirtualQuote} from '../api/commerce.api'
+import type {VirtualQuote} from '../types/commerce'
 import {beginFinancialActivity} from './update-manager'
 import {newWalletRequestID} from './wallet'
 import {parseAdjustmentAmount,adjustmentPending,canProposeAdjustment} from './order-adjustments'
@@ -20,6 +22,7 @@ export type AdjustmentDialog = 'create'|'accept'|'reject'|'withdraw'|'pay'
 /** 以当前订单读取函数驱动共享组件，变更后通知父页面重新取订单与聊天。 */
 export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
   const records=ref<OrderAdjustment[]>([]),loading=ref(false),busy=ref(false),error=ref(''),formError=ref(''),dialog=ref<AdjustmentDialog|null>(null),kind=ref<AdjustmentKind>('increase'),amount=ref(''),reason=ref(''),selected=ref<OrderAdjustment|null>(null),channel=ref<'wechat'|'balance'>('wechat'),wallet=ref<Wallet|null>(null),walletLoading=ref(false),walletError=ref('')
+  const virtualMode=computed(()=>!state.devMode&&(selected.value?.payment_channel?selected.value.payment_channel==='virtual':state.commerce?.mode==='mini_program')),quote=ref<VirtualQuote|null>(null),quoteError=ref('')
   let visible=true,disposed=false,readVersion=0,operation=0,walletVersion=0
   let currentRead:Promise<void>|null=null
   let resumeDraft:{kind:AdjustmentKind;amount:string;reason:string}|null=null
@@ -46,7 +49,7 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
     return currentRead
   }
   /** 清空确认和输入，仅当用户主动取消或切页时丢弃未提交草稿。 */
-  function close():void{if(busy.value)return;walletVersion++;dialog.value=null;selected.value=null;wallet.value=null;walletLoading.value=false;walletError.value='';formError.value=''}
+  function close():void{if(busy.value)return;walletVersion++;dialog.value=null;selected.value=null;wallet.value=null;quote.value=null;quoteError.value='';walletLoading.value=false;walletError.value='';formError.value=''}
   /** 打开创建表单，尚无双方确认或资金请求。 */
   function openCreate(next:AdjustmentKind):void{if(!visible||busy.value||(next==='increase'?!canIncrease.value:!canDecrease.value))return;close();kind.value=next;amount.value='';reason.value='';dialog.value='create'}
   /** 仅另一位交易当事人可以接受/拒绝，发起人只能撤回普通未付款方案。 */
@@ -58,7 +61,11 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
   /** 准备明确的接受/拒绝/撤回确认，不在点击记录时直接改资金。 */
   function prepare(record:OrderAdjustment,action:'accept'|'reject'|'withdraw'):void{if(!visible||busy.value||!canRespond(record,action))return;close();selected.value=record;dialog.value=action}
   /** 补款弹层只读当前余额，旧账号或关闭后的读取不能回填。 */
-  async function openPay(record:OrderAdjustment):Promise<void>{if(!visible||busy.value||!canPay(record))return;close();selected.value=record;channel.value='wechat';dialog.value='pay';const t=ticket(),version=++walletVersion;walletLoading.value=true;try{const result=await getWallet();if(visible&&same(t)&&version===walletVersion&&dialog.value==='pay')wallet.value=result}catch(e){if(visible&&same(t)&&version===walletVersion)walletError.value=errorMessage(e)}finally{if(version===walletVersion)walletLoading.value=false}}
+  async function openPay(record:OrderAdjustment):Promise<void>{
+    if(!visible||busy.value||!canPay(record))return;close();selected.value=record;channel.value='wechat';dialog.value='pay';const t=ticket(),version=++walletVersion;walletLoading.value=true
+    try{if(virtualMode.value){const result=await getVirtualQuote(record.amount_cents,paymentPlatform(),{order_id:readOrder()?.id,adjustment_id:record.id});if(visible&&same(t)&&version===walletVersion&&dialog.value==='pay')quote.value=result}else{const result=await getWallet();if(visible&&same(t)&&version===walletVersion&&dialog.value==='pay')wallet.value=result}}
+    catch(e){if(visible&&same(t)&&version===walletVersion){if(virtualMode.value)quoteError.value=errorMessage(e);else walletError.value=errorMessage(e)}}finally{if(version===walletVersion)walletLoading.value=false}
+  }
   /** 正式付款前保持同一业务键；未知响应重试也沿用原补款，而非另开一笔。 */
   function paymentRequest(id:string):string{const key='jijie_adjustment_payment:'+state.user?.id+':'+id;const saved=uni.getStorageSync(key),value=typeof saved==='string'&&saved?saved:newWalletRequestID();uni.setStorageSync(key,value);return value}
   /** 创建重试按原账号、订单和完整草稿绑定请求号；不保存令牌或支付参数。 */
@@ -71,16 +78,19 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
     if(!visible||disposed||busy.value||!action||!order)return
     const t=ticket(),version=++operation,finishFinancial=beginFinancialActivity();busy.value=true;formError.value='';readVersion++;loading.value=false;currentRead=null
     try{
+      if(action!=='pay'&&(order.payment_channel==='virtual'||order.has_virtual_payment)&&order.buyer_id===t.id&&((action==='accept'&&record?.kind==='decrease')||(action==='create'&&kind.value==='decrease'))){await prepareVirtualPayment(true);if(!current(t,version))return}
       if(action==='create'){
         const cents=parseAdjustmentAmount(amount.value),text=reason.value.trim();if(Array.from(text).length<2||Array.from(text).length>500)throw new Error('请填写2—500字原因');if(kind.value==='decrease'&&cents>order.amount_cents)throw new Error('退差金额不能超过当前订单金额');if(!(await requirePhone())||!current(t,version))return
         const requestID=creationRequest(cents);await createOrderAdjustment(order.id,{kind:kind.value,amount_cents:cents,reason:text,request_id:requestID});if(current(t,version))clearCreationRequest(requestID)
       }else if(action==='pay'){
-        if(!record||!canPay(record))return;if(channel.value==='balance'&&(!wallet.value||wallet.value.spendable_cents<record.amount_cents))throw new Error('钱包余额不足，请选择微信支付');if(!(await requirePhone())||!current(t,version))return
+        if(!record||!canPay(record))return;if(!virtualMode.value&&channel.value==='balance'&&(!wallet.value||wallet.value.spendable_cents<record.amount_cents))throw new Error('钱包余额不足，请选择微信支付');if(!(await requirePhone())||!current(t,version))return
         if(!(await requireIdentity())||!current(t,version))return
-        const result=await payOrderAdjustment(order.id,record.id,{channel:channel.value,...(channel.value==='balance'?{request_id:paymentRequest(record.id)}:{})});if(!current(t,version))return
-        if(result.mode==='wechat'&&result.adjustment.status!=='completed'){
-          if(!result.pay_params)throw new Error('缺少微信补款参数，请同步原补款单')
-          try{await requestWechatPayment(result.pay_params)}catch{/* 用户取消或未知结果均读取原单，不能本地认定扣款成功或换单。 */}
+        if(virtualMode.value){if(!quote.value||walletLoading.value||quoteError.value)throw new Error('请重新核对金币与手续费');await prepareVirtualPayment(true);if(!current(t,version))return}
+        const result=await payOrderAdjustment(order.id,record.id,{channel:virtualMode.value?'wechat':channel.value,...(virtualMode.value?{platform:paymentPlatform(),quoted_total_cents:quote.value!.total_cents,quoted_topup_cents:quote.value!.topup_cents}:channel.value==='balance'?{request_id:paymentRequest(record.id)}:{})});if(!current(t,version))return
+        if((result.mode==='wechat'||result.mode==='virtual')&&result.adjustment.status!=='completed'){
+          const params=result.mode==='virtual'?result.virtual_params:result.pay_params
+          if(!params&&result.mode==='wechat')throw new Error('缺少微信补款参数，请同步原补款单')
+          try{if(params)await requestWechatPayment(params)}catch{/* 用户取消或未知结果均读取原单，不能本地认定扣款成功或换单。 */}
           if(!current(t,version))return
           await syncOrderAdjustment(order.id,record.id)
         }
@@ -92,13 +102,13 @@ export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
     }catch(e){if(current(t,version))formError.value=errorMessage(e)}finally{if(version===operation)busy.value=false;finishFinancial()}
   }
   /** 买家及平台只同步既有付款/退款结果，不代替双方同意或另建资金单。 */
-  async function synchronize(record:OrderAdjustment):Promise<void>{if(!visible||busy.value||!canSynchronize())return;const t=ticket(),version=++operation,finishFinancial=beginFinancialActivity();busy.value=true;error.value='';try{await syncOrderAdjustment(t.order||'',record.id);if(!current(t,version))return;busy.value=false;changed();await load()}catch(e){if(current(t,version))error.value=errorMessage(e)}finally{if(version===operation)busy.value=false;finishFinancial()}}
+  async function synchronize(record:OrderAdjustment):Promise<void>{if(!visible||busy.value||!canSynchronize())return;const t=ticket(),version=++operation,finishFinancial=beginFinancialActivity();busy.value=true;error.value='';try{const order=readOrder();if((order?.payment_channel==='virtual'||order?.has_virtual_payment)&&order?.buyer_id===t.id){await prepareVirtualPayment(true);if(!current(t,version))return}await syncOrderAdjustment(t.order||'',record.id);if(!current(t,version))return;busy.value=false;changed();await load()}catch(e){if(current(t,version))error.value=errorMessage(e)}finally{if(version===operation)busy.value=false;finishFinancial()}}
   /** 切账号/订单立即清空旧证据、草稿与所有未发出的后续资金操作。 */
-  function clear():void{operation++;readVersion++;walletVersion++;resumeDraft=null;records.value=[];loading.value=false;currentRead=null;busy.value=false;error.value='';dialog.value=null;selected.value=null;wallet.value=null;walletLoading.value=false;walletError.value='';formError.value='';amount.value='';reason.value=''}
+  function clear():void{operation++;readVersion++;walletVersion++;resumeDraft=null;records.value=[];loading.value=false;currentRead=null;busy.value=false;error.value='';dialog.value=null;selected.value=null;wallet.value=null;quote.value=null;quoteError.value='';walletLoading.value=false;walletError.value='';formError.value='';amount.value='';reason.value=''}
   /** 原生授权临时隐藏只撤销旧操作和支付意图，同账号创建草稿保留供用户重新打开。 */
   function hide():void{visible=false;const draft=dialog.value==='create'?{kind:kind.value,amount:amount.value,reason:reason.value}:null;clear();resumeDraft=draft}
   watch([()=>readOrder()?.id,()=>state.user?.id,sessionRevision],()=>{clear();if(visible)void load()},{immediate:true,flush:'sync'})
   watch(()=>readOrder()?.updated_at,()=>{if(visible&&!busy.value)void load()})
   onShow(()=>{visible=true;if(resumeDraft){kind.value=resumeDraft.kind;amount.value=resumeDraft.amount;reason.value=resumeDraft.reason;dialog.value='create';resumeDraft=null}void load()});onHide(hide);onUnload(()=>{disposed=true;hide();resumeDraft=null});onBeforeUnmount(()=>{disposed=true;hide();resumeDraft=null})
-  return{records,pending,loading,busy,error,formError,dialog,kind,amount,reason,selected,channel,wallet,walletLoading,walletError,canIncrease,canDecrease,load,close,openCreate,canRespond,canPay,canSynchronize,prepare,openPay,confirm,synchronize}
+  return{records,pending,loading,busy,error,formError,dialog,kind,amount,reason,selected,channel,virtualMode,quote,quoteError,wallet,walletLoading,walletError,canIncrease,canDecrease,load,close,openCreate,canRespond,canPay,canSynchronize,prepare,openPay,confirm,synchronize}
 }

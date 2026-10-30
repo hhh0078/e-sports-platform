@@ -23,6 +23,11 @@ func (a *App) createWalletWithdrawal(w http.ResponseWriter, r *http.Request) (an
 // createWithdrawalFor 为本人或负责人的组织独立账户冻结可核验来源，并原子限制每日有效申请次数。
 func (a *App) createWithdrawalFor(w http.ResponseWriter, r *http.Request, u User, accountID, clubID string, requestedBy ...string) (any, error) {
 	var err error
+	if !a.Config.DevMode {
+		if err = a.refreshVirtualFunding(r.Context(), accountID, "available"); err != nil {
+			return nil, err
+		}
+	}
 	requesterID := u.ID
 	if len(requestedBy) > 0 {
 		requesterID = requestedBy[0]
@@ -129,11 +134,11 @@ func (a *App) createWithdrawalFor(w http.ResponseWriter, r *http.Request, u User
 		v.AccountType = "club"
 	}
 	if !a.Config.DevMode {
-		identity, e := get[map[string]string](ctx, tx, "identities", u.ID, false)
-		if e != nil || identity["openid"] == "" {
-			return nil, fail(503, "请先通过微信登录后申请提现")
+		openid, e := a.paymentOpenID(ctx, tx, u.ID, c.AppID)
+		if e != nil {
+			return nil, e
 		}
-		v.PayOpenID = identity["openid"]
+		v.PayOpenID = openid
 		v.MerchantID = c.MerchantID
 		v.AppID = c.AppID
 		if in.UserName != "" {

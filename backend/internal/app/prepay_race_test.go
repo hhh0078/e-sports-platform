@@ -20,6 +20,7 @@ func TestIntegrationPrepayCancelSerialization(t *testing.T) {
 	configurePayEnvironment(t, c)
 	api.App.Config.WechatAppID = c.AppID
 	api.App.Config.DevMode = false
+	api.App.commerceConfig = &commerceSettings{Mode: "official_account", FeeBearer: "platform", OfficialAppID: c.AppID}
 	if err := put(t.Context(), api.App.DB, "identities", "player", testVerifiedWechatIdentity("payer-openid")); err != nil {
 		t.Fatal(err)
 	}
@@ -89,6 +90,7 @@ func TestIntegrationPrepayTimeoutKeepsIntent(t *testing.T) {
 	configurePayEnvironment(t, c)
 	api.App.Config.WechatAppID = c.AppID
 	api.App.Config.DevMode = false
+	api.App.commerceConfig = &commerceSettings{Mode: "official_account", FeeBearer: "platform", OfficialAppID: c.AppID}
 	put(t.Context(), api.App.DB, "identities", "player", testVerifiedWechatIdentity("payer-openid"))
 	var o Order
 	api.call("player", "POST", "/orders", map[string]any{"service_id": "delta-service-1", "quantity": 1}, 200, &o)
@@ -145,6 +147,7 @@ func TestIntegrationPrepayWithSingleDBConnection(t *testing.T) {
 	c, key := testPayConfig(t)
 	configurePayEnvironment(t, c)
 	api.App.Config.DevMode = false
+	api.App.commerceConfig = &commerceSettings{Mode: "official_account", FeeBearer: "platform", OfficialAppID: c.AppID}
 	api.App.Config.WechatAppID = c.AppID
 	if e = put(t.Context(), api.App.DB, "identities", "player", testVerifiedWechatIdentity("single-connection-openid")); e != nil {
 		t.Fatal(e)

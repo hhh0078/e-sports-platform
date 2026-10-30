@@ -151,6 +151,9 @@ func (a *App) subscriptionCallback(w http.ResponseWriter, r *http.Request) {
 		w.Write(raw)
 		return
 	}
+	if a.handleVirtualCallback(w, r, raw) {
+		return
+	}
 	var event subscriptionCallbackEvent
 	if xml.Unmarshal(raw, &event) != nil || event.MsgType != "event" || event.FromUserName == "" {
 		http.Error(w, "invalid event", 400)

@@ -161,6 +161,11 @@ func wxNotifyResult(w http.ResponseWriter, err error) {
 
 // applyWXPayment 核对商户、买家、金额与原订单，并对重复支付通知幂等处理。
 func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction) error {
+	original, e := a.loadWXPayForApp(v.AppID)
+	if e != nil {
+		return e
+	}
+	c = original
 	if v.MerchantID != c.MerchantID || v.AppID != c.AppID || v.TradeState != "SUCCESS" || v.TransactionID == "" || v.Amount.Currency != "CNY" {
 		return fail(400, "支付商户或交易信息不匹配")
 	}
@@ -191,11 +196,18 @@ func (a *App) applyWXPayment(ctx context.Context, c wxPayConfig, v wxTransaction
 	if err != nil {
 		return err
 	}
+	c, err = a.loadWXPayForApp(o.PaymentAppID)
+	if err != nil {
+		return err
+	}
 	if err = requireLiveOrder(o); err != nil {
 		return err
 	}
 	if baseOrderAmount(o) != v.Amount.Total || o.PayOpenID == "" || o.PayOpenID != v.Payer.OpenID {
 		return fail(400, "支付金额或付款人不匹配")
+	}
+	if o.PaymentMerchantID != "" && (o.PaymentMerchantID != v.MerchantID || o.PaymentAppID != v.AppID) {
+		return fail(409, "官方回调与已锁定原支付应用或商户不一致")
 	}
 	if o.PaymentTransactionID != "" {
 		if o.PaymentTransactionID == v.TransactionID {
@@ -260,6 +272,10 @@ func (a *App) applyWXRefund(ctx context.Context, c wxPayConfig, v wxRefund) erro
 		return fail(404, "退款订单不存在")
 	}
 	o, err := lockWalletOrder(ctx, tx, id, "")
+	if err != nil {
+		return err
+	}
+	c, err = a.loadWXPayForApp(o.PaymentAppID)
 	if err != nil {
 		return err
 	}
@@ -334,10 +350,20 @@ func (a *App) syncPayment(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 		return get[Order](r.Context(), a.DB, "orders", o.ID, false)
 	}
+	if o.PaymentChannel == "virtual" {
+		p, e := get[virtualConsumption](r.Context(), a.DB, "virtual_consumptions", virtualConsumptionID(o.ID, ""), false)
+		if e != nil {
+			return nil, e
+		}
+		if err = a.syncVirtualConsumption(r.Context(), p); err != nil {
+			return nil, err
+		}
+		return get[Order](r.Context(), a.DB, "orders", o.ID, false)
+	}
 	if a.Config.DevMode || o.PaymentChannel == "balance" {
 		return o, nil
 	}
-	c, err := a.loadWXPay()
+	c, err := a.loadWXPayForApp(o.PaymentAppID)
 	if err != nil {
 		return nil, err
 	}
@@ -391,7 +417,7 @@ func (a *App) retryRefund(w http.ResponseWriter, r *http.Request) (any, error) {
 		return nil, err
 	}
 	if complete {
-		c, configErr := a.loadWXPay()
+		c, configErr := a.loadWXPayForApp(o.PaymentAppID)
 		if configErr != nil {
 			return nil, configErr
 		}

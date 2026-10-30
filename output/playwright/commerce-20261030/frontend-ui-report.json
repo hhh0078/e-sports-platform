@@ -1,0 +1,47 @@
+{
+  "purpose": "本地H5界面与授权往返验收，全部API为显式测试夹具，不产生真实登录、短信或付款",
+  "viewports": [
+    "320×844",
+    "390×844"
+  ],
+  "screenshots": [
+    "login-official-320.png",
+    "login-official-390.png",
+    "payment-320.png",
+    "payment-390.png",
+    "phone-official-320.png",
+    "phone-official-390.png",
+    "settings-320.png",
+    "settings-390.png",
+    "wallet-320.png",
+    "wallet-390.png"
+  ],
+  "verified": [
+    "管理员两种运行模式、手续费承担方及安卓/iOS费率分别展示",
+    "金币余额与人民币余额分别展示，金币不进入可提现额度",
+    "订单付款前展示服务金币、手续费、金币余额、购买差额与现金实付",
+    "付款弹层320/390宽度均可读且按钮可见",
+    "公众号登录保持用户主动勾选协议",
+    "公众号手机号采用短信表单；未配置短信立即明确提示并禁用提交",
+    "无fragment根URL授权回跳实际进入登录并回到wallet，URL的code/state和sessionStorage一次记录已清理",
+    "最终订单验收页面console无error/warning",
+    "在320宽手机号页测量document/body宽均为320，无横向溢出"
+  ],
+  "tests": {
+    "typecheck": "passed",
+    "standards": "passed",
+    "targeted_payment_wallet_oauth_tests": 67
+  },
+  "not_verified": [
+    "微信真机requestVirtualPayment",
+    "真实公众号OAuth",
+    "真实短信发送",
+    "真实JSAPI扣款、虚拟金币扣减与官方退款",
+    "真实公众号商家转账确认"
+  ],
+  "notes": [
+    "截图为真实H5渲染，数据明确为本地模拟；不能代替微信真机或资金验收",
+    "触控尺寸复用现有组件，新增模式选项、金币购买、短信发送/关闭保持44px实际下限",
+    "项目已有orders/orders.vue与orders/chat.vue修改未触碰"
+  ]
+}

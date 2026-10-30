@@ -11,7 +11,7 @@
         <view class="people-card"><view class="person"><Icon name="user" :size="19"/><view class="person-copy"><text class="person-role">买家</text><text class="person-name">{{ order.buyer_name }}</text></view></view><view class="person"><Icon name="work" :size="19"/><view class="person-copy"><text class="person-role">服务方</text><text class="person-name">{{ order.provider_name||'等待接单' }}</text></view></view></view>
         <view class="detail-section"><button class="section-toggle" @click="agreementOpen=!agreementOpen"><Icon name="receipt" :size="18"/><text class="detail-section-title">服务约定</text><Icon :name="agreementOpen?'up':'arrow'" :size="14"/></button><view v-show="agreementOpen" class="section-body"><view v-if="order.service_description" class="agreement"><text class="agreement-title">下单时的服务说明</text><text class="agreement-body">{{ order.service_description }}</text></view><view class="requirements"><text class="agreement-title">需求与验收标准</text><text class="agreement-body">{{ order.requirements||'无额外要求，以服务详情约定为准。' }}</text></view><view v-if="order.delivery_note" class="delivery"><text class="agreement-title">交付说明</text><text class="agreement-body">{{ order.delivery_note }}</text></view></view></view>
         <view class="detail-section"><button class="section-toggle" :disabled="adjustmentProcessing" @click="feesOpen=!feesOpen"><Icon name="wallet" :size="18"/><text class="detail-section-title">费用与调价</text><Icon :name="feesOpen?'up':'arrow'" :size="14"/></button><view v-show="feesOpen" class="section-body fee-body"><OrderSettlement v-if="isProvider||state.user?.role==='admin'||(!isBuyer&&!!order.club_id)" :order="order"/><view v-else class="paid-row"><text>订单金额</text><text>¥{{ money(order.amount_cents) }}</text></view><OrderAdjustments ref="adjustmentsView" :order="order" @changed="load()" @processing="adjustmentProcessing=$event"/></view></view>
-        <view class="detail-section"><button class="section-toggle" @click="afterSaleOpen=!afterSaleOpen"><Icon name="shield-check" :size="18"/><view class="after-sale-heading"><text class="detail-section-title">售后与协商</text><text class="after-sale-hint">{{ refundActive?refundTitle:'如有问题，可在订单内协商处理' }}</text></view><Icon :name="afterSaleOpen?'up':'arrow'" :size="14"/></button><view v-if="refundActive&&afterSaleOpen" class="refund-panel"><text>申请理由：{{ order.refund_reason }}</text><text v-if="order.refund_reply">处理说明：{{ order.refund_reply }}</text><text v-if="['requested','escalated','processing'].includes(order.refund_status)" class="muted">协商期间暂停验收与结算，订单证据完整保留。</text></view><view v-if="secondaryActions.length" class="actions"><button v-for="item in secondaryActions" :key="item.id" class="text-btn order-secondary" :disabled="busy||adjustmentProcessing" @click="prepare(item)">{{ item.label }}</button></view></view>
+        <view class="detail-section"><button class="section-toggle" @click="afterSaleOpen=!afterSaleOpen"><Icon name="shield-check" :size="18"/><view class="after-sale-heading"><text class="detail-section-title">售后与协商</text><text class="after-sale-hint">{{ refundActive?refundTitle:'如有问题，可在订单内协商处理' }}</text></view><Icon :name="afterSaleOpen?'up':'arrow'" :size="14"/></button><view v-if="refundActive&&afterSaleOpen" class="refund-panel"><text>申请理由：{{ order.refund_reason }}</text><text v-if="order.refund_reply">处理说明：{{ order.refund_reply }}</text><text v-if="['requested','escalated','processing'].includes(order.refund_status)" class="muted">协商期间暂停验收与结算，订单证据完整保留。</text><text v-if="(order.payment_channel==='virtual'||order.has_virtual_payment)&&order.refund_status==='processing'" class="muted">{{isBuyer?'退款处理中，可使用下方入口刷新微信身份并同步退款。':'虚拟支付退款可能需要买家使用原小程序账号刷新微信身份后同步；平台不能代刷买家身份。'}}</text></view><view v-if="secondaryActions.length" class="actions"><button v-for="item in secondaryActions" :key="item.id" class="text-btn order-secondary" :disabled="busy||adjustmentProcessing" @click="prepare(item)">{{ item.label }}</button></view></view>
         <view v-if="state.user?.role==='admin'&&order.refund_status==='escalated'" class="admin-resolution"><text class="section-title">平台裁决</text><text class="muted">请先进入订单聊天，审阅交付及图片证据，再填写裁决依据。</text><button class="btn" @click="prepare({id:'resolve_refund',label:'裁决退款',note:true,tip:'请说明事实依据与退款原因'})">支持买方 · 原路退款</button><button class="btn-secondary btn-small" @click="prepare({id:'resolve_resume',label:'驳回退款',note:true,tip:'请说明驳回原因及后续履约要求'})">驳回申请 · 继续履约</button><button v-if="order.status==='delivered'" class="btn-secondary btn-small" @click="prepare({id:'resolve_complete',label:'裁决完成',note:true,tip:'确认服务已按约定交付，并说明证据依据'})">支持卖方 · 确认完成</button></view>
         <view v-if="canReview" class="form-section review-panel"><text class="section-title">这次并肩体验如何？</text><view class="stars"><button v-for="star in 5" :key="star" class="rating-button" @click="rating=star"><Icon name="star" :size="26" :class="{lit:star<=rating}"/></button></view><textarea v-model="reviewText" class="input review-input" maxlength="500" placeholder="留下真实反馈，帮助下一位玩家找到好队友"/><text class="hint">{{ Array.from(reviewText).length }}/500</text><button class="btn-secondary btn-small review-button" :disabled="busy" @click="submitReview">发布评价</button></view>
         <view v-if="reviews.length" class="review-result"><text>买家评价 · {{ reviews[0].rating }} / 5</text><text class="muted">{{ reviews[0].content||'用户未填写文字评价' }}</text></view>
@@ -20,7 +20,7 @@
       </template>
     </view>
     <view v-if="order" class="order-dock"><button class="chat-entry" :disabled="busy||adjustmentProcessing" @click="openChat"><Icon name="chat" :size="21"/><text>订单聊天</text></button><button v-if="primaryAction" class="btn dock-primary" :disabled="busy||adjustmentProcessing" @click="prepare(primaryAction)">{{ primaryAction.label }}</button></view>
-    <view v-if="pendingAction" class="modal-mask" @click="pendingAction = null"><view class="modal" @click.stop><text class="modal-title">{{ pendingAction.label }}</text><text class="muted">{{ pendingAction.tip || '确认后，系统会在聊天室记录这次操作。' }}</text><textarea v-if="pendingAction.note" v-model="actionNote" class="input modal-input" maxlength="1000" placeholder="请详细说明，作为双方协商与平台判断的依据"/><view v-if="pendingAction.id === 'pay'" class="payment-summary"><text>应付金额</text><text>¥{{ money(order?.amount_cents) }}</text></view><view v-if="pendingAction.id === 'pay'" class="payment-options"><button :class="['payment-option',{chosen:paymentChannel==='wechat'}]" :disabled="busy" @click="paymentChannel='wechat'"><Icon name="weixin" :size="21"/><text class="payment-option-copy">微信支付</text><Icon :name="paymentChannel==='wechat'?'checkbox-filled':'circle'" :size="20"/></button><button :class="['payment-option',{chosen:paymentChannel==='balance'}]" :disabled="busy||!paymentWallet||paymentWallet.spendable_cents<(order?.amount_cents||0)" @click="paymentChannel='balance'"><Icon name="wallet" :size="21"/><view class="payment-option-copy"><text>钱包余额</text><text class="payment-hint">{{ paymentWallet?'可用余额 ¥'+money(paymentWallet.spendable_cents):'正在读取余额…' }}{{ paymentWallet&&paymentWallet.spendable_cents<(order?.amount_cents||0)?' · 余额不足':'' }}</text></view><Icon :name="paymentChannel==='balance'?'checkbox-filled':'circle'" :size="20"/></button><text class="payment-hint">充值余额仅可消费，不能提现。</text><text v-if="walletError" class="payment-hint danger">{{ walletError }}</text></view><text v-if="pendingAction.id === 'pay' && state.devMode" class="dev-warning">当前为本地测试支付，不会真实扣款。</text><view class="action-footer modal-actions"><button class="text-btn" :disabled="busy" @click="pendingAction = null">再想想</button><button class="btn" :disabled="busy || (pendingAction.note && !actionNote.trim())" @click="execute">{{ busy ? '处理中…' : '确认' + pendingAction.label }}</button></view></view></view>
+    <view v-if="pendingAction" class="modal-mask" @click="pendingAction = null"><view class="modal" @click.stop><text class="modal-title">{{ pendingAction.label }}</text><text class="muted">{{ pendingAction.tip || '确认后，系统会在聊天室记录这次操作。' }}</text><textarea v-if="pendingAction.note" v-model="actionNote" class="input modal-input" maxlength="1000" placeholder="请详细说明，作为双方协商与平台判断的依据"/><view v-if="pendingAction.id === 'pay'" class="payment-summary"><text>{{virtualMode?'服务消费':'应付金额'}}</text><text>{{virtualMode?money(order?.amount_cents)+' 金币':'¥'+money(order?.amount_cents)}}</text></view><view v-if="pendingAction.id === 'pay'&&!virtualMode" class="payment-options"><button :class="['payment-option',{chosen:paymentChannel==='wechat'}]" :disabled="busy" @click="paymentChannel='wechat'"><Icon name="weixin" :size="21"/><text class="payment-option-copy">微信支付</text><Icon :name="paymentChannel==='wechat'?'checkbox-filled':'circle'" :size="20"/></button><button :class="['payment-option',{chosen:paymentChannel==='balance'}]" :disabled="busy||!paymentWallet||paymentWallet.spendable_cents<(order?.amount_cents||0)" @click="paymentChannel='balance'"><Icon name="wallet" :size="21"/><view class="payment-option-copy"><text>钱包余额</text><text class="payment-hint">{{ paymentWallet?'可用余额 ¥'+money(paymentWallet.spendable_cents):'正在读取余额…' }}{{ paymentWallet&&paymentWallet.spendable_cents<(order?.amount_cents||0)?' · 余额不足':'' }}</text></view><Icon :name="paymentChannel==='balance'?'checkbox-filled':'circle'" :size="20"/></button><text class="payment-hint">充值余额仅可消费，不能提现。</text><text v-if="walletError" class="payment-hint danger">{{ walletError }}</text></view><VirtualPaymentSummary v-if="pendingAction.id==='pay'&&virtualMode" :quote="paymentQuote" :loading="quoteLoading" :error="quoteError"/><text v-if="pendingAction.id === 'pay' && state.devMode" class="dev-warning">当前为本地测试支付，不会真实扣款。</text><view class="action-footer modal-actions"><button class="text-btn" :disabled="busy" @click="pendingAction = null">再想想</button><button class="btn" :disabled="busy || (pendingAction.note && !actionNote.trim()) || (pendingAction.id==='pay'&&virtualMode&&(quoteLoading||!paymentQuote||!!quoteError))" @click="execute">{{ busy ? '处理中…' : '确认' + pendingAction.label }}</button></view></view></view>
   </AppShell>
 </template>
 <script setup lang="ts">
@@ -33,13 +33,16 @@ import SubscribeReminder from '../../components/SubscribeReminder.vue'
 import Icon from '../../components/Icon.vue'
 import OrderSettlement from '../../components/OrderSettlement.vue'
 import OrderAdjustments from '../../components/OrderAdjustments.vue'
+import VirtualPaymentSummary from '../../components/VirtualPaymentSummary.vue'
+import { getVirtualQuote } from '../../api/commerce.api'
+import type { VirtualQuote } from '../../types/commerce'
 import { getOrder, listOrderReviews, payOrder, syncOrderPayment, performOrderAction, submitOrderReview } from '../../api/orders.api'
 import { retryOrderRefund, resolveOrder } from '../../api/admin.api'
 import type { Order, Review } from '../../types/models'
 import { token, errorMessage, errorStatus } from '../../api/client'
 import { getWallet } from '../../api/wallet.api'
 import type { Wallet } from '../../types/wallet'
-import { requestWechatPayment } from '../../lib/payment'
+import { requestWechatPayment,prepareVirtualPayment,paymentPlatform } from '../../lib/payment'
 import { beginFinancialActivity } from '../../lib/update-manager'
 import { newWalletRequestID } from '../../lib/wallet'
 import { requirePhone } from '../../lib/phone'
@@ -55,6 +58,8 @@ const adjustmentProcessing=ref(false)
 const agreementOpen=ref(true),feesOpen=ref(true),afterSaleOpen=ref(true)
 useNativePageRefresh({refresh:refreshOrder,blocked:()=>busy.value||adjustmentProcessing.value||!!pendingAction.value,context:()=>[state.user?.id,state.user?.role,sessionRevision(),id.value]})
 const paymentChannel=ref<'wechat'|'balance'>('wechat'),paymentWallet=ref<Wallet|null>(null),walletError=ref('')
+const paymentQuote=ref<VirtualQuote|null>(null),quoteLoading=ref(false),quoteError=ref('')
+const virtualMode=computed(()=>!state.devMode&&(order.value?.payment_channel?order.value.payment_channel==='virtual':state.commerce?.mode==='mini_program'))
 let disposed=false,paymentPreparation=0
 let timer: ReturnType<typeof setInterval> | undefined, polling = false, visible = false, viewerID = '', pageVersion = 0
 /** 捕获一次订单操作的账号和会话，防止迟到响应进入其他账号。 */
@@ -64,7 +69,7 @@ function sameSession(session: ReturnType<typeof currentSession>): boolean { retu
 /** 页面显示且版本、会话都一致时才回填私有订单和证据。 */
 function currentRequest(version: number, session: ReturnType<typeof currentSession>): boolean { return visible&&version===pageVersion&&sameSession(session) }
 /** 切换身份立即移除上一位参与者的私有内容和未发送草稿。 */
-function clearPrivateOrder(): void {adjustmentProcessing.value=false;order.value=null;reviews.value=[];pendingAction.value=null;actionNote.value='';reviewText.value='';paymentWallet.value=null;walletError.value='';pageVersion++;polling=false}
+function clearPrivateOrder(): void {adjustmentProcessing.value=false;order.value=null;reviews.value=[];pendingAction.value=null;actionNote.value='';reviewText.value='';paymentWallet.value=null;paymentQuote.value=null;quoteError.value='';quoteLoading.value=false;walletError.value='';pageVersion++;polling=false}
 watch(()=>[state.user?.id,state.user?.role,state.user?.platform_admin_role,state.user?.status,sessionRevision()].join('\n'),()=>{clearPrivateOrder();if(visible)load()})
 const isBuyer = computed(() => order.value?.buyer_id === state.user?.id)
 const isProvider = computed(() => order.value?.provider_id === state.user?.id)
@@ -75,7 +80,7 @@ const actions = computed(() => {
   const result: OrderAction[] = [], current = order.value
   if (!current) return result
   const status = current.status, refund = current.refund_status || 'none', suspended = ['requested','escalated','processing'].includes(refund)
-  if (!state.devMode && (isBuyer.value || state.user?.role === 'admin') && (status === 'pending_payment' || refund === 'processing')) result.push({ id:'sync_payment', label:'同步资金状态' })
+  if (!state.devMode && (isBuyer.value || state.user?.role === 'admin') && (status === 'pending_payment' || refund === 'processing')) result.push({ id:'sync_payment', label:(current.payment_channel==='virtual'||current.has_virtual_payment)&&isBuyer.value?(refund==='processing'?'刷新微信身份并同步退款':'刷新微信身份并同步资金'):'同步资金状态' })
   if (!state.devMode && state.user?.role === 'admin' && refund === 'processing') result.push({ id:'retry_refund', label:'重试退款通道', tip:'沿用原退款单号重试未知结果，不会发起第二笔退款。' })
   if (isBuyer.value && status === 'pending_payment') result.push({ id:'pay', label:'支付订单', primary:true }, { id:'cancel', label:'取消订单' })
   if (isBuyer.value && status === 'open' && !suspended) result.push({ id:'cancel', label:'取消订单' })
@@ -118,6 +123,8 @@ async function prepare(action: OrderAction) {
   if(action.id!=='pay')return
   paymentChannel.value='wechat';paymentWallet.value=null;walletError.value=''
   const session=currentSession(),version=pageVersion
+  paymentQuote.value=null;quoteError.value='';quoteLoading.value=virtualMode.value
+  if(virtualMode.value){try{const quote=await getVirtualQuote(order.value?.amount_cents||0,paymentPlatform(),{order_id:id.value});if(currentRequest(version,session)&&prepared===paymentPreparation&&pendingAction.value?.id==='pay')paymentQuote.value=quote}catch(err){if(currentRequest(version,session)&&prepared===paymentPreparation)quoteError.value=errorMessage(err)}finally{if(prepared===paymentPreparation)quoteLoading.value=false};return}
   try{const result=await getWallet();if(currentRequest(version,session)&&prepared===paymentPreparation&&pendingAction.value?.id==='pay')paymentWallet.value=result}
   catch(err){if(currentRequest(version,session)&&prepared===paymentPreparation&&pendingAction.value?.id==='pay')walletError.value=errorMessage(err)}
 }
@@ -128,13 +135,15 @@ async function payCurrentOrder(session: ReturnType<typeof currentSession>):Promi
   if(!(await requirePhone())||!sameSession(session)||!visible)return false
   if(!(await requireIdentity())||!sameSession(session)||!visible)return false
   if(paymentChannel.value==='balance'&&(!paymentWallet.value||paymentWallet.value.spendable_cents<(order.value?.amount_cents||0)))throw new Error('钱包余额不足，请充值或选择微信支付')
-  const result=await payOrder(id.value,{channel:paymentChannel.value,...(paymentChannel.value==='balance'?{request_id:balanceRequestID()}:{})})
+  if(virtualMode.value){if(!paymentQuote.value||quoteLoading.value||quoteError.value)throw new Error('请重新打开付款确认，核对金币与手续费');await prepareVirtualPayment(true);if(!sameSession(session)||!visible)return false}
+  const result=await payOrder(id.value,{channel:virtualMode.value?'wechat':paymentChannel.value,...(virtualMode.value?{platform:paymentPlatform(),quoted_total_cents:paymentQuote.value!.total_cents,quoted_topup_cents:paymentQuote.value!.topup_cents}:paymentChannel.value==='balance'?{request_id:balanceRequestID()}:{})})
   if(!sameSession(session))return false
   let paid=result.order
-  if(result.mode==='wechat'&&paid.payment_status!=='paid'){
+  if((result.mode==='wechat'||result.mode==='virtual')&&paid.payment_status!=='paid'){
     if(!visible)return false
-    if(!result.pay_params)throw new Error('支付参数不完整，请同步原订单资金状态')
-    try{await requestWechatPayment(result.pay_params)}catch{/* 用户取消或微信未知响应均需查询原单，不假设已扣款。 */}
+    const params=result.mode==='virtual'?result.virtual_params:result.pay_params
+    if(!params&&result.mode==='wechat')throw new Error('支付参数不完整，请同步原订单资金状态')
+    try{if(params)await requestWechatPayment(params)}catch{/* 用户取消或微信未知响应均需查询原单，不假设已扣款。 */}
     if(!sameSession(session))return false
     paid=await syncOrderPayment(id.value)
   }
@@ -149,6 +158,7 @@ async function execute() {
   busy.value = true
   try {
     const action = pendingAction.value.id
+    if(action!=='pay'&&(order.value?.payment_channel==='virtual'||order.value?.has_virtual_payment)&&order.value?.buyer_id===session.id&&['sync_payment','request_refund','cancel'].includes(action)){await prepareVirtualPayment(true);if(!sameSession(session)||!visible)return}
     if (action === 'pay') { if(!(await payCurrentOrder(session)))return }
     else if (action === 'retry_refund') await retryOrderRefund(id.value)
     else if (action === 'sync_payment') await syncOrderPayment(id.value)

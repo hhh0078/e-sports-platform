@@ -5,10 +5,11 @@ import { getBootstrap } from '../api/games.api'
 import { getMe } from '../api/users.api'
 import { loginDev, prepareWechat, signInWechat, signOut as revokeSession } from '../api/auth.api'
 import type { User, Game, Consent, WechatPreparation } from '../types/models'
+import type { CommercePublic } from '../types/commerce'
 
 /** 共享页面状态。 */
-interface PlatformState { support_qr_url: string; support_phone: string; support_wechat: string; user: User | null; games: Game[]; gameId: string; devMode: boolean; announcement: string; siteName: string; ready: boolean }
-export const state = reactive<PlatformState>({ support_qr_url: '', support_phone: '', support_wechat: '', user: null, games: [], gameId: String(uni.getStorageSync('jijie_game') || 'delta'), devMode: false, announcement: '', siteName: '开机电竞', ready: false })
+interface PlatformState { commerce:CommercePublic; support_qr_url: string; support_phone: string; support_wechat: string; user: User | null; games: Game[]; gameId: string; devMode: boolean; announcement: string; siteName: string; ready: boolean }
+export const state = reactive<PlatformState>({ commerce:{mode:'mini_program',fee_bearer:'platform',android_fee_bps:0,ios_fee_bps:0}, support_qr_url: '', support_phone: '', support_wechat: '', user: null, games: [], gameId: String(uni.getStorageSync('jijie_game') || 'delta'), devMode: false, announcement: '', siteName: '开机电竞', ready: false })
 /** 配置尚未读取时用于稳定首次布局的游戏主题。 */
 const fallbackGame: Game = { id: 'delta', name: '三角洲行动', short_name: '三角洲', subtitle: '', primary_color: '#00e18a', bg_color: '#0a1110', surface_color: '#15201e', text_color: '#f2f5f3', icon_url: '', cover_url: '', covers: [], categories: [], enabled: true, sort_order: 0 }
 export const game = computed<Game>(() => state.games.find(item => item.id === state.gameId) || state.games[0] || fallbackGame)
@@ -39,6 +40,7 @@ export async function initPublic(force = false): Promise<void> {
   if (state.ready && !force) return
   publicPending = (async () => {
     const data = await getBootstrap()
+    if(data.commerce)state.commerce=data.commerce
     state.games = data.games || []; state.devMode = !!data.dev_mode; state.announcement = data.announcement || ''; state.siteName = data.site_name || '开机电竞';state.support_qr_url=data.support_qr_url||'';state.support_phone=data.support_phone||'';state.support_wechat=data.support_wechat||''
     const entryGame = pendingEntryGame; pendingEntryGame = ''
     if (entryGame && state.games.some(item => item.id === entryGame)) state.gameId = entryGame

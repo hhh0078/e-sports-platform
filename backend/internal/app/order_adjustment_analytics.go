@@ -30,6 +30,10 @@ func adjustmentPaymentEvidence(ctx context.Context, q querier, o Order, p OrderP
 		entry, e := get[WalletEntry](ctx, q, "wallet_entries", walletKey(o.BuyerID, kind, reference), false)
 		return e == nil && entry.AmountCents == -p.AmountCents && entry.RechargeDelta == -p.RechargeUsed && entry.AvailableDelta == -p.IncomeUsed && p.RechargeUsed >= 0 && p.IncomeUsed >= 0 && p.RechargeUsed+p.IncomeUsed == p.AmountCents
 	}
+	if p.Channel == "virtual" {
+		cons, e := get[virtualConsumption](ctx, q, "virtual_consumptions", virtualConsumptionID(o.ID, p.AdjustmentID), false)
+		return e == nil && cons.Status == "paid" && cons.UserID == p.BuyerID && cons.Quote.ServiceCents == p.AmountCents && cons.OrderNo == p.TransactionID && cons.AppID == p.AppID && p.MerchantID == "virtual:"+cons.OfferID
+	}
 	if p.Channel != "wechat" && !(dev && p.Channel == "dev") {
 		return false
 	}

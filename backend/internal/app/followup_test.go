@@ -20,6 +20,7 @@ func TestIntegrationPaymentConfigDoesNotLockCancellation(t *testing.T) {
 	}
 	t.Setenv("WECHAT_PAY_MCH_ID", "")
 	api.App.Config.DevMode = false
+	api.App.commerceConfig = &commerceSettings{Mode: "official_account", FeeBearer: "platform"}
 	api.call("player", "POST", "/orders/"+o.ID+"/pay", map[string]any{}, 503, nil)
 	saved, err := get[Order](t.Context(), api.App.DB, "orders", o.ID, false)
 	if err != nil || saved.PayOpenID != "" {

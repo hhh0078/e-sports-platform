@@ -11,7 +11,7 @@ import (
 // bootstrap 提供客户端初始化数据和开发模式提示。
 func (a *App) bootstrap(w http.ResponseWriter, r *http.Request) (any, error) {
 	w.Header().Set("Cache-Control", "no-store")
-	return publicCached(r.Context(), a, "bootstrap", func() (map[string]any, error) {
+	result, err := publicCached(r.Context(), a, "bootstrap", func() (map[string]any, error) {
 		games, err := a.publicGames(r.Context())
 		if err != nil {
 			return nil, err
@@ -26,6 +26,12 @@ func (a *App) bootstrap(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 		return map[string]any{"games": games, "moderation_mode": mode, "dev_mode": a.Config.DevMode, "site_name": s.SiteName, "announcement": s.Announcement, "support_qr_url": s.SupportQRURL, "support_phone": s.SupportPhone, "support_wechat": s.SupportWechat}, nil
 	})
+	if err != nil {
+		return nil, err
+	}
+	// 支付入口从当前内存快照读取，缓存中的公开资料不能恢复旧交易模式。
+	result["commerce"] = a.commercePublicView()
+	return result, nil
 }
 
 // games 返回公开游戏缓存，游戏发布和交易校验仍从事务数据库读取。
