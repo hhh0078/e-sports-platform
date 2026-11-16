@@ -4,6 +4,7 @@
   "connection": "官方自动化SDK连接成功",
   "blocked_at": "读取wx.getWindowInfo基础原生窗口信息",
   "error": "timeout waiting for automator response",
+  "observed_blocker": "实际检查开发工具界面，停留在未登录页，模拟器尚未运行；未操作登录",
   "font_api_test_completed": false,
   "physical_device_test_completed": false
 }
