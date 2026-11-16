@@ -4,6 +4,7 @@ import vm from 'node:vm'
 import ts from 'typescript'
 import { ref,nextTick,watch } from 'vue'
 import {artFontID} from './art-fonts'
+import {serviceFormIssue,setServicePreview,getServicePreview,clearServicePreview} from './service-preview'
 import { newWalletRequestID } from './wallet'
 import type { NativePageRefreshOptions } from './native-page-refresh'
 import { beginFinancialActivity } from './update-manager'
@@ -20,6 +21,10 @@ export function pageScript(path: string): string { const source = readFileSync(n
 /** 注入所有实际 API 的具名方法，传输边界转到可控 api 函数。 */
 export function injectBusinessAPIs(context: vm.Context): void {
   context.artFontID ??= artFontID
+  context.serviceFormIssue ??= serviceFormIssue
+  context.setServicePreview ??= setServicePreview
+  context.getServicePreview ??= getServicePreview
+  context.clearServicePreview ??= clearServicePreview
   context.isTimelinePreview ??= () => false
   context.enablePublicShareMenu ??= () => {}
   context.onShow ??= () => {}

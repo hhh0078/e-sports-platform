@@ -6,49 +6,43 @@
     <view v-if="!formReady&&!error" class="loading-line">正在准备发布表单…</view>
     <template v-if="formReady">
 
-      <view class="form-section game-selector"><view class="field service-game-field"><text class="field-label">选择游戏</text><GameSelector :value="form.game_id" :disabled="busy" @change="changeGame"/></view></view>
+      <view class="form-section game-selector"><view class="field service-game-field"><text class="field-label">选择游戏</text><GameSelector :value="form.game_id" :disabled="draftPending" @change="changeGame"/></view></view>
       <view class="platform-deposit-note"><Icon name="wallet" :size="17"/><view class="platform-deposit-copy"><text class="platform-deposit-title">平台押金 · 自愿缴纳</text><text class="subtle-note platform-deposit-detail">缴纳后展示平台押金标识，不影响发布</text></view><button class="text-btn platform-wallet-entry" @click="go(state.user?'/pages/account/wallet':'/pages/account/login?next='+encodeURIComponent('/pages/account/wallet'))">我的钱包<Icon name="arrow" :size="11"/></button></view>
-      <view class="form-section form-panel"><text class="section-title">封面文字</text><text class="hint block">默认左下依次排列，位置和样式可独立设置。</text>
-
-        <text class="field-label">游戏底图 · 也可以自己选</text>
-        <view class="cover-options"><view v-for="src in covers" :key="src" :class="['cover-option',{chosen:form.cover_url===src}]" @click="form.cover_url=src"><image :src="assetUrl(src)" mode="aspectFill"/><view v-if="form.cover_url===src" class="cover-check"><Icon name="check" :size="12"/></view></view></view>
-        <view class="section-row"><text class="field-label">叠加文字 {{ form.labels.length }} / 6</text><button class="text-btn" :disabled="form.labels.length>=6" @click="addLabel"><Icon name="plus" :size="15"/>添加文字</button></view>
-        <view v-if="!form.labels.length" class="subtle-note">也可以保持纯图片封面。添加文字可展示段位、服务特色或限时活动。</view>
-        <view v-for="(label,index) in form.labels" :key="label.id" class="label-editor"><view class="row between"><text class="label-index">文案 {{ index+1 }}</text><button class="text-btn danger" @click="form.labels.splice(index,1)">删除</button></view><input v-model="label.text" class="input" maxlength="48" placeholder="最多12个字，表情完整保留" @blur="label.text=normalizeLabelText(label.text)"/><ArtFontPicker v-model="label.font_family" :disabled="busy"/><view class="colors"><view class="color-field"><text>文字颜色</text><view class="swatches"><button v-for="color in textColors" :key="color" :style="{background:color}" :class="{chosen:label.color===color}" :aria-label="'文字颜色'+color" @click="label.color=color"/></view><input v-model="label.color" class="color-code" maxlength="7" placeholder="#ffffff"/></view><view class="color-field"><text>背景颜色</text><view class="swatches"><button v-for="color in backgroundColors" :key="color" :style="{background:color}" :class="{chosen:label.background===color,transparent:color==='transparent'}" :aria-label="'背景颜色'+color" @click="label.background=color"/></view><input v-model="label.background" class="color-code" maxlength="11" placeholder="#000000"/></view></view><view class="label-bottom"><button class="position-picker" @click="positionEditor=positionEditor===label.id?'':label.id">位置 · {{ positionName(label.position) }} <Icon name="bottom" :size="11"/></button><view class="font-picker"><text>字号 {{ label.font_size }}</text><slider :value="label.font_size" :min="12" :max="24" :step="1" :activeColor="selectedGame?.primary_color" :block-size="sliderBlockSize" @change="label.font_size=$event.detail.value"/></view></view><view v-if="positionEditor===label.id" class="position-grid"><button v-for="position in POSITIONS" :key="position[0]" :class="{selected:label.position===position[0]}" @click="label.position=position[0];positionEditor=''">{{ position[1] }}</button></view></view>
+      <view class="form-section cover-section"><text class="section-title">封面底图</text>
+        <view class="cover-options"><button v-for="src in covers" :key="src" :class="['cover-option',{chosen:form.cover_url===src}]" :aria-pressed="form.cover_url===src" aria-label="选择封面底图" @click="form.cover_url=src"><image class="cover-image" :src="assetUrl(src)" mode="aspectFill"/><view v-if="form.cover_url===src" class="cover-check"><Icon name="check" :size="12"/></view></button></view>
+      </view>
+      <view class="form-section cover-text-section">
+        <view class="cover-text-heading"><view class="cover-text-title"><text class="section-title">封面文字</text><text class="label-count">{{form.labels.length}} / 6</text></view><button class="text-btn add-label" :disabled="draftPending||form.labels.length>=6" @click="addLabel"><Icon name="plus" :size="15"/>添加文字</button></view>
+        <text v-if="!form.labels.length" class="subtle-note">可添加最多6条文字，也可保留纯图片封面。</text>
+        <CoverLabelEditor v-for="(label,index) in form.labels" :key="label.id??index" :label="label" :index="index" :disabled="draftPending" :accent="selectedGame?.primary_color" :slider-block-size="sliderBlockSize" @remove="form.labels.splice(index,1)"/>
       </view>
       <view class="form-section form-panel"><text class="section-title">服务信息</text><view class="field"><text class="field-label">服务标题</text><input v-model="form.title" class="input" maxlength="40" placeholder="例如：三角洲双人护航 · 耐心沟通"/></view><view class="field"><text class="field-label">服务类型</text><picker :range="selectedGame?.categories || []" :value="categoryIndex" @change="form.category=selectedGame.categories[Number($event.detail.value)]"><view class="input picker-value">{{ form.category || '请选择' }}<Icon name="arrow" :size="14"/></view></picker></view><view class="price-grid"><view class="field"><text class="field-label">价格（元）</text><input v-model="form.price" type="digit" class="input" placeholder="例如 29"/></view><view class="field"><text class="field-label">计价单位</text><picker :range="units" :value="units.indexOf(form.unit)" @change="form.unit=units[Number($event.detail.value)]"><view class="input">每 {{ form.unit }}</view></picker></view></view><view class="field"><text class="field-label">服务说明与交付标准</text><textarea v-model="form.description" class="input description" maxlength="1000" placeholder="明确服务包含什么、预约方式、服务时长、验收标准以及不包含的内容。请勿提供外挂或索取账号密码。"/></view><view class="field"><text class="field-label">服务标签（逗号分隔，最多4个）</text><input v-model="form.tagsText" class="input" maxlength="60" placeholder="耐心沟通,稳定在线,新手友好"/></view><view class="field"><text class="field-label">俱乐部挂靠（可选）</text><picker :range="clubOptions" range-key="name" :value="clubIndex" @change="form.club_id=clubOptions[Number($event.detail.value)].id"><view class="input picker-value">{{ clubOptions[clubIndex]?.name || '自由打手 · 无需挂靠' }}<Icon name="arrow" :size="14"/></view></picker><text class="hint">仅能选择已通过挂靠的俱乐部。认证由平台审核，不影响自由接单。</text></view></view>
-      <view class="preview publish-final-preview"><view class="preview-toolbar"><text>服务卡片预览</text><button v-if="covers.length>1" class="text-btn" @click="changeCover">换一张底图</button></view><ServiceCard :service="previewService" :interactive="false"/></view>
-      <view class="publish-notice"><text class="publish-notice-title">发布须知</text><text class="subtle-note publish-notice-copy">发布后进行图文审核；无AI时由管理员人工处理。审核未通过会通知修改，已有订单的约定保持不变。</text></view><button class="btn submit" :disabled="busy||draftPending" @click="save">{{ busy ? '正在发布…' : '发布服务' }}</button>
+      <view class="action-footer editor-actions"><button class="btn next-preview" :disabled="draftPending" @click="nextPreview">下一步预览<Icon name="arrow" :size="14"/></button></view>
     </template>
-    <SubscribeReminder ref="subscriptionReminder" :scenes="['provider_order']" :entry="false" title="发布成功" description="有人购买你的服务时，及时收到微信提醒。拒绝订阅不影响接单。" button-label="接收新订单提醒"/>
     <PublishDraftDialog v-for="context in draftDialogs" :key="context" :opened="true" :context="context" @restore="draft.restore" @discard="draft.discard" @dismiss="draft.dismiss"/>
   </AppShell>
 </template>
 <script setup lang="ts">
-import { requirePhone } from '../../lib/phone'
 /** 文件作用：维护可保存的封面配置，检查金额与服务内容后发布并进入后置图文审核。 */
 import { ref, reactive, computed, watch,nextTick } from 'vue'
 import { onLoad, onShow, onHide, onUnload, onResize } from '@dcloudio/uni-app'
-import ArtFontPicker from '../../components/ArtFontPicker.vue'
+import CoverLabelEditor from '../../components/CoverLabelEditor.vue'
 import AppShell from '../../components/AppShell.vue'
-import ServiceCard from '../../components/ServiceCard.vue'
 import GameSelector from '../../components/GameSelector.vue'
 import Icon from '../../components/Icon.vue'
-import SubscribeReminder from '../../components/SubscribeReminder.vue'
 import PublishDraftDialog from '../../components/PublishDraftDialog.vue'
 import {createPublishDraft,publishDraftOwner,serviceDraftFields} from '../../lib/publish-draft'
 import { state, init, sessionRevision } from '../../lib/store'
-import { getService, createService, updateService } from '../../api/services.api'
+import { getService } from '../../api/services.api'
 import { listClubs } from '../../api/clubs.api'
 import {getWallet} from '../../api/wallet.api'
 import {getClubDeposits} from '../../api/finance.api'
 import type { Club, CoverLabel, Service } from '../../types/models'
 import { token, errorMessage } from '../../api/client'
 import { go, notify, assetUrl } from '../../lib/format'
-import { newLabel, POSITIONS, gameCovers, randomGameCover, normalizeLabelText } from '../../lib/cover'
+import { newLabel, gameCovers, randomGameCover, normalizeLabelText } from '../../lib/cover'
 import { designPixels } from '../../lib/design-units'
-const positionEditor = ref('')
-const subscriptionReminder=ref<{offer:(next?:()=>void)=>void}|null>(null)
+import {setServicePreview,serviceFormIssue} from '../../lib/service-preview'
 /** 原生slider旋钮接口使用实际像素，并限制在官方允许的12至28像素范围。 */
 const sliderBlockSize=ref(16)
 /** 按窗口宽度同步旋钮，避免表单缩放后仍保留固定像素。 */
@@ -56,7 +50,7 @@ function refreshSliderBlockSize():void{try{const width=uni.getWindowInfo().windo
 onResize(refreshSliderBlockSize)
 /** 发布预览的两类押金只来自本账号服务端记录，不属于可保存的草稿字段。 */
 const serverProviderDeposit=ref(0),serverProviderClubDeposit=ref(0)
-const serviceId = ref(''), clubs = ref<Club[]>([]), error = ref(''), busy = ref(false),formReady=ref(false)
+const serviceId = ref(''), clubs = ref<Club[]>([]), error = ref(''), formReady=ref(false)
 const form = reactive({ game_id:'delta', title:'', description:'', category:'', price:'', unit:'局', cover_url:'', labels:[] as CoverLabel[], tagsText:'', club_id:'' })
 const draft=createPublishDraft({kind:'service',owner:()=>publishDraftOwner(state.user?.id),object:()=>serviceId.value,read:()=>form,parse:serviceDraftFields,apply:fields=>{Object.assign(form,fields);if(form.club_id&&!clubOptions.value.some(club=>club.id===form.club_id))form.club_id=''}})
 const draftPending=draft.pending,draftIssue=draft.issue
@@ -69,7 +63,7 @@ const clubOptions = computed(() => [{id:'',name:'自由打手 · 无需挂靠'},
 const clubIndex = computed(() => Math.max(0,clubOptions.value.findIndex(item=>item.id===form.club_id)))
 /** 使用正式服务卡片展示草稿，确保文字和价格区与列表共用同一布局。 */
 const previewService = computed<Service>(() => ({ provider_deposit_cents:serverProviderDeposit.value,provider_club_deposit_cents:serverProviderClubDeposit.value, id:serviceId.value, game_id:form.game_id, provider_id:state.user?.id||'', provider_name:state.user?.nickname||'', provider_avatar:state.user?.avatar||'', club_id:form.club_id, club_name:clubs.value.find(club=>club.id===form.club_id)?.name||'', club_verified:clubs.value.some(club=>club.id===form.club_id&&club.verified), title:form.title||'你的服务标题', description:form.description, category:form.category||'服务类型', price_cents:Number.isFinite(Number(form.price))?Math.max(0,Math.round(Number(form.price)*100)):0, unit:form.unit, cover_url:form.cover_url, labels:form.labels, tags:form.tagsText.split(/[,，]/).map(item=>item.trim()).filter(Boolean).slice(0,4), status:'draft', rating:0, completed_count:0, created_at:'' }))
-const units = ['局','小时','次','任务'], textColors = ['#ffffff','#00e18a','#f4c36c','#ff6b6b','#101714'], backgroundColors = ['transparent','#07130f','#00e18a','#b98132','#a43c3c']
+const units = ['局','小时','次','任务']
 let disposed=false,visible=true,loadVersion=0,loading=false,sessionLoadQueued=false,platformDepositVersion=0,clubDepositVersion=0,loadedSession: ReturnType<typeof currentSession> | null=null
 /** 捕获服务发布所属账号，防止手机号授权后切换会话继续写入。 */
 function currentSession(){return{id:state.user?.id,token:token(),revision:sessionRevision()}}
@@ -119,35 +113,24 @@ function showPage(){refreshSliderBlockSize();visible=true;if(!loading&&(!loadedS
 function hidePage(){draft.flush();visible=false;loadVersion++;platformDepositVersion++;clubDepositVersion++;loading=false}
 /** 为新建服务或新选游戏随机设置底图，并使用当前游戏默认分类。 */
 function chooseDefaults() { form.cover_url=randomGameCover(selectedGame.value);form.category=selectedGame.value?.categories?.[0] || '' }
-/** 仅更换底图，保留所有文字、颜色、位置和服务信息。 */
-function changeCover() { form.cover_url=randomGameCover(selectedGame.value,form.cover_url) }
 /** 切换游戏，避免带入不适用的分类或封面。 */
 function changeGame(id:string) { const selected=state.games.find(item=>item.id===id&&item.enabled!==false);if(!selected||selected.id===form.game_id)return;form.game_id=selected.id;chooseDefaults();if(!clubOptions.value.some(club=>club.id===form.club_id))form.club_id='' }
 /** 加入一条默认左下角文案。 */
 function addLabel() { if(form.labels.length<6) form.labels.push(newLabel(selectedGame.value?.primary_color)) }
-/** 获取当前九宫格位置索引。 */
-function positionIndex(value: string | undefined) { return Math.max(0,POSITIONS.findIndex(item=>item[0]===value)) }
-/** 获取中文位置名称。 */
-function positionName(value: string | undefined) { return POSITIONS[positionIndex(value)][1] }
-/** 单次提交锁覆盖手机号授权与发布，默认接单身份无需另行启用，取消或失败保留草稿。 */
-async function save() {
-  if(busy.value||draftPending.value)return
-  if(!state.user)return go('/pages/account/login?next='+encodeURIComponent('/pages/services/publish'+(serviceId.value?'?id='+serviceId.value:'')))
-  const session=currentSession();busy.value=true;error.value=''
-  try {
-    if(!(await requirePhone())||!sameSession(session))return
-    form.labels.forEach(label=>{label.text=normalizeLabelText(label.text)})
-    const price=Math.round(Number(form.price)*100)
-    if(!form.title.trim()||!form.description.trim()||!form.category||!form.cover_url)return notify('请完整填写标题、说明、类型和封面')
-    if(!/^\d+(\.\d{1,2})?$/.test(form.price)||price<100||price>1000000)return notify('价格请填写1至10000元，最多两位小数')
-    if(form.labels.some(label=>!label.text.trim()||!/^#[0-9a-f]{6}$/i.test(label.color||'')||!(label.background==='transparent'||/^#[0-9a-f]{6}$/i.test(label.background||''))))return notify('请填写文案，并使用正确的六位颜色值')
-    const body={game_id:form.game_id,title:form.title.trim(),description:form.description.trim(),category:form.category,price_cents:price,unit:form.unit,cover_url:form.cover_url,labels:form.labels,tags:form.tagsText.split(/[,，]/).map(item=>item.trim()).filter(Boolean).slice(0,4),club_id:form.club_id}
-    const submitted=draft.submitting()
-    await (serviceId.value?updateService(serviceId.value,body):createService(body))
+/** 校验并补存完整表单后打开独立预览，返回保持本页实例与原生滚动位置。 */
+function nextPreview():void {
+  if(!formReady.value||draftPending.value)return
+  form.labels.forEach(label=>{label.text=normalizeLabelText(label.text)})
+  const issue=serviceFormIssue(form)
+  if(issue)return notify(issue)
+  const submitted=draft.submitting(),session=currentSession()
+  if(!submitted)return notify('草稿尚未准备好，请稍后重试')
+  setServicePreview({owner:publishDraftOwner(session.id),revision:session.revision,serviceID:serviceId.value,fields:form,service:previewService.value,valid:()=>sameSession(session)&&draft.contextID()===submitted.context,complete:()=>{
     draft.complete(submitted)
-    if(!sameSession(session))return
-    notify('服务已发布，图文审核中');if(subscriptionReminder.value)subscriptionReminder.value.offer(()=>go('/pages/main/index?tab=worker'));else go('/pages/main/index?tab=worker')
-  }catch(e){if(sameSession(session)){error.value=errorMessage(e);notify(e)}}finally{busy.value=false}
+    // 已发布的原稿返回时重新初始化，不能再次发布同一份内容；提交期间的新输入继续保留。
+    if(sameSession(session)&&JSON.stringify(serviceDraftFields(form))===submitted.signature)loadedSession=null
+  }})
+  go('/pages/services/preview'+(serviceId.value?'?id='+encodeURIComponent(serviceId.value):''))
 }
 onLoad(options=>{serviceId.value=options?.id||'';load()})
 onShow(showPage)
@@ -155,7 +138,6 @@ onHide(hidePage)
 onUnload(()=>{disposed=true;hidePage();draft.dispose()})
 </script>
 <style scoped>
-.game-selector{margin-bottom:30.7692rpx;padding:0 0 23.0769rpx}.game-selector .field{margin:0}.picker-value{justify-content:space-between;gap:23.0769rpx}.preview{min-width:0;margin-bottom:30.7692rpx}.preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:23.0769rpx;padding:0 0 23.0769rpx;font-size:28.8462rpx;font-weight:650}.form-panel{margin-bottom:0}.form-panel>.section-title{display:block;margin-bottom:30.7692rpx}.block{display:block;margin:15.3846rpx 0 30.7692rpx}.cover-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15.3846rpx;margin-top:23.0769rpx}.cover-option{position:relative;height:123.0769rpx;border:3.8462rpx solid transparent;border-radius:15.3846rpx;overflow:hidden}.cover-option.chosen{border-color:var(--accent)}.cover-option image{width:100%;height:100%}.cover-check{position:absolute;right:3.8462rpx;bottom:3.8462rpx;display:flex;align-items:center;justify-content:center;width:38.4615rpx;height:38.4615rpx;border-radius:50%;background:var(--accent);color:var(--bg)}.label-editor{border:0;border-bottom:1px solid var(--line-subtle);border-radius:0;padding:30.7692rpx 0;margin-top:0}.label-index{font-size:23.0769rpx;color:var(--muted)}.colors{display:flex;flex-direction:column;gap:23.0769rpx;margin-top:23.0769rpx}.color-field{display:flex;align-items:center;flex-wrap:wrap;gap:15.3846rpx;min-width:0}.color-field>text{font-size:23.0769rpx;min-width:92.3077rpx;color:var(--muted)}.swatches{display:flex;gap:15.3846rpx;min-width:0}.swatches button{display:flex;width:53.8462rpx;height:53.8462rpx;min-height:53.8462rpx;padding:0;border:3.8462rpx solid transparent;border-radius:9.6154rpx}.swatches button.chosen{border-color:var(--accent);box-shadow:0 0 0 1px var(--bg)}.swatches button.transparent{background:repeating-linear-gradient(45deg,#ffffff10 0 7.6923rpx,transparent 7.6923rpx 15.3846rpx);border-color:var(--line)}.color-code{height:53.8462rpx;font-family:monospace;font-size:21.1538rpx;color:var(--muted);width:146.1538rpx;margin-left:auto;padding:0 11.5385rpx;border:1px solid var(--line);border-radius:9.6154rpx}.label-bottom{display:flex;flex-direction:column;gap:23.0769rpx;margin-top:30.7692rpx}.position-picker{display:flex;align-items:center;justify-content:space-between;width:100%;height:69.2308rpx;padding:0 23.0769rpx;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;color:var(--text);font-size:23.0769rpx}.font-picker{display:flex;align-items:center;gap:23.0769rpx;font-size:23.0769rpx;color:var(--muted)}.font-picker slider{flex:1;margin:0}.position-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15.3846rpx;margin-top:23.0769rpx}.position-grid button{height:69.2308rpx;padding:0;border:1px solid var(--line);border-radius:11.5385rpx;background:transparent;color:var(--muted);font-size:23.0769rpx;line-height:65.3846rpx}.position-grid button.selected{border-color:var(--accent);color:var(--accent)}.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:23.0769rpx}.description{height:269.2308rpx}.submit{position:sticky;bottom:23.0769rpx;width:100%;z-index:3;box-shadow:0 0 0 15.3846rpx var(--bg);margin-top:46.1538rpx}.label-editor .input{font-size:25rpx}
-.platform-deposit-note{display:flex;align-items:flex-start;gap:15.3846rpx;min-width:0;padding:0 0 30.7692rpx;border-bottom:1px solid var(--line-subtle);color:var(--accent)}.platform-deposit-copy{display:flex;flex:1;flex-direction:column;gap:5.7692rpx;min-width:0}.platform-deposit-title{font-size:23.0769rpx;line-height:34.6154rpx;color:var(--text)}.platform-deposit-detail{padding:0;font-size:19.2308rpx;line-height:32.6923rpx;overflow-wrap:anywhere}.platform-wallet-entry{flex-shrink:0;min-height:53.8462rpx;padding:0;font-size:19.2308rpx;gap:5.7692rpx}
-.publish-final-preview{padding:30.7692rpx 0;margin:0;border-top:1px solid var(--line-subtle);border-bottom:1px solid var(--line-subtle)}.publish-notice{padding-top:30.7692rpx;min-width:0}.publish-notice-title{display:block;color:var(--text);font-size:25rpx;font-weight:650;line-height:38.4615rpx}.publish-notice-copy{padding:15.3846rpx 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.game-selector{margin-bottom:30.7692rpx;padding:0 0 23.0769rpx}.game-selector .field{margin:0}.picker-value{justify-content:space-between;gap:23.0769rpx}.form-panel{margin-bottom:0}.cover-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15.3846rpx}.cover-option{position:relative;min-width:0;height:123.0769rpx;min-height:44px;padding:0;border:3.8462rpx solid transparent;border-radius:15.3846rpx;overflow:hidden;background:transparent}.cover-option.chosen{border-color:var(--accent)}.cover-image{width:100%;height:100%}.cover-check{position:absolute;right:3.8462rpx;bottom:3.8462rpx;display:flex;align-items:center;justify-content:center;width:38.4615rpx;height:38.4615rpx;border-radius:50%;background:var(--accent);color:var(--bg)}.cover-text-heading{display:flex;align-items:center;justify-content:space-between;gap:15.3846rpx;min-width:0}.cover-text-title{display:flex;align-items:baseline;gap:15.3846rpx;min-width:0}.label-count{font-size:23.0769rpx;color:var(--muted)}.add-label{min-height:44px;padding:0}.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:23.0769rpx}.description{height:269.2308rpx}.editor-actions{position:sticky;bottom:0;z-index:3;background:var(--bg);padding:23.0769rpx 0 calc(15.3846rpx + env(safe-area-inset-bottom))}.next-preview{width:100%}
+.platform-deposit-note{display:flex;align-items:flex-start;gap:15.3846rpx;min-width:0;padding:0 0 30.7692rpx;border-bottom:1px solid var(--line-subtle);color:var(--accent)}.platform-deposit-copy{display:flex;flex:1;flex-direction:column;gap:5.7692rpx;min-width:0}.platform-deposit-title{font-size:23.0769rpx;line-height:34.6154rpx;color:var(--text)}.platform-deposit-detail{padding:0;font-size:19.2308rpx;line-height:32.6923rpx;overflow-wrap:anywhere}.platform-wallet-entry{flex-shrink:0;min-height:44px;padding:0;font-size:19.2308rpx;gap:5.7692rpx}
 </style>

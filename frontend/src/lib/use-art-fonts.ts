@@ -1,6 +1,6 @@
 /** 文件作用：在可见文字需要时加载真实字体子集，合并请求、隔离迟到结果并在失败时保留系统字。 */
 import {computed,ref,watch,onScopeDispose} from 'vue'
-import type {CSSProperties} from 'vue'
+import type {CSSProperties,Ref} from 'vue'
 import {artFontGroups,artFontID} from './art-fonts'
 import {fontSubsetURL} from '../api/fonts.api'
 import type {CoverLabel} from '../types/models'
@@ -23,13 +23,14 @@ export function loadArtFont(id:string,text:string,family:string):Promise<boolean
   return pending
 }
 /** 仅允许最新可见字集应用字体，切图、输入、换字体或卸载不会被旧回包恢复。 */
-export function useArtFonts(labels:()=>CoverLabel[],active:()=>boolean):{style:(label:CoverLabel)=>CSSProperties}{
-  const groups=computed(()=>artFontGroups(labels())),ready=ref<Record<string,string>>({})
+export function useArtFonts(labels:()=>CoverLabel[],active:()=>boolean):{style:(label:CoverLabel)=>CSSProperties;loading:Ref<boolean>;failed:Ref<string[]>}{
+  const groups=computed(()=>artFontGroups(labels())),ready=ref<Record<string,string>>({}),loading=ref(false),failed=ref<string[]>([])
   let version=0,disposed=false
   watch(()=>[active(),JSON.stringify(groups.value)] as const,async([enabled])=>{
-    const current=++version;ready.value={};if(!enabled||disposed)return
+    const current=++version;ready.value={};failed.value=[];loading.value=false;if(!enabled||disposed)return
+    loading.value=groups.value.length>0
     const entries=await Promise.all(groups.value.map(async group=>[group.id,await loadArtFont(group.id,group.text,group.family)?group.family:''] as const))
-    if(!disposed&&current===version&&active())ready.value=Object.fromEntries(entries)
+    if(!disposed&&current===version&&active()){ready.value=Object.fromEntries(entries);failed.value=entries.filter(([,family])=>!family).map(([id])=>id);loading.value=false}
   },{immediate:true})
   onScopeDispose(()=>{disposed=true;version++})
   /** 成功后才应用艺术字；加载中、缺字和失败交由系统字体正常回退。 */
@@ -37,5 +38,5 @@ export function useArtFonts(labels:()=>CoverLabel[],active:()=>boolean):{style:(
     const family=ready.value[artFontID(label.font_family)]
     return family?{fontFamily:'"'+family+'", sans-serif',fontWeight:400}:{}
   }
-  return{style}
+  return{style,loading,failed}
 }

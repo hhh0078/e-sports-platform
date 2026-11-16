@@ -21,6 +21,12 @@
       }
     },
     {
+      "path": "pages/services/preview",
+      "style": {
+        "navigationBarTitleText": "预览服务"
+      }
+    },
+    {
       "path": "pages/requests/publish",
       "style": {
         "navigationBarTitleText": "发布需求"

@@ -3,7 +3,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
-import { reactive, ref, computed, watch } from 'vue'
+import { reactive, ref, shallowRef, triggerRef, computed, watch } from 'vue'
 import { executable, pageScript, injectBusinessAPIs } from './sfc-test'
 import type { DeferredRequest, PageLifecycle } from './sfc-test'
 import { readSafeArea } from './safe-area'
@@ -37,10 +37,24 @@ function harness(kind:PageKind,providerEnabled=true){
   context.store.state.ready=true;context.store.state.user={...accountA,provider_enabled:providerEnabled}
   vm.runInContext('(function(){'+executable(phoneSource)+';globalThis.requirePhone=requirePhone;globalThis.phone={phoneGate,finishPhone}})()',context)
   if(kind==='purchase')vm.runInContext('const submitServiceOrder=createOrder',context)
-  const exposed=kind==='purchase'?'submit:createOrder,busy:submitting,requirements,quantity,error,service,coverReserveTop,coverReserveBottom,coverMinLabelArea,providerDepositCents':'submit:save,load,clubs,clubOptions,busy,form,serviceId,error,previewService,changeGame,sliderBlockSize'
+  const exposed=kind==='purchase'?'submit:createOrder,busy:submitting,requirements,quantity,error,service,coverReserveTop,coverReserveBottom,coverMinLabelArea,providerDepositCents':'submit:nextPreview,nextPreview,formReady,draft,load,clubs,clubOptions,form,serviceId,error,previewService,changeGame,sliderBlockSize'
   vm.runInContext(executable(sources[kind])+'\nglobalThis.page={'+exposed+'}',context)
   if(kind==='purchase'){vm.runInContext("id='service-A'",context);context.page.requirements.value=' 晚上八点陪练一小时 ';context.page.quantity.value=2}
   else Object.assign(context.page.form,{game_id:'delta',title:' 三角洲陪练 ',description:'按约定时段双排教学，耐心沟通。',category:'陪练教学',price:'39.90',unit:'小时',cover_url:'/static/covers/official/delta-3.jpg',labels:[],tagsText:'耐心,教学',club_id:''})
+  if(kind==='publish'){
+    let previewPage:{save:()=>Promise<void>;busy:ReturnType<typeof ref>;error:ReturnType<typeof ref>}|undefined
+    /** 手机号专项使用真实预览页提交；编辑字段在该夹具中已明确准备完成。 */
+    context.page.submit=()=>{
+      if(!previewPage){
+        if(!context.page.formReady.value){context.page.draft.start();context.page.formReady.value=true}
+        context.page.nextPreview();assert.equal(navigations.pop()?.split('?')[0],'/pages/services/preview');lifecycle.hide()
+        const previewContext=vm.createContext({...context,state:context.store.state,sessionRevision:context.store.sessionRevision,ref,shallowRef,triggerRef,onLoad:()=>{},onShow:()=>{},onHide:()=>{},onUnload:()=>{}})
+        vm.runInContext(executable(pageScript('services/preview.vue'))+';editingID='+JSON.stringify(context.page.serviceId.value)+';load();globalThis.previewPage={save,busy,error}',previewContext)
+        previewPage=previewContext.previewPage;context.page.busy=previewPage!.busy;context.page.error=previewPage!.error
+      }
+      return previewPage!.save()
+    }
+  }
   return{
     store:context.store,page:context.page,phone:context.phone,requests,notices,navigations,lifecycle,storage,creationPath:kind==='purchase'?'/orders':'/services',
     /** 身份专项直接运行真实预检与门禁，拒绝后不能创建待付款订单。 */
@@ -324,8 +338,8 @@ test('新建服务完整预览读取本人两类实缴押金，不使用规则�
   assert.equal(subject.page.previewService.value.provider_club_deposit_cents,23000)
   subject.page.form.provider_deposit_cents=999999;subject.page.form.provider_club_deposit_cents=999999
   assert.equal(subject.page.previewService.value.provider_deposit_cents,12500);assert.equal(subject.page.previewService.value.provider_club_deposit_cents,23000)
-  const source=readFileSync(new URL('../pages/services/publish.vue',import.meta.url),'utf8')
-  assert.match(source,/<ServiceCard :service="previewService" :interactive="false"\s*\/>/)
+  const source=readFileSync(new URL('../pages/services/preview.vue',import.meta.url),'utf8')
+  assert.match(source,/<ServiceCard :service="preview.service" :interactive="false"\s*\/>/)
   assert.doesNotMatch(source,/cover-only/)
 })
 
