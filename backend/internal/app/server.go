@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 	"io"
+	"jijie/internal/artfonts"
 	"jijie/internal/assets"
 	"log"
 	"net/http"
@@ -236,6 +237,7 @@ func (a *App) wrap(fn func(http.ResponseWriter, *http.Request) (any, error)) htt
 // Handler 注册平台全部 API，并只允许明确列出的接口。
 func (a *App) Handler() http.Handler {
 	mux := http.NewServeMux()
+	mux.Handle("GET /api/fonts/{version}/{font}", artfonts.Handler())
 	mux.Handle("GET /static/covers/", assets.Handler())
 	mux.Handle("GET /static/avatars/", assets.AvatarHandler())
 	mux.Handle("GET /static/operations/", assets.OperationsHandler())

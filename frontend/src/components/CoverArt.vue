@@ -33,10 +33,14 @@
 	import type { PlacedLabel } from '../lib/cover'
 	import {layoutReadableCover} from '../lib/cover-readable'
 	import { useViewportWidth } from '../lib/viewport'
+	import {useArtFonts} from '../lib/use-art-fonts'
 	const props = withDefaults(defineProps<{ src?: string; labels?: CoverLabel[]; shade?: boolean; reserveBottom?: number; reserveBottomPixels?: number; reserveTopPixels?: number; minLabelAreaPixels?: number; aspectRatio?: number;readable?:boolean;minFontPixels?:number; active?: boolean; lazyLoad?: boolean }>(), { labels: () => [], shade: true, reserveBottom: 0, reserveBottomPixels: 0, reserveTopPixels: 0, minLabelAreaPixels: 0, aspectRatio: 16 / 9,readable:false,minFontPixels:10, active: true, lazyLoad: false })
 	const viewportWidth = useViewportWidth()
 	const width = ref(0)
 	const instance = getCurrentInstance()
+	const fontVisible=ref(!props.lazyLoad),fontPageVisible=ref(true)
+	const artFonts=useArtFonts(()=>props.labels,()=>props.active&&fontPageVisible.value&&fontVisible.value)
+	let fontObserver:UniApp.IntersectionObserver|undefined
 	const ratio = computed(() => Number.isFinite(props.aspectRatio) && props.aspectRatio >= .5 && props.aspectRatio <= 4 ? props.aspectRatio : 16 / 9)
 	/** 实际像素按测量宽度转为360画布单位，旧reserveBottom继续保留原单位。 */
 	const reserved = computed(() => Math.max(Number.isFinite(props.reserveBottom) ? Math.max(0, props.reserveBottom) : 0, width.value > 0 && Number.isFinite(props.reserveBottomPixels) ? Math.max(0, props.reserveBottomPixels) * 360 / width.value : 0))
@@ -55,6 +59,7 @@
 	function labelStyle(label: PlacedLabel): CSSProperties {
 
 		return {
+			...artFonts.style(label),
 			left: label.left + '%',
 			top: label.top + '%',
 			width: label.width + '%',
@@ -96,15 +101,22 @@
 	}
 	/** 卸载时清理尺寸监听，防止隐藏旧组件继续更新。 */
 	function stopMeasuring() {
+		fontObserver?.disconnect()
 		mounted = false
 		measurementVersion++
 		resizeObserver?.disconnect()
 	}
-	onMounted(() => { mounted = true; synchronizeMeasuring() })
+	onMounted(() => {
+		mounted = true; synchronizeMeasuring()
+		if(props.lazyLoad&&instance?.proxy&&typeof uni.createIntersectionObserver==='function'){
+			fontObserver=uni.createIntersectionObserver(instance.proxy,{thresholds:[0]})
+			fontObserver.relativeToViewport({top:160,bottom:160}).observe('.cover-art',entry=>{fontVisible.value=entry.intersectionRatio>0})
+		}else fontVisible.value=true
+	})
 	watch(() => props.active, synchronizeMeasuring)
 	watch(viewportWidth, measure)
-	onShow(() => { pageVisible = true; synchronizeMeasuring() })
-	onHide(() => { pageVisible = false; synchronizeMeasuring() })
+	onShow(() => { pageVisible = true; fontPageVisible.value=true;synchronizeMeasuring() })
+	onHide(() => { pageVisible = false; fontPageVisible.value=false;synchronizeMeasuring() })
 	onBeforeUnmount(stopMeasuring)
 </script>
 <style scoped>

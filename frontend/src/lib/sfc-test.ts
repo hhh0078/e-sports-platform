@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import ts from 'typescript'
 import { ref,nextTick,watch } from 'vue'
+import {artFontID} from './art-fonts'
 import { newWalletRequestID } from './wallet'
 import type { NativePageRefreshOptions } from './native-page-refresh'
 import { beginFinancialActivity } from './update-manager'
@@ -18,6 +19,7 @@ export function executable(source: string): string { const plain = source.replac
 export function pageScript(path: string): string { const source = readFileSync(new URL('../pages/' + path, import.meta.url), 'utf8'); const match = source.match(/<script\s+setup(?:\s+lang="ts")?\s*>([\s\S]*?)<\/script>/); if (!match) throw new Error('页面脚本不存在：' + path); return match[1] }
 /** 注入所有实际 API 的具名方法，传输边界转到可控 api 函数。 */
 export function injectBusinessAPIs(context: vm.Context): void {
+  context.artFontID ??= artFontID
   context.isTimelinePreview ??= () => false
   context.enablePublicShareMenu ??= () => {}
   context.onShow ??= () => {}

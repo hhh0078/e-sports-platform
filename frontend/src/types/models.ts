@@ -18,7 +18,7 @@ export type PublicProfile = Pick<User, 'id' | 'nickname' | 'avatar' | 'bio' | 'p
 /** 游戏及可配置主题。 */
 export interface Game { id: string; name: string; short_name: string; subtitle: string; primary_color: string; bg_color: string; surface_color: string; text_color: string; icon_url: string; cover_url: string; covers: string[]; categories: string[]; enabled: boolean; sort_order: number }
 /** 图片上的独立文案图层。 */
-export interface CoverLabel { id?: string | number; text: string; color?: string; background?: string; position?: string; font_size?: number }
+export interface CoverLabel { id?: string | number; text: string; color?: string; background?: string; position?: string; font_size?: number; font_family?: string }
 /** 已发布服务与公开卡片。 */
 export interface Service { /** 服务端返回打手当前有效平台押金，退款处理中不展示。 */ provider_deposit_cents?: number; provider_club_deposit_cents?: number; id: string; game_id: string; provider_id: string; provider_name: string; provider_avatar: string; club_id: string; club_name: string; club_verified: boolean; title: string; description: string; category: string; price_cents: number; unit: string; cover_url: string; labels: CoverLabel[]; tags: string[]; status: string; rating: number; completed_count: number; created_at: string; reviews?: Review[]; is_demo?: boolean }
 /** 图文详情块。 */

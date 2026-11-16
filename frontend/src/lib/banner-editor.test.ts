@@ -31,6 +31,12 @@ async function flush():Promise<void>{await new Promise(resolve=>setImmediate(res
 /** 完成一次真实完整配置读取。 */
 async function ready(s:ReturnType<typeof harness>,value=config()):Promise<void>{s.hooks.show();await flush();s.take().resolve(value);await flush()}
 
+test('轮播保存与预览保留合法字体编号，历史和未知字体安全回退',async t=>{
+  const s=harness(t),value=config();value.global_slides[0].labels[0].font_family='mashanzheng'
+  await ready(s,value);assert.equal(s.page.previewLabels.value[0].font_family,'mashanzheng');assert.equal(s.page.saveBody().global_slides[0].labels[0].font_family,'mashanzheng')
+  s.page.form.labels[0].font_family='https://invalid.example/font.ttf';assert.equal(s.page.previewLabels.value[0].font_family,undefined);assert.equal(s.page.saveBody().global_slides[0].labels[0].font_family,undefined)
+})
+
 test('平台单项保存只PATCH当前完整数组，独立标签不修改其它项或游戏',async t=>{
   const s=harness(t),original=config();await ready(s,original);s.page.form.labels[0].text='新的独立文字';s.page.form.target={kind:'article',id:'guide'}
   assert.equal(original.global_slides[0].labels[0].text,'开机即组队');const saving=s.page.save(),writing=s.take('PATCH');assert.deepEqual(Object.keys(writing.body).sort(),['global_slides','revision'])

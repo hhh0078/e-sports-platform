@@ -12,6 +12,7 @@ import {onHide,onShow} from '@dcloudio/uni-app'
 import {assetUrl} from '../lib/format'
 import {openContentTarget} from '../lib/content'
 import {layoutCarouselSlides} from '../lib/carousel-layout'
+import {useArtFonts} from '../lib/use-art-fonts'
 import type {CarouselGeometry} from '../lib/carousel-layout'
 import type {PlacedLabel} from '../lib/cover'
 import type {ContentSlide} from '../types/content'
@@ -19,10 +20,11 @@ import type {CSSProperties} from 'vue'
 const props=withDefaults(defineProps<{slides:ContentSlide[];fallback?:string;active:boolean;geometry?:CarouselGeometry|null}>(),{fallback:'',geometry:null})
 const emit=defineEmits<{'height-change':[height:number];'caption-change':[hasText:boolean]}>()
 const items=computed<ContentSlide[]>(()=>props.slides.length?props.slides:props.fallback?[{id:'current-game-fallback',kind:'image',image_url:props.fallback,labels:[],target:null}]:[])
-const slidesSignature=computed(()=>JSON.stringify(items.value.map(slide=>[slide.id,slide.kind,slide.image_url,slide.labels.map(label=>[label.id??null,label.text,label.color??'',label.background??'',label.position??'',label.font_size??null]),slide.target?[slide.target.kind,slide.target.id]:null])))
+const slidesSignature=computed(()=>JSON.stringify(items.value.map(slide=>[slide.id,slide.kind,slide.image_url,slide.labels.map(label=>[label.id??null,label.text,label.color??'',label.background??'',label.position??'',label.font_size??null,label.font_family??'']),slide.target?[slide.target.kind,slide.target.id]:null])))
 const arrangement=computed(()=>layoutCarouselSlides(items.value,props.geometry))
 const imageIndex=ref(0),textIndex=ref(0),pageVisible=ref(true)
 const canAnimate=computed(()=>props.active&&pageVisible.value)
+const artFonts=useArtFonts(()=>[...(items.value[textIndex.value]?.labels||[]),...(items.value[(imageIndex.value+1)%items.value.length]?.labels||[])],()=>canAnimate.value)
 const textHasLabels=computed(()=>!!arrangement.value.slides[textIndex.value]?.length)
 let timer:ReturnType<typeof setTimeout>|undefined,disposed=false
 /** 撤销过时文字切换，隐藏后不继续计时。 */
@@ -30,7 +32,7 @@ function clearTimer():void{if(timer!==undefined)clearTimeout(timer);timer=undefi
 /** 图片先切，文字晚300毫秒跟随，快速滑动只采纳最后一个有效索引。 */
 function imageChanged(event:{detail:{current:number}}):void{const next=event.detail.current;if(!canAnimate.value||!Number.isInteger(next)||next<0||next>=items.value.length)return;clearTimer();imageIndex.value=next;timer=setTimeout(()=>{if(!disposed&&canAnimate.value&&next<items.value.length)textIndex.value=next;timer=undefined},300)}
 /** 布局值来自真实像素；与共享CoverArt一致，保证320宽也不少于10实际像素。 */
-function labelStyle(label:PlacedLabel):CSSProperties{return {left:label.left+'%',top:label.top+'%',width:label.width+'%',height:label.height+'%',color:label.color||'#fff',background:'transparent',fontSize:label.font_size*(props.geometry?.width||0)/360+'px'}}
+function labelStyle(label:PlacedLabel):CSSProperties{return {...artFonts.style(label),left:label.left+'%',top:label.top+'%',width:label.width+'%',height:label.height+'%',color:label.color||'#fff',background:'transparent',fontSize:label.font_size*(props.geometry?.width||0)/360+'px'}}
 /** 文字层不截获手势或点击；仅实际点击图片才按该图目标跳转。 */
 function open(slide:ContentSlide):void{if(canAnimate.value)openContentTarget(slide.target)}
 /** 真实图文变化撤销旧字幕；同一图片换序保留当前位置，删除当前项才回到后台首项。 */

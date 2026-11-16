@@ -1,0 +1,9 @@
+{
+  "file_purpose": "记录本次微信开发工具自动化验证边界，不以编译成功替代真实字体显示",
+  "verified": false,
+  "connection": "官方自动化SDK连接成功",
+  "blocked_at": "读取wx.getWindowInfo基础原生窗口信息",
+  "error": "timeout waiting for automator response",
+  "font_api_test_completed": false,
+  "physical_device_test_completed": false
+}

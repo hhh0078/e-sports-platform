@@ -1,5 +1,6 @@
 /** 文件作用：直接执行真实CoverArt脚本，验证测量宽度后的实际像素预留、比例切换和监听清理。 */
 import test from 'node:test'
+import {useArtFonts} from './use-art-fonts'
 import type { TestContext } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -24,7 +25,7 @@ function harness(t: TestContext, initialWidth: number, options: { aspectRatio?: 
   let actualWidth = initialWidth, callback: ((rect: {width:number})=>void) | undefined, measureCount = 0, delayed = false
   const pending: Array<()=>void> = []
   const query: TestQuery = { in:()=>query,select:()=>query,boundingClientRect:read=>{callback=read;return query},exec:()=>{measureCount++;const read=callback,rect={width:actualWidth};if(delayed)pending.push(()=>read?.(rect));else read?.(rect)} }
-  const context = vm.createContext({ computed,ref,watch,nextTick,layoutLabels,layoutReadableCover,defineProps:()=>props,withDefaults:(value:object)=>value,getCurrentInstance:()=>({proxy:{}}),
+  const context = vm.createContext({ useArtFonts,computed,ref,watch,nextTick,layoutLabels,layoutReadableCover,defineProps:()=>props,withDefaults:(value:object)=>value,getCurrentInstance:()=>({proxy:{}}),
     useViewportWidth:()=>viewportWidth,onMounted:(hook:()=>void)=>mounted.push(hook),onShow:(hook:()=>void)=>shown.push(hook),onHide:(hook:()=>void)=>hidden.push(hook),onBeforeUnmount:(hook:()=>void)=>unmounted.push(hook),
     uni:{createSelectorQuery:()=>query},
   })

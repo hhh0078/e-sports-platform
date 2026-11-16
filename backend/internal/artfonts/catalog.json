@@ -1,0 +1,49 @@
+{
+  "_description": "文件作用：集中登记免费商用艺术字体及原文件校验值，前后端共用；变更字体或裁剪规则时递增version。",
+  "version": "1",
+  "upstream_commit": "cc39c4c2c304bc368c9b7c311ea2bcc6013299fe",
+  "fonts": [
+    {
+      "id": "zcoolkuaile",
+      "label": "站酷快乐体",
+      "file": "sources/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf",
+      "sha256": "812a6fc1fe54b6d73a419245c32dfeba8aa33104d5be90d1cf6af082007cb71d",
+      "source": "https://raw.githubusercontent.com/google/fonts/cc39c4c2c304bc368c9b7c311ea2bcc6013299fe/ofl/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf"
+    },
+    {
+      "id": "zcoolqingkehuangyou",
+      "label": "站酷庆科黄油体",
+      "file": "sources/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular.ttf",
+      "sha256": "54f0c0df4308cd74cd0f2fd3494ae054dbc4a1fd6fa7d71f4807eb4cdd8b4136",
+      "source": "https://raw.githubusercontent.com/google/fonts/cc39c4c2c304bc368c9b7c311ea2bcc6013299fe/ofl/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular.ttf"
+    },
+    {
+      "id": "zcoolxiaowei",
+      "label": "站酷小薇体",
+      "file": "sources/zcoolxiaowei/ZCOOLXiaoWei-Regular.ttf",
+      "sha256": "a42b620140f493db42f741351dfbf343c0936d58588ee8004b8b2a218d997ff1",
+      "source": "https://raw.githubusercontent.com/google/fonts/cc39c4c2c304bc368c9b7c311ea2bcc6013299fe/ofl/zcoolxiaowei/ZCOOLXiaoWei-Regular.ttf"
+    },
+    {
+      "id": "mashanzheng",
+      "label": "马善政毛笔体",
+      "file": "sources/mashanzheng/MaShanZheng-Regular.ttf",
+      "sha256": "6d2546bb189c732a8ca29af9e22457b152387d158aa459e4ac2ce1e51788b7fb",
+      "source": "https://raw.githubusercontent.com/google/fonts/cc39c4c2c304bc368c9b7c311ea2bcc6013299fe/ofl/mashanzheng/MaShanZheng-Regular.ttf"
+    },
+    {
+      "id": "longcang",
+      "label": "龙藏体",
+      "file": "sources/longcang/LongCang-Regular.ttf",
+      "sha256": "e5bf2c3f24ef2327c6f136d8f73e2f9dfdf44896fdbeb35a9515f44777bb91bc",
+      "source": "https://raw.githubusercontent.com/google/fonts/cc39c4c2c304bc368c9b7c311ea2bcc6013299fe/ofl/longcang/LongCang-Regular.ttf"
+    },
+    {
+      "id": "zhimangxing",
+      "label": "志莽行书",
+      "file": "sources/zhimangxing/ZhiMangXing-Regular.ttf",
+      "sha256": "644e0cae9b40f0b10ab729a01bd32032e3973bac22be3dccae01bf6ae7fde969",
+      "source": "https://raw.githubusercontent.com/google/fonts/cc39c4c2c304bc368c9b7c311ea2bcc6013299fe/ofl/zhimangxing/ZhiMangXing-Regular.ttf"
+    }
+  ]
+}

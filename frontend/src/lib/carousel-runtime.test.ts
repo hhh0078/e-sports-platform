@@ -1,5 +1,6 @@
 /** 文件作用：执行真实双swiper组件，验证300ms字幕、混合空文案、真实字号与隐藏/配置切换的计时清理。 */
 import test from 'node:test'
+import {useArtFonts} from './use-art-fonts'
 import type {TestContext} from 'node:test'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
@@ -14,7 +15,7 @@ import type {ContentSlide} from '../types/content'
 function harness(t:TestContext){
   const slides:ContentSlide[]=[{id:'text',kind:'image',image_url:'a.jpg',labels:[{text:'第一张文案',font_size:24}],target:{kind:'service',id:'a'}},{id:'empty',kind:'image',image_url:'b.jpg',labels:[],target:{kind:'article',id:'b'}}]
   const props=reactive({slides,fallback:'',active:true,geometry:{width:320,baseHeight:182,reserveTop:110,reserveBottom:17}}),events:Array<{name:string;value:unknown}>=[],opened:unknown[]=[],jobs=new Map<number,{due:number;run:()=>void}>(),hooks={show:()=>{},hide:()=>{},unmount:()=>{}};let clock=0,sequence=0
-  const context=vm.createContext({computed,ref,watch,layoutCarouselSlides,defineProps:()=>props,withDefaults:(value:unknown)=>value,defineEmits:()=>((name:string,value:unknown)=>events.push({name,value})),openContentTarget:(target:unknown)=>opened.push(target),setTimeout:(run:()=>void,delay:number)=>{const id=++sequence;jobs.set(id,{due:clock+delay,run});return id},clearTimeout:(id:number)=>jobs.delete(id),onShow:(run:()=>void)=>{hooks.show=run},onHide:(run:()=>void)=>{hooks.hide=run},onBeforeUnmount:(run:()=>void)=>{hooks.unmount=run}})
+  const context=vm.createContext({useArtFonts,computed,ref,watch,layoutCarouselSlides,defineProps:()=>props,withDefaults:(value:unknown)=>value,defineEmits:()=>((name:string,value:unknown)=>events.push({name,value})),openContentTarget:(target:unknown)=>opened.push(target),setTimeout:(run:()=>void,delay:number)=>{const id=++sequence;jobs.set(id,{due:clock+delay,run});return id},clearTimeout:(id:number)=>jobs.delete(id),onShow:(run:()=>void)=>{hooks.show=run},onHide:(run:()=>void)=>{hooks.hide=run},onBeforeUnmount:(run:()=>void)=>{hooks.unmount=run}})
   const source=readFileSync(new URL('../components/ContentCarousel.vue',import.meta.url),'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)?.[1];assert.ok(source);const scope=effectScope();scope.run(()=>vm.runInContext(executable(source)+';globalThis.carousel={imageChanged,imageIndex,textIndex,arrangement,labelStyle,canAnimate,textHasLabels,open}',context));t.after(()=>scope.stop())
   return{page:context.carousel,props,events,opened,jobs,hooks,
     /** 只推进已排队timer，Vue队列由测试单独nextTick。 */

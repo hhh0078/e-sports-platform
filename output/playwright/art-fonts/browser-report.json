@@ -1,0 +1,106 @@
+{
+  "fonts": [
+    {
+      "text": "限时优惠",
+      "family": "Art1_zcoolkuaile_4f18_60e0_65f6_9650, sans-serif",
+      "weight": "400",
+      "loaded": true
+    },
+    {
+      "text": "限时优惠",
+      "family": "Art1_zcoolqingkehuangyou_4f18_60e0_65f6_9650, sans-serif",
+      "weight": "400",
+      "loaded": true
+    },
+    {
+      "text": "限时优惠",
+      "family": "Art1_zcoolxiaowei_4f18_60e0_65f6_9650, sans-serif",
+      "weight": "400",
+      "loaded": true
+    },
+    {
+      "text": "限时优惠",
+      "family": "Art1_mashanzheng_4f18_60e0_65f6_9650, sans-serif",
+      "weight": "400",
+      "loaded": true
+    },
+    {
+      "text": "限时优惠",
+      "family": "Art1_longcang_4f18_60e0_65f6_9650, sans-serif",
+      "weight": "400",
+      "loaded": true
+    },
+    {
+      "text": "限时优惠",
+      "family": "Art1_zhimangxing_4f18_60e0_65f6_9650, sans-serif",
+      "weight": "400",
+      "loaded": true
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/mashanzheng.woff?text=%E4%BC%98%E6%83%A0%E6%97%B6%E9%99%90",
+      "status": 200,
+      "bytes": 5352
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/zhimangxing.woff?text=%E4%BC%98%E6%83%A0%E6%97%B6%E9%99%90",
+      "status": 200,
+      "bytes": 5200
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/longcang.woff?text=%E4%BC%98%E6%83%A0%E6%97%B6%E9%99%90",
+      "status": 200,
+      "bytes": 5728
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/zcoolkuaile.woff?text=%E4%BC%98%E6%83%A0%E6%97%B6%E9%99%90",
+      "status": 200,
+      "bytes": 3960
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/zcoolqingkehuangyou.woff?text=%E4%BC%98%E6%83%A0%E6%97%B6%E9%99%90",
+      "status": 200,
+      "bytes": 7232
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/zcoolxiaowei.woff?text=%E4%BC%98%E6%83%A0%E6%97%B6%E9%99%90",
+      "status": 200,
+      "bytes": 7560
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/zcoolqingkehuangyou.woff?text=%E4%B8%80%E5%86%B2%E5%88%86%E5%BC%80%E5%BF%83%E7%BB%83%E7%BB%84%E8%80%90%E8%B5%B7%E9%98%9F%E9%99%AA",
+      "status": 200,
+      "bytes": 8672
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/zcoolkuaile.woff?text=%E4%B8%80%E5%86%B2%E5%88%86%E5%BC%80%E5%BF%83%E7%BB%83%E7%BB%84%E8%80%90%E8%B5%B7%E9%98%9F%E9%99%AA",
+      "status": 200,
+      "bytes": 4620
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/longcang.woff?text=%E4%B8%80%E5%86%B2%E5%88%86%E5%BC%80%E5%BF%83%E7%BB%83%E7%BB%84%E8%80%90%E8%B5%B7%E9%98%9F%E9%99%AA",
+      "status": 200,
+      "bytes": 7760
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/zhimangxing.woff?text=%E4%B8%80%E5%86%B2%E5%88%86%E5%BC%80%E5%BF%83%E7%BB%83%E7%BB%84%E8%80%90%E8%B5%B7%E9%98%9F%E9%99%AA",
+      "status": 200,
+      "bytes": 6948
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/zcoolxiaowei.woff?text=%E4%B8%80%E5%86%B2%E5%88%86%E5%BC%80%E5%BF%83%E7%BB%83%E7%BB%84%E8%80%90%E8%B5%B7%E9%98%9F%E9%99%AA",
+      "status": 200,
+      "bytes": 9876
+    },
+    {
+      "url": "http://127.0.0.1:18091/api/fonts/1/mashanzheng.woff?text=%E4%B8%80%E5%86%B2%E5%88%86%E5%BC%80%E5%BF%83%E7%BB%83%E7%BB%84%E8%80%90%E8%B5%B7%E9%98%9F%E9%99%AA",
+      "status": 200,
+      "bytes": 7808
+    }
+  ],
+  "errors": [],
+  "writes": [],
+  "bannerPickers": 6,
+  "file_purpose": "真实H5组件与实际字体裁剪HTTP请求的验收；业务接口为隔离夹具，不代表生产或微信真机"
+}

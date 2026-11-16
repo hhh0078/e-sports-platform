@@ -2,6 +2,7 @@
 package app
 
 import (
+	"jijie/internal/artfonts"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -105,6 +106,9 @@ func validateService(s *Service, g Game) error {
 		}
 		if l.FontSize == 0 {
 			l.FontSize = 16
+		}
+		if !artfonts.Valid(l.FontFamily) {
+			return fail(400, "请选择平台支持的字体")
 		}
 		if !length(l.Text, 1, 12) || !hexColor.MatchString(l.Color) || (!hexColor.MatchString(l.Background) && l.Background != "transparent") || !contains(positions, l.Position) || l.FontSize < 12 || l.FontSize > 24 {
 			return fail(400, "封面文字、颜色、字号或位置不合法")

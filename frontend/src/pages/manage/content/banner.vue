@@ -16,6 +16,7 @@
         <view class="banner-section-heading"><text class="section-title">图片文字</text><text class="banner-caption">纯文字 · 最多6条</text></view>
         <view v-for="(label,index) in form.labels" :key="label.id" class="banner-label-editor">
           <view class="banner-label-row"><button class="banner-label-color" :style="{backgroundColor:colorValue(label.color,'#ffffff',false)}" :aria-label="'调整第'+(index+1)+'条文字样式'" :disabled="locked" @click="settingsEditor=settingsEditor===label.id?'':label.id"/><input v-model="label.text" class="input banner-label-input" maxlength="48" :disabled="locked" placeholder="最多12个字" @blur="label.text=normalizeLabelText(label.text)"/><button class="banner-position" :disabled="locked" @click="positionEditor=positionEditor===label.id?'':label.id"><Icon name="location" :size="12"/><text>{{positionName(label.position)}}</text><Icon name="bottom" :size="10"/></button><button class="banner-delete" :disabled="locked" aria-label="删除文字" @click="removeLabel(index)"><Icon name="trash" :size="18"/></button></view>
+          <ArtFontPicker v-model="label.font_family" :disabled="locked"/>
           <view v-if="positionEditor===label.id" class="banner-position-grid"><button v-for="position in POSITIONS" :key="position[0]" class="banner-position-option" :class="{'banner-position-selected':label.position===position[0]}" :disabled="locked" @click="label.position=position[0];positionEditor=''">{{position[1]}}</button></view>
           <template v-if="settingsEditor===label.id"><view class="banner-label-settings"><view class="banner-font"><text>字号 {{label.font_size||16}}</text><slider class="banner-slider" :value="label.font_size||16" :min="12" :max="24" :step="1" :disabled="locked" :block-size="18" :active-color="accent" @change="label.font_size=$event.detail.value"/></view></view><view class="banner-color-field"><text class="banner-color-label">文字颜色</text><view class="banner-swatches"><button v-for="color in textColors" :key="color" class="banner-swatch" :class="{'banner-swatch-selected':label.color===color}" :style="{backgroundColor:color}" :aria-label="'文字颜色'+color" :disabled="locked" @click="label.color=color"/></view><input v-model="label.color" class="banner-color-code" :disabled="locked" maxlength="7" placeholder="#ffffff"/></view>
           </template>
@@ -33,6 +34,8 @@ import {onLoad,onShow,onHide,onUnload} from '@dcloudio/uni-app'
 import AppShell from '../../../components/AppShell.vue'
 import EmptyState from '../../../components/EmptyState.vue'
 import Icon from '../../../components/Icon.vue'
+import ArtFontPicker from '../../../components/ArtFontPicker.vue'
+import {artFontID} from '../../../lib/art-fonts'
 import CoverArt from '../../../components/CoverArt.vue'
 import ContentTargetPicker from '../../../components/ContentTargetPicker.vue'
 import {getAdminPublicContent,savePublicContent} from '../../../api/content.api'
@@ -68,7 +71,7 @@ async function load():Promise<void>{if(!visible||disposed||locked.value)return;c
 /** 文字颜色仅允许六位十六进制色，原始输入永不直接拼入CSS。 */
 function colorValue(value:string|undefined,fallback:string,strict:boolean):string{if(/^#[\da-f]{6}$/i.test(value||''))return value!;if(strict)throw new Error('文字颜色需为#开头的六位色值');return fallback}
 /** 沿用封面文字归一化，约束数量、位置和字号；预览只使用校验后的样式值。 */
-function safeLabels(labels:CoverLabel[],strict:boolean):CoverLabel[]{if(strict&&labels.length>6)throw new Error('图片文字最多6条');return labels.slice(0,6).map((label,index)=>{const text=normalizeLabelText(label.text);if(strict&&!text)throw new Error('请填写第'+(index+1)+'条图片文字');const position=POSITIONS.some(item=>item[0]===label.position)?label.position:'bottom-left',font=Number(label.font_size);return{id:label.id||'label-'+index,text,color:colorValue(label.color,'#ffffff',strict),background:'transparent',position,font_size:Number.isFinite(font)?Math.max(12,Math.min(24,Math.round(font))):16}})}
+function safeLabels(labels:CoverLabel[],strict:boolean):CoverLabel[]{if(strict&&labels.length>6)throw new Error('图片文字最多6条');return labels.slice(0,6).map((label,index)=>{const text=normalizeLabelText(label.text);if(strict&&!text)throw new Error('请填写第'+(index+1)+'条图片文字');const position=POSITIONS.some(item=>item[0]===label.position)?label.position:'bottom-left',font=Number(label.font_size);return{id:label.id||'label-'+index,text,...(artFontID(label.font_family)?{font_family:artFontID(label.font_family)}:{}),color:colorValue(label.color,'#ffffff',strict),background:'transparent',position,font_size:Number.isFinite(font)?Math.max(12,Math.min(24,Math.round(font))):16}})}
 /** 添加默认左下文案，已有六条时不再增加。 */
 function addLabel():void{if(!locked.value&&form.labels.length<6)form.labels.push({...newLabel(accent.value),background:'transparent'})}
 /** 删除明确指定文字，不影响图片或其它图层位置。 */

@@ -65,6 +65,7 @@ type CoverLabel struct {
 	Background string `json:"background"`
 	Position   string `json:"position"`
 	FontSize   int    `json:"font_size"`
+	FontFamily string `json:"font_family,omitempty"` // 艺术字体白名单编号，空值沿用系统字体。
 }
 type Service struct {
 	ProviderClubDepositCents int64        `json:"provider_club_deposit_cents"`

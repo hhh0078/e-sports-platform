@@ -1,5 +1,6 @@
 /** 文件作用：按账号、发布类型和编辑对象隔离本机表单草稿，负责白名单、恢复确认、延迟保存及成功后的条件清理。 */
 import {ref,watch} from 'vue'
+import {artFontID} from './art-fonts'
 import type {CoverLabel} from '../types/models'
 /** 服务草稿只含十项用户输入，编辑ID放在独立存储元数据。 */
 export interface ServicePublishDraft{game_id:string;title:string;description:string;category:string;price:string;unit:string;cover_url:string;labels:CoverLabel[];tagsText:string;club_id:string}
@@ -28,7 +29,7 @@ function strings(value:Record<string,unknown>,limits:Record<string,number>):bool
 export function serviceDraftFields(value:unknown):ServicePublishDraft|null{
   const row=record(value);if(!row||!strings(row,{game_id:128,title:80,description:2000,category:128,price:64,unit:32,cover_url:2048,tagsText:120,club_id:128})||!Array.isArray(row.labels)||row.labels.length>6)return null
   const labels:CoverLabel[]=[]
-  for(const value of row.labels){const label=record(value);if(!label||!strings(label,{text:96})||['color','background','position'].some(key=>label[key]!==undefined&&(typeof label[key]!=='string'||(label[key] as string).length>32))||label.font_size!==undefined&&(typeof label.font_size!=='number'||!Number.isFinite(label.font_size)||label.font_size<0||label.font_size>100)||label.id!==undefined&&(typeof label.id!=='string'&&typeof label.id!=='number'||String(label.id).length>128))return null;labels.push({text:label.text as string,...(label.id!==undefined?{id:label.id as string|number}:{}),...(label.color!==undefined?{color:label.color as string}:{}),...(label.background!==undefined?{background:label.background as string}:{}),...(label.position!==undefined?{position:label.position as string}:{}),...(label.font_size!==undefined?{font_size:label.font_size as number}:{})})}
+  for(const value of row.labels){const label=record(value);if(!label||!strings(label,{text:96})||['color','background','position'].some(key=>label[key]!==undefined&&(typeof label[key]!=='string'||(label[key] as string).length>32))||label.font_size!==undefined&&(typeof label.font_size!=='number'||!Number.isFinite(label.font_size)||label.font_size<0||label.font_size>100)||label.id!==undefined&&(typeof label.id!=='string'&&typeof label.id!=='number'||String(label.id).length>128))return null;labels.push({text:label.text as string,...(artFontID(label.font_family)?{font_family:artFontID(label.font_family)}:{}),...(label.id!==undefined?{id:label.id as string|number}:{}),...(label.color!==undefined?{color:label.color as string}:{}),...(label.background!==undefined?{background:label.background as string}:{}),...(label.position!==undefined?{position:label.position as string}:{}),...(label.font_size!==undefined?{font_size:label.font_size as number}:{})})}
   return{game_id:row.game_id as string,title:row.title as string,description:row.description as string,category:row.category as string,price:row.price as string,unit:row.unit as string,cover_url:row.cover_url as string,labels,tagsText:row.tagsText as string,club_id:row.club_id as string}
 }
 /** 提取需求四字段，不接受订单、金额分区或支付字段。 */

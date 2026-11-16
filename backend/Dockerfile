@@ -10,10 +10,14 @@ RUN go build -trimpath -ldflags="-s -w" -o /out/jijie-api ./cmd/server && go bui
 
 FROM alpine:3.21
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
-    && apk add --no-cache ca-certificates tzdata \
+    && apk add --no-cache ca-certificates tzdata python3 py3-pip \
     && addgroup -S jijie \
     && adduser -S -G jijie jijie
 WORKDIR /app
+COPY font-requirements.txt /app/font-requirements.txt
+RUN python3 -m venv /opt/font-subset \
+    && /opt/font-subset/bin/pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r /app/font-requirements.txt
+ENV FONT_SUBSET_PYTHON=/opt/font-subset/bin/python
 COPY --from=builder /out/ /app/
 USER jijie
 EXPOSE 8090
