@@ -1,0 +1,49 @@
+{
+  "file_purpose": "从正式HTTPS加载六款字体并由真实浏览器FontFace解析显示，样例只在本次浏览器DOM中展示",
+  "fonts": [
+    {
+      "id": "zcoolkuaile",
+      "label": "站酷快乐体",
+      "bytes": 3960,
+      "status": "loaded",
+      "loaded": true
+    },
+    {
+      "id": "zcoolqingkehuangyou",
+      "label": "站酷庆科黄油体",
+      "bytes": 7232,
+      "status": "loaded",
+      "loaded": true
+    },
+    {
+      "id": "zcoolxiaowei",
+      "label": "站酷小薇体",
+      "bytes": 7560,
+      "status": "loaded",
+      "loaded": true
+    },
+    {
+      "id": "mashanzheng",
+      "label": "马善政毛笔体",
+      "bytes": 5352,
+      "status": "loaded",
+      "loaded": true
+    },
+    {
+      "id": "longcang",
+      "label": "龙藏体",
+      "bytes": 5728,
+      "status": "loaded",
+      "loaded": true
+    },
+    {
+      "id": "zhimangxing",
+      "label": "志莽行书",
+      "bytes": 5200,
+      "status": "loaded",
+      "loaded": true
+    }
+  ],
+  "all_loaded": true,
+  "business_records_changed": false
+}

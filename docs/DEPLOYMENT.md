@@ -1,6 +1,12 @@
 # 开机电竞：从源码到 Docker 后端与微信小程序发布
 
-本文对应当前项目：Go API + PostgreSQL + Redis；域名 `game.ai.58it.cn`。前端由微信发布，服务器不需要运行 Node、Vite 或 H5。游戏封面嵌入 Go 后端，随 `/static/covers/` 提供；用户上传的图片保存在 PostgreSQL 中。
+本文对应当前项目：Go API + PostgreSQL + Redis；域名 `game.ai.58it.cn`。游戏封面嵌入 Go 后端，随 `/static/covers/` 提供；用户上传的图片保存在 PostgreSQL 中。
+
+## 当前交付（2026-11-17 自动部署与艺术字体）
+
+前后端已从main上线，正式域名现在同时提供H5网页和Go API。宝塔任务15每两分钟执行 `/opt/jijie-auto-deploy/source/auto_deploy.sh`，按实际应用输入与运行身份判断是否构建；详情见[自动部署说明](AUTO_DEPLOY.md)。Node只在发布检查/构建期间运行，H5静态产物由nginx提供。
+
+本轮应用提交 `0dd01b6e308df6a2779aa52cd2ddb7cae3117656`，六款艺术字体已完成正式域名的精确四字WOFF、缓存、跨域及真实浏览器显示验收。遵照用户本次明确要求未创建备份，保留原私密配置引用、数据库/Redis容器及数据卷。实际发布与周期任务证据见[线上验收记录](../output/playwright/auto-deploy-production/README.md)。微信小程序的正式审核发布仍为独立步骤，下方较早记录按历史状态保留。
 
 ## 当前交付（2026-10-28 身份核验）
 

@@ -1,0 +1,60 @@
+{
+  "file_purpose": "正式域名真实HTTP和字体内容验收，不修改生产业务记录",
+  "fonts": [
+    {
+      "id": "zcoolkuaile",
+      "bytes": 3960,
+      "codepoints": 4,
+      "license_retained": true,
+      "etag_304": true
+    },
+    {
+      "id": "zcoolqingkehuangyou",
+      "bytes": 7232,
+      "codepoints": 4,
+      "license_retained": true,
+      "etag_304": true
+    },
+    {
+      "id": "zcoolxiaowei",
+      "bytes": 7560,
+      "codepoints": 4,
+      "license_retained": true,
+      "etag_304": true
+    },
+    {
+      "id": "mashanzheng",
+      "bytes": 5352,
+      "codepoints": 4,
+      "license_retained": true,
+      "etag_304": true
+    },
+    {
+      "id": "longcang",
+      "bytes": 5728,
+      "codepoints": 4,
+      "license_retained": true,
+      "etag_304": true
+    },
+    {
+      "id": "zhimangxing",
+      "bytes": 5200,
+      "codepoints": 4,
+      "license_retained": true,
+      "etag_304": true
+    }
+  ],
+  "health": {
+    "data": {
+      "database": "ok",
+      "dev_mode": false,
+      "redis": "ok",
+      "status": "ok"
+    }
+  },
+  "version": {
+    "source_commit": "0dd01b6e308df6a2779aa52cd2ddb7cae3117656",
+    "input_digest": "357d66e9c58d72d4934d11af2521c14286b49f0513a9b753503eee7d4c9236bc"
+  },
+  "error_boundaries_passed": true
+}
