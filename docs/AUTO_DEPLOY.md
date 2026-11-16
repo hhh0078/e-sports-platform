@@ -2,7 +2,7 @@
 
 文件作用：说明宝塔两分钟自动部署入口、实际版本判断与本次用户明确要求的不备份边界。
 
-- 宝塔Shell任务每两分钟执行 `cd /www/wwwroot/game.ai.58it.cn && bash auto_deploy.sh`。每轮先取得 `/opt/jijie-auto-deploy/job.lock` 的非阻塞进程锁，已有部署运行时直接跳过。
+- 宝塔Shell任务每两分钟执行 `cd /opt/jijie-auto-deploy/source && bash auto_deploy.sh`。源码在空间充足的/opt独立浅克隆，生产配置仅通过 `deploy/.env` 软链引用原站点现有文件，不复制配置。每轮先取得 `/opt/jijie-auto-deploy/job.lock` 的非阻塞进程锁，已有部署运行时直接跳过。
 - 默认只跟踪GitHub的 `origin/main`。跟踪文件有未提交修改、提交无法快进或远端访问失败时停止；站点原有未跟踪文件和 `deploy/.env` 保留。不会使用 `git reset --hard` 或 `git clean`。
 - 根据backend、frontend、deploy及发布入口等实际Git对象计算应用输入摘要。只有实际API镜像标签和H5版本文件均匹配才跳过构建，避免“Git更新成功但发布失败”永远不再重试。纯文档提交不触发应用重建。
 - 新版本依次执行npm ci、类型检查、规范检查、前端测试、H5/微信正式构建和分享事件检查，再构建包含Python FontTools的后端镜像。国内npm、Go、Alpine和pip镜像沿用项目配置。
