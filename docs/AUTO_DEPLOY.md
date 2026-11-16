@@ -4,6 +4,7 @@
 
 - 宝塔Shell任务每两分钟执行 `cd /opt/jijie-auto-deploy/source && bash auto_deploy.sh`。源码在空间充足的/opt独立浅克隆，生产配置仅通过 `deploy/.env` 软链引用原站点现有文件，不复制配置。每轮先取得 `/opt/jijie-auto-deploy/job.lock` 的非阻塞进程锁，已有部署运行时直接跳过。
 - 默认只跟踪GitHub的 `origin/main`。跟踪文件有未提交修改、提交无法快进或远端访问失败时停止；站点原有未跟踪文件和 `deploy/.env` 保留。不会使用 `git reset --hard` 或 `git clean`。
+- 部署检出使用Git稀疏目录及blob过滤，仅展开backend、frontend、deploy、scripts、design、docs与根文件，避免发布无关的历史演示视频；首次源码可通过宝塔官方上传通道导入经SHA256校验的同提交Git种子，后续仍直接跟踪GitHub主分支。
 - 根据backend、frontend、deploy及发布入口等实际Git对象计算应用输入摘要。只有实际API镜像标签和H5版本文件均匹配才跳过构建，避免“Git更新成功但发布失败”永远不再重试。纯文档提交不触发应用重建。
 - 新版本依次执行npm ci、类型检查、规范检查、前端测试、H5/微信正式构建和分享事件检查，再构建包含Python FontTools的后端镜像。国内npm、Go、Alpine和pip镜像沿用项目配置。
 - Docker磁盘不足3GiB时停止，不清理其他项目缓存。仅更新Compose的api服务，不重启PostgreSQL或Redis，不更换卷、现有密钥或账户。

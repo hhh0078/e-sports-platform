@@ -114,7 +114,7 @@ class Release:
         if self.git("status", "--porcelain", "--untracked-files=no"):
             raise RuntimeError("服务器跟踪文件有未提交修改，停止更新")
         self.stage = "fetch"
-        self.git("fetch", "origin", "refs/heads/main:refs/remotes/origin/main")
+        self.git("fetch", "--filter=blob:none", "origin", "refs/heads/main:refs/remotes/origin/main")
         self.target = self.git("rev-parse", "origin/main")
         self.git("merge-base", "--is-ancestor", "HEAD", self.target)
         branches = self.git("branch", "--list", "main")
