@@ -136,14 +136,18 @@ class Release:
             print("主分支已核对，实际前后端已是当前应用版本，无需构建", flush=True)
             return
         docker_root = self.run(["docker", "info", "--format", "{{.DockerRootDir}}"], capture=True)
-        if shutil.disk_usage(docker_root).free < 3 * 1024 ** 3:
-            raise RuntimeError("Docker磁盘余量不足3GiB，保留现有服务并停止构建")
+        if shutil.disk_usage(docker_root).free < 2 * 1024 ** 3:
+            raise RuntimeError("Docker磁盘余量不足2GiB，保留现有服务并停止构建")
         self.stage = "build"
         self.update("building")
         print("开始构建 main=" + self.target, flush=True)
         self.run(["npm", "--prefix", "frontend", "ci", "--registry=https://registry.npmmirror.com", "--no-audit", "--no-fund"], timeout=900)
         for task in ("typecheck", "check:standards", "test", "build:h5", "build:mp-weixin"):
-            self.run(["npm", "--prefix", "frontend", "run", task], timeout=900)
+            if task == "test":
+                tests = sorted(str(path.relative_to(self.source)) for path in (self.source / "frontend/src/lib").glob("*.test.ts"))
+                self.run([str(self.source / "frontend/node_modules/.bin/tsx"), "--test", "--test-concurrency=2", *tests], timeout=900)
+            else:
+                self.run(["npm", "--prefix", "frontend", "run", task], timeout=900)
         self.run([str(self.source / "frontend/node_modules/.bin/tsx"), "scripts/check-share-runtime-hooks.ts", "frontend/dist/build/mp-weixin"])
         tag = "auto-" + digest[:16]
         image = "jijie-api:" + tag
