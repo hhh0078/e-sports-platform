@@ -14,3 +14,6 @@ frontend/dist-*/
 
 .deploy/
 deploy/.env
+
+# Python发布工具的本地解释器缓存。
+__pycache__/

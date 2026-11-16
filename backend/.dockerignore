@@ -1,7 +1,10 @@
-# 文件作用：防止私密配置、测试输出及本机构建产物进入 Docker 构建上下文。
+# 文件作用：排除后端构建上下文中的私密配置、临时验收程序和编译产物。
 .env
 .env.*
 !.env.example
+.git
+.run
 bin
 *.log
 Dockerfile.runtime
+__pycache__

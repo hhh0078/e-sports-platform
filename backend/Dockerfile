@@ -9,6 +9,9 @@ COPY . .
 RUN go build -trimpath -ldflags="-s -w" -o /out/jijie-api ./cmd/server && go build -trimpath -ldflags="-s -w" -o /out/jijie-demo ./cmd/demo && go build -trimpath -ldflags="-s -w" -o /out/jijie-default-content ./cmd/default-content
 
 FROM alpine:3.21
+ARG SOURCE_COMMIT=unknown
+ARG SOURCE_INPUT=unknown
+LABEL org.opencontainers.image.revision=$SOURCE_COMMIT cn.58it.jijie.input=$SOURCE_INPUT
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk add --no-cache ca-certificates tzdata python3 py3-pip \
     && addgroup -S jijie \
