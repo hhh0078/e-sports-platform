@@ -46,9 +46,14 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 		ClubID      string `json:"club_id"`
 		AmountCents int64  `json:"amount_cents"`
 		RequestID   string `json:"request_id"`
+		Platform    string `json:"platform"`
 	}
 	if err = decode(r, &in); err != nil {
 		return nil, err
+	}
+	// 平台字段只描述客户端设备，不参与充值金额、支付通道及原单幂等判定。
+	if in.Platform != "" && !contains([]string{"android", "ios"}, in.Platform) {
+		return nil, fail(400, "支付平台无效")
 	}
 	if err = walletRequestID(in.RequestID); err != nil {
 		return nil, err

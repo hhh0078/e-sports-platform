@@ -84,3 +84,9 @@ H5 的普通支付使用微信内置桥；提现确认使用服务端同源 URL 
 - [普通商户 JSAPI 用户确认收款](https://pay.wechatpay.cn/doc/v3/merchant/4012716430)
 - [腾讯云短信 TC3 签名](https://cloud.tencent.com/document/product/382/55981)
 - [腾讯云发送短信接口](https://cloud.tencent.com/document/api/382/52072)
+
+## 2026-11-17 充值平台字段兼容
+
+`POST /wallet/topups` 接收可选 `platform: android|ios`，未传按旧协议处理。此前前端已发送该字段，后端严格JSON请求结构遗漏，导致创建充值前返回400“请求内容格式不正确”。本次仅补齐明确字段及枚举校验，保留未知字段拒绝、原金额、用途、通道与幂等记账；同一请求切换平台不能另建充值或重复入账。
+
+隔离数据库先复现用户载荷的400，再执行完整 `TEST_INTEGRATION=true go test -race ./... -count=1` 全部通过（internal/app139.583秒）；覆盖Android、iOS、旧载荷、幂等重试、非法平台和未知字段。未执行真实充值或微信扣款。

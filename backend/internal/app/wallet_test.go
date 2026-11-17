@@ -356,3 +356,36 @@ func TestIntegrationWalletPersonalDepositSmallRefund(t *testing.T) {
 		t.Fatalf("分笔原支付退款来源不守恒:%+v %v", stored, e)
 	}
 }
+
+// TestIntegrationWalletTopupPlatform 验证平台字段兼容、旧载荷、重试幂等和未知字段门禁。
+// 充值仅使用隔离测试schema的开发通道，不调用真实微信支付。
+func TestIntegrationWalletTopupPlatform(t *testing.T) {
+	api := newTestAPI(t)
+	before := testWallet(api, "player").RechargeCents
+	body := map[string]any{"purpose": "balance", "amount_cents": 100, "request_id": "wmwkt92zyydfv4s399z", "platform": "android"}
+	var first, again struct {
+		Payment WalletTopup `json:"payment"`
+	}
+	api.call("player", "POST", "/wallet/topups", body, 200, &first)
+	body["platform"] = "ios"
+	api.call("player", "POST", "/wallet/topups", body, 200, &again)
+	if first.Payment.ID == "" || again.Payment.ID != first.Payment.ID || testWallet(api, "player").RechargeCents != before+100 {
+		t.Fatal("跨平台重试不能重复充值或更换原单")
+	}
+	body["request_id"] = "platform-ios-topup"
+	api.call("player", "POST", "/wallet/topups", body, 200, nil)
+	delete(body, "platform")
+	body["request_id"] = "platform-legacy-topup"
+	api.call("player", "POST", "/wallet/topups", body, 200, nil)
+	for _, platform := range []any{"windows", 7} {
+		body["platform"] = platform
+		body["request_id"] = "platform-invalid-topup"
+		api.call("player", "POST", "/wallet/topups", body, 400, nil)
+	}
+	body["platform"] = "android"
+	body["unexpected_field"] = true
+	api.call("player", "POST", "/wallet/topups", body, 400, nil)
+	if testWallet(api, "player").RechargeCents != before+300 {
+		t.Fatal("非法请求不能增加资金")
+	}
+}
