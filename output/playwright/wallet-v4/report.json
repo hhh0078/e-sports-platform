@@ -37,6 +37,12 @@
     "wechat_uploaded": true,
     "wechat_package_bytes": 1749284,
     "wechat_published": false,
-    "virtual_callback_configured": false
+    "virtual_callback_configured": true,
+    "callback_mode": "plain",
+    "callback_format": "json",
+    "public_callback_echo_verified": true,
+    "invalid_callback_signature_rejected": true,
+    "virtual_payment_configured": false,
+    "wechat_backend_message_config_saved": false
   }
 }
