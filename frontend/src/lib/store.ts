@@ -14,9 +14,9 @@ export const state = reactive<PlatformState>({ commerce:{mode:'mini_program',fee
 const fallbackGame: Game = { id: 'delta', name: '三角洲行动', short_name: '三角洲', subtitle: '', primary_color: '#00e18a', bg_color: '#0a1110', surface_color: '#15201e', text_color: '#f2f5f3', icon_url: '', cover_url: '', covers: [], categories: [], enabled: true, sort_order: 0 }
 export const game = computed<Game>(() => state.games.find(item => item.id === state.gameId) || state.games[0] || fallbackGame)
 /** 页面局部主题变量；与主游戏选择及本地缓存独立。 */
-export type PageTheme = Record<'--accent' | '--bg' | '--surface' | '--text', string>
+export type PageTheme = Record<'--accent' | '--bg' | '--surface' | '--text' | '--accent-soft' | '--accent-line', string>
 /** 只读取指定游戏的主题，未知游戏回退当前主游戏，调用不会改变用户选择或写入缓存。 */
-export function pageTheme(gameId?: string): PageTheme { const selected = state.games.find(item => item.id === gameId) || game.value; return { '--accent': selected.primary_color || '#00e18a', '--bg': selected.bg_color || '#0a1110', '--surface': selected.surface_color || '#15201e', '--text': selected.text_color || '#f2f5f3' } }
+export function pageTheme(gameId?: string): PageTheme { const selected = state.games.find(item => item.id === gameId) || game.value; const accent=selected.primary_color || '#00e18a',tint=/^#[0-9a-f]{6}$/i.test(accent)?accent:'#00e18a'; return { '--accent': accent, '--accent-soft':tint+'18', '--accent-line':tint+'40', '--bg': selected.bg_color || '#0a1110', '--surface': selected.surface_color || '#15201e', '--text': selected.text_color || '#f2f5f3' } }
 export const themeStyle = computed(() => pageTheme())
 let pending: Promise<void> | null = null
 let publicPending: Promise<void> | null = null

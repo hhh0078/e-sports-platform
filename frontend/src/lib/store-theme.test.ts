@@ -35,7 +35,7 @@ test('指定游戏不存在或未指定时回退主游戏，空配置也有完�
   assert.equal(subject.pageTheme('missing')['--accent'], '#00e18a')
   assert.equal(subject.pageTheme()['--bg'], '#0a1110')
   subject.state.games = []
-  assert.equal(Object.keys(subject.pageTheme('missing')).length, 4)
+  assert.equal(Object.keys(subject.pageTheme('missing')).length, 6)
   assert.equal(subject.pageTheme('missing')['--surface'], '#15201e')
   assert.equal(writes.length, 0)
 })
@@ -51,7 +51,12 @@ test('只有显式选择有效游戏持久化，局部计算能响应后台主�
   const localStyle = computed(() => subject.pageTheme('delta'))
   subject.state.games[0].primary_color = '#77ccaa'
   assert.equal(localStyle.value['--accent'], '#77ccaa')
-  assert.equal(subject.themeStyle.value['--accent'], '#e3ba71')
+  assert.equal(localStyle.value['--accent-soft'], '#77ccaa18')
+  assert.equal(localStyle.value['--accent-line'], '#77ccaa40')
+  assert.equal(subject.themeStyle.value['--accent-soft'], '#e3ba7118')
+  subject.state.games[1].primary_color='#f58c4b'
+  assert.equal(subject.themeStyle.value['--accent-line'], '#f58c4b40')
+  assert.equal(subject.themeStyle.value['--accent'], '#f58c4b')
   assert.equal(storage.get('jijie_game'), 'honor')
 })
 

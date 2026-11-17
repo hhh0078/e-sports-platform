@@ -37,7 +37,7 @@ function pageContext(t:TestContext,page:BalancePage,balance:Partial<Wallet>|null
  */
 function renderBalance(page:BalancePage,context:Record<string,unknown>):VNode{
   const source=readFileSync(new URL('../pages/'+page,import.meta.url),'utf8')
-  const block=source.match(page==='main/me/me.vue'?/(<view class="me-wallet"[\s\S]*?)\n\n\t\t<view v-if="error"/:/(<view class="balance-section">[\s\S]*?)\n    <view class="deposit-section">/)
+  const block=source.match(page==='main/me/me.vue'?/(<view class="me-wallet"[\s\S]*?)\n\n\t\t<view v-if="error"/:/(<view class="balance-section"[^>]*>[\s\S]*?)\n    <view class="deposit-section">/)
   assert.ok(block,'缺少真实钱包摘要模板')
   const render=compile(block[1],{isCustomElement:()=>true,prefixIdentifiers:true}) as unknown as (context:Record<string,unknown>,cache:unknown[])=>VNode
   return render(context,[])
@@ -55,7 +55,7 @@ for(const page of ['main/me/me.vue','account/wallet.vue'] as const){
     const data={spendable_cents:7001,available_cents:1000,recharge_cents:6001,ongoing_cents:2500,settling_cents:3000,withdrawal_frozen_cents:500}
     const rendered=renderBalance(page,pageContext(t,page,data))
     assert.equal(classText(rendered,mainClass),'¥70.01')
-    if(page==='account/wallet.vue')assert.equal(classText(rendered,noteClass),'其中可提现 ¥10.00，充值仅用于消费');else assert.equal(classText(rendered,noteClass),'')
+    if(page==='account/wallet.vue')assert.equal(classText(rendered,noteClass),'可提现 ¥10.00');else assert.equal(classText(rendered,noteClass),'')
     if(page==='account/wallet.vue')assert.match(visibleText(rendered),/账户余额/);else assert.doesNotMatch(visibleText(rendered),/我的钱包|账户余额|充值仅用于消费/)
     assert.match(visibleText(rendered),/进行中¥25.00结算中¥30.00提现中¥5.00/)
     assert.equal(classText(rendered,'wallet-recharge'),'')
@@ -76,6 +76,6 @@ for(const page of ['main/me/me.vue','account/wallet.vue'] as const){
   test(page+'：访客始终零值，不显示上个账号缓存',t=>{
     const rendered=renderBalance(page,pageContext(t,page,{spendable_cents:999999,available_cents:999999},false))
     assert.equal(classText(rendered,mainClass),'¥0.00')
-    assert.equal(classText(rendered,noteClass),page==='account/wallet.vue'?'其中可提现 ¥0.00，充值仅用于消费':'')
+    assert.equal(classText(rendered,noteClass),page==='account/wallet.vue'?'可提现 ¥0.00':'')
   })
 }

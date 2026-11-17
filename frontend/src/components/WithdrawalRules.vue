@@ -1,5 +1,6 @@
 <!-- 文件作用：个人及俱乐部钱包复用提现规则入口和弹框，明确平台门槛、渠道限制与来源审核。 -->
 <template>
+  <view class="withdrawal-rules-control">
   <button class="withdrawal-rules-link" @click="opened=true">提现规则 <Icon name="info" :size="13"/></button>
   <FinancePopup :opened="opened" title="提现规则" @close="opened=false">
     <text class="withdrawal-rule">1. 平台0元起提现，不额外设置平台最低门槛。实际申请金额必须大于0，并满足微信渠道最低金额{{ minimum ? '（当前¥'+(minimum/100).toFixed(2)+'）' : '' }}。</text>
@@ -9,6 +10,7 @@
     <text class="withdrawal-rule">5. 申请后冻结对应金额；微信确认收款不等于已到账，以资金记录显示的最终状态为准。未知结果请同步原申请。</text>
     <button class="btn withdrawal-rules-close" @click="opened=false">我知道了</button>
   </FinancePopup>
+  </view>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -18,5 +20,6 @@ withDefaults(defineProps<{ club?: boolean; minimum?: number }>(), { club: false,
 const opened=ref(false)
 </script>
 <style scoped>
-.withdrawal-rules-link{display:inline-flex;align-items:center;justify-content:center;gap:9.6154rpx;min-height:53.8462rpx;padding:0;background:transparent;color:var(--accent);font-size:25rpx}.withdrawal-rule{display:block;margin-top:23.0769rpx;font-size:26.9231rpx;line-height:46.1538rpx;color:var(--muted,#9aada2);overflow-wrap:anywhere}.withdrawal-rules-close{width:100%;margin-top:46.1538rpx}
+.withdrawal-rules-control{display:inline-flex;align-items:center;flex-shrink:0}
+.withdrawal-rules-link{display:inline-flex;align-items:center;justify-content:center;gap:9.6154rpx;min-height:44px;padding:0;background:transparent;color:var(--accent);font-size:25rpx}.withdrawal-rule{display:block;margin-top:23.0769rpx;font-size:26.9231rpx;line-height:46.1538rpx;color:var(--muted,#9aada2);overflow-wrap:anywhere}.withdrawal-rules-close{width:100%;margin-top:46.1538rpx}
 </style>
