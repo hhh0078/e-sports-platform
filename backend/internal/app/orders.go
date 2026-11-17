@@ -395,6 +395,9 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) (any, error) {
 		}
 		return a.virtualOrderPayment(r, u, p)
 	}
+	if !a.Config.DevMode && o.PaymentChannel == "" && (in.QuotedTotal > 0 || in.QuotedTopup > 0) {
+		return nil, fail(409, "支付方式已调整，请重新打开订单确认")
+	}
 	if in.Channel == "balance" {
 		if !a.Config.DevMode && o.PayOpenID != "" {
 			return nil, fail(409, "该订单已发起微信支付，请先同步原付款；需更换余额支付时请取消原订单后重新下单")

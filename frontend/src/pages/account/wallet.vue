@@ -46,7 +46,7 @@ import { walletStatus,walletKind } from '../../lib/wallet'
 const {wallet,entries,topups,withdrawals,refunds,filteredEntries,loading,busy,error,operation,amount,userName,formError,filter,hasMore,load,retryFailed,open,close,submit,syncRecord,resumeTopup}=useWallet()
 useNativePageRefresh({refresh:()=>load(),more:()=>error.value?retryFailed():load(true),blocked:()=>busy.value||!!operation.value,context:()=>[state.user?.id,state.user?.role,sessionRevision(),filter.value]})
 /** 本地模拟钱包保持人民币记账，真实小程序金币独立展示。 */
-const miniCoinMode=computed(()=>!state.devMode&&state.commerce?.mode==='mini_program')
+const miniCoinMode=computed(()=>!state.devMode&&(state.commerce?.payment_method?state.commerce.payment_method==='virtual':state.commerce?.mode==='mini_program'))
 const tabs=[{id:'all',label:'明细'},{id:'recharge',label:'充值'},{id:'withdrawal',label:'提现'},{id:'deposit',label:'押金'}]
 const titles=computed(()=>({balance:miniCoinMode.value?'购买金币':'充值',withdrawal:'提现',deposit:wallet.value?.deposit_shortfall_cents?'补缴平台押金':'缴纳平台押金',refund:'退还押金'}))
 const descriptions=computed(()=>({balance:miniCoinMode.value?'1金币=1元，本次输入为购买金币数，仅供小程序消费，不可提现。购买金币不重复收取渠道手续费。':'充值余额仅用于平台消费，不可提现。',withdrawal:'仅可提现服务收入。申请后冻结金额，平台审核后由微信转账。',deposit:'平台押金完全自愿，不影响自由接单。当前最低¥'+fixed(wallet.value?.deposit_required_cents)+'，已缴¥'+fixed(wallet.value?.deposit_cents)+(wallet.value?.deposit_shortfall_cents?'，还需补缴¥'+fixed(wallet.value.deposit_shortfall_cents)+'。补齐后恢复标识，原押金继续保留。':'。达到最低金额后展示保障标识。'),refund:'退至押金原支付渠道；双方均无待付款、进行中或售后订单才能退还。'}))

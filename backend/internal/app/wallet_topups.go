@@ -51,7 +51,7 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
-	// 平台字段只描述客户端设备，不参与充值金额、支付通道及原单幂等判定。
+	// 平台字段描述客户端设备；只有新充值校验当前支付契约，旧单仍按原渠道恢复。
 	if in.Platform != "" && !contains([]string{"android", "ios"}, in.Platform) {
 		return nil, fail(400, "支付平台无效")
 	}
@@ -83,6 +83,9 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 	id := walletKey("topup", u.ID, in.RequestID)
 	payment, err := get[WalletTopup](ctx, tx, "wallet_topups", id, true)
 	if missing(err) {
+		if !a.Config.DevMode && in.Purpose == "balance" && in.Platform != "" && a.commerceSettings().paymentMethod() != "virtual" {
+			return nil, fail(409, "支付方式已调整，请更新小程序后重试")
+		}
 		wallet, e := accountBalance(ctx, tx, accountID)
 		if e != nil {
 			return nil, e
@@ -91,7 +94,7 @@ func (a *App) createWalletTopup(w http.ResponseWriter, r *http.Request) (any, er
 			return nil, e
 		}
 		payment = WalletTopup{AccountID: accountID, ClubID: in.ClubID, ID: id, UserID: u.ID, RequestID: in.RequestID, Purpose: in.Purpose, AmountCents: in.AmountCents, Status: "pending_payment", OrderNo: "WT" + strings.ToUpper(id[:30]), CreatedAt: now(), UpdatedAt: now()}
-		if !a.Config.DevMode && in.Purpose == "balance" && a.commerceSettings().Mode == "mini_program" {
+		if !a.Config.DevMode && in.Purpose == "balance" && a.commerceSettings().paymentMethod() == "virtual" {
 			payment, err = a.newVirtualTopup(ctx, tx, u, id, in.RequestID, in.AmountCents)
 			if err != nil {
 				return nil, err

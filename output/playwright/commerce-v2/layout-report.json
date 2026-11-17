@@ -1,0 +1,38 @@
+[
+  {
+    "page": "frontend",
+    "overflow": false,
+    "primary": [
+      {
+        "height": 44
+      }
+    ],
+    "width": 320
+  },
+  {
+    "page": "method",
+    "overflow": false,
+    "primary": [
+      {
+        "height": 44
+      }
+    ],
+    "width": 320
+  },
+  {
+    "page": "virtual",
+    "overflow": false,
+    "primary": [
+      {
+        "height": 44
+      }
+    ],
+    "width": 320
+  },
+  {
+    "page": "payments",
+    "overflow": false,
+    "primary": [],
+    "width": 320
+  }
+]

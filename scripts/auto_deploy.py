@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -63,12 +64,35 @@ class Release:
 
     def run(self, args, timeout=120, capture=False, env=None):
         """执行固定参数命令，凭据仅由Compose环境文件自行读取，不进入命令或日志。"""
-        result = subprocess.run(args, cwd=self.source, env={**os.environ, **(env or {})},
-                                text=True, stdout=subprocess.PIPE if capture else None,
-                                stderr=subprocess.PIPE if capture else None, timeout=timeout)
-        if result.returncode:
-            raise RuntimeError(f"{self.stage}阶段命令失败：{Path(args[0]).name}，退出码{result.returncode}")
-        return result.stdout.strip() if capture else ""
+        process = subprocess.Popen(args, cwd=self.source, env={**os.environ, **(env or {})},
+                                   text=True, stdout=subprocess.PIPE if capture else None,
+                                   stderr=subprocess.PIPE if capture else None, start_new_session=True)
+        try:
+            output, _ = process.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            # Git下载的孙进程也会继承部署锁，必须一并结束；不影响其它项目进程。
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            try:
+                process.communicate(timeout=10)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.communicate()
+            raise
+        if process.returncode:
+            raise RuntimeError(f"{self.stage}阶段命令失败：{Path(args[0]).name}，退出码{process.returncode}")
+        return (output or "").strip() if capture else ""
+
+    def clean_build_files(self):
+        """仅清理发布副本中可由npm ci和构建恢复的目录，保留线上版本、缓存资源及私密配置。"""
+        for folder in (self.source / "frontend/node_modules", self.source / "frontend/dist"):
+            if folder.is_dir() and not folder.is_symlink():
+                shutil.rmtree(folder)
 
     def git(self, *args):
         """以固定源码目录执行Git，只返回所需元数据，不使用强制重置或清理。"""
@@ -133,6 +157,7 @@ class Release:
                     raise RuntimeError("正式H5版本不匹配，保留当前应用并停止")
             self.stage = "idle"
             self.update("up_to_date", deployed_commit=before["commit"], input_digest=digest, image_id=before["image_id"])
+            self.clean_build_files()
             print("主分支已核对，实际前后端已是当前应用版本，无需构建", flush=True)
             return
         docker_root = self.run(["docker", "info", "--format", "{{.DockerRootDir}}"], capture=True)
@@ -214,6 +239,8 @@ class Release:
                 self.run([*compose, "up", "-d", "--no-deps", "--no-build", "api"], timeout=180,
                          env={"IMAGE_TAG": before["image"].split(":", 1)[1]})
             raise
+
+        self.clean_build_files()
 
 
 def main():

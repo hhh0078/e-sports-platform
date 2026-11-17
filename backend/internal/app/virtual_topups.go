@@ -4,6 +4,7 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -70,10 +71,30 @@ func (a *App) virtualTopupPayment(r *http.Request, u User, p WalletTopup) (any, 
 	return map[string]any{"payment": p, "mode": "virtual", "virtual_params": map[string]string{"mode": "short_series_coin", "signData": string(raw), "paySig": virtualHMAC(key, "requestVirtualPayment&"+string(raw)), "signature": virtualHMAC(s.SessionKey, string(raw))}}, nil
 }
 
-// validateVirtualCashOrder 检查现金充值单号、面额、实付、订单类型和可信支付时间，拒绝扣币单和退款单混入。
+// validateVirtualCashIdentity 检查不可变原单、面额和现金订单类型；不把上游处理状态误报为金额冲突。
+func validateVirtualCashIdentity(p WalletTopup, o virtualCashOrder) error {
+	if p.Channel != "virtual" || p.Purpose != "balance" || o.OrderID != p.OrderNo {
+		return fail(409, "官方金币充值原单不一致，请平台核账")
+	}
+	if o.OrderFee != p.AmountCents || o.PaidFee != p.AmountCents {
+		return fail(409, "官方金币充值面额或实付金额不一致，请平台核账")
+	}
+	if o.OrderType != 0 && o.OrderType != 7 {
+		return fail(409, "官方返回的订单不是金币现金充值单，请平台核账")
+	}
+	return nil
+}
+
+// validateVirtualCashOrder 仅接受已付终态及完整可信支付凭据作为金币入账证据。
 func validateVirtualCashOrder(p WalletTopup, o virtualCashOrder) error {
-	if p.Channel != "virtual" || p.Purpose != "balance" || o.OrderID != p.OrderNo || o.OrderFee != p.AmountCents || o.PaidFee != p.AmountCents || o.Status != 2 && o.Status != 4 || o.OrderType != 0 && o.OrderType != 7 || o.WXOrderID == "" || o.PaidTime <= 0 {
-		return fail(409, "官方金币现金订单与原充值金额或类型不一致，请平台核账")
+	if e := validateVirtualCashIdentity(p, o); e != nil {
+		return e
+	}
+	if o.Status != 2 && o.Status != 4 {
+		return fail(409, "官方金币充值尚未处于可入账状态，请同步原付款单")
+	}
+	if o.WXOrderID == "" || o.PaidTime <= 0 {
+		return fail(409, "官方金币充值支付凭据尚未齐全，请稍后同步原付款单")
 	}
 	if time.Unix(o.PaidTime, 0).After(time.Now().Add(5 * time.Minute)) {
 		return fail(409, "官方充值支付时间无效")
@@ -93,28 +114,45 @@ func (a *App) syncVirtualTopup(ctx context.Context, p WalletTopup) error {
 	if code != 0 {
 		return virtualResultError(code)
 	}
+	// 只记录数值和匹配结果，既能区分金额/状态/凭据问题，也不泄露OpenID、签名或交易凭证。
+	log.Printf("金币充值核验 topup=%s local_status=%s expected_cents=%d order_fee=%d paid_fee=%d official_status=%d order_type=%d order_matches=%t receipt_present=%t paid_time=%d left_fee=%d", p.ID, p.Status, p.AmountCents, result.Order.OrderFee, result.Order.PaidFee, result.Order.Status, result.Order.OrderType, result.Order.OrderID == p.OrderNo, result.Order.WXOrderID != "", result.Order.PaidTime, result.Order.LeftFee)
 	if result.Order.OrderID != p.OrderNo {
 		return fail(409, "官方充值查询返回了不同原单")
 	}
-	if p.Status == "paid" && (result.Order.Status == 5 || result.Order.Status == 8 || result.Order.LeftFee > 0 && result.Order.LeftFee < p.AmountCents) {
-		amount := p.AmountCents - result.Order.LeftFee
-		if amount <= 0 || amount > p.AmountCents {
-			amount = p.AmountCents
+	if result.Order.Status == 5 || result.Order.Status == 8 || p.Status == "paid" && result.Order.LeftFee > 0 && result.Order.LeftFee < p.AmountCents {
+		if e = validateVirtualCashIdentity(p, result.Order); e != nil {
+			return e
 		}
+		if result.Order.LeftFee < 0 || result.Order.LeftFee >= p.AmountCents {
+			return fail(409, "官方退款状态与可退金额不一致，请平台核账")
+		}
+		amount := p.AmountCents - result.Order.LeftFee
 		if e = a.recordVirtualCashRefund(ctx, p, amount, "query:"+p.ID+":"+strconv.Itoa(result.Order.Status)+":"+strconv.FormatInt(amount, 10), true); e != nil {
 			return e
 		}
-		return fail(409, "官方金币现金订单已退款或退款异常，相关来源已冻结待平台核账")
+		if p.Status == "paid" {
+			return fail(409, "官方金币现金订单已退款，相关来源已冻结待平台核账")
+		}
+		return nil
 	}
 	if p.Status == "paid" && result.Order.Status != 2 && result.Order.Status != 4 {
 		return a.freezeVirtualSource(ctx, p)
 	}
-	if result.Order.Status == 0 || result.Order.Status == 1 || result.Order.Status == 6 {
+	// 0/1未付、3官方处理中、6关闭均不能产生入账；保留同一原单等待下一次可信查询。
+	if result.Order.Status == 0 || result.Order.Status == 1 || result.Order.Status == 3 || result.Order.Status == 6 {
+		return nil
+	}
+	if e = validateVirtualCashIdentity(p, result.Order); e != nil {
+		return e
+	}
+	// 上游已付状态但支付凭据尚未传播完整时继续等待；金额和类型仍必须先核对一致。
+	if p.Status == "pending_payment" && (result.Order.Status == 2 || result.Order.Status == 4) && (result.Order.WXOrderID == "" || result.Order.PaidTime == 0) {
 		return nil
 	}
 	if e = validateVirtualCashOrder(p, result.Order); e != nil {
 		return e
 	}
+
 	tx, e := a.DB.Begin(ctx)
 	if e != nil {
 		return e

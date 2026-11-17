@@ -256,6 +256,9 @@ func (a *App) virtualPaymentQuote(w http.ResponseWriter, r *http.Request) (any, 
 	} else if in.AdjustmentID != "" {
 		return nil, fail(400, "补款报价须指定原订单")
 	}
+	if a.commerceSettings().paymentMethod() != "virtual" {
+		return nil, fail(409, "支付方式已调整，请重新打开订单确认")
+	}
 	wallet, e := get[Wallet](r.Context(), a.DB, "wallets", u.ID, false)
 	if missing(e) {
 		wallet = Wallet{UserID: u.ID}

@@ -207,8 +207,11 @@ func (a *App) payOrderAdjustment(w http.ResponseWriter, r *http.Request) (any, e
 	}
 	p, e := get[OrderPayment](r.Context(), tx, "order_payments", adjustmentPaymentID(v.ID), true)
 	if missing(e) {
+		if !a.Config.DevMode && a.commerceSettings().paymentMethod() != "virtual" && (in.QuotedTotal > 0 || in.QuotedTopup > 0) {
+			return nil, fail(409, "支付方式已调整，请重新确认补款")
+		}
 		p = OrderPayment{ID: adjustmentPaymentID(v.ID), OrderID: o.ID, AdjustmentID: v.ID, BuyerID: o.BuyerID, Kind: "supplement", Channel: in.Channel, AmountCents: v.AmountCents, Status: "pending_payment", OrderNo: "OA" + strings.ToUpper(walletKey(v.ID)[:30]), RequestID: in.RequestID, CreatedAt: now(), UpdatedAt: now()}
-		if !a.Config.DevMode && a.commerceSettings().Mode == "mini_program" {
+		if !a.Config.DevMode && a.commerceSettings().paymentMethod() == "virtual" {
 			if in.Channel == "balance" {
 				return nil, fail(409, "小程序补款须使用官方金币")
 			}

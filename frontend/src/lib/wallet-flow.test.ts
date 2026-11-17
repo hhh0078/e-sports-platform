@@ -239,3 +239,8 @@ test('钱包刷新失败保留旧hasMore时，错误重试仍从第一页GET而�
 })
 
 test('钱包页原生触底在刷新或追加失败后重试同一offset',async t=>{const s=harness(t);s.histories.entries=Array.from({length:40},(_,i)=>({id:'entry-'+i}));s.hooks.show();await flush();s.attachBottom();s.failRead('/wallet');await s.page.load();s.reads.length=0;s.bottom();await flush();assert.ok(s.reads.includes('/wallet/entries?limit=30&offset=0'));assert.equal(s.reads.some(path=>path.includes('offset=30')),false);s.failRead('/wallet/entries');await s.page.load(true);s.reads.length=0;s.bottom();await flush();assert.deepEqual(s.reads,['/wallet/entries?limit=30&offset=30']);assert.equal(s.page.entries.value.length,40)})
+
+
+test('充值先现金退款再同步时关闭原意图，不能误提示仍在支付',async t=>{
+ const s=harness(t);s.hooks.show();await flush();s.page.open('balance');s.page.amount.value='10';const task=s.page.submit();await flush();s.take('/wallet/topups').resolve({payment:topup,mode:'wechat',pay_params:params});await flush();s.payments[0].success();await flush();s.take('/wallet/topups/topup-A/sync').resolve({...topup,status:'cash_refunded',refunded_cents:1000});await task;assert.equal(s.page.operation.value,null);assert.equal(s.page.wallet.value.recharge_cents,0);assert.ok(s.notices.some(value=>String(value).includes('已退还')));assert.equal([...s.storage.keys()].filter(key=>key.startsWith('jijie_wallet_intent:')).length,0)
+})

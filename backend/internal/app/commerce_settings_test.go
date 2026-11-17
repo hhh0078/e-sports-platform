@@ -149,3 +149,66 @@ func TestIntegrationCommerceSettings(t *testing.T) {
 		t.Fatal("应用重启丢失渠道配置")
 	}
 }
+
+// TestCommerceIndependentPaymentRouting 验证旧配置兼容与前端/付款独立，原服务单保持已经绑定的渠道。
+func TestCommerceIndependentPaymentRouting(t *testing.T) {
+	for _, item := range []struct{ mode, method, want string }{{"mini_program", "", "virtual"}, {"official_account", "", "wechat"}, {"mini_program", "wechat", "wechat"}, {"mini_program", "virtual", "virtual"}} {
+		c := commerceSettings{Mode: item.mode, PaymentMethod: item.method, FeeBearer: "platform"}
+		if c.paymentMethod() != item.want || validateCommerceSettings(c) != nil {
+			t.Fatal("支付方式不兼容旧记录或新独立配置")
+		}
+		a := &App{commerceConfig: &c}
+		if a.useVirtualPayment(Order{}) != (item.want == "virtual") || !a.useVirtualPayment(Order{PaymentChannel: "virtual"}) || a.useVirtualPayment(Order{PaymentChannel: "wechat", PayOpenID: "original"}) {
+			t.Fatal("新配置改变了旧服务单的原支付渠道")
+		}
+	}
+	if validateCommerceSettings(commerceSettings{Mode: "official_account", PaymentMethod: "virtual", FeeBearer: "platform"}) == nil {
+		t.Fatal("公众号虚拟支付未受支持却被接受")
+	}
+}
+
+// TestIntegrationCommerceScopedUpdates 验证独立分区不会覆盖其它配置，旧管理端不能再联动更改支付方式。
+func TestIntegrationCommerceScopedUpdates(t *testing.T) {
+	setPaymentEncryptionKey(t)
+	api := newTestAPI(t)
+	secret := strings.Repeat("s", 32)
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"mode": "mini_program", "offer_id": "12345", "app_key": secret, "official_app_id": "wx1234567890abcdef", "official_secret": secret}, 200, nil)
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"frontend_mode": "official_account"}, 400, nil)
+	var result map[string]any
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"payment_method": "wechat"}, 200, &result)
+	if result["mode"] != "mini_program" || result["payment_method"] != "wechat" {
+		t.Fatal("支付选择改变了前端入口")
+	}
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"frontend_mode": "official_account"}, 200, nil)
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"payment_method": "virtual"}, 400, nil)
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"frontend_mode": "mini_program"}, 200, nil)
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"mode": "official_account"}, 409, nil)
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"payment_method": ""}, 400, nil)
+	api.call("admin", "PATCH", "/admin/commerce-settings", map[string]any{"official_redirect_url": "https://example.com/"}, 200, nil)
+	c := api.App.commerceSettings()
+	if c.Mode != "mini_program" || c.paymentMethod() != "wechat" || c.OfferID != "12345" || c.AppKey != secret || c.OfficialSecret != secret {
+		t.Fatal("其它分区字段被覆盖")
+	}
+	restarted, err := New(t.Context(), api.App.Config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer restarted.Close()
+	if restarted.commerceSettings().paymentMethod() != "wechat" {
+		t.Fatal("重启丢失独立支付方式")
+	}
+	api.App.Config.DevMode = false
+	identity, err := get[map[string]string](t.Context(), api.App.DB, "identities", "player", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	identity["phone_source"] = "wechat"
+	if err = put(t.Context(), api.App.DB, "identities", "player", identity); err != nil {
+		t.Fatal(err)
+	}
+	api.call("player", "POST", "/wallet/topups", map[string]any{"purpose": "balance", "amount_cents": 100, "request_id": "stale-virtual-client", "platform": "android"}, 409, nil)
+	var count int
+	if err = api.App.DB.QueryRow(t.Context(), "SELECT count(*) FROM wallet_topups WHERE data->>'request_id'='stale-virtual-client'").Scan(&count); err != nil || count != 0 {
+		t.Fatal("旧金币客户端创建了人民币付款意图")
+	}
+}

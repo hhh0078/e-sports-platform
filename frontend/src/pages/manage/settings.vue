@@ -1,6 +1,6 @@
 <!-- 文件作用：小程序内的管理员协议版本及微信支付配置入口，秘密仅在本次填写时保留，保存或离开后清空。 -->
 <template>
-  <AppShell :title="tab==='commerce'?'支付模式':tab==='payment'?'微信支付配置':'协议管理'" back>
+  <AppShell :title="pageTitle" back>
     <view v-if="error" class="error-box mb"><text>{{ error }}</text><button class="text-btn" :disabled="loading" @click="load">重新加载</button></view>
     <EmptyState v-if="state.ready&&state.user?.role!=='admin'" title="仅平台管理员可访问" detail="协议发布和支付配置均由服务端再次验证管理权限。" icon="shield"><button class="text-btn" @click="go('/pages/account/login')">切换账号</button></EmptyState>
     <template v-else-if="state.user?.role==='admin'">
@@ -16,7 +16,7 @@
         </view>
         <view class="settings-actions"><button class="text-btn" :disabled="busy" @click="restoreAgreements">取消修改</button><button class="btn" :disabled="busy||!loaded" @click="saveAgreements">{{ busy?'正在发布…':'发布协议版本' }}</button></view>
       </template>
-      <template v-else-if="tab==='commerce'"><CommerceConfig/></template>
+      <template v-else-if="commerceSection"><CommerceConfig :section="commerceSection"/></template>
       <template v-else>
         <view class="payment-status"><view class="status-icon"><Icon :name="paymentStatus.configured?'shield':'settings'" :size="26"/></view><view><text>{{ paymentStatus.configured?'支付配置已就绪':'支付配置尚未完整' }}</text><text>{{ paymentStatus.configured?'真实交易仍需微信 AppID 与商户权限匹配':'可以先保存已准备好的资料，缺项时不会发起真实扣款' }}</text></view></view>
         <view v-if="!paymentStatus.storage_available" class="subtle-note">服务器尚未启用支付资料的加密保存，请按项目部署说明完成配置后再保存。当前页面仍可查看已配置状态。</view>
@@ -39,7 +39,7 @@
   </AppShell>
 </template>
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive,computed } from 'vue'
 import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import EmptyState from '../../components/EmptyState.vue'
@@ -55,6 +55,10 @@ const documents: {key:keyof Agreements;label:string;icon:string}[]=[{key:'user_a
 /** 公开支付配置项的编辑展示信息。 */
 type PublicPayment = Pick<PaymentSettings,'merchant_id'|'certificate_serial'|'platform_public_key_id'|'notify_url'|'refund_notify_url'>
 const publicFields: {key:keyof PublicPayment;label:string;placeholder:string;url?:boolean;hint?:string}[]=[{key:'merchant_id',label:'微信支付商户号',placeholder:'微信支付商户平台中的商户号'},{key:'certificate_serial',label:'商户 API 证书序列号',placeholder:'与商户私钥对应的证书序列号'},{key:'platform_public_key_id',label:'微信支付公钥 ID',placeholder:'例如 PUB_KEY_ID_…'},{key:'notify_url',label:'支付结果通知地址',placeholder:'https://你的域名/api/payments/wechat/notify',url:true,hint:'需要公网可访问的 HTTPS 地址，与服务端支付回调路由一致。'},{key:'refund_notify_url',label:'退款结果通知地址',placeholder:'https://你的域名/api/payments/wechat/refund-notify',url:true}]
+/** 配置分区使用固定白名单，不接受任意路由组件。 */
+type CommerceSection='frontend'|'methods'|'virtual'|'login'
+const commerceSection=computed<CommerceSection|null>(()=>['frontend','methods','virtual','login'].includes(tab.value)?tab.value as CommerceSection:null)
+const pageTitle=computed(()=>({frontend:'前端模式',methods:'支付方式',virtual:'虚拟支付',login:'微信登录',payment:'微信支付配置',agreements:'协议管理'}[tab.value]||'平台设置'))
 const tab=ref('agreements'),loading=ref(true),busy=ref(false),error=ref(''),loaded=ref(false)
 const agreements=reactive<Agreements>({user_agreement:{title:'',version:'',content:'',updated_at:''},privacy_policy:{title:'',version:'',content:'',updated_at:''}})
 const payment=reactive<PublicPayment>({merchant_id:'',certificate_serial:'',platform_public_key_id:'',notify_url:'',refund_notify_url:''})
@@ -76,8 +80,8 @@ function date(value: string | undefined){return value?String(value).slice(0,10):
 function clearSecrets(){secrets.api_v3_key='';secrets.merchant_private_key_pem='';secrets.platform_public_key_pem=''}
 /** 只复制公开字段和是否配置标志，不接收任何服务端秘密回显。 */
 function applyPayment(result: PaymentSettings){publicFields.forEach(field=>{payment[field.key]=result[field.key]||''});Object.assign(paymentStatus,{configured:result.configured,storage_available:result.storage_available,source:result.source,api_v3_key_set:result.api_v3_key_set,merchant_private_key_set:result.merchant_private_key_set,platform_public_key_set:result.platform_public_key_set});savedPayment=JSON.stringify(payment);clearSecrets()}
-/** 并行读取两类管理员配置，并校验身份后一起展示。 */
-async function load(){const current=++version;loading.value=true;error.value='';let session: ReturnType<typeof currentSession> | undefined;try{await init();if(current!==version||!visible)return;session=currentSession();if(state.user?.role!=='admin'){loaded.value=false;clearSecrets();return}const[agreementData,paymentData]=await Promise.all([getAdminAgreements(),getPaymentSettings()]);if(!currentRequest(current,session))return;documents.forEach(document=>{agreements[document.key]={...agreementData[document.key]}});savedAgreements=JSON.stringify(agreements);applyPayment(paymentData);loadedSession=session;loaded.value=true}catch(err){if(current===version&&(!session||sameSession(session)))error.value=errorMessage(err)}finally{if(current===version)loading.value=false}}
+/** 只读取当前分区所需的配置，确认管理员和请求版本后展示。 */
+async function load(){const current=++version;loading.value=true;error.value='';let session: ReturnType<typeof currentSession> | undefined;try{await init();if(current!==version||!visible)return;session=currentSession();if(state.user?.role!=='admin'){loaded.value=false;clearSecrets();return}if(commerceSection.value){loadedSession=session;loaded.value=true;return}if(tab.value==='agreements'){const agreementData=await getAdminAgreements();if(!currentRequest(current,session))return;documents.forEach(document=>{agreements[document.key]={...agreementData[document.key]}});savedAgreements=JSON.stringify(agreements)}else{const paymentData=await getPaymentSettings();if(!currentRequest(current,session))return;applyPayment(paymentData)}loadedSession=session;loaded.value=true}catch(err){if(current===version&&(!session||sameSession(session)))error.value=errorMessage(err)}finally{if(current===version)loading.value=false}}
 /** 撤销当前协议草稿，保持已发布内容不变。 */
 function restoreAgreements(){if(savedAgreements)Object.assign(agreements,JSON.parse(savedAgreements));notify('未发布的修改已取消')}
 /** 撤销公开配置草稿并清空本次输入的秘密。 */
@@ -91,7 +95,7 @@ function showPage(){visible=true;if(loaded.value&&sameSession(loadedSession))ret
 /** 离开即清空秘密并作废未完成回调，避免账号切换泄露管理状态。 */
 function hidePage(){visible=false;version++;if(busy.value||loading.value)loaded.value=false;clearSecrets()}
 /** 控制台入口只决定初始分区，不扩大配置访问权限。 */
-onLoad(options=>{if(options?.tab==='payment'||options?.tab==='agreements'||options?.tab==='commerce')tab.value=options.tab})
+onLoad(options=>{if(options?.tab==='commerce')tab.value='methods';else if(options?.tab&&['payment','agreements','frontend','methods','virtual','login'].includes(options.tab))tab.value=options.tab})
 onShow(showPage)
 onHide(hidePage)
 onUnload(hidePage)

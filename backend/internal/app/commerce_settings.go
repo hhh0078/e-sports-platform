@@ -17,6 +17,7 @@ import (
 // commerceSettings 保存渠道配置；手续费单位为万分之一，金币兑换固定一元一金币。
 type commerceSettings struct {
 	Mode                   string   `json:"mode"`
+	PaymentMethod          string   `json:"payment_method,omitempty"`
 	FeeBearer              string   `json:"fee_bearer"`
 	AndroidFeeBPS          int64    `json:"android_fee_bps"`
 	IOSFeeBPS              int64    `json:"ios_fee_bps"`
@@ -48,10 +49,27 @@ func (a *App) commerceSettings() commerceSettings {
 	return environmentCommerceSettings()
 }
 
+// paymentMethod 返回独立支付方式；旧配置缺省时保持历史模式的支付行为。
+func (v commerceSettings) paymentMethod() string {
+	if v.PaymentMethod != "" {
+		return v.PaymentMethod
+	}
+	if v.Mode == "official_account" {
+		return "wechat"
+	}
+	return "virtual"
+}
+
 // validateCommerceSettings 校验显式渠道和费率边界，允许未填秘密的配置草稿。
 func validateCommerceSettings(v commerceSettings) error {
 	if v.Mode != "mini_program" && v.Mode != "official_account" {
 		return fail(400, "请选择小程序模式或公众号模式")
+	}
+	if v.PaymentMethod != "" && v.PaymentMethod != "wechat" && v.PaymentMethod != "virtual" {
+		return fail(400, "请选择微信支付或虚拟支付")
+	}
+	if v.Mode == "official_account" && v.paymentMethod() == "virtual" {
+		return fail(400, "公众号模式目前仅支持微信支付，请先切换支付方式")
 	}
 	if v.FeeBearer != "platform" && v.FeeBearer != "buyer" {
 		return fail(400, "请选择平台承担或买家承担手续费")
@@ -145,7 +163,7 @@ func (a *App) commercePublicView() map[string]any {
 		virtualKey = v.SandboxAppKey
 	}
 	_, smsErr := readPhoneSMSConfig()
-	return map[string]any{"mode": v.Mode, "fee_bearer": v.FeeBearer, "android_fee_bps": v.AndroidFeeBPS, "ios_fee_bps": v.IOSFeeBPS, "coin_rate": 1, "virtual_configured": a.Config.WechatAppID != "" && a.Config.WechatMessageToken != "" && v.OfferID != "" && virtualKey != "", "callback_configured": a.Config.WechatMessageToken != "", "official_configured": v.OfficialAppID != "" && v.OfficialSecret != "" && v.OfficialRedirectURL != "", "sms_configured": smsErr == nil}
+	return map[string]any{"mode": v.Mode, "payment_method": v.paymentMethod(), "fee_bearer": v.FeeBearer, "android_fee_bps": v.AndroidFeeBPS, "ios_fee_bps": v.IOSFeeBPS, "coin_rate": 1, "virtual_configured": a.Config.WechatAppID != "" && a.Config.WechatMessageToken != "" && v.OfferID != "" && virtualKey != "", "callback_configured": a.Config.WechatMessageToken != "", "official_configured": v.OfficialAppID != "" && v.OfficialSecret != "" && v.OfficialRedirectURL != "", "sms_configured": smsErr == nil}
 }
 
 // commerceSettingsView 返回管理员可见的配置和秘密存在标记，禁止序列化内部原始配置。
@@ -156,7 +174,7 @@ func (a *App) commerceSettingsView(v commerceSettings) map[string]any {
 		key = v.SandboxAppKey
 	}
 	_, smsErr := readPhoneSMSConfig()
-	return map[string]any{"mode": v.Mode, "fee_bearer": v.FeeBearer, "android_fee_bps": v.AndroidFeeBPS, "ios_fee_bps": v.IOSFeeBPS, "coin_rate": 1, "offer_id": v.OfferID, "virtual_env": v.VirtualEnv, "official_app_id": v.OfficialAppID, "official_redirect_url": v.OfficialRedirectURL, "app_key_set": v.AppKey != "", "sandbox_app_key_set": v.SandboxAppKey != "", "official_secret_set": v.OfficialSecret != "", "virtual_configured": a.Config.WechatAppID != "" && a.Config.WechatMessageToken != "" && v.OfferID != "" && key != "", "callback_configured": a.Config.WechatMessageToken != "", "official_configured": v.OfficialAppID != "" && v.OfficialSecret != "" && v.OfficialRedirectURL != "", "sms_configured": smsErr == nil, "storage_available": storageErr == nil}
+	return map[string]any{"mode": v.Mode, "payment_method": v.paymentMethod(), "fee_bearer": v.FeeBearer, "android_fee_bps": v.AndroidFeeBPS, "ios_fee_bps": v.IOSFeeBPS, "coin_rate": 1, "offer_id": v.OfferID, "virtual_env": v.VirtualEnv, "official_app_id": v.OfficialAppID, "official_redirect_url": v.OfficialRedirectURL, "app_key_set": v.AppKey != "", "sandbox_app_key_set": v.SandboxAppKey != "", "official_secret_set": v.OfficialSecret != "", "virtual_configured": a.Config.WechatAppID != "" && a.Config.WechatMessageToken != "" && v.OfferID != "" && key != "", "callback_configured": a.Config.WechatMessageToken != "", "official_configured": v.OfficialAppID != "" && v.OfficialSecret != "" && v.OfficialRedirectURL != "", "sms_configured": smsErr == nil, "storage_available": storageErr == nil}
 }
 
 // adminCommerceSettings 只允许当前平台管理员读取脱敏渠道配置。
@@ -175,6 +193,8 @@ func (a *App) saveCommerceSettings(w http.ResponseWriter, r *http.Request) (any,
 	}
 	var patch struct {
 		Mode                *string `json:"mode"`
+		FrontendMode        *string `json:"frontend_mode"`
+		PaymentMethod       *string `json:"payment_method"`
 		FeeBearer           *string `json:"fee_bearer"`
 		AndroidFeeBPS       *int64  `json:"android_fee_bps"`
 		IOSFeeBPS           *int64  `json:"ios_fee_bps"`
@@ -208,6 +228,24 @@ func (a *App) saveCommerceSettings(w http.ResponseWriter, r *http.Request) (any,
 		return nil, err
 	}
 	previousAppID := in.OfficialAppID
+	if patch.FrontendMode != nil && patch.Mode != nil {
+		return nil, fail(400, "前端模式参数不能重复")
+	}
+	// 新分区保存时固定原支付选择，前端入口变化不再暗中改变付款通道。
+	if patch.FrontendMode != nil {
+		in.PaymentMethod = in.paymentMethod()
+		in.Mode = strings.TrimSpace(*patch.FrontendMode)
+	}
+	if patch.PaymentMethod != nil {
+		in.PaymentMethod = strings.TrimSpace(*patch.PaymentMethod)
+		if in.PaymentMethod == "" {
+			return nil, fail(400, "请选择微信支付或虚拟支付")
+		}
+	}
+	// 旧客户端mode参数仅兼容尚未拆分的配置，独立配置后不得跨入口覆盖前端模式。
+	if patch.Mode != nil && in.PaymentMethod != "" && strings.TrimSpace(*patch.Mode) != in.Mode {
+		return nil, fail(409, "前端模式与支付方式已拆分，请更新管理端后重试")
+	}
 	for _, field := range []struct {
 		input  *string
 		target *string

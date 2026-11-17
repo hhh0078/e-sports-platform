@@ -59,7 +59,7 @@ const agreementOpen=ref(true),feesOpen=ref(true),afterSaleOpen=ref(true)
 useNativePageRefresh({refresh:refreshOrder,blocked:()=>busy.value||adjustmentProcessing.value||!!pendingAction.value,context:()=>[state.user?.id,state.user?.role,sessionRevision(),id.value]})
 const paymentChannel=ref<'wechat'|'balance'>('wechat'),paymentWallet=ref<Wallet|null>(null),walletError=ref('')
 const paymentQuote=ref<VirtualQuote|null>(null),quoteLoading=ref(false),quoteError=ref('')
-const virtualMode=computed(()=>!state.devMode&&(order.value?.payment_channel?order.value.payment_channel==='virtual':state.commerce?.mode==='mini_program'))
+const virtualMode=computed(()=>!state.devMode&&(order.value?.payment_channel?order.value.payment_channel==='virtual':(state.commerce?.payment_method?state.commerce.payment_method==='virtual':state.commerce?.mode==='mini_program')))
 let disposed=false,paymentPreparation=0
 let timer: ReturnType<typeof setInterval> | undefined, polling = false, visible = false, viewerID = '', pageVersion = 0
 /** 捕获一次订单操作的账号和会话，防止迟到响应进入其他账号。 */

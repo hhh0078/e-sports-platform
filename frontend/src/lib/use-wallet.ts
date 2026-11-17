@@ -51,7 +51,7 @@ export function useWallet(){
   /** 充值只有付款确认或退还后才完成意图，未付款和未知状态保留原号用于恢复。
    */
   function reconcileTopup(owner:ReturnType<typeof session>,record:WalletTopup,fallbackRequestID?:string){
-    if((record.purpose==='balance'||record.purpose==='deposit')&&(record.status==='paid'||record.status==='refunded'))reconcileRequest(owner,record.purpose,record.amount_cents,record.request_id||fallbackRequestID)
+    if((record.purpose==='balance'||record.purpose==='deposit')&&(record.status==='paid'||record.status==='refunded'||record.status==='cash_refunded'))reconcileRequest(owner,record.purpose,record.amount_cents,record.request_id||fallbackRequestID)
   }
   /** 首屏刷新读取余额和第一页；触底仅GET各自下一页，失败不推进游标或清空资金草稿。 */
   async function load(append=false){
@@ -94,7 +94,7 @@ export function useWallet(){
   /** 创建充值/押金支付并查原单，微信本地回调不会修改余额。 */
   async function payTopup(owner:ReturnType<typeof session>,kind:WalletTopup['purpose'],cents:number,intent?:ReturnType<typeof intentID>,originalID?:string,originalVirtual=false){
     if(!originalID&&!intent)throw new Error('付款原请求缺失，请重新打开付款单')
-    const virtual=kind==='balance'&&!state.devMode&&(originalVirtual||state.commerce?.mode==='mini_program')
+    const virtual=kind==='balance'&&!state.devMode&&(originalVirtual||(state.commerce?.payment_method?state.commerce.payment_method==='virtual':state.commerce?.mode==='mini_program'))
     if(virtual){await prepareVirtualPayment(true);if(!same(owner)||!visible)return}
     const platform=virtual?{platform:paymentPlatform()}:{}
     const result=originalID?await payWalletTopup(originalID,platform):await createWalletTopup({purpose:kind,amount_cents:cents,request_id:intent!.id,...platform})
@@ -107,7 +107,7 @@ export function useWallet(){
     if(!same(owner))return
     const payment=await syncWalletTopup(result.payment.id)
     if(!same(owner))return
-    if(payment.status==='paid'||payment.status==='refunded'){reconcileTopup(owner,payment,result.payment.request_id||intent?.id);if(visible)notify(payment.status==='paid'?'已确认到账':'该付款单已退还')}
+    if(payment.status==='paid'||payment.status==='refunded'||payment.status==='cash_refunded'){reconcileTopup(owner,payment,result.payment.request_id||intent?.id);if(visible)notify(payment.status==='paid'?'已确认到账':'该付款单已退还')}
     else if(visible)notify(nativeError?'支付未确认，可从原付款单继续支付或同步':'支付处理中，请同步原付款单状态')
   }
   /** 恢复服务端本人原付款单，跨设备也不会错误创建另一笔充值。 */

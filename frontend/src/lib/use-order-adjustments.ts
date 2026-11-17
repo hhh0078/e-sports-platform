@@ -22,7 +22,7 @@ export type AdjustmentDialog = 'create'|'accept'|'reject'|'withdraw'|'pay'
 /** 以当前订单读取函数驱动共享组件，变更后通知父页面重新取订单与聊天。 */
 export function useOrderAdjustments(readOrder:()=>Order|null,changed:()=>void){
   const records=ref<OrderAdjustment[]>([]),loading=ref(false),busy=ref(false),error=ref(''),formError=ref(''),dialog=ref<AdjustmentDialog|null>(null),kind=ref<AdjustmentKind>('increase'),amount=ref(''),reason=ref(''),selected=ref<OrderAdjustment|null>(null),channel=ref<'wechat'|'balance'>('wechat'),wallet=ref<Wallet|null>(null),walletLoading=ref(false),walletError=ref('')
-  const virtualMode=computed(()=>!state.devMode&&(selected.value?.payment_channel?selected.value.payment_channel==='virtual':state.commerce?.mode==='mini_program')),quote=ref<VirtualQuote|null>(null),quoteError=ref('')
+  const virtualMode=computed(()=>!state.devMode&&(selected.value?.payment_channel?selected.value.payment_channel==='virtual':(state.commerce?.payment_method?state.commerce.payment_method==='virtual':state.commerce?.mode==='mini_program'))),quote=ref<VirtualQuote|null>(null),quoteError=ref('')
   let visible=true,disposed=false,readVersion=0,operation=0,walletVersion=0
   let currentRead:Promise<void>|null=null
   let resumeDraft:{kind:AdjustmentKind;amount:string;reason:string}|null=null

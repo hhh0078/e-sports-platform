@@ -18,11 +18,11 @@ export const ADMIN_CONTENT_ENTRIES:AdminEntry[]=[
   {label:'发送平台消息',icon:'bell',route:'/pages/manage/messages'},
 ]
 export const ADMIN_SETTINGS_GROUPS:AdminSettingsGroup[]=[
-  {id:'platform',label:'平台基础',icon:'settings',description:'平台名称与基础资料',entries:[{label:'平台资料',icon:'settings',route:'/pages/manage/platform'}]},
+  {id:'platform',label:'平台基础',icon:'settings',description:'平台资料、前端模式',entries:[{label:'平台资料',icon:'settings',route:'/pages/manage/platform'},{label:'前端模式',icon:'settings',route:'/pages/manage/settings?tab=frontend',description:'小程序模式或公众号模式'}]},
   {id:'games',label:'游戏配置',icon:'game',description:'游戏目录、分类与主题',entries:[{label:'游戏管理',icon:'game',route:'/pages/manage/games'}]},
-  {id:'identity',label:'账号与身份',icon:'shield',description:'身份校验、操作审计',entries:[{label:'身份校验',icon:'shield',route:'/pages/manage/identity',description:'严格API核验或宽松基础校验'},{label:'操作审计',icon:'receipt',route:'/pages/manage/audit',description:'查看管理员操作记录'}]},
+  {id:'identity',label:'账号与身份',icon:'shield',description:'微信登录、身份校验与审计',entries:[{label:'微信登录',icon:'weixin',route:'/pages/manage/settings?tab=login',description:'小程序登录状态与公众号授权资料'},{label:'身份校验',icon:'shield',route:'/pages/manage/identity',description:'严格API核验或宽松基础校验'},{label:'操作审计',icon:'receipt',route:'/pages/manage/audit',description:'查看管理员操作记录'}]},
   {id:'agreements',label:'协议管理',icon:'receipt',description:'用户协议、隐私政策',entries:[{label:'协议管理',icon:'receipt',route:'/pages/manage/settings?tab=agreements'}]},
-  {id:'payments',label:'支付与结算',icon:'weixin',description:'支付模式、微信支付、商家转账',entries:[{label:'支付模式',icon:'settings',route:'/pages/manage/settings?tab=commerce',description:'小程序与公众号的支付方式'},{label:'微信支付',icon:'weixin',route:'/pages/manage/settings?tab=payment',description:'商户信息、密钥与回调'},{label:'商家转账',icon:'wallet',route:'/pages/manage/wallet?view=transfer',description:'提现通道、场景与报备字段'}]},
+  {id:'payments',label:'支付与结算',icon:'weixin',description:'支付方式、渠道配置与转账',entries:[{label:'支付方式',icon:'settings',route:'/pages/manage/settings?tab=methods',description:'微信支付或虚拟支付'},{label:'微信支付',icon:'weixin',route:'/pages/manage/settings?tab=payment',description:'商户信息、密钥与回调'},{label:'虚拟支付',icon:'game',route:'/pages/manage/settings?tab=virtual',description:'Offer ID、密钥与渠道手续费'},{label:'商家转账',icon:'wallet',route:'/pages/manage/wallet?view=transfer',description:'提现通道、场景与报备字段'}]},
   {id:'finance',label:'费率与押金',icon:'wallet',description:'平台抽成与两类押金门槛',entries:[{label:'交易规则',icon:'wallet',route:'/pages/manage/finance/settings'}]},
   {id:'review',label:'内容与审核',icon:'shield',description:'AI审核服务与规则',entries:[{label:'AI审核配置',icon:'settings',route:'/pages/manage/ai'}]},
   {id:'notifications',label:'消息与订阅',icon:'bell',description:'微信订阅模板与提醒',entries:[{label:'微信订阅',icon:'bell',route:'/pages/manage/subscriptions'}]},

@@ -15,7 +15,7 @@ interface PaymentBridge { invoke:(name:string,params:WechatPaymentParams,callbac
 export function paymentPlatform():PaymentPlatform{return /ios/i.test(String(uni.getSystemInfoSync().platform||''))?'ios':'android'}
 /** 拉起虚拟支付前刷新服务端签名会话，密钥始终只留在服务端。 */
 export async function prepareVirtualPayment(required=false):Promise<void>{
-  if(state.devMode||!required&&state.commerce?.mode!=='mini_program')return
+  if(state.devMode||!required&&(state.commerce?.payment_method?state.commerce.payment_method!=='virtual':state.commerce?.mode!=='mini_program'))return
   const userID=state.user?.id,revision=sessionRevision(),savedToken=token()
   const runtime=(globalThis as unknown as {wx?:VirtualRuntime}).wx
   if(!runtime?.login||!required&&(!runtime.requestVirtualPayment||runtime.canIUse&&!runtime.canIUse('requestVirtualPayment')))throw new Error(required?'请使用原小程序买家账号刷新微信身份并同步原资金单':'请在支持虚拟支付的新版微信小程序内付款')

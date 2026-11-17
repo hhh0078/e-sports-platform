@@ -16,7 +16,7 @@ func virtualConsumptionID(orderID, adjustmentID string) string {
 
 // useVirtualPayment 只为小程序新服务付款选择虚拟支付，已经发起的原普通微信单始终保持原渠道。
 func (a *App) useVirtualPayment(o Order) bool {
-	return !a.Config.DevMode && (o.PaymentChannel == "virtual" || o.PayOpenID == "" && o.PaymentChannel == "" && a.commerceSettings().Mode == "mini_program")
+	return !a.Config.DevMode && (o.PaymentChannel == "virtual" || o.PayOpenID == "" && o.PaymentChannel == "" && a.commerceSettings().paymentMethod() == "virtual")
 }
 
 // prepareVirtualConsumption 在订单及用户锁中冻结收费快照，每个用户只允许一笔未知扣币，防止余额重复占用。

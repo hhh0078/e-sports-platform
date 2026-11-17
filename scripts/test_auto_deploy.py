@@ -3,6 +3,9 @@ import importlib.util
 import json
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
+import time
 import unittest
 from unittest.mock import patch
 
@@ -65,6 +68,32 @@ class AutoDeployTests(unittest.TestCase):
                     release.verify_fonts()
             with patch.object(deploy, "request", return_value=(good, b"wOFF" + b"0" * 80)):
                 self.assertEqual(release.verify_fonts(), [{"font": "longcang", "bytes": 84}])
+
+    def test_cleanup_only_rebuildable_files(self):
+        """清理仅删除发布副本的依赖和临时构建，不删除线上回滚目录或配置。"""
+        with tempfile.TemporaryDirectory() as root:
+            release = self.subject(root, True)
+            for name in ("frontend/node_modules", "frontend/dist", "deploy"):
+                path = release.source / name
+                path.mkdir(parents=True)
+                (path / "keep-test").write_text("test")
+            release.clean_build_files()
+            self.assertFalse((release.source / "frontend/node_modules").exists())
+            self.assertFalse((release.source / "frontend/dist").exists())
+            self.assertTrue((release.source / "deploy/keep-test").is_file())
+            self.assertTrue((release.root / "current/h5/deployment-version.json").is_file())
+
+    def test_timeout_ends_download_descendants(self):
+        """超时必须停止整个下载进程组，避免孙进程继续持有发布锁。"""
+        with tempfile.TemporaryDirectory() as root:
+            release = self.subject(root, True)
+            delayed = Path(root) / "orphan-wrote"
+            child = "import time;from pathlib import Path;time.sleep(.5);Path(" + repr(str(delayed)) + ").write_text('bad')"
+            parent = "import subprocess,sys,time;subprocess.Popen([sys.executable,'-c'," + repr(child) + "]);time.sleep(30)"
+            with self.assertRaises(subprocess.TimeoutExpired):
+                release.run([sys.executable, "-c", parent], timeout=.1, capture=True)
+            time.sleep(.6)
+            self.assertFalse(delayed.exists())
 
 
 if __name__ == "__main__":

@@ -32,8 +32,9 @@ function harness(pageName: keyof typeof sources) {
   vm.runInContext(executable(storeSource) + '\nglobalThis.store = { state, login, sessionRevision }', context)
   context.store.state.user = { ...accountA }
   context.store.state.ready = true
-  const exposed = { 'club-detail': 'id,club,requirementsAccepted,applicationNote,submitJoin,reviewNote,reviewing,reviewStatus,submitReview,busy', 'club-edit': 'load, save, form, depositCents, canManage', 'admin-settings': 'load, savePayment, saveAgreements, payment, secrets, paymentStatus, agreements, loaded', profile: 'load, upload, form, uploading' }[pageName]
+  const exposed = { 'club-detail': 'id,club,requirementsAccepted,applicationNote,submitJoin,reviewNote,reviewing,reviewStatus,submitReview,busy', 'club-edit': 'load, save, form, depositCents, canManage', 'admin-settings': 'load, savePayment, saveAgreements, payment, secrets, paymentStatus, agreements, loaded, tab', profile: 'load, upload, form, uploading' }[pageName]
   vm.runInContext(executable(sources[pageName]) + '\nglobalThis.page = { ' + exposed + ' }', context)
+  if(pageName==='admin-settings')lifecycle.load({tab:'payment'})
   return {
     store: context.store, page: context.page, storage, requests, uploads, notices, navigations, lifecycle,
     /** 取得确实发出的单个请求，重复或缺失调用会直接失败。 */
@@ -69,8 +70,8 @@ function paymentData(label = 'A') {
 /** 完成已开始的管理员配置读取，避免复制加载逻辑。 */
 async function resolveAdmin(subject: ReturnType<typeof harness>, label = 'A', extraPayment: object = {}) {
   await flush()
-  subject.take('/admin/agreements').resolve(agreementData(label))
-  subject.take('/admin/payment-settings').resolve({ ...paymentData(label), ...extraPayment })
+  if(subject.page.tab.value==='agreements')subject.take('/admin/agreements').resolve(agreementData(label))
+  else subject.take('/admin/payment-settings').resolve({ ...paymentData(label), ...extraPayment })
   await flush()
 }
 
@@ -136,9 +137,8 @@ test('管理员只接收支付公开字段，隐藏页面立即清除秘密且�
 test('管理员跨身份迟到的配置读取不能写入新身份页面', async () => {
   const subject = harness('admin-settings'), loading = subject.page.load()
   await flush()
-  const oldAgreements = subject.take('/admin/agreements'), oldPayment = subject.take('/admin/payment-settings')
+  const oldPayment = subject.take('/admin/payment-settings')
   await loginB(subject)
-  oldAgreements.resolve(agreementData('A'))
   oldPayment.resolve(paymentData('A'))
   await loading
   assert.equal(subject.page.loaded.value, false)
@@ -150,7 +150,7 @@ test('管理员跨身份迟到的配置读取不能写入新身份页面', async
 test('管理员跨身份迟到的支付或协议保存不能覆盖新配置', async t => {
   for (const kind of ['payment', 'agreements']) {
     await t.test(kind, async () => {
-      const subject = harness('admin-settings'), loading = subject.page.load()
+      const subject = harness('admin-settings');subject.lifecycle.load({tab:kind});const loading = subject.page.load()
       await resolveAdmin(subject)
       await loading
       subject.page.payment.merchant_id = 'A-unsaved'
@@ -165,8 +165,8 @@ test('管理员跨身份迟到的支付或协议保存不能覆盖新配置', as
       await resolveAdmin(subject, 'B')
       old.resolve(kind === 'payment' ? paymentData('old-A') : agreementData('old-A'))
       await saving
-      assert.equal(subject.page.payment.merchant_id, 'merchant-B')
-      assert.equal(subject.page.agreements.user_agreement.version, 'B-v1')
+      if(kind==='payment')assert.equal(subject.page.payment.merchant_id, 'merchant-B')
+      else assert.equal(subject.page.agreements.user_agreement.version, 'B-v1')
       assert.ok(Object.values(subject.page.secrets).every(value => value === ''))
       assert.equal(subject.notices.length, 0)
       if (kind === 'payment') assert.equal(old.body.api_v3_key, '')
