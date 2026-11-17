@@ -149,6 +149,12 @@ curl --fail https://game.ai.58it.cn/api/bootstrap
 curl -I https://game.ai.58it.cn/static/covers/official/delta-icon.jpg
 ```
 
+### 内置素材更新与代理缓存（2026-11-18）
+
+当前H5通过 `/opt/jijie-auto-deploy/current/h5` 发布，图片仍由API提供。本站rewrite文件中的 `/static/covers/` 与 `/static/operations/` 两个location需明确设置 `proxy_cache off;`，避免继承全局cache_one后继续返回旧图片；客户端24小时缓存继续由API的Cache-Control管理。不要清空服务器全局代理缓存目录，它可能包含其它站点数据。
+
+本次在保留原配置后完成 `nginx -t` 和平滑重载，回退基线为服务器 `/opt/jijie-auto-deploy/nginx-before-mobile-cache-20261118.conf`。随后通过正式HTTPS域名比对46张图片的字节数、SHA256及PNG尺寸，结果见 `output/mobile-image-delivery/production-verification.json`。上线验收不能只检查API本机端口，还需确认公网返回相同字节。
+
 ## 5. 微信登录、手机号与合法域名
 
 前端 `frontend/src/manifest.json` 的 `mp-weixin.appid` 与服务端 `.env` 的 `WECHAT_APP_ID` 必须一致。`AppSecret` 只在服务器配置。

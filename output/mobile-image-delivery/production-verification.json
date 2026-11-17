@@ -1,0 +1,343 @@
+{
+  "passed": true,
+  "production_version": {
+    "source_commit": "f01281b83f3fe96fed755ad5430188ff495aac60",
+    "input_digest": "a1676229c06aed942fc56fa35c7136aa78f7f8038c3cd5514b25d7f3b85e7e3c"
+  },
+  "images_verified": 46,
+  "image_bytes": 1594401,
+  "images": [
+    {
+      "path": "/static/operations/newcomer-rules-v1.png",
+      "bytes": 152412,
+      "sha256": "dd5a3740e922b954cbef78b7fc0d4d9c2cc121202b2926f92d2fa21729d5f4fc",
+      "content_type": "image/png",
+      "cache_control": "public, max-age=86400",
+      "size": [
+        768,
+        960
+      ]
+    },
+    {
+      "path": "/static/operations/platform-intro-v1.png",
+      "bytes": 95072,
+      "sha256": "7dad6eebf23952aa8f66254820d7ede54022f11ed01304354180e1bcea614962",
+      "content_type": "image/png",
+      "cache_control": "public, max-age=86400",
+      "size": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "/static/covers/arena-1.jpg",
+      "bytes": 14968,
+      "sha256": "b0a43bcf3a2adca9c4c748532b67c0839a5eb9cd14b26f98f72bf6aff6c226d1",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/arena-2.jpg",
+      "bytes": 13442,
+      "sha256": "23818e251ee90f62aebe9f5451ae33536948e1e1b8f49b02db25e64e3e889db9",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/cfm-1.jpg",
+      "bytes": 16863,
+      "sha256": "cfacffd786859f4958e6d0d43231aea5300748c8628fd1bbf431e3bb9fcea3c2",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/cfm-2.jpg",
+      "bytes": 16008,
+      "sha256": "6d47614044bc7ba04a0719a6c283c7283eadac0a2f54c0073354feaf00d8e0af",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/delta-1.jpg",
+      "bytes": 16212,
+      "sha256": "39c785122350cf22be1b12650fe724c7634e5972ec8020892e136e5088eb9307",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/delta-2.jpg",
+      "bytes": 14813,
+      "sha256": "6c92d4d16db494b8987347229c04c8515845ae0a29bafc484f0ef31dc7deb66e",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/honor-1.jpg",
+      "bytes": 20254,
+      "sha256": "ca5b9574d3b762e1ef9199879c0470bacb39ed468917de7d133af403dcf4a47d",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/honor-2.jpg",
+      "bytes": 18856,
+      "sha256": "e0d37ecac7f1296900d463a3fe5c6cf04526e48fcbf6d513361cf69d908d9fc6",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/arena-1.jpg",
+      "bytes": 39181,
+      "sha256": "23d66d1d06345019d16dfa1e7689819bee79c29c54a3d8f67559056ef1973d11",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/arena-2.jpg",
+      "bytes": 26187,
+      "sha256": "99dcb48cc3670f565324a040811be41ccdba963d2da7aad57bdccd150eceefc9",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/cfm-1.jpg",
+      "bytes": 42692,
+      "sha256": "85496bf5c6cdf8551e0a5043f3909f26d969ed225122f0601864096b17d74991",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/cfm-2.jpg",
+      "bytes": 38651,
+      "sha256": "7c77b576fe5eb3b89f248488a62152c0e5abb51630e006acd22836d3a0a5b315",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/codm-1.jpg",
+      "bytes": 36712,
+      "sha256": "b14fb623b0bdba6a531d22cccd4341a0c6d4036a024283d6cbde08d867b4b9c7",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/codm-2.jpg",
+      "bytes": 31084,
+      "sha256": "d875bfb0351b3c99f4bf35e55c84f2d30c4e04bc4cfe675751c8768e4dce8072",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/delta-1.jpg",
+      "bytes": 29505,
+      "sha256": "95474f53e659faaa82619b9327997fab7b662b187e33d91b4dbeaa5296e932ae",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/delta-2.jpg",
+      "bytes": 32760,
+      "sha256": "56ed1a3543a9c505ad62c11f989f28758b45dcc472182597f86117cd4bbfd165",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/delta-3.jpg",
+      "bytes": 36120,
+      "sha256": "7383188bd2b64a1c9b646b80e629b00185bde04e654100e8c51133efb3a6e991",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/delta-4.jpg",
+      "bytes": 34450,
+      "sha256": "463afe10e28a4aaa0e591b3474f8a4b1e9852fb3aec0ec5281d77365b96874dd",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/eggy-1.jpg",
+      "bytes": 35331,
+      "sha256": "72c5b90178381743542671bc61183bbb79279ce89ca77471639e427832b5a891",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/eggy-2.jpg",
+      "bytes": 58695,
+      "sha256": "a6ba0e4a834ae2f1b7e91d24f49a11a30a560d8a5dd6058e29bc6f3571582fa7",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/honor-1.jpg",
+      "bytes": 32430,
+      "sha256": "cf461bd032ad799473cb6807aa100c06946c14ab31d898cab4a4c308e8e3d62c",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/honor-2.jpg",
+      "bytes": 39006,
+      "sha256": "59bfe33058c84840b0c4dfcb9e94d2e11b0b64bb1fae5c3479e8437261c9a8cf",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/honor-3.jpg",
+      "bytes": 30267,
+      "sha256": "661816e519f5bbc919330922a0b8379163bc2f600bdfee98597b27403e64a257",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/honor-4.jpg",
+      "bytes": 40165,
+      "sha256": "48881960b1e8401050f907ef5a6ea8836c5b2273ac860fcd77eae759595d2df9",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/identityv-1.jpg",
+      "bytes": 38118,
+      "sha256": "43d0d0328e6afee2426a71f3a43782d01727f0fa2386b5c94af1f83abe57e2a0",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/identityv-2.jpg",
+      "bytes": 37869,
+      "sha256": "6faf408d182b1dae7aa034628eb61213b0f33435a8bf4dd8889f3ab61033deb1",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/lol-1.jpg",
+      "bytes": 32302,
+      "sha256": "90727cf82435e3585716e47e66bc13887484dd6a25b2c2a4aec6d90f311fb841",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/lol-2.jpg",
+      "bytes": 41400,
+      "sha256": "b30c13387726b45806213c509701d175ba4edd71f35222b0cfca07dc2720e158",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/narakam-1.jpg",
+      "bytes": 32017,
+      "sha256": "af73aec596d9de4e01b558792f32ad5da645718c0004f6db8ef6a22b53acad32",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/narakam-2.jpg",
+      "bytes": 25397,
+      "sha256": "fecd99aa5d0d852f1d1bc509f4fc12cf03e047647febc65b10ae38bac9c894da",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/peace-1.jpg",
+      "bytes": 43927,
+      "sha256": "0e8dd2041dfa0242d1e44e476f7d6df7cf1027b3bc6c57d899c4596ae51b14f1",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/peace-2.jpg",
+      "bytes": 47081,
+      "sha256": "2e54fba80db148db14ff90c66e904a520502faab4a86b1f2208f565fae2556ba",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/tft-1.jpg",
+      "bytes": 55093,
+      "sha256": "fe79350399ca2f22707c749447d1c122d31fec22cbbbfb71999ef08e3ed0adb7",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/tft-2.jpg",
+      "bytes": 41486,
+      "sha256": "713babb4112c923dda4ea80b0ba6bb2a5bd9f83e1b0f32c244e6495e7d3ee089",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/valorant-1.jpg",
+      "bytes": 35189,
+      "sha256": "e50af5938a913ceb21c37b90879490e267a0134fae61aee7fcfeca24cb585a85",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/valorant-2.jpg",
+      "bytes": 27173,
+      "sha256": "4a6229e6418345a58e861dc3b194edd1f68a82f5141e14dc58e976eb3c68f980",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/valorantm-1.jpg",
+      "bytes": 25529,
+      "sha256": "32be679bedd5941a27cbd23685b0930c27a86746001443393ce516185d19e088",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/official/valorantm-2.jpg",
+      "bytes": 34725,
+      "sha256": "2d4b7a2dc34594f20739bd805fb34e10b9ddf5488f455f2f71f689dd2ae6ee1f",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/peace-1.jpg",
+      "bytes": 21192,
+      "sha256": "eb5727703602bbd67f448f2811441a60f5acf0e0af08b3587e5ac06f4f7034ee",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/peace-2.jpg",
+      "bytes": 22103,
+      "sha256": "fb8d1de214856ce5d4559da276f5b0b0256315e5aa5433b58cc1564e1de40e59",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/tft-1.jpg",
+      "bytes": 21341,
+      "sha256": "e15c8dd365828ad97ae948fbb6b243dc5e6e696bd2a272c8372078eb727045d3",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/tft-2.jpg",
+      "bytes": 21062,
+      "sha256": "72bfe7caaf5c52ac2d79897e6a2701b16a664c54a823c4a5f4d0a3421cf032d2",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/valorant-1.jpg",
+      "bytes": 14297,
+      "sha256": "878a2b87dceca3775d0caaa4daf395b251aa9480fe0364a64ff050a9000e2358",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    },
+    {
+      "path": "/static/covers/valorant-2.jpg",
+      "bytes": 14964,
+      "sha256": "2fda50d1ca9efaef0d8c9d24660d3066c6a3de3c4ed57c75abee99618c8dc539",
+      "content_type": "image/jpeg",
+      "cache_control": "public, max-age=86400"
+    }
+  ],
+  "real_device": false,
+  "review_submitted": false
+}
