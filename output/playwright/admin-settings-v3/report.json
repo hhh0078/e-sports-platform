@@ -34,6 +34,10 @@
     "h5_public_version_matches": true,
     "fonts": 6,
     "identity_mode": "strict",
-    "wechat_uploaded": false
+    "wechat_uploaded": true,
+    "wechat_version": "1.0.20261117",
+    "wechat_package_bytes": 1737952,
+    "wechat_url_check": true,
+    "wechat_published": false
   }
 }

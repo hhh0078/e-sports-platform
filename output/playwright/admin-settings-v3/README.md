@@ -12,3 +12,5 @@
 微信官方SDK模拟器（基础库3.17.6）已验证九类列表、支付三项、返回恢复和无密钥基础方式保存。网络使用SDK mock，未提交真实身份。当前开发者工具Tool.getInfo只返回IDE版本，验收脚本以真实wx.getSystemInfoSync读取SDK版本后继续；等待路由动画完成后再检查节点。
 
 完整数据库集成回归 `TEST_INTEGRATION=true go test -race ./... -count=1` 全部通过，internal/app耗时152.427秒；仅使用本机隔离schema，不触碰生产数据。
+
+微信正式包已经官方CLI成功上传为开发版本1.0.20261117（1737952字节），使用正式HTTPS与合法域名校验；未提审或正式发布。
