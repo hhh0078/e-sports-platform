@@ -29,5 +29,14 @@
   "mini_sdk": "3.17.6",
   "mini_rule_contexts": 4,
   "real_payment": false,
-  "real_device": false
+  "real_device": false,
+  "deployment": {
+    "source_commit": "9458c6084aeed0cacda70e4b69361caa3ebe94e6",
+    "backend_and_h5_deployed": true,
+    "wechat_version": "1.0.20261117.1",
+    "wechat_uploaded": true,
+    "wechat_package_bytes": 1749284,
+    "wechat_published": false,
+    "virtual_callback_configured": false
+  }
 }
