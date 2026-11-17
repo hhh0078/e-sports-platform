@@ -143,7 +143,7 @@ func subscriptionPage(path string) string {
 	if err != nil || u.IsAbs() || u.Host != "" {
 		return "pages/account/messages/index"
 	}
-	allowed := map[string]bool{"pages/orders/detail": true, "pages/account/wallet": true, "pages/account/messages/index": true, "pages/account/profile": true, "pages/services/publish": true, "pages/services/detail": true, "pages/community/clubs/detail": true, "pages/community/clubs/edit": true, "pages/community/clubs/console": true, "pages/manage/moderation": true, "pages/manage/orders": true, "pages/manage/wallet": true, "pages/manage/clubs": true, "pages/manage/index": true, "pages/main/index": true}
+	allowed := map[string]bool{"pages/orders/detail": true, "pages/account/wallet": true, "pages/account/messages/index": true, "pages/account/profile": true, "pages/services/publish": true, "pages/services/detail": true, "pages/community/clubs/detail": true, "pages/community/clubs/edit": true, "pages/community/clubs/console": true, "pages/manage/moderation": true, "pages/manage/orders": true, "pages/manage/wallet": true, "pages/manage/clubs": true, "pages/manage/index": true, "pages/main/index": true, "pages/main/worker/index": true, "pages/main/orders/index": true, "pages/main/me/index": true}
 	if !allowed[u.Path] || len(path) > 512 {
 		return "pages/account/messages/index"
 	}

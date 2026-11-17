@@ -23,12 +23,12 @@ test('空值和无效时间安全显示，未知状态保留原值', () => {
 
 test('上传封面和内置游戏图片采用当前后端地址', () => {
   assert.equal(assetUrl('/api/media/cover123'), 'http://127.0.0.1:8090/api/media/cover123')
-  assert.equal(assetUrl('/static/covers/delta-1.jpg'), 'http://127.0.0.1:8090/static/covers/delta-1.jpg')
+  assert.equal(assetUrl('/static/covers/delta-1.jpg'), 'http://127.0.0.1:8090/static/covers/delta-1.jpg?v=mobile-20261118')
   assert.equal(assetUrl(null), '')
 })
 
 test('运营轮播、透明公告和文章封面解析为当前API域名，包内与外部图片保持原地址', () => {
-  for(const name of ['platform-intro-v1','newcomer-rules-v1'])assert.equal(assetUrl('/static/operations/'+name+'.png'),'http://127.0.0.1:8090/static/operations/'+name+'.png')
+  for(const name of ['platform-intro-v1','newcomer-rules-v1'])assert.equal(assetUrl('/static/operations/'+name+'.png'),'http://127.0.0.1:8090/static/operations/'+name+'.png?v=mobile-20261118')
   for(const value of ['/static/icons/game.png','https://images.example.com/image.png','wxfile://local.png'])assert.equal(assetUrl(value),value)
 })
 
@@ -38,17 +38,17 @@ test('主导航归一化保留筛选，同一主页面切换不重建，二级�
   let pages: Array<{ route: string }> = []
   const platform = globalThis as unknown as { getCurrentPages?: () => Array<{ route: string }>; uni?: object }
   platform.getCurrentPages = () => pages
-  platform.uni = { reLaunch: (options: Options) => calls.push({ type: 'reLaunch', options }), navigateTo: (options: Options) => calls.push({ type: 'navigateTo', options }), showToast: (options: Options) => calls.push({ type: 'toast', options }) }
+  platform.uni = { switchTab: (options: Options) => calls.push({ type: 'switchTab', options }), navigateTo: (options: Options) => calls.push({ type: 'navigateTo', options }), showToast: (options: Options) => calls.push({ type: 'toast', options }) }
   go('/pages/orders/index?role=provider&status=working')
-  assert.equal(calls[0].type, 'reLaunch')
-  assert.equal(calls[0].options.url, '/pages/main/index?tab=orders&role=provider&status=working')
+  assert.equal(calls[0].type, 'switchTab')
+  assert.equal(calls[0].options.url, '/pages/main/orders/index')
   go('/pages/order/index?id=example')
   assert.equal(calls[1].type, 'navigateTo')
   calls[1].options.fail?.()
   assert.equal(calls[2].type, 'toast')
   pages = [{ route: 'pages/main/index' }]
   go('/pages/me/index')
-  assert.equal(calls.length, 3)
+  assert.equal(calls.at(-1)?.type,'switchTab');assert.equal(calls.at(-1)?.options.url,'/pages/main/me/index')
   delete platform.uni
   delete platform.getCurrentPages
 })
@@ -59,18 +59,18 @@ test('共享返回优先沿历史返回，无历史或返回失败时进入唯�
   let pages = [{ route: 'pages/main/index' }, { route: 'pages/services/detail' }]
   const platform = globalThis as unknown as { getCurrentPages?: () => Array<{ route: string }>; uni?: object }
   platform.getCurrentPages = () => pages
-  platform.uni = { navigateBack: (options: Options) => calls.push({ type: 'back', options }), reLaunch: (options: Options) => calls.push({ type: 'reLaunch', options }), showToast: () => {} }
+  platform.uni = { navigateBack: (options: Options) => calls.push({ type: 'back', options }), switchTab: (options: Options) => calls.push({ type: 'switchTab', options }), showToast: () => {} }
   try {
     back()
     assert.equal(calls[0].type, 'back')
     assert.equal(calls[0].options.delta, 1)
     calls[0].options.fail?.()
-    assert.equal(calls[1].type, 'reLaunch')
-    assert.equal(calls[1].options.url, '/pages/main/index?tab=player')
+    assert.equal(calls[1].type, 'switchTab')
+    assert.equal(calls[1].options.url, '/pages/main/index')
     pages = [{ route: 'pages/community/clubs/detail' }]
     back()
-    assert.equal(calls[2].type, 'reLaunch')
-    assert.equal(calls[2].options.url, '/pages/main/index?tab=player')
+    assert.equal(calls[2].type, 'switchTab')
+    assert.equal(calls[2].options.url, '/pages/main/index')
   } finally { delete platform.uni; delete platform.getCurrentPages }
 })
 

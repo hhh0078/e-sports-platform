@@ -6,7 +6,7 @@ test('保留有效订单深链，拒绝未知身份与筛选', () => {
   assert.deepEqual(parseOrderQuery({ role: 'provider', status: 'working' }), { role: 'provider', filter: 'working' })
   assert.deepEqual(parseOrderQuery({ role: 'all', status: 'completed' }), { role: 'all', filter: 'completed' })
   assert.deepEqual(parseOrderQuery({ role: 'admin&all=1', status: 'invalid' }), { role: 'buyer', filter: 'all' })
-  assert.equal(orderListPath('provider', 'refund'), '/pages/main/index?tab=orders&role=provider&status=refund')
+  assert.equal(orderListPath('provider', 'refund'), '/pages/main/orders/index?role=provider&status=refund')
 })
 test('付款入口只向本人买方显示，售后与履约优先级明确', () => {
   const order = { buyer_id: 'buyer', provider_id: 'worker', status: 'pending_payment', refund_status: 'none' }

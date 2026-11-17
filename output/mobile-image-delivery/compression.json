@@ -1,0 +1,605 @@
+{
+  "images": [
+    {
+      "path": "backend/internal/assets/operations/newcomer-rules-v1.png",
+      "before_bytes": 2206416,
+      "after_bytes": 152412,
+      "before_size": [
+        1122,
+        1402
+      ],
+      "after_size": [
+        768,
+        960
+      ]
+    },
+    {
+      "path": "backend/internal/assets/operations/platform-intro-v1.png",
+      "before_bytes": 1994250,
+      "after_bytes": 95072,
+      "before_size": [
+        1672,
+        941
+      ],
+      "after_size": [
+        960,
+        540
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/arena-1.jpg",
+      "before_bytes": 17121,
+      "after_bytes": 14968,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/arena-2.jpg",
+      "before_bytes": 15403,
+      "after_bytes": 13442,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/cfm-1.jpg",
+      "before_bytes": 19163,
+      "after_bytes": 16863,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/cfm-2.jpg",
+      "before_bytes": 18028,
+      "after_bytes": 16008,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/delta-1.jpg",
+      "before_bytes": 18294,
+      "after_bytes": 16212,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/delta-2.jpg",
+      "before_bytes": 16858,
+      "after_bytes": 14813,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/honor-1.jpg",
+      "before_bytes": 22723,
+      "after_bytes": 20254,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/honor-2.jpg",
+      "before_bytes": 21192,
+      "after_bytes": 18856,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/arena-1.jpg",
+      "before_bytes": 57785,
+      "after_bytes": 39181,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/arena-2.jpg",
+      "before_bytes": 38441,
+      "after_bytes": 26187,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/cfm-1.jpg",
+      "before_bytes": 62748,
+      "after_bytes": 42692,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/cfm-2.jpg",
+      "before_bytes": 57700,
+      "after_bytes": 38651,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/codm-1.jpg",
+      "before_bytes": 36712,
+      "after_bytes": 36712,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/codm-2.jpg",
+      "before_bytes": 31084,
+      "after_bytes": 31084,
+      "before_size": [
+        800,
+        440
+      ],
+      "after_size": [
+        800,
+        440
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/delta-1.jpg",
+      "before_bytes": 42047,
+      "after_bytes": 29505,
+      "before_size": [
+        800,
+        444
+      ],
+      "after_size": [
+        800,
+        444
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/delta-2.jpg",
+      "before_bytes": 46852,
+      "after_bytes": 32760,
+      "before_size": [
+        800,
+        444
+      ],
+      "after_size": [
+        800,
+        444
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/delta-3.jpg",
+      "before_bytes": 41915,
+      "after_bytes": 36120,
+      "before_size": [
+        760,
+        427
+      ],
+      "after_size": [
+        760,
+        427
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/delta-4.jpg",
+      "before_bytes": 40115,
+      "after_bytes": 34450,
+      "before_size": [
+        760,
+        427
+      ],
+      "after_size": [
+        760,
+        427
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/eggy-1.jpg",
+      "before_bytes": 35331,
+      "after_bytes": 35331,
+      "before_size": [
+        800,
+        448
+      ],
+      "after_size": [
+        800,
+        448
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/eggy-2.jpg",
+      "before_bytes": 58695,
+      "after_bytes": 58695,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/honor-1.jpg",
+      "before_bytes": 46123,
+      "after_bytes": 32430,
+      "before_size": [
+        800,
+        367
+      ],
+      "after_size": [
+        800,
+        367
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/honor-2.jpg",
+      "before_bytes": 55507,
+      "after_bytes": 39006,
+      "before_size": [
+        800,
+        367
+      ],
+      "after_size": [
+        800,
+        367
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/honor-3.jpg",
+      "before_bytes": 35316,
+      "after_bytes": 30267,
+      "before_size": [
+        760,
+        349
+      ],
+      "after_size": [
+        760,
+        349
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/honor-4.jpg",
+      "before_bytes": 46776,
+      "after_bytes": 40165,
+      "before_size": [
+        760,
+        349
+      ],
+      "after_size": [
+        760,
+        349
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/identityv-1.jpg",
+      "before_bytes": 38118,
+      "after_bytes": 38118,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/identityv-2.jpg",
+      "before_bytes": 37869,
+      "after_bytes": 37869,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/lol-1.jpg",
+      "before_bytes": 32302,
+      "after_bytes": 32302,
+      "before_size": [
+        800,
+        472
+      ],
+      "after_size": [
+        800,
+        472
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/lol-2.jpg",
+      "before_bytes": 41400,
+      "after_bytes": 41400,
+      "before_size": [
+        800,
+        472
+      ],
+      "after_size": [
+        800,
+        472
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/narakam-1.jpg",
+      "before_bytes": 32017,
+      "after_bytes": 32017,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/narakam-2.jpg",
+      "before_bytes": 25397,
+      "after_bytes": 25397,
+      "before_size": [
+        800,
+        450
+      ],
+      "after_size": [
+        800,
+        450
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/peace-1.jpg",
+      "before_bytes": 50718,
+      "after_bytes": 43927,
+      "before_size": [
+        760,
+        353
+      ],
+      "after_size": [
+        760,
+        353
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/peace-2.jpg",
+      "before_bytes": 54088,
+      "after_bytes": 47081,
+      "before_size": [
+        518,
+        760
+      ],
+      "after_size": [
+        518,
+        760
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/tft-1.jpg",
+      "before_bytes": 61261,
+      "after_bytes": 55093,
+      "before_size": [
+        720,
+        405
+      ],
+      "after_size": [
+        720,
+        405
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/tft-2.jpg",
+      "before_bytes": 48339,
+      "after_bytes": 41486,
+      "before_size": [
+        760,
+        427
+      ],
+      "after_size": [
+        760,
+        427
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/valorant-1.jpg",
+      "before_bytes": 49084,
+      "after_bytes": 35189,
+      "before_size": [
+        800,
+        453
+      ],
+      "after_size": [
+        800,
+        453
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/valorant-2.jpg",
+      "before_bytes": 38853,
+      "after_bytes": 27173,
+      "before_size": [
+        800,
+        453
+      ],
+      "after_size": [
+        800,
+        453
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/valorantm-1.jpg",
+      "before_bytes": 25529,
+      "after_bytes": 25529,
+      "before_size": [
+        800,
+        567
+      ],
+      "after_size": [
+        800,
+        567
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/official/valorantm-2.jpg",
+      "before_bytes": 34725,
+      "after_bytes": 34725,
+      "before_size": [
+        800,
+        461
+      ],
+      "after_size": [
+        800,
+        461
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/peace-1.jpg",
+      "before_bytes": 23627,
+      "after_bytes": 21192,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/peace-2.jpg",
+      "before_bytes": 24707,
+      "after_bytes": 22103,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/tft-1.jpg",
+      "before_bytes": 23894,
+      "after_bytes": 21341,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/tft-2.jpg",
+      "before_bytes": 23637,
+      "after_bytes": 21062,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/valorant-1.jpg",
+      "before_bytes": 16381,
+      "after_bytes": 14297,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    },
+    {
+      "path": "backend/internal/assets/covers/valorant-2.jpg",
+      "before_bytes": 17032,
+      "after_bytes": 14964,
+      "before_size": [
+        400,
+        250
+      ],
+      "after_size": [
+        400,
+        250
+      ]
+    }
+  ],
+  "before_bytes": 5781573,
+  "after_bytes": 1594401,
+  "saved_percent": 72.4
+}

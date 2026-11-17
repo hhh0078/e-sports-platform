@@ -57,7 +57,7 @@ async function verifyPhone(){if(!state.user||!visible)return;if(state.user.phone
 /** 主动核验同样读取实时身份，不展示真实姓名或完整身份证。 */
 async function verifyUserIdentity():Promise<void>{if(!state.user||!visible||saving.value||uploading.value)return;const session=currentSession();try{if(await requireIdentity())if(visible&&sameSession(session))notify('身份已核验')}catch(err){if(visible&&sameSession(session))notify(err)}}
 /** 撤销当前会话，迟到回调不能退出后来登录的账号。 */
-async function signOut(){if(saving.value)return;version++;saving.value=true;try{await logout();if(!state.user&&!token()){resetForm();go('/pages/main/index?tab=me')}}catch(err){notify(err)}finally{saving.value=false}}
+async function signOut(){if(saving.value)return;version++;saving.value=true;try{await logout();if(!state.user&&!token()){resetForm();go('/pages/main/me/index')}}catch(err){notify(err)}finally{saving.value=false}}
 /** 原生选图返回时保留当前草稿，仅在身份变化或没有未保存内容时刷新。 */
 function showPage(){visible=true;if(loadedSession&&sameSession(loadedSession)&&(uploading.value||JSON.stringify(form)!==savedForm))return;load()}
 /** 页面隐藏后使读取与保存回调失效。 */

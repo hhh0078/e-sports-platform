@@ -3,7 +3,29 @@
     {
       "path": "pages/main/index",
       "style": {
-        "navigationBarTitleText": "开机电竞"
+        "navigationBarTitleText": "开机电竞",
+        "disableScroll": true
+      }
+    },
+    {
+      "path": "pages/main/worker/index",
+      "style": {
+        "navigationBarTitleText": "打手",
+        "disableScroll": true
+      }
+    },
+    {
+      "path": "pages/main/orders/index",
+      "style": {
+        "navigationBarTitleText": "我的订单",
+        "disableScroll": true
+      }
+    },
+    {
+      "path": "pages/main/me/index",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "disableScroll": true
       }
     },
     {
@@ -106,7 +128,9 @@
     },
     {
       "path": "pages/manage/settings/index",
-      "style": {"navigationBarTitleText": "平台设置"}
+      "style": {
+        "navigationBarTitleText": "平台设置"
+      }
     },
     {
       "path": "pages/manage/settings",
@@ -389,5 +413,29 @@
     "custom": {
       "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
     }
+  },
+  "tabBar": {
+    "color": "#9dafA3",
+    "selectedColor": "#83e7b7",
+    "backgroundColor": "#0a1110",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/main/index",
+        "text": "玩家"
+      },
+      {
+        "pagePath": "pages/main/worker/index",
+        "text": "打手"
+      },
+      {
+        "pagePath": "pages/main/orders/index",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/main/me/index",
+        "text": "我的"
+      }
+    ]
   }
 }

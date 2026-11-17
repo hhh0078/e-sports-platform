@@ -33,3 +33,10 @@ export default {
 <style>
 @import './styles/global.css';
 </style>
+
+<style>
+/* H5预先隐藏框架默认底栏，四个真实tab页统一使用MainPage的主题底栏。 */
+/* #ifdef H5 */
+uni-tabbar{display:none!important}
+/* #endif */
+</style>

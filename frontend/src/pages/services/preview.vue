@@ -68,7 +68,7 @@ async function save():Promise<void>{
     published.value=true;clearServicePreview(value)
     notify('服务已发布，图文审核中')
     /** 订阅提示结束时仍核对原账号，迟到关闭不能导航新的会话。 */
-    function finishPublish():void{if(!disposed&&requestToken===token()&&value?.owner===publishDraftOwner(state.user?.id)&&value?.revision===sessionRevision())go('/pages/main/index?tab=worker')}
+    function finishPublish():void{if(!disposed&&requestToken===token()&&value?.owner===publishDraftOwner(state.user?.id)&&value?.revision===sessionRevision())go('/pages/main/worker/index')}
     if(subscriptionReminder.value)subscriptionReminder.value.offer(finishPublish);else finishPublish()
   }catch(reason){if(current(value)){error.value=errorMessage(reason);notify(reason)}}finally{busy.value=false}
 }

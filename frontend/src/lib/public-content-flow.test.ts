@@ -18,18 +18,18 @@ function harness(t:TestContext,cachedGame='delta'){
   const bootstrap:Array<Pending<unknown>>=[],me:Array<Pending<unknown>>=[],reads:Array<Pending<PublicContent>&{game:string}>=[]
   const hooks={load:(_query:Record<string,string>)=>{},show:()=>{},hide:()=>{},unload:()=>{}}
   const context=vm.createContext({computed,reactive,ref,shallowRef,watch,
-    uni:{getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>{writes.push([key,value]);storage.set(key,value)},removeStorageSync:(key:string)=>storage.delete(key)},
+    uni:{hideTabBar:()=>{},getStorageSync:(key:string)=>storage.get(key),setStorageSync:(key:string,value:string)=>{writes.push([key,value]);storage.set(key,value)},removeStorageSync:(key:string)=>storage.delete(key)},
     token:()=>storage.get('jijie_token')||'',errorStatus:(error:{status?:number})=>error.status,errorMessage:(error:Error)=>error.message,
     getBootstrap:()=>new Promise((resolve,reject)=>bootstrap.push({resolve,reject})),getMe:()=>new Promise((resolve,reject)=>me.push({resolve,reject})),
     getPublicContent:(game:string)=>new Promise<PublicContent>((resolve,reject)=>reads.push({game,resolve,reject})),
     mainNavigation:reactive({tab:'player'}),themeStyle:{},
     isTimelinePreview:()=>false,enablePublicShareMenu:()=>{},readSafeArea:()=>({statusBarHeight:20,capsuleSpace:44,capsuleRightInset:100}),createPublicShareHandlers:()=>({friend:()=>{},timeline:()=>{}}),
-    onShareAppMessage:()=>{},onShareTimeline:()=>{},applyMainQuery:()=>{},notify:()=>{},
-    onLoad:(fn:typeof hooks.load)=>{hooks.load=fn},onShow:(fn:()=>void)=>{hooks.show=fn},onHide:(fn:()=>void)=>{hooks.hide=fn},onUnload:(fn:()=>void)=>{hooks.unload=fn},
+    onShareAppMessage:()=>{},onShareTimeline:()=>{},onReady:()=>{},applyTabQuery:()=>{},normalizePageUrl:(url:string)=>url,navigate:()=>{},defineProps:()=>({tab:'player',view:null}),MAIN_PAGES:{},notify:()=>{},
+    onLoad:(fn:typeof hooks.load)=>{hooks.load=fn},onShow:(fn:()=>void)=>{const previous=hooks.show;hooks.show=()=>{previous();fn()}},onHide:(fn:()=>void)=>{hooks.hide=fn},onUnload:(fn:()=>void)=>{hooks.unload=fn},
   })
   vm.runInContext(executable(readFileSync(new URL('./store.ts',import.meta.url),'utf8')),context)
   vm.runInContext(executable(readFileSync(new URL('./public-content.ts',import.meta.url),'utf8')),context)
-  const scope=effectScope();scope.run(()=>vm.runInContext(executable(pageScript('main/index.vue')),context));t.after(()=>scope.stop())
+  const scope=effectScope();scope.run(()=>{vm.runInContext('(function(){'+executable(pageScript('main/index.vue'))+'})()',context);vm.runInContext('(function(){'+executable(readFileSync(new URL('../components/MainPage.vue',import.meta.url),'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)![1])+'})()',context)});t.after(()=>scope.stop())
   vm.runInContext('globalThis.subject={state,init,initPublic,prepareEntryGame,selectGame,sessionRevision,clearSession,publicContent,publicContentLoading,publicContentError,refreshPublicContent,resetPublicContent}',context)
   return{page:context.subject,hooks,bootstrap,me,reads,storage,writes,
     /** 仅返回平台初始化所需的公开游戏字段。 */

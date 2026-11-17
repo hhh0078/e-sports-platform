@@ -1,0 +1,39 @@
+{
+  "layouts": [
+    {
+      "page": "pages/main/orders/index",
+      "url": "http://127.0.0.1:5186/#/pages/main/orders/index",
+      "navs": 1,
+      "overflow": false,
+      "width": 320
+    },
+    {
+      "page": "pages/main/me/index",
+      "url": "http://127.0.0.1:5186/#/pages/main/me/index",
+      "navs": 1,
+      "overflow": false,
+      "width": 320
+    },
+    {
+      "page": "pages/main/worker/index",
+      "url": "http://127.0.0.1:5186/#/pages/main/worker/index",
+      "navs": 1,
+      "overflow": false,
+      "width": 320
+    },
+    {
+      "page": "pages/main/index",
+      "width": 320,
+      "overflow": false
+    }
+  ],
+  "homeScrollBefore": 534,
+  "homeScrollAfter": 534,
+  "orderLoginReturnedToDedicatedPath": true,
+  "orderQuickLinkPreservedFilter": true,
+  "announcementNaturalSize": [
+    768,
+    960
+  ],
+  "announcementDisplayWidth": 350
+}

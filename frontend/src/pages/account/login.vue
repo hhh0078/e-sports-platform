@@ -115,7 +115,7 @@
 	/** 复用已核验的三款官方游戏图片，仅作为独立主视觉。 */
 	const loginCovers = ['/static/covers/official/delta-3.jpg', '/static/covers/official/honor-1.jpg', '/static/covers/official/peace-1.jpg']
 	const accountDescriptions : Record<string, string> = { player: '玩家 · 下单与验收', worker: '打手 · 发布服务与交付', clubowner: '俱乐部管理员', admin: '平台管理与纠纷处理', outsider: '独立玩家 · 自由接单' }
-	let next = '/pages/main/index?tab=me', operation = 0, disposed = false
+	let next = '/pages/main/me/index', operation = 0, disposed = false
 	/** 加载当前协议版本，任何重新加载都要求再次主动勾选。 */
 	async function load() { loading.value = true; error.value = ''; accepted.value = false; try { await init(); agreements.value = await getAgreements(); if (state.devMode) accounts.value = await listDevAccounts() || []; await finishOfficialAuthorization() } catch (err) { error.value = errorMessage(err) } finally { loading.value = false } }
 	/** 回跳凭据只在当前标签页兑换一次，使用授权前主动同意的协议版本。 */
@@ -177,7 +177,7 @@
 	/** 关闭可选资料弹层并返回原本想访问的页面。 */
 	function finishLogin() { if (profileBusy.value) return; profileOffer.value = false; go(next) }
 	/** 只允许返回站内页面，避免登录后的跳转离开应用。 */
-	function applyRoute(options : Record<string, string | undefined> = {}) { let target = ''; try { target = options.next ? decodeURIComponent(options.next) : '' } catch { } next = target.startsWith('/pages/') && !target.startsWith('/pages/account/login') ? target : '/pages/main/index?tab=me'; load() }
+	function applyRoute(options : Record<string, string | undefined> = {}) { let target = ''; try { target = options.next ? decodeURIComponent(options.next) : '' } catch { } next = target.startsWith('/pages/') && !target.startsWith('/pages/account/login') ? target : '/pages/main/me/index'; load() }
 	onLoad(applyRoute)
 	onHide(() => { operation++; submitting.value = '' })
 	onUnload(() => { disposed = true; operation++ })

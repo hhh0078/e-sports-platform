@@ -110,9 +110,9 @@ for (const path of sourceFiles) {
     const selector = unsupportedComponentSelector(text)
     if (selector) issue(path, '微信组件样式必须使用类选择器：' + selector)
   }
-  const mounts = [...text.matchAll(/<BottomNav\b/g)].length
+  const mounts = extension==='.vue'?[...text.matchAll(/<BottomNav\b/g)].length:0
   bottomNavMounts += mounts
-  if (mounts && path !== resolve(sourceRoot, 'pages/main/index.vue')) issue(path, '主底栏只能由唯一主页面挂载')
+  if (mounts && path !== resolve(sourceRoot, 'components/MainPage.vue')) issue(path, '主底栏只能由共享MainPage框架挂载')
 }
 
 for (const path of pages) {
@@ -131,7 +131,7 @@ for (const path of pages) {
   if (!existsSync(specification)) issue(path, '缺少同名前缀 .design.md 设计说明')
   const text = readFileSync(path, 'utf8')
   if (!pagePath.startsWith('main/') && !/<AppShell\b[^>]*\btitle=/.test(text)) issue(path, '二级页面必须使用带标题的统一 AppShell（自动提供返回）')
-  if (pagePath.startsWith('main/') && pagePath !== 'main/index.vue' && /<(?:AppShell|BottomNav|PageHeader|UniNavBar|uni-nav-bar)\b/.test(text)) issue(path, '主内容视图不能重复挂载导航框架')
+  if (pagePath.startsWith('main/') && !['main/index.vue','main/worker/index.vue','main/orders/index.vue','main/me/index.vue'].includes(pagePath) && /<(?:AppShell|BottomNav|PageHeader|UniNavBar|uni-nav-bar)\b/.test(text)) issue(path, '主内容视图不能重复挂载导航框架')
 }
 
 const client = resolve(sourceRoot, 'api/client.ts')
@@ -139,14 +139,19 @@ if (!existsSync(client)) issue(client, '缺少统一 API 传输工具')
 const shell = resolve(sourceRoot, 'components/AppShell.vue')
 if (!existsSync(shell) || !hasUnifiedReturn(readFileSync(shell, 'utf8'))) issue(shell, '统一二级页面框架必须提供共享返回实现，展示型可使用悬浮返回')
 if (bottomNavMounts !== 1) issue(resolve(sourceRoot, 'pages/main/index.vue'), `底栏应挂载一次，实际 ${bottomNavMounts} 次`)
-const mainPage = resolve(sourceRoot, 'pages/main/index.vue')
-if (existsSync(mainPage)) {
-  const text = readFileSync(mainPage, 'utf8')
-  if (/<(?:PageHeader|UniNavBar|uni-nav-bar)\b/.test(text)) issue(mainPage, '四个主页面不显示顶部导航栏，仅处理状态栏与胶囊安全距离')
-  if (/\breLaunch\s*\(/.test(text)) issue(mainPage, '主导航切换不能重新启动页面')
-  const mainScrolls = text.match(/<scroll-view\b[^>]*class="main-scroll(?:\s[^\"]*)?"[^>]*>/g) ?? []
-  if (mainScrolls.length !== 4 || mainScrolls.some(tag => /(?:\bv-if=|\bv-show=|\bhidden=|:key=)/.test(tag))) issue(mainPage, '四个主滚动容器必须常驻且保留原生尺寸，不能v-show/display:none隐藏或销毁')
-  if (mainScrolls.some(tag => !tag.includes('main-scroll-inactive')) || !/\.main-scroll-inactive\s*\{[^}]*visibility:\s*hidden[^}]*pointer-events:\s*none/.test(text)) issue(mainPage, '隐藏主容器须用visibility和pointer-events隔离，不能改变滚动几何')
+const mainPage=resolve(sourceRoot,'components/MainPage.vue')
+if(existsSync(mainPage)){
+ const text=readFileSync(mainPage,'utf8')
+ if(/<(?:PageHeader|UniNavBar|uni-nav-bar)\b/.test(text))issue(mainPage,'四个主页面不显示顶部导航栏')
+ if((text.match(/<scroll-view\b/g)||[]).length!==1||/:scroll-top=|@scroll=/.test(text))issue(mainPage,'独立主页面仅持有本页滚动容器，不持续回写scroll-top')
+}
+const config=JSON.parse(readFileSync(resolve(sourceRoot,'pages.json'),'utf8')) as {pages:Array<{path:string}>;tabBar?:{list:Array<{pagePath:string}>}}
+const mainPaths=['pages/main/index','pages/main/worker/index','pages/main/orders/index','pages/main/me/index']
+if(JSON.stringify(config.tabBar?.list.map(item=>item.pagePath))!==JSON.stringify(mainPaths))issue(mainPage,'四个主导航必须注册为不同tabBar页面，订单必须有独立路径')
+for(const path of mainPaths){
+ if(!config.pages.some(page=>page.path===path))issue(mainPage,'独立主页面未注册：'+path)
+ const text=readFileSync(resolve(sourceRoot,path+'.vue'),'utf8')
+ if(!/<MainPage\b/.test(text)||/<(?:PageHeader|BottomNav)\b/.test(text))issue(mainPage,'独立主页面必须复用共享MainPage：'+path)
 }
 
 if (issues.length) {

@@ -1,4 +1,4 @@
-<!-- 文件作用：仅在主页面挂载一次的四项底栏，直接发出内容切换事件。 -->
+<!-- 文件作用：四个独立主页面复用的主题底栏，切换由MainPage交给官方switchTab。 -->
 <template>
   <view class="bottom-nav"><view class="nav-inner">
     <button v-for="item in items" :key="item.key" :class="['nav-item', { selected: active === item.key }]" :aria-label="item.label" @click="emit('change', item.key)"><view class="nav-icon"><Icon :name="item.icon" :size="23" /></view><text>{{ item.label }}</text></button>

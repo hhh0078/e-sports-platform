@@ -21,7 +21,7 @@ type officialOAuthState struct {
 // officialReturnPath 限制回跳为站内业务页，拒绝协议、反斜杠、控制字符及登录循环。
 func officialReturnPath(value string) (string, error) {
 	if value == "" {
-		return "/pages/main/index?tab=me", nil
+		return "/pages/main/me/index", nil
 	}
 	u, err := url.Parse(value)
 	if err != nil || len(value) > 1024 || !strings.HasPrefix(value, "/pages/") || u.IsAbs() || u.Host != "" || u.Fragment != "" || strings.ContainsAny(value, "\\\r\n\x00") || strings.Contains(u.Path, "..") || strings.HasPrefix(u.Path, "/pages/account/login") {

@@ -24,7 +24,7 @@
 		<view class="orders-section">
 
 			<view class="order-shortcuts"><button class="order-shortcut" v-for="item in orderLinks" :key="item.status"
-					@click="protectedGo('/pages/main/index?tab=orders&role=buyer&status='+item.status)">
+					@click="protectedGo('/pages/main/orders/index?role=buyer&status='+item.status)">
 					<view class="order-icon-wrap">
 						<Icon :name="item.icon" :size="25" /><text v-if="orderCount(item.countKey)"
 							class="order-count">{{ orderCount(item.countKey) }}</text>
@@ -100,7 +100,7 @@
 	/** 需要身份的操作保留登录后目标。 */
 	function protectedGo(target : string) : boolean { if (!state.user) { go('/pages/account/login?next=' + encodeURIComponent(target)); return false } go(target); return true }
 	/** 点击头像查看本人公开名片。 */
-	function openIdentity() : void { protectedGo(state.user ? '/pages/community/players/detail?id=' + encodeURIComponent(state.user.id) : '/pages/main/index?tab=me') }
+	function openIdentity() : void { protectedGo(state.user ? '/pages/community/players/detail?id=' + encodeURIComponent(state.user.id) : '/pages/main/me/index') }
 	/** 复制公开用户ID；切号或离页后不向其他身份显示旧操作结果。 */
 	function copyUserID():void{const userID=state.user?.id;if(!userID)return;const session=currentSession();uni.setClipboardData({data:userID,success(){if(visible&&sameSession(session))notify('用户ID已复制')},fail(err){if(visible&&sameSession(session))notify(err)}})}
 	/** 刷新个人资料和真实统计，保留隐藏及跨账号竞态保护。 */

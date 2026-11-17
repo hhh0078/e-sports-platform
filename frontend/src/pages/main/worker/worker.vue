@@ -30,7 +30,7 @@
 				<view class="intro-actions"><button class="publish-entry" @click="openPublish">
 						<Icon name="plus" :size="17" />发布服务
 					</button><button class="orders-entry"
-						@click="go('/pages/main/index?tab=orders&role=provider&status=working')">查看订单
+						@click="go('/pages/main/orders/index?role=provider&status=working')">查看订单
 						<Icon name="arrow" :size="11" />
 					</button></view>
 			</view>
@@ -170,7 +170,7 @@ const refreshKey=ref(0)
 	function changeTab(value : 'services' | 'jobs' | 'clubs') : void { if (tab.value !== value) { refreshKey.value++; tab.value = value; void load(false, true) } }
 	/** 领取需求前明确选择挂靠，取消选择不创建交易。 */
 	async function claim(job : PublicJob) : Promise<void> {
-		if (!state.user) return go('/pages/account/login?next=' + encodeURIComponent('/pages/main/index?tab=worker'))
+		if (!state.user) return go('/pages/account/login?next=' + encodeURIComponent('/pages/main/worker/index'))
 		if (claiming.value) return
 		const session = currentSession()
 		claiming.value = job.id

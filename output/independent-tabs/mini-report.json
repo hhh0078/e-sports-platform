@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "checks": [
+    "直接打开独立订单页",
+    "我的独立路径",
+    "订单身份和筛选保留",
+    "打手独立路径",
+    "玩家首页独立路径"
+  ],
+  "SDKVersion": "3.17.6",
+  "windowWidth": 390,
+  "exceptions": [],
+  "externalPayment": false,
+  "realDevice": false,
+  "directLocalNetwork": false,
+  "scope": "仅实际原生路由、订单筛选保留；模拟器未接通本地API；滚动与图片由H5真实API验收"
+}

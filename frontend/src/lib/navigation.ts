@@ -1,20 +1,22 @@
-/** 文件作用：维护唯一主页面的标签状态、深链归一化及二级页面返回导航。 */
+/** 文件作用：维护四个独立主页面的路由、参数交接及二级页面返回导航。 */
 import { reactive, watch, onBeforeUnmount } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
 import { isTimelinePreview } from './sharing'
 
-/** 主页面四个常驻视图的标识。 */
+/** 四个独立主页面的标识。 */
 export type MainTab = 'player' | 'worker' | 'orders' | 'me'
 /** 路由查询项，保持微信页面参数的字符串形式。 */
 export type PageQuery = Record<string, string | undefined>
 
 export const MAIN_PAGE = '/pages/main/index'
+/** 四个实际注册的主导航页面；订单可无参数直接打开。 */
+export const MAIN_PAGES:Record<MainTab,string>={player:MAIN_PAGE,worker:'/pages/main/worker/index',orders:'/pages/main/orders/index',me:'/pages/main/me/index'}
 export const mainNavigation = reactive({ tab: 'player' as MainTab, query: {} as PageQuery, revision: 0 })
 const aliases: Record<string, string> = {
   '/pages/index/index': MAIN_PAGE + '?tab=player',
-  '/pages/worker/index': MAIN_PAGE + '?tab=worker',
-  '/pages/orders/index': MAIN_PAGE + '?tab=orders',
-  '/pages/me/index': MAIN_PAGE + '?tab=me',
+  '/pages/worker/index': MAIN_PAGES.worker,
+  '/pages/orders/index': MAIN_PAGES.orders,
+  '/pages/me/index': MAIN_PAGES.me,
   '/pages/service/index': '/pages/services/detail',
   '/pages/publish/index': '/pages/services/publish',
   '/pages/request/index': '/pages/requests/publish',
@@ -36,7 +38,14 @@ export function normalizePageUrl(url: string): string {
   const path = index < 0 ? url : url.slice(0, index)
   const query = index < 0 ? '' : url.slice(index + 1)
   const target = aliases[path] || path
-  return target + (query ? (target.includes('?') ? '&' : '?') + query : '')
+  if(target.split('?')[0]===MAIN_PAGE){
+    const values=parsePageQuery(target+(query?(target.includes('?')?'&':'?')+query:''))
+    const tab=(['player','worker','orders','me'] as const).find(item=>item===values.tab)||'player'
+    delete values.tab
+    const rest=Object.entries(values).filter(([,v])=>v!==undefined).map(([k,v])=>encodeURIComponent(k)+'='+encodeURIComponent(v!)).join('&')
+    return MAIN_PAGES[tab]+(rest?'?'+rest:'')
+  }
+  return target+(query?(target.includes('?')?'&':'?')+query:'')
 }
 
 /** 解读内部页面查询串，非法编码保持原文，避免破坏导航。 */
@@ -68,29 +77,26 @@ export function applyMainQuery(query: PageQuery = {}): void {
   selectMainTab(tab, query)
 }
 
-/** 打开页面；主页面已经在栈中时直接返回并切换内容。 */
-export function navigate(url: string): void {
-  if(isTimelinePreview()){uni.showToast({title:'请从微信顶部打开小程序后继续',icon:'none'});return}
-  const target = normalizePageUrl(url)
-  const fail = () => uni.showToast({ title: '页面打开失败，请重试', icon: 'none' })
-  if (target.split('?')[0] !== MAIN_PAGE) {
-    uni.navigateTo({ url: target, fail })
-    return
-  }
-  applyMainQuery(parsePageQuery(target))
-  const pages = getCurrentPages()
-  const mainIndex = pages.findIndex(page => page.route === MAIN_PAGE.slice(1))
-  if (mainIndex === pages.length - 1 && mainIndex >= 0) return
-  if (mainIndex >= 0) uni.navigateBack({ delta: pages.length - 1 - mainIndex, fail })
-  else uni.reLaunch({ url: target, fail })
+/** 直接进入独立主页面时交接筛选参数，普通返回不重置本页筛选。 */
+export function applyTabQuery(tab:MainTab,query:PageQuery={}):void{if(Object.keys(query).length||mainNavigation.tab!==tab)selectMainTab(tab,query)}
+
+/** 主导航只用switchTab；先交接参数，因为官方switchTab的URL不能带查询串。 */
+export function navigate(url:string):void{
+ if(isTimelinePreview()){uni.showToast({title:'请从微信顶部打开小程序后继续',icon:'none'});return}
+ const target=normalizePageUrl(url),path=target.split('?')[0],fail=()=>uni.showToast({title:'页面打开失败，请重试',icon:'none'})
+ const tab=(Object.keys(MAIN_PAGES) as MainTab[]).find(key=>MAIN_PAGES[key]===path)
+ if(!tab){uni.navigateTo({url:target,fail});return}
+ selectMainTab(tab,parsePageQuery(target))
+ const pages=getCurrentPages()
+ if(pages.at(-1)?.route===path.slice(1))return
+ uni.switchTab({url:path,fail})
 }
 
-/** 统一普通顶栏与悬浮按钮的返回行为；无历史或原生返回失败时回到唯一主页面。 */
-export function back(): void {
-  if(isTimelinePreview()){uni.showToast({title:'请从微信顶部打开小程序查看详情',icon:'none'});return}
-  const url = MAIN_PAGE + '?tab=player'
-  if (getCurrentPages().length > 1) uni.navigateBack({ delta: 1, fail: () => uni.reLaunch({ url, fail: () => uni.showToast({ title: '返回失败，请重新打开小程序', icon: 'none' }) }) })
-  else navigate(url)
+/** 统一二级页面返回；无历史或返回失败时进入独立首页。 */
+export function back():void{
+ if(isTimelinePreview()){uni.showToast({title:'请从微信顶部打开小程序查看详情',icon:'none'});return}
+ if(getCurrentPages().length>1)uni.navigateBack({delta:1,fail:()=>navigate(MAIN_PAGE)})
+ else navigate(MAIN_PAGE)
 }
 
 /**

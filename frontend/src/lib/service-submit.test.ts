@@ -143,7 +143,7 @@ test('旧本地接单标记不触发启停接口，手机号验证通过后直�
   const creating=subject.take('/services','POST')
   assert.equal(creating.body.title,'三角洲陪练')
   creating.resolve({id:'default-provider-service'});await submitting
-  assert.deepEqual(subject.navigations,['/pages/main/index?tab=worker'])
+  assert.deepEqual(subject.navigations,['/pages/main/worker/index'])
   assert.equal(subject.page.busy.value,false)
 })
 

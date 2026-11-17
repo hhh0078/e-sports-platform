@@ -16,7 +16,7 @@ func TestOperationAssetsScope(t *testing.T) {
 		t.Fatal(err)
 	}
 	cfg, err := png.DecodeConfig(bytes.NewReader(intro))
-	if err != nil || cfg.Width != 1672 || cfg.Height != 941 {
+	if err != nil || cfg.Width != 960 || cfg.Height != 540 {
 		t.Fatal("平台首图真实尺寸异常", err)
 	}
 	for _, test := range [][2]string{{"/static/operations/newcomer-rules-v1.png", "promotion_banner"}, {"/static/operations/newcomer-rules-v1.png", "article_cover"}, {"/static/operations/platform-intro-v1.png", "avatar"}, {"/static/operations/../avatars/cat_face.png", "article_image"}, {"/static/operations/platform-intro-v1.png?x=1", "promotion_banner"}, {"/static/operations/unknown.png", "announcement_image"}} {

@@ -186,7 +186,7 @@ test('个人中心和资料页的跨会话回调及隐藏后的统计不再提�
     assert.equal(subject.store.state.user, null)
     assert.equal(subject.storage.has('jijie_token'), false)
     assert.equal(subject.page.form.nickname, '')
-    assert.equal(subject.navigations.at(-1), '/pages/main/index?tab=me')
+    assert.equal(subject.navigations.at(-1), '/pages/main/me/index')
   })
 })
 
