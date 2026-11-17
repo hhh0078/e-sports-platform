@@ -105,6 +105,10 @@
       }
     },
     {
+      "path": "pages/manage/settings/index",
+      "style": {"navigationBarTitleText": "平台设置"}
+    },
+    {
       "path": "pages/manage/settings",
       "style": {
         "navigationBarTitleText": "平台配置"

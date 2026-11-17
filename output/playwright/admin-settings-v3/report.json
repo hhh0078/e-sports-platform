@@ -1,0 +1,29 @@
+{
+  "frontend_tests": 882,
+  "typecheck": true,
+  "standards": true,
+  "go_all": true,
+  "identity_integration_race": true,
+  "go_vet": true,
+  "builds": [
+    "h5",
+    "mp-weixin",
+    "mp-weixin:local"
+  ],
+  "h5_widths": [
+    320,
+    390
+  ],
+  "h5_page_errors": 0,
+  "settings_groups": 9,
+  "mini_sdk": "3.17.6",
+  "mini_checks": [
+    "groups",
+    "payments",
+    "back",
+    "basic-save"
+  ],
+  "external_identity_calls": 0,
+  "real_device": false,
+  "production_mode_changed": false
+}

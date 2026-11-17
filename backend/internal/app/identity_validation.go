@@ -12,12 +12,23 @@ import (
 const identityAPIURL = "https://v2.xxapi.cn/api/idCardCheck"
 
 var identityCardPattern = regexp.MustCompile(`^[1-9][0-9]{16}[0-9X]$`)
+var basicIdentityCardPattern = regexp.MustCompile(`^[0-9]{17}[0-9X]$`)
 var identityRequestPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
 
 // identityAdult 校验身份证有效结构，并按上海日期判断是否已经满十八周岁。
 // card 为规范化证件号，at 为判断时刻；非法证件返回错误，合法证件返回成年状态。
 func identityAdult(card string, at time.Time) (bool, error) {
-	if !identityCardPattern.MatchString(card) {
+	return identityAdultWithMode(card, at, false)
+}
+
+// identityAdultWithMode 共用真实生日及上海周岁判断，基础模式仅跳过地区、顺序码和校验位约束。
+// basic为管理员配置的基础方式，不能由用户请求决定。
+func identityAdultWithMode(card string, at time.Time, basic bool) (bool, error) {
+	pattern := identityCardPattern
+	if basic {
+		pattern = basicIdentityCardPattern
+	}
+	if !pattern.MatchString(card) {
 		return false, fail(http.StatusBadRequest, "请输入有效的18位身份证号")
 	}
 	weights := [...]int{7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}
@@ -25,7 +36,7 @@ func identityAdult(card string, at time.Time) (bool, error) {
 	for i, weight := range weights {
 		sum += int(card[i]-'0') * weight
 	}
-	if card[17] != "10X98765432"[sum%11] || card[14:17] == "000" {
+	if !basic && (card[17] != "10X98765432"[sum%11] || card[14:17] == "000") {
 		return false, fail(http.StatusBadRequest, "身份证号校验失败，请检查后重新输入")
 	}
 	birthday, err := time.Parse("20060102", card[6:14])

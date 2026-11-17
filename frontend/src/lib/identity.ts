@@ -4,10 +4,11 @@ import {state,sessionRevision} from './store'
 import {token,errorMessage} from '../api/client'
 import {getIdentityStatus} from '../api/users.api'
 import {go} from './format'
+import type {IdentityVerificationMode} from '../types/models'
 
 /** 身份弹层模式区分可跳过的首次提醒与当前交易必须完成的核验。 */
 export type IdentityMode='entry'|'required'
-export const identityGate=reactive({visible:false,busy:false,error:'',epoch:0,mode:'entry' as IdentityMode})
+export const identityGate=reactive({visible:false,busy:false,error:'',epoch:0,mode:'entry' as IdentityMode,verificationMode:'strict' as IdentityVerificationMode})
 let owner:{id:string;token:string;revision:number}|null=null,pending:Promise<boolean>|undefined,resolvePending:((value:boolean)=>void)|undefined,accepted=false
 const reminderKey='jijie_identity_reminded'
 let reminderShown=false
@@ -21,10 +22,10 @@ function reminded():boolean{if(reminderShown)return true;try{return uni.getStora
 /** 当前账号与弹层代次共同隔离迟到请求和旧页面关闭事件。 */
 export function isCurrentIdentityGate(epoch:number):boolean{return identityGate.visible&&epoch===identityGate.epoch&&!!owner&&same(owner)}
 /** 打开独立代次并合并同一账号尚未结束的验证等待。 */
-function open(mode:IdentityMode,error=''):Promise<boolean>{
-  if(pending&&isCurrentIdentityGate(identityGate.epoch)){if(mode==='required')identityGate.mode='required';if(error)identityGate.error=error;return pending}
+function open(mode:IdentityMode,error='',verificationMode:IdentityVerificationMode='strict'):Promise<boolean>{
+  if(pending&&isCurrentIdentityGate(identityGate.epoch)){if(mode==='required'){identityGate.mode='required';identityGate.verificationMode=verificationMode};if(error)identityGate.error=error;return pending}
   if(pending)finishIdentity(false,identityGate.epoch)
-  owner=session();accepted=false;identityGate.epoch++;identityGate.mode=mode;identityGate.busy=false;identityGate.error=error;identityGate.visible=true
+  owner=session();accepted=false;identityGate.epoch++;identityGate.mode=mode;identityGate.verificationMode=verificationMode;identityGate.busy=false;identityGate.error=error;identityGate.visible=true
   pending=new Promise(resolve=>{resolvePending=resolve});return pending
 }
 /** 仅已恢复会话且尚未真正展示过时安排首次提示；公开预览由承载组件排除。 */
@@ -56,7 +57,7 @@ export async function requireIdentity():Promise<boolean>{
     const verified=result.is_minor===false&&result.verified===true
     if(state.user)state.user.is_minor=!verified
     if(verified)return true
-    return open('required')
+    return open('required','',result.verification_mode==='basic'?'basic':'strict')
   }catch(error){if(!same(current))return false;return open('required',errorMessage(error))}
 }
 /** 结束指定代次，取消不继续原交易，旧请求不能结束新账号的核验。 */

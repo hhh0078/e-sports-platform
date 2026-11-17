@@ -75,3 +75,10 @@ test('隐藏立即清除身份证并释放提示槽，迟到核验结果不能�
   const verifying=h.component.submit(),request=h.take('/me/identity/verify');h.hooks.hide();assert.equal(await gate.pending,false);assert.equal(h.component.name.value,'');assert.equal(h.component.idcard.value,'');assert.equal(h.status.owner,null)
   h.switchAccount();request.resolve({is_minor:false,verified:true});await verifying;assert.equal(h.gate.identityGate.visible,false)
 })
+
+test('基础模式弹层接受无校验位夹具，通过后清除证号并恢复原交易',async t=>{
+  const h=harness(t),pending=h.gate.requireIdentity();h.take('/me/identity').resolve({is_minor:true,verified:false,verification_mode:'basic'});await flush()
+  assert.equal(h.gate.identityGate.verificationMode,'basic');h.component.name.value='合成测试';h.component.idcard.value='00000019900101000x';h.component.consent.value=true
+  const saving=h.component.submit(),request=h.take('/me/identity/verify');assert.equal(request.body.idcard,'00000019900101000X')
+  request.resolve({is_minor:false,verified:true,verification_mode:'basic',verification_source:'basic'});await saving;assert.equal(await pending,true);await flush();assert.equal(h.component.idcard.value,'');assert.equal(h.component.consent.value,false)
+})

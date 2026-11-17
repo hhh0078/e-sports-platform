@@ -1,10 +1,11 @@
 <!-- 文件作用：管理员查看提现列表并进入来源审核，独立维护不含密钥的商家转账公开配置。 -->
 <template>
-  <AppShell title="钱包管理" back>
+  <AppShell :title="transferOnly?'商家转账配置':'提现申请'" back>
     <view v-if="bootstrapError" class="error-box bootstrap-error"><text>{{ bootstrapError }}</text><button class="text-btn" :disabled="initializing" @click="showPage">重新加载</button></view>
     <view v-if="state.ready && state.user?.role !== 'admin'" class="access-note"><text>仅平台管理员可访问</text><button class="text-btn" @click="go('/pages/account/login')">切换账号</button></view>
     <template v-else-if="state.user?.role === 'admin'">
-      <view class="finance-links"><button class="finance-link" @click="go('/pages/manage/finance/index')"><view class="finance-link-copy"><text class="finance-link-title">资金来源审核</text><text class="hint finance-link-note">逐笔核验个人与俱乐部提现来源</text></view><Icon name="arrow" :size="16"/></button><button class="finance-link" @click="go('/pages/manage/finance/settings')"><view class="finance-link-copy"><text class="finance-link-title">交易规则</text><text class="hint finance-link-note">平台抽成与创建俱乐部押金</text></view><Icon name="arrow" :size="16"/></button></view>
+      <template v-if="!transferOnly">
+      <view class="finance-links"><button class="finance-link" @click="go('/pages/manage/finance/index')"><view class="finance-link-copy"><text class="finance-link-title">资金来源审核</text><text class="hint finance-link-note">逐笔核验个人与俱乐部提现来源</text></view><Icon name="arrow" :size="16"/></button></view>
       <view class="section-heading"><text class="section-title">提现申请</text></view>
       <scroll-view scroll-x :show-scrollbar="false" class="status-scroll"><view class="status-filters"><button v-for="item in filters" :key="item.value" :class="['status-filter', { selected: status === item.value }]" @click="chooseStatus(item.value)">{{ item.label }}</button></view></scroll-view>
       <view v-if="listError" class="subtle-note error-copy">{{ listError }}<button class="text-btn" :disabled="listLoading" @click="retryFailed">重试</button></view>
@@ -17,8 +18,9 @@
         <view class="withdrawal-actions"><button class="text-btn" @click="openAudit(item.id)">{{ item.status==='pending_review'?'查看来源并审核':'来源与处理记录' }}<Icon name="arrow" :size="13"/></button></view>
       </view>
       <ListLoadState :loading="listLoading" :has-more="hasMore" :error="listError" @retry="retryFailed"/>
-      <text v-if="loaded && !transferReady && !state.devMode" class="subtle-note">提现通道尚未就绪，请先核对下方商家转账及支付配置。</text>
-      <view class="form-section">
+      </template>
+      <text v-if="transferOnly && loaded && !transferReady && !state.devMode" class="subtle-note">提现通道尚未就绪，请先核对下方商家转账及支付配置。</text>
+      <view v-if="transferOnly" class="form-section">
         <view class="section-heading"><text class="section-title">商家转账配置</text><text class="ready-label">{{ transferReady ? '已就绪' : '未就绪' }}</text></view>
         <text class="subtle-note">{{ configurationNotice || '保存配置不代表微信商家转账场景已经获批。' }}</text>
         <view v-if="settingsError" class="subtle-note error-copy">{{ settingsError }}<button class="text-btn" :disabled="settingsLoading" @click="retrySettingsFailed">重试</button></view>
@@ -29,7 +31,7 @@
         <view class="field"><text class="field-label">转账通知HTTPS地址</text><input v-model="form.transfer_notify_url" class="input" maxlength="2048" :disabled="!loaded || saving" placeholder="无查询参数的HTTPS回调地址"/></view>
         <view class="field"><text class="field-label">转账备注 · 最多32字</text><input v-model="form.transfer_remark" class="input" maxlength="32" :disabled="!loaded || saving"/></view>
         <view class="field"><text class="field-label">收款感知描述 · 最多10字</text><input v-model="form.user_recv_perception" class="input" maxlength="10" :disabled="!loaded || saving"/></view>
-        <button class="text-btn payment-link" @click="go('/pages/manage/settings')">商户密钥与证书沿用支付配置<Icon name="arrow" :size="12"/></button>
+        <button class="text-btn payment-link" @click="go('/pages/manage/settings?tab=payment')">商户密钥与证书沿用支付配置<Icon name="arrow" :size="12"/></button>
         <view class="action-footer"><button class="text-btn" :disabled="!loaded || saving" @click="restoreSettings">取消修改</button><button class="btn" :disabled="!loaded || saving" @click="saveSettings">{{ saving ? '正在保存…' : '保存转账配置' }}</button></view>
       </view>
     </template>
@@ -38,7 +40,7 @@
 </template>
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
-import { onShow, onHide, onUnload } from '@dcloudio/uni-app'
+import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import AppShell from '../../components/AppShell.vue'
 import NativeSwitch from '../../components/NativeSwitch.vue'
 import Icon from '../../components/Icon.vue'
@@ -56,6 +58,7 @@ type WithdrawalStatus = WalletWithdrawal['status']
 const filters: Array<{ value: WithdrawalStatus; label: string }> = [{ value: 'pending_review', label: '待审核' }, { value: 'processing', label: '处理中' }, { value: 'wait_user_confirm', label: '待确认' }, { value: 'success', label: '成功' }, { value: 'failed', label: '失败' }, { value: 'rejected', label: '已拒绝' }]
 const status = ref<WithdrawalStatus>('pending_review'), withdrawals = ref<WalletWithdrawal[]>([]), listLoading = ref(false), hasMore = ref(false), listError = ref('')
 const form = reactive<WalletSettings>(emptySettings()), settingsLoading = ref(false), settingsError = ref(''), saving = ref(false), loaded = ref(false), transferReady = ref(false), configurationNotice = ref('')
+const transferOnly=ref(false)
 const bootstrapError = ref(''), initializing = ref(false)
 let visible = false, pageRevision = 0, listVersion = 0, listOffset = 0, settingsVersion = 0, saveVersion = 0, savedSettings = ''
 let listFailedAppend=false,settingsFailedPreserveDraft=false
@@ -134,6 +137,7 @@ async function showPage(): Promise<void> { visible = true; if (initializing.valu
 /** 隐藏即作废回调和确认操作，不在客户端缓存资金信息。 */
 function hidePage(): void { visible = false; pageRevision++; listVersion++; settingsVersion++; saveVersion++; if(settingsLoading.value||saving.value)loaded.value=false; listLoading.value = false; settingsLoading.value = false; initializing.value = false; saving.value = false }
 watch([() => state.user?.id, () => state.user?.role, sessionRevision], () => { const wasVisible = visible; hidePage(); clearData(); if (wasVisible) void showPage() }, { flush: 'sync' })
+onLoad(options=>{transferOnly.value=options?.view==='transfer'})
 onShow(showPage)
 onHide(hidePage)
 onUnload(() => { hidePage(); clearData() })

@@ -13,9 +13,11 @@ import (
 
 // IdentityStatus 是仅返回给本人使用的身份核验状态，不包含姓名及完整身份证。
 type IdentityStatus struct {
-	IsMinor    bool   `json:"is_minor"`
-	Verified   bool   `json:"verified"`
-	VerifiedAt string `json:"verified_at,omitempty"`
+	IsMinor            bool   `json:"is_minor"`
+	Verified           bool   `json:"verified"`
+	VerifiedAt         string `json:"verified_at,omitempty"`
+	VerificationMode   string `json:"verification_mode"`
+	VerificationSource string `json:"verification_source,omitempty"`
 }
 
 // identityStatus 从用户表和私密通过事实实时读取状态，旧数据或缺失事实一律不能付款。
@@ -28,11 +30,16 @@ func identityStatus(ctx context.Context, q querier, userID string) (IdentityStat
 	if err != nil && !missing(err) {
 		return IdentityStatus{IsMinor: true}, err
 	}
-	status := IdentityStatus{IsMinor: u.IsMinor}
+	policy, err := readIdentityPolicy(ctx, q)
+	if err != nil {
+		return IdentityStatus{IsMinor: true}, err
+	}
+	status := IdentityStatus{IsMinor: u.IsMinor, VerificationMode: policy.Mode}
 	_, timestampErr := time.Parse(time.RFC3339Nano, identity["identity_verified_at"])
-	status.Verified = !u.IsMinor && u.Status == "active" && identity["identity_source"] == "xxapi" && identity["identity_adult"] == "true" && timestampErr == nil
+	status.Verified = !u.IsMinor && u.Status == "active" && (identity["identity_source"] == "xxapi" || identity["identity_source"] == "basic" && policy.Mode == identityBasic) && identity["identity_adult"] == "true" && timestampErr == nil
 	if status.Verified {
 		status.VerifiedAt = identity["identity_verified_at"]
+		status.VerificationSource = identity["identity_source"]
 	}
 	return status, nil
 }
@@ -77,10 +84,17 @@ func (a *App) verifyIdentity(w http.ResponseWriter, r *http.Request) (any, error
 	}
 	in.Name = strings.TrimSpace(in.Name)
 	in.IDCard = strings.ToUpper(strings.TrimSpace(in.IDCard))
+	policy, err := readIdentityPolicy(r.Context(), a.DB)
+	if err != nil {
+		return nil, err
+	}
+	if policy.Mode == identityBasic && !length(in.Name, 2, 5) {
+		return nil, fail(400, "请输入2至5字的真实姓名")
+	}
 	if err = validateIdentityName(in.Name); err != nil {
 		return nil, err
 	}
-	adult, err := identityAdult(in.IDCard, time.Now())
+	adult, err := identityAdultWithMode(in.IDCard, time.Now(), policy.Mode == identityBasic)
 	if err != nil {
 		return nil, err
 	}
@@ -113,6 +127,9 @@ func (a *App) verifyIdentity(w http.ResponseWriter, r *http.Request) (any, error
 	if err != nil || current.Verified {
 		return current, err
 	}
+	if policy.Mode == identityBasic {
+		return a.storeAdultIdentity(r.Context(), u.ID, in.Name, in.IDCard, "", identityBasic)
+	}
 	settings, err := readIdentitySettings(r.Context(), a.DB)
 	if err != nil {
 		return nil, err
@@ -124,7 +141,7 @@ func (a *App) verifyIdentity(w http.ResponseWriter, r *http.Request) (any, error
 	if err != nil {
 		return nil, err
 	}
-	return a.storeAdultIdentity(r.Context(), u.ID, in.Name, in.IDCard, requestID)
+	return a.storeAdultIdentity(r.Context(), u.ID, in.Name, in.IDCard, requestID, "xxapi")
 }
 
 // callIdentityCheck 发送限时表单请求，拒绝重定向，仅明确一致才返回请求摘要。
@@ -192,12 +209,23 @@ func identityProviderMessage(message, fallback string, secrets ...string) string
 }
 
 // storeAdultIdentity 使用用户行锁合并私密核验事实，完整姓名和证件号均不写入数据库。
-func (a *App) storeAdultIdentity(ctx context.Context, userID, name, card, requestID string) (IdentityStatus, error) {
+func (a *App) storeAdultIdentity(ctx context.Context, userID, name, card, requestID, source string) (IdentityStatus, error) {
 	tx, err := a.DB.Begin(ctx)
 	if err != nil {
 		return IdentityStatus{}, err
 	}
 	defer tx.Rollback(ctx)
+	// 与管理员保存使用同一事务锁，基础校验的迟到结果不能越过已切回的严格规则。
+	if _, err = tx.Exec(ctx, "SELECT pg_advisory_xact_lock(8173081)"); err != nil {
+		return IdentityStatus{}, err
+	}
+	policy, err := readIdentityPolicy(ctx, tx)
+	if err != nil {
+		return IdentityStatus{}, err
+	}
+	if source != "xxapi" && (source != identityBasic || policy.Mode != identityBasic) {
+		return IdentityStatus{}, fail(409, "身份校验方式已变更，请重新核验")
+	}
 	u, err := get[User](ctx, tx, "users", userID, true)
 	if err != nil {
 		return IdentityStatus{}, err
@@ -206,7 +234,7 @@ func (a *App) storeAdultIdentity(ctx context.Context, userID, name, card, reques
 		return IdentityStatus{}, fail(403, "账号已被停用")
 	}
 	verifiedAt := now()
-	fields := map[string]string{"identity_verified_at": verifiedAt, "identity_source": "xxapi", "identity_adult": "true", "identity_request_id": requestID, "identity_name_masked": string([]rune(name)[0]) + "*", "identity_card_masked": "**************" + card[14:], "identity_consent_at": verifiedAt}
+	fields := map[string]string{"identity_verified_at": verifiedAt, "identity_source": source, "identity_adult": "true", "identity_request_id": requestID, "identity_name_masked": string([]rune(name)[0]) + "*", "identity_card_masked": "**************" + card[14:], "identity_consent_at": verifiedAt}
 	if err = mergeIdentity(ctx, tx, userID, fields); err != nil {
 		return IdentityStatus{}, err
 	}
@@ -217,7 +245,7 @@ func (a *App) storeAdultIdentity(ctx context.Context, userID, name, card, reques
 	if err = tx.Commit(ctx); err != nil {
 		return IdentityStatus{}, err
 	}
-	return IdentityStatus{IsMinor: false, Verified: true, VerifiedAt: verifiedAt}, nil
+	return IdentityStatus{IsMinor: false, Verified: true, VerifiedAt: verifiedAt, VerificationMode: policy.Mode, VerificationSource: source}, nil
 }
 
 // registerIdentityVerificationRoutes 独立挂载本人核验与管理员密钥配置，避免通用资料接口修改核验标记。

@@ -1,10 +1,9 @@
 <!-- 文件作用：小程序内的管理员协议版本及微信支付配置入口，秘密仅在本次填写时保留，保存或离开后清空。 -->
 <template>
-  <AppShell title="平台配置" back>
+  <AppShell :title="tab==='commerce'?'支付模式':tab==='payment'?'微信支付配置':'协议管理'" back>
     <view v-if="error" class="error-box mb"><text>{{ error }}</text><button class="text-btn" :disabled="loading" @click="load">重新加载</button></view>
     <EmptyState v-if="state.ready&&state.user?.role!=='admin'" title="仅平台管理员可访问" detail="协议发布和支付配置均由服务端再次验证管理权限。" icon="shield"><button class="text-btn" @click="go('/pages/account/login')">切换账号</button></EmptyState>
     <template v-else-if="state.user?.role==='admin'">
-      <view class="settings-tabs"><button :class="{active:tab==='agreements'}" @click="tab='agreements'">协议配置</button><button :class="{active:tab==='payment'}" @click="tab='payment'">微信支付</button></view>
       <view v-if="loading" class="loading-line">正在读取配置…</view>
       <template v-else-if="tab==='agreements'">
         <view class="subtle-note">发布后的协议可在登录页阅读。标题或正文发生变化时，必须填写新的版本号。</view>
@@ -17,8 +16,8 @@
         </view>
         <view class="settings-actions"><button class="text-btn" :disabled="busy" @click="restoreAgreements">取消修改</button><button class="btn" :disabled="busy||!loaded" @click="saveAgreements">{{ busy?'正在发布…':'发布协议版本' }}</button></view>
       </template>
+      <template v-else-if="tab==='commerce'"><CommerceConfig/></template>
       <template v-else>
-        <CommerceConfig/>
         <view class="payment-status"><view class="status-icon"><Icon :name="paymentStatus.configured?'shield':'settings'" :size="26"/></view><view><text>{{ paymentStatus.configured?'支付配置已就绪':'支付配置尚未完整' }}</text><text>{{ paymentStatus.configured?'真实交易仍需微信 AppID 与商户权限匹配':'可以先保存已准备好的资料，缺项时不会发起真实扣款' }}</text></view></view>
         <view v-if="!paymentStatus.storage_available" class="subtle-note">服务器尚未启用支付资料的加密保存，请按项目部署说明完成配置后再保存。当前页面仍可查看已配置状态。</view>
         <view v-if="state.devMode" class="subtle-note">本地开发环境仍使用测试支付；填写配置不会把测试订单变成真实扣款。</view>
@@ -92,7 +91,7 @@ function showPage(){visible=true;if(loaded.value&&sameSession(loadedSession))ret
 /** 离开即清空秘密并作废未完成回调，避免账号切换泄露管理状态。 */
 function hidePage(){visible=false;version++;if(busy.value||loading.value)loaded.value=false;clearSecrets()}
 /** 控制台入口只决定初始分区，不扩大配置访问权限。 */
-onLoad(options=>{if(options?.tab==='payment'||options?.tab==='agreements')tab.value=options.tab})
+onLoad(options=>{if(options?.tab==='payment'||options?.tab==='agreements'||options?.tab==='commerce')tab.value=options.tab})
 onShow(showPage)
 onHide(hidePage)
 onUnload(hidePage)

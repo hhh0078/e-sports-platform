@@ -63,36 +63,47 @@ func readIdentitySettings(ctx context.Context, q querier) (identitySettings, err
 	return openIdentitySettings(v)
 }
 
-// identitySettingsView 仅输出密钥配置状态和固定地址，不包含原始秘密或密文。
-func identitySettingsView(v identitySettings) map[string]any {
-	_, err := paymentCipher()
-	return map[string]any{"has_api_key": v.APIKey != "", "configured": v.APIKey != "" && err == nil, "storage_available": err == nil, "api_url": identityAPIURL}
+// identitySettingsView 输出模式和密钥状态；解密异常不阻止管理员选择独立的基础校验。
+func identitySettingsView(v identitySettings, policy identityPolicy, keyError error) map[string]any {
+	_, cipherErr := paymentCipher()
+	view := map[string]any{"mode": policy.Mode, "has_api_key": v.APIKey != "", "configured": policy.Mode == identityBasic || v.APIKey != "" && cipherErr == nil && keyError == nil, "storage_available": cipherErr == nil, "api_url": identityAPIURL}
+	if keyError != nil {
+		view["api_error"] = "原接口密钥暂不可读取；基础校验仍可使用，严格核验前请检查服务端加密配置"
+	}
+	return view
 }
 
-// adminIdentitySettings 限制仅平台管理员读取脱敏核验配置。
+// adminIdentitySettings 仅平台管理员读取模式和脱敏状态，不向客户端回显秘密。
 func (a *App) adminIdentitySettings(w http.ResponseWriter, r *http.Request) (any, error) {
 	if _, err := a.admin(r); err != nil {
 		return nil, err
 	}
-	v, err := readIdentitySettings(r.Context(), a.DB)
+	policy, err := readIdentityPolicy(r.Context(), a.DB)
 	if err != nil {
 		return nil, err
 	}
-	return identitySettingsView(v), nil
+	v, keyErr := readIdentitySettings(r.Context(), a.DB)
+	return identitySettingsView(v, policy, keyErr), nil
 }
 
-// saveIdentitySettings 在串行事务内合并密钥并加密保存，空输入保留原值。
+// saveIdentitySettings 串行保存规则；空密钥不读取或覆盖旧密文，基础校验不依赖第三方配置。
 func (a *App) saveIdentitySettings(w http.ResponseWriter, r *http.Request) (any, error) {
 	u, err := a.admin(r)
 	if err != nil {
 		return nil, err
 	}
-	var in identitySettings
+	var in struct {
+		APIKey string `json:"api_key"`
+		Mode   string `json:"mode"`
+	}
 	if err = decode(r, &in); err != nil {
 		return nil, err
 	}
 	if len(in.APIKey) > 4096 || strings.ContainsAny(in.APIKey, "\r\n") {
 		return nil, fail(400, "核验密钥格式无效")
+	}
+	if in.Mode != "" && in.Mode != identityStrict && in.Mode != identityBasic {
+		return nil, fail(400, "请选择有效的身份校验方式")
 	}
 	tx, err := a.DB.Begin(r.Context())
 	if err != nil {
@@ -102,25 +113,31 @@ func (a *App) saveIdentitySettings(w http.ResponseWriter, r *http.Request) (any,
 	if _, err = tx.Exec(r.Context(), "SELECT pg_advisory_xact_lock(8173081)"); err != nil {
 		return nil, err
 	}
-	v, err := readIdentitySettings(r.Context(), tx)
+	policy, err := readIdentityPolicy(r.Context(), tx)
 	if err != nil {
 		return nil, err
+	}
+	if in.Mode != "" {
+		policy.Mode = in.Mode
 	}
 	if strings.TrimSpace(in.APIKey) != "" {
-		v.APIKey = strings.TrimSpace(in.APIKey)
+		encrypted, sealErr := sealIdentitySettings(identitySettings{APIKey: strings.TrimSpace(in.APIKey)})
+		if sealErr != nil {
+			return nil, sealErr
+		}
+		if err = put(r.Context(), tx, "settings", "identity-private", encrypted); err != nil {
+			return nil, err
+		}
 	}
-	encrypted, err := sealIdentitySettings(v)
-	if err != nil {
+	if err = put(r.Context(), tx, "settings", "identity-policy", policy); err != nil {
 		return nil, err
 	}
-	if err = put(r.Context(), tx, "settings", "identity-private", encrypted); err != nil {
-		return nil, err
-	}
-	if err = audit(r.Context(), tx, u.ID, "identity.settings.save", "identity-private", "更新加密身份核验配置"); err != nil {
+	if err = audit(r.Context(), tx, u.ID, "identity.settings.save", "identity-policy", "保存身份校验方式："+policy.Mode); err != nil {
 		return nil, err
 	}
 	if err = tx.Commit(r.Context()); err != nil {
 		return nil, err
 	}
-	return identitySettingsView(v), nil
+	v, keyErr := readIdentitySettings(r.Context(), a.DB)
+	return identitySettingsView(v, policy, keyErr), nil
 }

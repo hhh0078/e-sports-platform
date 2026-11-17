@@ -80,3 +80,20 @@ test('旧账号预检与核验返回不能放行新账号，旧关闭事件不�
   h.subject.finishIdentity(true,epoch-1);assert.equal(h.subject.identityGate.visible,true)
   assert.equal(h.subject.acceptIdentityResult({is_minor:false,verified:true},epoch),true);h.subject.finishIdentity(true,epoch);assert.equal(await current,true)
 })
+
+test('基础方式允许无效校验位和小写x，但保留姓名长度、18位格式及真实生日年龄',()=>{
+ const now=new Date('2026-11-17T00:00:00Z'),card='00000019900101000x'
+ assert.equal(validateIdentityInput('合成测试',card,true,now,'basic').idcard,card.toUpperCase())
+ for(const name of ['张','张'.repeat(6)])assert.throws(()=>validateIdentityInput(name,card,true,now,'basic'),/2—5/)
+ assert.throws(()=>validateIdentityInput('合成测试','00000A19900101000X',true,now,'basic'),/18位/)
+ assert.throws(()=>validateIdentityInput('合成测试','00000020000230000X',true,now,'basic'),/出生日期/)
+ assert.throws(()=>validateIdentityInput('合成测试','00000020081118000X',true,now,'basic'),/未满18岁/)
+ assert.equal(validateIdentityInput('合成测试','00000020081117000X',true,now,'basic').consent,true)
+ assert.throws(()=>validateIdentityInput('合成测试',card,false,now,'basic'),/同意/)
+})
+
+test('强制预检把服务端基础方式带入当前门禁，旧账号结果不能更改新门禁方式',async()=>{
+ const h=harness(),pending=h.subject.requireIdentity();h.reads[0].resolve({is_minor:true,verified:false,verification_mode:'basic'});await flush()
+ assert.equal(h.subject.identityGate.verificationMode,'basic');h.subject.finishIdentity();await pending
+ h.switchAccount();const next=h.subject.requireIdentity();h.reads[1].resolve({is_minor:true,verified:false,verification_mode:'strict'});await flush();assert.equal(h.subject.identityGate.verificationMode,'strict');h.subject.finishIdentity();await next
+})

@@ -27,6 +27,7 @@ export function injectBusinessAPIs(context: vm.Context): void {
   context.clearServicePreview ??= clearServicePreview
   context.isTimelinePreview ??= () => false
   context.enablePublicShareMenu ??= () => {}
+  context.onLoad ??= () => {}
   context.onShow ??= () => {}
   context.onHide ??= () => {}
   context.onUnload ??= () => {}

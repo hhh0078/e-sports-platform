@@ -33,3 +33,7 @@ Use case: ui-mockup. Edit the attached Chinese390x844 mini-program design to app
 ## 2026-10-30 双模式支付
 
 本轮先行布局及状态规则见 [settings.commerce.design.md](settings.commerce.design.md) 与同名前缀 `.commerce.png`。金币、人民币及费用分别展示；公众号手机号短信和无服务配置提示复用登录设计变体。
+
+## 2026-11-17 独立配置入口
+
+按分类导航分别打开协议、支付模式和微信支付配置。移除跨业务页签，标题明确当前内容；支付模式只展示共享CommerceConfig，微信支付只展示商户字段，协议仅展示协议表单。字段、密钥处理及原设计尺寸沿用本文和`settings.commerce.png`，本次只调整导航与分区，不新增商户字段。
