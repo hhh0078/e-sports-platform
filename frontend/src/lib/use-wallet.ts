@@ -94,7 +94,7 @@ export function useWallet(){
   /** 创建充值/押金支付并查原单，微信本地回调不会修改余额。 */
   async function payTopup(owner:ReturnType<typeof session>,kind:WalletTopup['purpose'],cents:number,intent?:ReturnType<typeof intentID>,originalID?:string,originalVirtual=false){
     if(!originalID&&!intent)throw new Error('付款原请求缺失，请重新打开付款单')
-    const virtual=kind==='balance'&&!state.devMode&&(originalVirtual||(state.commerce?.payment_method?state.commerce.payment_method==='virtual':state.commerce?.mode==='mini_program'))
+    const virtual=kind==='balance'&&!state.devMode&&(originalID?originalVirtual:(state.commerce?.payment_method?state.commerce.payment_method==='virtual':state.commerce?.mode==='mini_program'))
     if(virtual){await prepareVirtualPayment(true);if(!same(owner)||!visible)return}
     const platform=virtual?{platform:paymentPlatform()}:{}
     const result=originalID?await payWalletTopup(originalID,platform):await createWalletTopup({purpose:kind,amount_cents:cents,request_id:intent!.id,...platform})

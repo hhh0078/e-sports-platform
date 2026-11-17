@@ -35,6 +35,8 @@ function harness(t:TestContext){
   vm.runInContext(executable(readFileSync(new URL('./payment.ts',import.meta.url),'utf8')),context)
   const scope=effectScope();scope.run(()=>vm.runInContext(executable(readFileSync(new URL('./use-wallet.ts',import.meta.url),'utf8'))+'\nglobalThis.page=useWallet()',context));t.after(()=>scope.stop())
   return{page:context.page,hooks,pending,storage,notices,payments,balance,histories,reads,
+    /** 只改变当前公开支付配置，已保存付款记录仍保留自己的原渠道。 */
+    setCommerce(method:'wechat'|'virtual'){Object.assign(state,{devMode:false,commerce:{mode:'mini_program',payment_method:method}})},
     /** 挂载真实钱包页的原生触底回调，复用已创建的真实资金组合函数。 */
     attachBottom(){scope.run(()=>{vm.runInContext(executable(readFileSync(new URL('./native-page-refresh.ts',import.meta.url),'utf8')),context);vm.runInContext('(function(useWallet){'+executable(pageScript('account/wallet.vue'))+'})(()=>globalThis.page)',context)})},
     /** 通过官方生命周期注册的回调触发分页，不直接调用重试方法。 */
@@ -243,4 +245,9 @@ test('钱包页原生触底在刷新或追加失败后重试同一offset',async 
 
 test('充值先现金退款再同步时关闭原意图，不能误提示仍在支付',async t=>{
  const s=harness(t);s.hooks.show();await flush();s.page.open('balance');s.page.amount.value='10';const task=s.page.submit();await flush();s.take('/wallet/topups').resolve({payment:topup,mode:'wechat',pay_params:params});await flush();s.payments[0].success();await flush();s.take('/wallet/topups/topup-A/sync').resolve({...topup,status:'cash_refunded',refunded_cents:1000});await task;assert.equal(s.page.operation.value,null);assert.equal(s.page.wallet.value.recharge_cents,0);assert.ok(s.notices.some(value=>String(value).includes('已退还')));assert.equal([...s.storage.keys()].filter(key=>key.startsWith('jijie_wallet_intent:')).length,0)
+})
+
+
+test('切换虚拟支付后继续旧微信充值仍按原渠道，不要求虚拟支付会话',async t=>{
+ const s=harness(t);s.setCommerce('virtual');s.hooks.show();await flush();const task=s.page.resumeTopup({...topup,channel:'wechat'});await flush();const original=s.take('/wallet/topups/topup-A/pay');assert.equal(original.body.platform,undefined);original.resolve({payment:topup,mode:'wechat',pay_params:params});await flush();assert.equal(s.payments.length,1);s.payments[0].success();await flush();s.take('/wallet/topups/topup-A/sync').resolve({...topup,status:'paid'});await task;assert.equal(s.page.wallet.value.recharge_cents,0);assert.equal(s.pending.some(row=>row.path==='/auth/wechat/session'),false)
 })
