@@ -25,5 +25,15 @@
   ],
   "external_identity_calls": 0,
   "real_device": false,
-  "production_mode_changed": false
+  "production_mode_changed": false,
+  "go_full_integration_race": true,
+  "go_app_integration_seconds": 152.427,
+  "deployment": {
+    "commit": "6e08a4c6a81f87db91b1291e7895041886b50bf4",
+    "backend_healthy": true,
+    "h5_public_version_matches": true,
+    "fonts": 6,
+    "identity_mode": "strict",
+    "wechat_uploaded": false
+  }
 }
